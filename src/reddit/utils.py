@@ -17,6 +17,7 @@ REMOVED_TEXT = {"[removed]", "[deleted]", "[removed by reddit]"}
 
 
 def get_logger(name: str, logfile: str | None = None) -> logging.Logger:
+    """Logger writing UTC-stamped lines to stdout and, if given, to logs/reddit/<logfile>."""
     logger = logging.getLogger(name)
     if logger.handlers:
         return logger
@@ -35,6 +36,7 @@ def get_logger(name: str, logfile: str | None = None) -> logging.Logger:
 
 
 def utc_now_iso() -> str:
+    """Current UTC time as an ISO-8601 string with microseconds and a Z suffix."""
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
 
@@ -53,10 +55,12 @@ def daterange(start: date, end: date):
 
 
 def epoch_to_iso(ts: float) -> str:
+    """Epoch seconds as an ISO-8601 UTC string (second resolution)."""
     return datetime.fromtimestamp(ts, tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def atomic_write_bytes(path: Path, data: bytes) -> None:
+    """Write `data` to `path` through a temp file and rename, so readers never see half a file."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
     try:
@@ -70,9 +74,11 @@ def atomic_write_bytes(path: Path, data: bytes) -> None:
 
 
 def write_json_gz(path: Path, obj) -> None:
+    """Atomically write `obj` as gzip-compressed UTF-8 JSON."""
     atomic_write_bytes(path, gzip.compress(json.dumps(obj, ensure_ascii=False).encode("utf-8"), 6))
 
 
 def read_json_gz(path: Path):
+    """Read a gzip-compressed JSON file written by write_json_gz."""
     with gzip.open(path, "rt", encoding="utf-8") as f:
         return json.load(f)

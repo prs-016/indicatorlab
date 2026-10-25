@@ -29,7 +29,14 @@ from src import config
 from src.reddit import settings
 from src.reddit.arctic_client import ArcticShiftClient, ArcticShiftError
 from src.reddit.collect_reddit import collect_day
-from src.reddit.utils import daterange, epoch_to_iso, get_logger, read_json_gz, utc_now_iso, write_json_gz
+from src.reddit.utils import (
+    daterange,
+    epoch_to_iso,
+    get_logger,
+    read_json_gz,
+    utc_now_iso,
+    write_json_gz,
+)
 
 log = get_logger("subreddit_map", "collect_reddit.log")
 

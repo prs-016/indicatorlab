@@ -57,7 +57,10 @@ class RedditStore:
 
 @lru_cache(maxsize=1)
 def get_store() -> RedditStore:
-    """The store built from the pipeline's output files (overridden in tests)."""
+    """The store built from the pipeline's output files (overridden in tests).
+
+    Loaded once per process: restart the API after the pipeline rewrites its tables.
+    """
     return RedditStore.from_files([OUT_RESEARCH, OUT_RECENT], SAMPLES_PATH, PRICES_PATH)
 
 

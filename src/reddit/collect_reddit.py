@@ -46,10 +46,12 @@ MANIFEST_FIELDS = ["subreddit", "date", "status", "n_posts", "n_pages", "n_http_
 
 # ----------------------------------------------------------------------------- manifest
 def raw_path(subreddit: str, d: date) -> Path:
+    """Raw file of one (subreddit, UTC day): data/reddit/raw/arctic_shift/<sub>/<YYYY>/<date>.json.gz."""
     return settings.RAW_ARCTIC / subreddit / f"{d:%Y}" / f"{d:%Y-%m-%d}.json.gz"
 
 
 def append_manifest(row: dict) -> None:
+    """Append one row to the append-only collection manifest (header on first write)."""
     new = not settings.MANIFEST.exists()
     settings.MANIFEST.parent.mkdir(parents=True, exist_ok=True)
     with open(settings.MANIFEST, "a", newline="") as f:
@@ -154,6 +156,7 @@ def collect_day(client: ArcticShiftClient, subreddit: str, d: date, max_pages: i
 
 
 def run_collect(args) -> None:
+    """`collect` subcommand: download every not-yet-complete (day, subreddit) pair in the range."""
     start = date.fromisoformat(args.start)
     end = date.fromisoformat(args.end) if args.end else settings.default_end_date()
     today = datetime.now(timezone.utc).date()
@@ -195,6 +198,7 @@ def run_collect(args) -> None:
 
 # ----------------------------------------------------------------------------- coverage
 def run_coverage(args) -> None:
+    """`coverage` subcommand: earliest archived post per subreddit, checked by a second request."""
     client = ArcticShiftClient(min_interval=args.interval)
     rows = []
     for s in args.subreddits or config.subreddits(args.market):
@@ -279,6 +283,7 @@ def run_verify(args) -> None:
 
 # ----------------------------------------------------------------------------- status
 def run_status(args) -> None:
+    """`status` subcommand: per-subreddit day counts, posts, failed days and storage -> collection_summary.csv."""
     start = date.fromisoformat(args.start)
     end = date.fromisoformat(args.end) if args.end else settings.default_end_date()
     latest = load_manifest_latest()
@@ -310,6 +315,7 @@ def run_status(args) -> None:
 
 
 def main() -> None:
+    """Command-line entry point."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     ap.add_argument("--market", default=settings.MARKET, choices=config.markets(),

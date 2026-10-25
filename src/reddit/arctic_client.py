@@ -31,6 +31,8 @@ def _is_rate_limit_text(text: str) -> bool:
 
 
 class ArcticShiftError(RuntimeError):
+    """Raised when a request fails for good; `attempts` keeps every try's status and error."""
+
     def __init__(self, msg: str, attempts: list[dict]):
         super().__init__(msg)
         self.attempts = attempts
@@ -38,6 +40,8 @@ class ArcticShiftError(RuntimeError):
 
 @dataclass
 class ApiResult:
+    """One successful API response with the request URL, parameters, status, time and attempts."""
+
     url: str
     params: dict
     http_status: int
@@ -47,6 +51,8 @@ class ApiResult:
 
 
 class ArcticShiftClient:
+    """Paced, retrying GET client for the Arctic Shift API (see the module docstring)."""
+
     def __init__(
         self,
         base_url: str = settings.ARCTIC_BASE_URL,
@@ -84,6 +90,7 @@ class ArcticShiftClient:
         return random.uniform(lo, hi)
 
     def get(self, path: str, params: dict) -> ApiResult:
+        """GET `path` with `params`, retrying per the policy; raises ArcticShiftError when retries run out."""
         url = f"{self.base_url}/{path.lstrip('/')}"
         full_url = f"{url}?{urlencode(params)}"
         attempts: list[dict] = []
