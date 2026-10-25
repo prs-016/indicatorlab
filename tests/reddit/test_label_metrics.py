@@ -44,3 +44,16 @@ def test_llm_refusal_is_recorded_not_guessed():
 def test_prompt_names_the_company_and_marks_truncation():
     p = ss.llm_prompt("x" * (ss.LLM_MAX_TEXT_CHARS + 10), "Netflix")
     assert "Netflix" in p and "[post truncated]" in p
+
+
+def test_labelled_sample_is_never_redrawn(tmp_path, monkeypatch):
+    from src.reddit import label_samples as ls
+    monkeypatch.setattr(ls.settings, "VALIDATION", tmp_path)
+    sample = tmp_path / "sentiment_sample.csv"
+    sample.write_text("item_id\ns001\n")
+    ls._guard(sample, "sentiment", force=False)                 # no labels yet: fine
+    (tmp_path / "labels").mkdir()
+    (tmp_path / "labels" / "sentiment_joshua.csv").write_text("item_id,label\ns001,positive\n")
+    with pytest.raises(SystemExit, match="already has labels"):
+        ls._guard(sample, "sentiment", force=False)
+    ls._guard(sample, "sentiment", force=True)                  # explicit override

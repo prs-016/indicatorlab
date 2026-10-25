@@ -7,6 +7,10 @@
   match      (Step 4) MATCH_PER_TICKER text-matched posts per ticker from non-product subreddits,
              uniformly within each ticker, to measure matching precision.
 
+A sample that already has labels is never redrawn unless --force is given. Drawing from the
+priority-pass days (see collect_reddit --sample-days-per-year) is still a random sample: the days
+are seeded random draws and the posts are drawn at random within them.
+
 Excluded from both: removed posts, posts from incompletely collected days, and posts that
 text-match 5+ stocks (multi_ticker_list). Sentiment posts also need some text
 (MIN_TEXT_CHARS of title + body). The page in src/reddit/label_server.py shows these files.
@@ -46,6 +50,14 @@ SECOND_RATER_OUT = settings.VALIDATION / "sentiment_second_rater.csv"
 MATCH_OUT = settings.VALIDATION / "match_precision_sample.csv"
 
 
+def _guard(path, task: str, force: bool) -> None:
+    """Refuse to redraw a sample that already has labels (item ids would no longer match them)."""
+    labelled = sorted((settings.VALIDATION / "labels").glob(f"{task}_*.csv"))
+    if path.exists() and labelled and not force:
+        raise SystemExit(f"{path.name} already has labels ({', '.join(f.name for f in labelled)}); "
+                         "pass --force only if you mean to start the labelling over")
+
+
 def _population() -> pd.DataFrame:
     """Research-period matches eligible for labelling."""
     mt = pd.read_parquet(settings.PROCESSED / "post_ticker_matches.parquet",
@@ -65,8 +77,9 @@ def _with_text(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def draw_sentiment(seed: int = SEED) -> pd.DataFrame:
+def draw_sentiment(seed: int = SEED, force: bool = False) -> pd.DataFrame:
     """Stratified sentiment sample; writes SENTIMENT_OUT and the blind second-rater file."""
+    _guard(SENTIMENT_OUT, "sentiment", force)
     rng = np.random.default_rng(seed)
     pop = _population()
     picked = []
@@ -103,8 +116,9 @@ def draw_sentiment(seed: int = SEED) -> pd.DataFrame:
     return out
 
 
-def draw_match(seed: int = SEED) -> pd.DataFrame:
+def draw_match(seed: int = SEED, force: bool = False) -> pd.DataFrame:
     """MATCH_PER_TICKER text-matched posts per ticker; population sizes saved for weighting."""
+    _guard(MATCH_OUT, "match", force)
     pop = _population()
     pop = pop[pop["subreddit_type"] != "product"]
     parts = [g.sample(min(len(g), MATCH_PER_TICKER), random_state=seed) for _, g in pop.groupby("ticker", sort=True)]
@@ -130,5 +144,6 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("sample", choices=["sentiment", "match"])
     ap.add_argument("--seed", type=int, default=SEED)
+    ap.add_argument("--force", action="store_true", help="redraw even if labels exist (they will no longer match)")
     a = ap.parse_args()
-    (draw_sentiment if a.sample == "sentiment" else draw_match)(a.seed)
+    (draw_sentiment if a.sample == "sentiment" else draw_match)(a.seed, a.force)
