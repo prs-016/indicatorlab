@@ -21,6 +21,7 @@ import re
 import pandas as pd
 
 from src.reddit import settings
+from src.reddit.build_posts import attach_text
 from src.reddit.match_tickers import clean_text
 from src.reddit.utils import get_logger, utc_now_iso
 
@@ -86,8 +87,8 @@ def draw(mt: pd.DataFrame, seed: int = SEED) -> pd.DataFrame:
 
 def build(seed: int = SEED) -> pd.DataFrame:
     mt = pd.read_parquet(settings.PROCESSED / "post_ticker_matches.parquet")
-    mt = mt[mt["day_status"] == "complete"]
-    s = draw(mt, seed)
+    mt = mt[(mt["day_status"] == "complete") & mt["subreddit"].isin(settings.SUBREDDITS)]   # Week 1 subreddits
+    s = attach_text(draw(mt, seed), ("title", "selftext"))
     s["relevant_context"] = s.apply(context, axis=1)
     s["body_excerpt"] = s["selftext"].map(lambda x: clean_text(x)[:500].replace("\n", " "))
     s["url"] = "https://www.reddit.com" + s["permalink"].fillna("")

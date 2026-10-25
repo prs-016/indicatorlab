@@ -19,6 +19,7 @@ RAW_ARCTIC = RAW / "arctic_shift"
 RAW_COVERAGE = RAW / "coverage"
 RAW_PRICES = RAW / "prices"
 PROCESSED = DATA / "processed"
+POSTS = PROCESSED / "posts"   # one parquet file per subreddit
 VALIDATION = DATA / "validation"
 RESULTS = ROOT / "results" / "reddit"
 CHARTS = RESULTS / "charts"

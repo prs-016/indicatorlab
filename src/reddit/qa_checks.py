@@ -42,7 +42,8 @@ def main(end: date | None = None) -> int:
              if pd.Timestamp(v["first_retrieved_utc"]) < pd.Timestamp(day_bounds_epoch(date.fromisoformat(d))[1], unit="s", tz="UTC")]
     check("every day retrieved after it ended (UTC)", not early, f"{len(early)} retrieved early {early[:5]}")
 
-    posts = pd.read_parquet(settings.PROCESSED / "posts.parquet")
+    posts = pd.read_parquet(settings.POSTS, columns=["id", "date", "raw_file_date", "day_status", "score",
+                                                     "num_comments", "created_utc"])
     check("post ids unique", posts["id"].is_unique, f"{len(posts):,} posts")
     mism = (posts["date"] != posts["raw_file_date"]).sum()
     check("post UTC date == raw file date", mism == 0, f"{mism} mismatches")

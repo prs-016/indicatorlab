@@ -12,6 +12,9 @@ from pathlib import Path
 
 from src.reddit import settings
 
+# Placeholder bodies Reddit leaves when a post is removed or deleted.
+REMOVED_TEXT = {"[removed]", "[deleted]", "[removed by reddit]"}
+
 
 def get_logger(name: str, logfile: str | None = None) -> logging.Logger:
     logger = logging.getLogger(name)
