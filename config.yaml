@@ -48,7 +48,7 @@ markets:
       AAPL:
         name: Apple
         wikipedia: {en: Apple_Inc.}
-        reddit: {product: [apple, iphone, mac, applewatch, VisionPro], stock: [AAPL]}
+        reddit: {product: [apple, iphone, mac, applewatch, VisionPro], stock: []}
         match:
           symbols: [AAPL]
           names:
@@ -57,7 +57,7 @@ markets:
       MSFT:
         name: Microsoft
         wikipedia: {en: Microsoft}
-        reddit: {product: [microsoft, windows, xbox], stock: [MSFT]}
+        reddit: {product: [microsoft, windows, xbox], stock: []}
         match:
           symbols: [MSFT]
           names: [{pattern: Microsoft, ignore_case: true}]
@@ -71,14 +71,14 @@ markets:
       TSLA:
         name: Tesla
         wikipedia: {en: 'Tesla,_Inc.'}
-        reddit: {product: [teslamotors, TeslaModelY], stock: [teslainvestorsclub]}
+        reddit: {product: [teslamotors, TeslaModelY, TeslaModel3, TeslaLounge], stock: [teslainvestorsclub]}
         match:
           symbols: [TSLA]
           names: [{pattern: '(?<!Nikola )Tesla', ignore_case: true}]
       AMZN:
         name: Amazon
         wikipedia: {en: Amazon_(company)}
-        reddit: {product: [amazon, aws, AmazonPrime], stock: [AMZN]}
+        reddit: {product: [amazon, aws, AmazonPrime], stock: []}
         match:
           symbols: [AMZN]
           names:
@@ -87,7 +87,7 @@ markets:
       META:
         name: Meta Platforms
         wikipedia: {en: Meta_Platforms}
-        reddit: {product: [facebook, OculusQuest], stock: [META_Stock]}
+        reddit: {product: [facebook, OculusQuest, instagram], stock: []}
         match:
           symbols: [META]
           names: [{pattern: Meta Platforms, ignore_case: true}, {pattern: Facebook, ignore_case: true}]
@@ -104,7 +104,7 @@ markets:
       GOOGL:
         name: Alphabet / Google
         wikipedia: {en: Alphabet_Inc.}
-        reddit: {product: [google, Android, GooglePixel], stock: [GOOGL]}
+        reddit: {product: [google, Android, GooglePixel], stock: []}
         match:
           symbols: [GOOGL, GOOG]
           names:
@@ -114,14 +114,14 @@ markets:
       AMD:
         name: Advanced Micro Devices
         wikipedia: {en: AMD}
-        reddit: {product: [Amd], stock: [AMD_Stock]}
+        reddit: {product: [Amd, radeon], stock: [AMD_Stock]}
         match:
           symbols: [AMD]
           names: [{pattern: Advanced Micro Devices, ignore_case: true}]
       NFLX:
         name: Netflix
         wikipedia: {en: Netflix}
-        reddit: {product: [netflix], stock: [NFLX]}
+        reddit: {product: [netflix], stock: []}
         match:
           symbols: [NFLX]
           names: [{pattern: Netflix, ignore_case: true}]
