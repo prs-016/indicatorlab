@@ -1,0 +1,150 @@
+# Shared Indicator Lab config: markets, stocks, attention sources and research rules.
+# Add a market, stock, subreddit or Wikipedia title here, never inside a function.
+# Load it with `from src import config` (see src/config.py).
+
+holdout_start: 2025-10-01   # research, spike studies and strategy tests use data strictly before this
+week_label: monday          # every weekly table labels a week by its Monday (00:00 UTC)
+
+# One spike rule for every attention source (Wikipedia views/edits, Reddit chatter).
+# baseline = median of the previous `baseline_weeks` weeks (week t excluded)
+# abnormal = log((x + offset) / (baseline + offset))
+# rz       = (abnormal - median) / (mad_scale * MAD), median and MAD of PAST abnormal values only
+# spike    = abnormal >= log(ratio) and rz >= rz_threshold
+spike:
+  ratio: 1.5
+  rz_threshold: 2.0
+  baseline_weeks: 8
+  rz_min_history: 26    # past abnormal values needed before rz is defined
+  mad_scale: 1.4826     # makes MAD comparable to a standard deviation
+  offset: 1             # abnormal = log((x + 1) / (baseline + 1)) so zero-post weeks stay finite
+
+# Strategy tests (PDF "Strategies: the new standard").
+strategy:
+  cost_bps: 10
+  n_random_portfolios: 200
+  random_seed: 42
+  # Standard split. Reddit data starts in 2023, so Reddit strategies use `reddit_split` instead.
+  split: {train: [2011-01-01, 2019-12-31], test: [2020-01-01, 2025-09-30]}
+  reddit_split: {train: [2023-01-02, 2024-06-30], test: [2024-07-01, 2025-09-30]}
+
+reddit:
+  arctic_shift:
+    base_url: https://arctic-shift.photon-reddit.com/api
+    min_interval_s: 1.0         # pause between requests
+    retry_wait_s: [10, 30]      # wait drawn uniformly from this range after a Timeout / server error
+    max_retries: 3              # then the day is logged as failed (never as zero posts)
+  collect_start: 2023-01-01
+  min_posts_per_week: 20        # subreddits below this (2024 average) are dropped
+  multi_ticker_list_min: 5      # a post text-matching this many tracked stocks is flagged as a list
+
+markets:
+  US:
+    currency: USD
+    benchmark: SPY
+    reddit:
+      general: [stocks, investing, wallstreetbets]   # text-matched to every stock
+      sector: [hardware]                             # multi-company subreddits, text-matched
+    stocks:
+      AAPL:
+        name: Apple
+        wikipedia: {en: Apple_Inc.}
+        reddit: {product: [apple, iphone, mac, applewatch, VisionPro], stock: []}
+        match:
+          symbols: [AAPL]
+          names:
+            - {pattern: '(?<!Big )(?<!BIG )(?:Apple|APPLE)(?! Hospitality)(?! Bank)(?! HOSPITALITY)'}
+          ambiguous_name: Apple
+      MSFT:
+        name: Microsoft
+        wikipedia: {en: Microsoft}
+        reddit: {product: [microsoft, windows, xbox], stock: []}
+        match:
+          symbols: [MSFT]
+          names: [{pattern: Microsoft, ignore_case: true}]
+      NVDA:
+        name: NVIDIA
+        wikipedia: {en: Nvidia}
+        reddit: {product: [nvidia], stock: [NVDA_Stock]}
+        match:
+          symbols: [NVDA]
+          names: [{pattern: Nvidia, ignore_case: true}]
+      TSLA:
+        name: Tesla
+        wikipedia: {en: 'Tesla,_Inc.'}
+        reddit: {product: [teslamotors, TeslaModelY, TeslaModel3, TeslaLounge], stock: [teslainvestorsclub]}
+        match:
+          symbols: [TSLA]
+          names: [{pattern: '(?<!Nikola )Tesla', ignore_case: true}]
+      AMZN:
+        name: Amazon
+        wikipedia: {en: Amazon_(company)}
+        reddit: {product: [amazon, aws, AmazonPrime], stock: []}
+        match:
+          symbols: [AMZN]
+          names:
+            - {pattern: '(?:Amazon|AMAZON)(?! [Rr]ainforest)(?! [Rr]iver)(?! [Bb]asin)(?! [Jj]ungle)'}
+          ambiguous_name: Amazon
+      META:
+        name: Meta Platforms
+        wikipedia: {en: Meta_Platforms}
+        reddit: {product: [facebook, OculusQuest, instagram], stock: []}
+        match:
+          symbols: [META]
+          names: [{pattern: Meta Platforms, ignore_case: true}, {pattern: Facebook, ignore_case: true}]
+          ambiguous_name: Meta
+          # Capitalised "Meta" alone counts only with company context (see match_tickers.py):
+          # a strong form right after it ("Meta's", "Meta stock", ...) or a context term anywhere in the post.
+          contextual_name:
+            word: 'Meta(?!-)(?! [Tt]hread)(?! [Pp]ost)(?! [Aa]nalysis)'
+            strong: "Meta(?:'s|’s| Platforms|\\s+(?:\\w+\\s+){0,2}?(?:stock|stocks|shares|earnings|calls|puts|options|price|PT|ER|guidance|capex)\\b)"
+            context_terms: [Zuckerberg, Zuck, Facebook, Instagram, WhatsApp, Oculus, Reality Labs, Llama,
+                            Threads app, FAANG, MAANG, 'Mag(?:nificent)? ?7', Magnificent Seven, big tech,
+                            Apple, Microsoft, Google, Alphabet, Amazon, Nvidia, Netflix, Tesla,
+                            AAPL, MSFT, 'GOOGL?', AMZN, NVDA, NFLX, TSLA, '\$META', META]
+      GOOGL:
+        name: Alphabet / Google
+        wikipedia: {en: Alphabet_Inc.}
+        reddit: {product: [google, Android, GooglePixel], stock: []}
+        match:
+          symbols: [GOOGL, GOOG]
+          names:
+            - {pattern: 'Google(?! it\b)(?! that\b)(?! this\b)', ignore_case: true}
+            - {pattern: '(?:Alphabet|ALPHABET)'}
+          ambiguous_name: Alphabet
+      AMD:
+        name: Advanced Micro Devices
+        wikipedia: {en: AMD}
+        reddit: {product: [Amd, radeon], stock: [AMD_Stock]}
+        match:
+          symbols: [AMD]
+          names: [{pattern: Advanced Micro Devices, ignore_case: true}]
+      NFLX:
+        name: Netflix
+        wikipedia: {en: Netflix}
+        reddit: {product: [netflix], stock: []}
+        match:
+          symbols: [NFLX]
+          names: [{pattern: Netflix, ignore_case: true}]
+      JPM:
+        name: JPMorgan Chase
+        wikipedia: {en: JPMorgan_Chase}
+        reddit: {product: [Chase], stock: []}
+        match:
+          symbols: [JPM]
+          names: [{pattern: 'J\.?\s?P\.?\s?Morgan', ignore_case: true}, {pattern: Chase Bank, ignore_case: true}]
+
+  IN:   # Jamal: fill in the 5 main stocks (names, subreddits, English + Hindi Wikipedia titles)
+    currency: INR
+    benchmark: ^NSEI
+    reddit:
+      general: [IndianStockMarket, IndianStreetBets]
+      sector: []
+    stocks: {}
+
+  HK:   # Jack: fill in the 5 stocks (names, subreddits, English + Chinese Wikipedia titles)
+    currency: HKD
+    benchmark: ^HSI
+    reddit:
+      general: []
+      sector: []
+    stocks: {}
