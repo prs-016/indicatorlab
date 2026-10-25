@@ -7,7 +7,7 @@ week_label: monday          # every weekly table labels a week by its Monday (00
 
 # One spike rule for every attention source (Wikipedia views/edits, Reddit chatter).
 # baseline = median of the previous `baseline_weeks` weeks (week t excluded)
-# abnormal = log(x / baseline)
+# abnormal = log((x + offset) / (baseline + offset))
 # rz       = (abnormal - median) / (mad_scale * MAD), median and MAD of PAST abnormal values only
 # spike    = abnormal >= log(ratio) and rz >= rz_threshold
 spike:
@@ -16,6 +16,7 @@ spike:
   baseline_weeks: 8
   rz_min_history: 26    # past abnormal values needed before rz is defined
   mad_scale: 1.4826     # makes MAD comparable to a standard deviation
+  offset: 1             # abnormal = log((x + 1) / (baseline + 1)) so zero-post weeks stay finite
 
 # Strategy tests (PDF "Strategies: the new standard").
 strategy:
