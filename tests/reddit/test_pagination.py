@@ -56,9 +56,16 @@ def test_empty_day_is_complete_with_zero_posts():
 
 def test_failure_is_failed_not_zero():
     posts = [mk(i, START + i * 10) for i in range(1, 10)]
-    r = collect_day(FakeClient(posts, page_size=3, fail_at_call=2), "x", DAY)
+    r = collect_day(FakeClient(posts, page_size=3, fail_at_call=2), "x", DAY, min_page_size=3)
     assert r["status"] == "failed"
     assert r["errors"]
+
+
+def test_short_page_ends_day_without_extra_request():
+    posts = [mk(i, START + i * 10) for i in range(1, 6)]
+    fake = FakeClient(posts, page_size=10)
+    r = collect_day(fake, "x", DAY, min_page_size=10)
+    assert r["status"] == "complete" and r["n_posts_unique"] == 5 and fake.calls == 1
 
 
 def test_tie_overflow_marked_partial():
@@ -101,3 +108,14 @@ def test_client_gives_up_and_raises():
     c = ArcticShiftClient(session=sess, min_interval=0, max_attempts=3, sleep=lambda s: None)
     with pytest.raises(ArcticShiftError):
         c.get("posts/search", {"subreddit": "x"})
+
+
+def test_server_error_waits_10_to_30s_and_retries_3_times():
+    err = {"data": None, "error": "Internal server error"}
+    sess = _Session([_Resp(200, err)] * 4)
+    waits = []
+    c = ArcticShiftClient(session=sess, min_interval=0, sleep=waits.append)
+    with pytest.raises(ArcticShiftError) as e:
+        c.get("posts/search", {"subreddit": "x"})
+    assert len(e.value.attempts) == 4          # 1 try + 3 retries
+    assert len(waits) == 3 and all(10 <= w <= 30 for w in waits)

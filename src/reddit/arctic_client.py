@@ -1,10 +1,12 @@
 """Polite HTTP client for the Arctic Shift API.
 
-- Enforces a minimum interval between requests (default ~1s).
-- Retries with exponential backoff on network errors, HTTP 429/5xx, and the
-  API's in-body rate-limit message ("Timeout. Maybe slow down a bit"), which is
-  returned with HTTP 200 and `data: null`, so the body must be inspected.
-- Never converts a failure into an empty result: exhausted retries raise.
+- Enforces a minimum interval between requests (config.yaml, ~1 s).
+- On network errors, HTTP 429/5xx, the in-body "Internal server error" and the API's
+  in-body rate-limit message ("Timeout. Maybe slow down a bit", returned with HTTP 200
+  or 422 and `data: null`, so the body must be inspected) it waits a random 10-30 s and
+  retries up to 3 times (config.yaml `reddit.arctic_shift`).
+- Never converts a failure into an empty result: exhausted retries raise, and the
+  collector then logs the day as failed.
 """
 from __future__ import annotations
 
@@ -20,10 +22,12 @@ from src.reddit.utils import get_logger, utc_now_iso
 
 log = get_logger("arctic_client", "collect_reddit.log")
 
+REQUEST_TIMEOUT_S = 90.0   # busy r/wallstreetbets days can take ~60 s to answer
+
 
 def _is_rate_limit_text(text: str) -> bool:
     t = text[:500].lower()
-    return "slow down" in t or "timeout" in t
+    return "slow down" in t or "timeout" in t or "internal server error" in t
 
 
 class ArcticShiftError(RuntimeError):
@@ -46,19 +50,17 @@ class ArcticShiftClient:
     def __init__(
         self,
         base_url: str = settings.ARCTIC_BASE_URL,
-        min_interval: float = 1.0,
-        max_attempts: int = 8,
-        base_backoff: float = 2.0,
-        max_backoff: float = 120.0,
-        timeout: float = 90.0,
+        min_interval: float = settings.ARCTIC_MIN_INTERVAL_S,
+        max_attempts: int = 1 + settings.ARCTIC_MAX_RETRIES,
+        retry_wait: tuple[float, float] = settings.ARCTIC_RETRY_WAIT_S,
+        timeout: float = REQUEST_TIMEOUT_S,
         session: requests.Session | None = None,
         sleep=time.sleep,
     ):
         self.base_url = base_url.rstrip("/")
         self.min_interval = min_interval
         self.max_attempts = max_attempts
-        self.base_backoff = base_backoff
-        self.max_backoff = max_backoff
+        self.retry_wait = retry_wait
         self.timeout = timeout
         self.session = session or requests.Session()
         self.session.headers.setdefault("User-Agent", "indicator-lab-reddit-research/1.0 (academic project)")
@@ -72,12 +74,14 @@ class ArcticShiftClient:
             self._sleep(wait)
 
     def _backoff(self, attempt: int, retry_after: str | None = None) -> float:
+        """Seconds to wait before retry `attempt + 1`: the server's Retry-After if given, else uniform(retry_wait)."""
+        lo, hi = self.retry_wait
         if retry_after:
             try:
-                return min(float(retry_after), self.max_backoff)
+                return min(float(retry_after), hi)
             except ValueError:
                 pass
-        return min(self.base_backoff * 2 ** (attempt - 1), self.max_backoff) + random.uniform(0, 1)
+        return random.uniform(lo, hi)
 
     def get(self, path: str, params: dict) -> ApiResult:
         url = f"{self.base_url}/{path.lstrip('/')}"

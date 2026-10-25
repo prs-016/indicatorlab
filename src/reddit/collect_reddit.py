@@ -76,9 +76,13 @@ def collect_day(client: ArcticShiftClient, subreddit: str, d: date, max_pages: i
     Pagination: sort=asc with an exclusive `after`. Each next page starts at
     `after = last_created_utc - 1` so that posts sharing the final second of a page
     are not skipped; overlap is removed by de-duplicating on post id. Paging stops
-    when a page contributes no new ids. If that final page is full (>= the API's
-    minimum page size of 100 observed for limit=auto), more posts may share that one
-    second than fit in a page, so the day is marked `partial` rather than complete.
+    when a page holds fewer than `min_page_size` records (the window is exhausted) or
+    contributes no new ids. If a page with no new ids is full (>= the API's minimum
+    page size of 100 observed for limit=auto), more posts may share that one second
+    than fit in a page, so the day is marked `partial` rather than complete.
+
+    The short-page stop was checked on the 12,059 Week 1 pages (Oct 2026): a page with
+    fewer than 100 records was never followed by a page adding new ids.
     """
     start, end = day_bounds_epoch(d)
     after = start
@@ -107,6 +111,8 @@ def collect_day(client: ArcticShiftClient, subreddit: str, d: date, max_pages: i
             if len(data) >= min_page_size:
                 status, note = "partial", f"possible tie overflow: full page with no new ids after={after}"
             break
+        if len(data) < min_page_size:
+            break   # short page: nothing left in the window
         next_after = max(int(p["created_utc"]) for p in data) - 1
         if next_after <= after:
             # >1 page of posts inside one second: cannot page further with second resolution.
@@ -287,7 +293,7 @@ def main() -> None:
     c.add_argument("--start", default=settings.START_DATE.isoformat())
     c.add_argument("--end", default=None, help="inclusive; default = last complete UTC day")
     c.add_argument("--subreddits", nargs="*")
-    c.add_argument("--interval", type=float, default=1.0)
+    c.add_argument("--interval", type=float, default=settings.ARCTIC_MIN_INTERVAL_S)
     c.add_argument("--max-pages", type=int, default=MAX_PAGES)
     c.add_argument("--force", action="store_true", help="re-download even complete days")
     c.add_argument("--allow-partial-today", action="store_true")
@@ -299,7 +305,7 @@ def main() -> None:
     k = sub.add_parser("verify")
     k.add_argument("--n-per-sub", type=int, default=10)
     k.add_argument("--seed", type=int, default=42)
-    k.add_argument("--interval", type=float, default=1.0)
+    k.add_argument("--interval", type=float, default=settings.ARCTIC_MIN_INTERVAL_S)
     k.set_defaults(func=run_verify)
     t = sub.add_parser("status")
     t.add_argument("--start", default=settings.START_DATE.isoformat())
