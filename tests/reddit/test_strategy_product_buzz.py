@@ -16,7 +16,8 @@ def _close(path_a=None):
 
 def _spec(entry_weeks, exit_weeks=(), max_weeks=6, tickers=("A",)):
     weeks = pd.date_range("2024-01-01", periods=28, freq="7D", tz="UTC")
-    rows = [{"ticker": t, "week": w, "entry": w in entry_weeks, "exit": w in exit_weeks} for t in tickers for w in weeks]
+    rows = [{"ticker": t, "week": w, "entry": w in entry_weeks, "exit": w in exit_weeks}
+            for t in tickers for w in weeks]
     return pb.Spec("test", max_weeks, pd.DataFrame(rows))
 
 

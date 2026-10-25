@@ -65,6 +65,8 @@ def test_source_filter_and_date_window(client):
 
 
 def test_unknown_ticker_is_404_and_bad_dates_are_422(client):
-    assert client.get("/sentiment", params={"ticker": "ZZZZ", "start": "2024-01-01", "end": "2024-02-01"}).status_code == 404
-    assert client.get("/spikes", params={"ticker": "AAPL", "start": "2024-13-01", "end": "2024-02-01"}).status_code == 422
-    assert client.get("/spikes", params={"ticker": "AAPL", "start": "2024-03-01", "end": "2024-02-01"}).status_code == 422
+    def status(path, ticker, start, end):
+        return client.get(path, params={"ticker": ticker, "start": start, "end": end}).status_code
+    assert status("/sentiment", "ZZZZ", "2024-01-01", "2024-02-01") == 404
+    assert status("/spikes", "AAPL", "2024-13-01", "2024-02-01") == 422      # not a date
+    assert status("/spikes", "AAPL", "2024-03-01", "2024-02-01") == 422      # start after end
