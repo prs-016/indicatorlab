@@ -155,7 +155,7 @@ def make_client():
 def score_llm(texts: list[str], companies: list[str]) -> pd.DataFrame:
     """One synchronous request per uncached post (fine for the ~300 labelled posts)."""
     cache = load_cache()
-    prompts = [llm_prompt(t, c) for t, c in zip(texts, companies)]
+    prompts = [llm_prompt(t, c) for t, c in zip(texts, companies, strict=True)]
     todo = [p for p in dict.fromkeys(prompts) if cache_key(p) not in cache]
     if todo:
         client = make_client()

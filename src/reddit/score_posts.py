@@ -1,7 +1,9 @@
 """Week 2, Step 5.5: score every matched post with the chosen scorer and write post_sentiment.parquet.
 
-The scorer per source comes from results/reddit/tables/sentiment_choice.json (written by
-`label_eval sentiment`), or from --scorer to force one. Posts are scored one subreddit at a time and
+Sentiment is stored per (post, ticker): text-only scorers give every ticker of a post the same
+score, while the LLM is asked about each company separately. The scorer per source comes from
+results/reddit/tables/sentiment_choice.json (written by `label_eval sentiment`), or from --scorer
+to force one. Posts are scored one subreddit at a time and
 saved under data/reddit/processed/post_sentiment/<subreddit>.parquet, so an interrupted run resumes.
 Removed posts and posts with no text are not scored (they still count as posts).
 
@@ -26,11 +28,11 @@ from src.reddit.reddit_weekly import SENTIMENT_PATH, SOURCE_OF_TYPE
 from src.reddit.sentiment_scorers import (
     LLM_MODEL,
     cache_key,
-    make_client,
+    llm_prompt,
     load_cache,
+    make_client,
     parse_label,
     request_params,
-    llm_prompt,
     run_scorer,
 )
 from src.reddit.utils import get_logger
@@ -48,24 +50,26 @@ POLL_S = 60
 
 
 def _posts_to_score(sub_file) -> pd.DataFrame:
-    """Matched, non-removed posts of one subreddit with text, plus the company name for the LLM."""
+    """One row per matched (post, ticker) of one subreddit: non-removed posts with text, plus the company name.
+
+    A post that names two tracked stocks gets two rows, because the LLM label is about one company.
+    """
     mt = pd.read_parquet(settings.PROCESSED / "post_ticker_matches.parquet",
                          filters=[("subreddit", "==", sub_file.stem)], columns=["post_id", "ticker", "subreddit_type"])
     posts = pd.read_parquet(sub_file, columns=["id", "title", "selftext", "removed_flag"])
     posts = posts[~posts["removed_flag"] & posts["id"].isin(mt["post_id"])]
     text = (posts["title"].map(clean_text) + "\n\n" + posts["selftext"].map(clean_text)).str.strip()
-    first = mt.drop_duplicates("post_id").set_index("post_id")
+    out = pd.DataFrame({"post_id": posts["id"].to_numpy(), "text": text.to_numpy()}).merge(
+        mt.drop_duplicates(["post_id", "ticker"]), on="post_id")
     names = {t: c["name"] for t, c in config.stocks(settings.MARKET).items()}
-    out = pd.DataFrame({"post_id": posts["id"].to_numpy(), "text": text.to_numpy()})
-    out["ticker"] = out["post_id"].map(first["ticker"])
     out["company"] = out["ticker"].map(names)
-    out["source"] = out["post_id"].map(first["subreddit_type"]).map(SOURCE_OF_TYPE)
-    return out[out["text"].str.len() > 0]
+    out["source"] = out["subreddit_type"].map(SOURCE_OF_TYPE)
+    return out[out["text"].str.len() > 0].drop(columns="subreddit_type").reset_index(drop=True)
 
 
 def estimate_llm_cost(texts: list[str], companies: list[str]) -> dict:
     """Rough token and dollar estimate for scoring `texts` with the batched LLM."""
-    in_tok = sum(len(llm_prompt(t, c)) for t, c in zip(texts, companies)) / CHARS_PER_TOKEN
+    in_tok = sum(len(llm_prompt(t, c)) for t, c in zip(texts, companies, strict=True)) / CHARS_PER_TOKEN
     out_tok = LLM_OUTPUT_TOKENS * len(texts)
     usd = BATCH_DISCOUNT * (in_tok * LLM_PRICE_PER_MTOK["input"] + out_tok * LLM_PRICE_PER_MTOK["output"]) / 1e6
     return {"posts": len(texts), "input_tokens": int(in_tok), "output_tokens": out_tok, "usd": round(usd, 2)}
@@ -76,7 +80,7 @@ def score_llm_batched(df: pd.DataFrame) -> pd.Series:
     from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
     from anthropic.types.messages.batch_create_params import Request
     cache = load_cache()
-    prompts = [llm_prompt(t, c) for t, c in zip(df["text"], df["company"])]
+    prompts = [llm_prompt(t, c) for t, c in zip(df["text"], df["company"], strict=True)]
     todo = {cache_key(p): p for p in prompts if cache_key(p) not in cache}
     client = make_client()
     keys = list(todo)
@@ -123,9 +127,12 @@ def run(force_scorer: str | None, confirm_llm_cost: bool, rescore: bool) -> pd.D
                 s = pd.DataFrame({"label": labels, "score": labels.map({"positive": 1.0, "negative": -1.0,
                                                                         "neutral": 0.0})})
             else:
-                s = run_scorer(scorer, g["text"].tolist(), g["company"].tolist())
-                s.index = g.index
-            parts.append(pd.DataFrame({"post_id": g["post_id"], "sentiment_label": s["label"],
+                # text-only scorers give the same answer for every ticker of a post: score each post once
+                once = g.drop_duplicates("post_id")
+                sc = run_scorer(scorer, once["text"].tolist(), once["company"].tolist())
+                sc.index = once["post_id"].to_numpy()
+                s = sc.loc[g["post_id"]].set_axis(g.index)
+            parts.append(pd.DataFrame({"post_id": g["post_id"], "ticker": g["ticker"], "sentiment_label": s["label"],
                                        "sentiment_score": s["score"], "scorer": scorer}))
         pd.concat(parts).to_parquet(out, index=False)
         log.info("scored r/%s: %d posts", sub_file.stem, len(df))

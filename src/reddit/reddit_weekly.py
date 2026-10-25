@@ -77,7 +77,8 @@ def build(matches: pd.DataFrame, day_status: pd.DataFrame, sentiment: pd.DataFra
     mt["source"] = mt["subreddit_type"].map(SOURCE_OF_TYPE)
     mt["week"] = week_start(mt["date"])
     if sentiment is not None and len(sentiment):
-        mt = mt.merge(sentiment[["post_id", "sentiment_label", "sentiment_score"]], on="post_id", how="left")
+        keys = [k for k in ("post_id", "ticker") if k in sentiment.columns]   # per (post, ticker) when available
+        mt = mt.merge(sentiment[keys + ["sentiment_label", "sentiment_score"]], on=keys, how="left")
     else:
         mt["sentiment_label"], mt["sentiment_score"] = np.nan, np.nan
     days = pd.to_datetime(day_status["date"], utc=True)
@@ -134,7 +135,8 @@ def spike_samples(weekly: pd.DataFrame, matches: pd.DataFrame, sentiment: pd.Dat
     top = attach_text(top, ("title",))
     top["url"] = "https://www.reddit.com" + top["permalink"].fillna("")
     if sentiment is not None and len(sentiment):
-        top = top.merge(sentiment[["post_id", "sentiment_label"]], on="post_id", how="left")
+        keys = [k for k in ("post_id", "ticker") if k in sentiment.columns]
+        top = top.merge(sentiment[keys + ["sentiment_label"]], on=keys, how="left")
     else:
         top["sentiment_label"] = None
     top["week"] = top["week"].dt.strftime("%Y-%m-%d")
