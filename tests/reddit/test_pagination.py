@@ -119,3 +119,13 @@ def test_server_error_waits_10_to_30s_and_retries_3_times():
         c.get("posts/search", {"subreddit": "x"})
     assert len(e.value.attempts) == 4          # 1 try + 3 retries
     assert len(waits) == 3 and all(10 <= w <= 30 for w in waits)
+
+
+def test_sample_days_is_seeded_and_balanced_by_year():
+    from datetime import timedelta
+
+    from src.reddit.collect_reddit import sample_days
+    days = [date(2023, 1, 1) + timedelta(days=i) for i in range(1004)]   # 2023-01-01 .. 2025-09-30
+    a, b = sample_days(days, 15, 42), sample_days(days, 15, 42)
+    assert a == b and len(a) == 45
+    assert {y: sum(d.year == y for d in a) for y in (2023, 2024, 2025)} == {2023: 15, 2024: 15, 2025: 15}

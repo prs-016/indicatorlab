@@ -70,6 +70,18 @@ def load_manifest_latest() -> dict[tuple[str, str], dict]:
 
 
 # ----------------------------------------------------------------------------- collection
+def sample_days(days: list[date], per_year: int, seed: int) -> list[date]:
+    """`per_year` seeded random days from each calendar year in `days` (all of a year's days if fewer).
+
+    Used for a quick priority pass so hand-labelling samples can be drawn before the full download.
+    """
+    rng = random.Random(seed)
+    by_year: dict[int, list[date]] = {}
+    for d in days:
+        by_year.setdefault(d.year, []).append(d)
+    return sorted(d for ys in by_year.values() for d in rng.sample(ys, min(per_year, len(ys))))
+
+
 def collect_day(client: ArcticShiftClient, subreddit: str, d: date, max_pages: int = MAX_PAGES,
                 min_page_size: int = 100) -> dict:
     """Download all submissions of one subreddit for one UTC day.
@@ -151,7 +163,12 @@ def run_collect(args) -> None:
     subs = args.subreddits or config.subreddits(args.market)
     client = ArcticShiftClient(min_interval=args.interval)
     latest = load_manifest_latest()
-    todo = [(d, s) for d in daterange(start, end) for s in subs
+    days = list(daterange(start, end))
+    if args.sample_days_per_year:
+        days = sample_days(days, args.sample_days_per_year, args.seed)
+        log.info("priority pass: %d sampled days (%d per year, seed %d)", len(days), args.sample_days_per_year,
+                 args.seed)
+    todo = [(d, s) for d in days for s in subs
             if args.force or latest.get((s, d.isoformat()), {}).get("status") != "complete"
             or not raw_path(s, d).exists()]
     log.info("collect %s..%s subs=%s: %d (day,sub) pairs to fetch", start, end, subs, len(todo))
@@ -305,6 +322,9 @@ def main() -> None:
     c.add_argument("--max-pages", type=int, default=MAX_PAGES)
     c.add_argument("--force", action="store_true", help="re-download even complete days")
     c.add_argument("--allow-partial-today", action="store_true")
+    c.add_argument("--sample-days-per-year", type=int, default=0,
+                   help="only this many seeded random days per year (priority pass); 0 = every day")
+    c.add_argument("--seed", type=int, default=42)
     c.set_defaults(func=run_collect)
     v = sub.add_parser("coverage")
     v.add_argument("--subreddits", nargs="*")
