@@ -29,6 +29,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 
+from src import config
 from src.reddit import settings
 from src.reddit.utils import get_logger
 
@@ -40,50 +41,38 @@ E = r"(?![A-Za-z0-9_])"     # right boundary
 URL_RE = re.compile(r"(https?://\S+|www\.\S+|\b[\w.-]+\.(?:com|net|org|io|co)(?:/\S*)?)", re.I)
 REMOVED = {"[removed]", "[deleted]", "[removed by reddit]"}
 
-TICKER_SYMBOLS = {t: [t] for t in settings.TICKERS}
-TICKER_SYMBOLS["GOOGL"] = ["GOOGL", "GOOG"]
-
-# Company-name aliases: (pattern, flags). Patterns are wrapped with word boundaries.
-NAME_PATTERNS: dict[str, list[tuple[str, int]]] = {
-    "AAPL": [(r"(?<!Big )(?<!BIG )(?:Apple|APPLE)(?! Hospitality)(?! Bank)(?! HOSPITALITY)", 0)],
-    "MSFT": [(r"Microsoft", re.I)],
-    "NVDA": [(r"Nvidia", re.I)],
-    "TSLA": [(r"(?<!Nikola )Tesla", re.I)],
-    "AMZN": [(r"(?:Amazon|AMAZON)(?! [Rr]ainforest)(?! [Rr]iver)(?! [Bb]asin)(?! [Jj]ungle)", 0)],
-    "META": [(r"Meta Platforms", re.I), (r"Facebook", re.I)],   # contextual "Meta" handled in code
-    "GOOGL": [(r"Google(?! it\b)(?! that\b)(?! this\b)", re.I), (r"(?:Alphabet|ALPHABET)", 0)],
-    "AMD": [(r"Advanced Micro Devices", re.I)],
-    "NFLX": [(r"Netflix", re.I)],
-    "JPM": [(r"J\.?\s?P\.?\s?Morgan", re.I), (r"Chase Bank", re.I)],
-}
-
-# Terms that are ambiguous on their own; recorded for validation sampling.
-AMBIGUOUS_NAMES = {"AAPL": "Apple", "AMZN": "Amazon", "META": "Meta", "GOOGL": "Alphabet"}
-
-META_CAP_RE = re.compile(B + r"Meta(?!-)(?! [Tt]hread)(?! [Pp]ost)(?! [Aa]nalysis)" + E)
-META_STRONG_RE = re.compile(B + r"Meta(?:'s|’s| Platforms" +
-                            r"|\s+(?:\w+\s+){0,2}?(?:stock|stocks|shares|earnings|calls|puts|options|price|PT|ER|guidance|capex)\b)", re.I)
-META_CONTEXT_RE = re.compile(r"\b(?:Zuckerberg|Zuck|Facebook|Instagram|WhatsApp|Oculus|Reality Labs|Llama|"
-                             r"Threads app|FAANG|MAANG|Mag(?:nificent)? ?7|Magnificent Seven|big tech|"
-                             r"Apple|Microsoft|Google|Alphabet|Amazon|Nvidia|Netflix|Tesla|"
-                             r"AAPL|MSFT|GOOGL?|AMZN|NVDA|NFLX|TSLA|\$META|META)\b")
-
-
 @dataclass
 class _Compiled:
     cashtag: re.Pattern
     ticker: re.Pattern
     names: list[re.Pattern]
+    ambiguous_name: str | None = None
+    # Optional context rule for a name that is ambiguous on its own (e.g. capitalised "Meta").
+    ctx_word: re.Pattern | None = None
+    ctx_strong: re.Pattern | None = None
+    ctx_terms: re.Pattern | None = None
 
 
-COMPILED: dict[str, _Compiled] = {}
-for _t, _syms in TICKER_SYMBOLS.items():
-    alt = "|".join(_syms)
-    COMPILED[_t] = _Compiled(
-        cashtag=re.compile(r"(?<![A-Za-z0-9_$])\$(?:" + alt + r")" + E, re.I),
-        ticker=re.compile(B + r"(?:" + alt + r")" + E),
-        names=[re.compile(B + p + E, f) for p, f in NAME_PATTERNS[_t]],
-    )
+def compile_market(market: str) -> dict[str, _Compiled]:
+    """Compile the cashtag, ticker and company-name patterns of every stock in `market` from config.yaml."""
+    out: dict[str, _Compiled] = {}
+    for tk, cfg in config.stocks(market).items():
+        m = cfg["match"]
+        alt = "|".join(m["symbols"])
+        names = [re.compile(B + n["pattern"] + E, re.I if n.get("ignore_case") else 0) for n in m.get("names", [])]
+        c = _Compiled(cashtag=re.compile(r"(?<![A-Za-z0-9_$])\$(?:" + alt + r")" + E, re.I),
+                      ticker=re.compile(B + r"(?:" + alt + r")" + E), names=names,
+                      ambiguous_name=m.get("ambiguous_name"))
+        ctx = m.get("contextual_name")
+        if ctx:
+            c.ctx_word = re.compile(B + ctx["word"] + E)
+            c.ctx_strong = re.compile(B + ctx["strong"], re.I)
+            c.ctx_terms = re.compile(r"\b(?:" + "|".join(ctx["context_terms"]) + r")\b")
+        out[tk] = c
+    return out
+
+
+COMPILED = compile_market(settings.MARKET)
 
 METHOD_ORDER = ["cashtag", "ticker", "company_name"]
 
@@ -94,13 +83,13 @@ def clean_text(s) -> str:
     return URL_RE.sub(" ", html.unescape(s))
 
 
-def _meta_contextual(text: str, context: str) -> re.Match | None:
-    """Capitalised 'Meta' in `text` that refers to the company; `context` is the whole post."""
-    for m in META_CAP_RE.finditer(text):
-        if META_STRONG_RE.match(text, m.start()):
+def _contextual_name(c: _Compiled, text: str, context: str) -> re.Match | None:
+    """The ambiguous capitalised name in `text` when it refers to the company; `context` is the whole post."""
+    for m in c.ctx_word.finditer(text):
+        if c.ctx_strong.match(text, m.start()):
             return m
-    m = META_CAP_RE.search(text)
-    if m and META_CONTEXT_RE.search(context):
+    m = c.ctx_word.search(text)
+    if m and c.ctx_terms.search(context):
         return m
     return None
 
@@ -108,7 +97,7 @@ def _meta_contextual(text: str, context: str) -> re.Match | None:
 def match_text(text: str, context: str | None = None) -> dict[str, dict[str, str]]:
     """Return {ticker: {method: first matched string}} for one cleaned text.
 
-    `context` (default: `text`) is the full post, used only for META's company-context rule.
+    `context` (default: `text`) is the full post, used only by context rules (META's "Meta").
     """
     context = text if context is None else context
     out: dict[str, dict[str, str]] = {}
@@ -125,8 +114,8 @@ def match_text(text: str, context: str | None = None) -> dict[str, dict[str, str
             if m:
                 hits["company_name"] = m.group(0)
                 break
-        if t == "META" and "company_name" not in hits:
-            m = _meta_contextual(text, context)
+        if c.ctx_word is not None and "company_name" not in hits:
+            m = _contextual_name(c, text, context)
             if m:
                 hits["company_name"] = m.group(0)
         if hits:
@@ -150,8 +139,8 @@ def match_post(title: str, selftext: str) -> list[dict]:
             "all_methods": ";".join(m for m in METHOD_ORDER if m in methods),
             "matched_text": methods[best],
             "found_in": where,
-            "ambiguous_term": best == "company_name" and tk in AMBIGUOUS_NAMES
-                              and methods[best].lower().startswith(AMBIGUOUS_NAMES[tk].lower()),
+            "ambiguous_term": best == "company_name" and COMPILED[tk].ambiguous_name is not None
+                              and methods[best].lower().startswith(COMPILED[tk].ambiguous_name.lower()),
         })
     return rows
 
