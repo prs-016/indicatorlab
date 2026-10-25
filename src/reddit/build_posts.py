@@ -129,11 +129,12 @@ def load_posts(period: str = "research", columns: list[str] | None = None,
 def attach_text(df: pd.DataFrame, cols: tuple[str, ...] = ("title", "selftext", "permalink")) -> pd.DataFrame:
     """Add post text columns to rows keyed by `post_id` (the matches table carries no text)."""
     out = []
-    for sub, g in df.groupby("subreddit"):
+    for sub, g in df.drop(columns=[c for c in cols if c in df.columns]).groupby("subreddit"):
         f = settings.POSTS / f"{sub.lower()}.parquet"
         txt = pd.read_parquet(f, columns=["id", *cols], filters=[("id", "in", list(g["post_id"].unique()))])
-        out.append(g.merge(txt.rename(columns={"id": "post_id"}), on="post_id", how="left"))
-    return pd.concat(out).loc[df.index] if out else df
+        merged = g.assign(_row=g.index).merge(txt.rename(columns={"id": "post_id"}), on="post_id", how="left")
+        out.append(merged.set_index("_row"))
+    return pd.concat(out).rename_axis(df.index.name).loc[df.index] if out else df
 
 
 if __name__ == "__main__":
