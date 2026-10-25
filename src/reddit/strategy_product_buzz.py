@@ -23,6 +23,7 @@ Exit when the stock subreddits spike (investors arrive: sell into it), product n
 
 Sizing: equal weight across open positions, at most 25% per stock; total exposure 50% while SPY is
 below its 200-day average (checked at the previous close). Costs: 10 bps per unit of turnover.
+A period with no trades is logged as "Insufficient data", not as a Drop.
 Benchmarks: SPY, the equal-weight universe, and 200 random portfolios that keep every trade's dates
 (so the same number of names, holding periods, sizing and regime) but pick a random stock not
 already held. Train 2023-01-02..2024-06-30, test 2024-07-01..2025-09-30 (Reddit data starts in 2023,
@@ -270,7 +271,11 @@ def evaluate(spec: Spec, close: pd.DataFrame, tickers: list[str], bench: str) ->
                   "ew_sharpe": metrics(_period(ew.to_frame("r"), p)["r"])["sharpe"],
                   "pct_random_beaten": beaten,
                   "n_trades": int(trades["entry_date"].between(SPLIT[p][0], SPLIT[p][1]).sum())}
-    res["decision"], res["why"] = decide(res["train"], res["test"])
+    if res["train"]["n_trades"] == 0 or res["test"]["n_trades"] == 0:
+        empty = [p for p in ("train", "test") if res[p]["n_trades"] == 0]
+        res["decision"], res["why"] = "Insufficient data", f"no trades in {' and '.join(empty)}"
+    else:
+        res["decision"], res["why"] = decide(res["train"], res["test"])
     return res
 
 
