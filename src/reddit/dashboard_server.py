@@ -171,7 +171,7 @@ class Handler(BaseHTTPRequestHandler):
             if u.path == "/api/matches":
                 return self._json(_csv(settings.TABLES / "match_method_summary.csv"))
             if u.path == "/api/weekly":
-                return self._json(weekly(q.get("ticker", ["AAPL"])[0].upper()))
+                return self._json(weekly(q.get("ticker", [next(iter(settings.TICKERS))])[0].upper()))
             if u.path == "/api/rebuild":
                 return self._json(rebuild_state)
             if u.path == "/api/strategy_log":

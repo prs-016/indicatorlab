@@ -27,6 +27,10 @@ from src.reddit.utils import get_logger, utc_now_iso
 
 log = get_logger("validation_sample", "pipeline.log")
 SEED = 42
+# Week 1 sample design (see the module docstring): extra draws for the riskiest ambiguous names.
+MOST_AMBIGUOUS, N_MOST_AMBIGUOUS = "META", 6
+OTHER_AMBIGUOUS, N_OTHER_AMBIGUOUS = ["AAPL", "AMZN", "GOOGL"], 4
+SAMPLE_SIZE = 50
 OUT = settings.VALIDATION / "ticker_validation_50.csv"
 LABELS = settings.VALIDATION / "agent_labels_50.csv"
 
@@ -71,13 +75,13 @@ def draw(mt: pd.DataFrame, seed: int = SEED) -> pd.DataFrame:
             sub = subs[(k + j) % len(subs)]
             if not pick(tk[tk["match_method"] == method], sub):
                 pick(tk, sub)   # fall back to any method for this ticker
-    meta_amb = mt[(mt["ticker"] == "META") & (mt["match_method"] == "company_name") & mt["ambiguous_term"]]
-    for j in range(6):
-        pick(meta_amb, subs[j % 3])
-    other_amb = mt[mt["ticker"].isin(["AAPL", "AMZN", "GOOGL"]) & mt["ambiguous_term"]]
-    for j in range(4):
-        pick(other_amb, subs[j % 3])
-    while len(chosen) < 50:   # top up if any stratum was empty
+    meta_amb = mt[(mt["ticker"] == MOST_AMBIGUOUS) & (mt["match_method"] == "company_name") & mt["ambiguous_term"]]
+    for j in range(N_MOST_AMBIGUOUS):
+        pick(meta_amb, subs[j % len(subs)])
+    other_amb = mt[mt["ticker"].isin(OTHER_AMBIGUOUS) & mt["ambiguous_term"]]
+    for j in range(N_OTHER_AMBIGUOUS):
+        pick(other_amb, subs[j % len(subs)])
+    while len(chosen) < SAMPLE_SIZE:   # top up if any stratum was empty
         if not pick(mt):
             break
     s = mt.loc[chosen].copy()

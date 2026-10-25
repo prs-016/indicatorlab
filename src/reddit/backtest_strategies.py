@@ -1,4 +1,8 @@
-"""Backtest five Reddit-chatter strategies and append EVERY result to the Strategy Log.
+"""Week 1 (legacy): backtest five Reddit-chatter strategies and append EVERY result to the Strategy Log.
+
+Week 2 note: signals now stop before the holdout date (Oct 1, 2025) unless --include-holdout is
+given, which only exists to reproduce the Week 1 log rows. Week 2 strategies live in
+strategy_product_buzz.py.
 
 Nothing is filtered: each run appends one row per strategy (plus the benchmark) to
 results/strategy_logs/strategy_log.csv, whatever the outcome. Earlier runs are never
@@ -46,6 +50,7 @@ from src.reddit.weekly_metrics import week_start
 log = get_logger("backtest_strategies", "pipeline.log")
 
 LOG_PATH = settings.STRATEGY_LOGS / "strategy_log.csv"
+WSB_SUBREDDIT = "wallstreetbets"   # S5 fades spikes in this one subreddit (Week 1 design)
 RUNS = settings.STRATEGY_LOGS / "runs"
 PRICES_PATH = settings.RAW_PRICES / "tickers_daily_yfinance.csv"
 TICKERS = list(settings.TICKERS)
@@ -112,10 +117,23 @@ def forward_returns(prices: pd.DataFrame) -> pd.DataFrame:
     return fwd[TICKERS]
 
 
-def signals():
+def _before_holdout(df: pd.DataFrame) -> pd.DataFrame:
+    """Weeks whose Sunday is before the holdout date."""
+    end = pd.to_datetime(df["week_start"]) + pd.Timedelta(days=6)
+    return df[end < pd.Timestamp(settings.HOLDOUT_START)]
+
+
+def signals(include_holdout: bool = False):
+    """Week 1 spike flags and ratios per (week, ticker), plus which weeks are tradable.
+
+    Returns (flag, ratio, ok, wsb_flag, wsb_ok): combined-subreddit spike flags and ratios, weeks with
+    complete coverage and a full baseline, and the same flags for r/wallstreetbets alone.
+    """
     w = pd.read_csv(settings.PROCESSED / "reddit_weekly.csv")
     ws = pd.read_csv(settings.PROCESSED / "reddit_weekly_by_subreddit.csv")
-    wsb = ws[ws["subreddit"] == "wallstreetbets"]
+    if not include_holdout:
+        w, ws = _before_holdout(w), _before_holdout(ws)
+    wsb = ws[ws["subreddit"] == WSB_SUBREDDIT]
     flag = w.pivot(index="week_start", columns="ticker", values="posts_spike_flag").reindex(columns=TICKERS).astype(bool)
     ratio = w.pivot(index="week_start", columns="ticker", values="posts_spike_ratio").reindex(columns=TICKERS)
     complete = w.groupby("week_start")["coverage_complete"].all()
@@ -240,10 +258,12 @@ def write_markdown() -> None:
     (settings.STRATEGY_LOGS / "strategy_log.md").write_text("\n".join(lines))
 
 
-def run(cost_bps: float = 10.0, refresh_prices: bool = False, note: str = "") -> pd.DataFrame:
+def run(cost_bps: float = 10.0, refresh_prices: bool = False, note: str = "", include_holdout: bool = False
+        ) -> pd.DataFrame:
+    """Run the five Week 1 strategies and the benchmark, and append every result to the log."""
     import_alpha101()
     fwd = forward_returns(load_prices(refresh_prices))
-    flag, ratio, ok, wsb_flag, wsb_ok = signals()
+    flag, ratio, ok, wsb_flag, wsb_ok = signals(include_holdout)
     weights = build_weights(flag, ratio, wsb_flag)
 
     run_id = "reddit_" + datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -287,7 +307,9 @@ def run(cost_bps: float = 10.0, refresh_prices: bool = False, note: str = "") ->
             "avg_weekly_turnover": float(turnover.mean()) if len(turnover) else np.nan,
             **m, "verdict": verdict(m, sid),
             "data_snapshot": f"Reddit collection {pct:.1%} complete; {len(net)} evaluable signal weeks",
-            "code_sha1": code_sha1, "details_path": f"results/strategy_logs/runs/{run_id}", "notes": note,
+            "code_sha1": code_sha1, "details_path": f"results/strategy_logs/runs/{run_id}",
+            "notes": note + ("; includes holdout weeks (Week 1 reproduction)" if include_holdout
+                             else "; weeks before the 2025-10-01 holdout only"),
         })
         weekly[sid].to_csv(run_dir / f"{sid}_{name}_weekly.csv", index_label="signal_week")
     append_log(rows)
@@ -307,5 +329,6 @@ if __name__ == "__main__":
     ap.add_argument("--cost-bps", type=float, default=10.0)
     ap.add_argument("--refresh-prices", action="store_true")
     ap.add_argument("--note", default="")
+    ap.add_argument("--include-holdout", action="store_true", help="only to reproduce the Week 1 log rows")
     a = ap.parse_args()
-    run(a.cost_bps, a.refresh_prices, a.note)
+    run(a.cost_bps, a.refresh_prices, a.note, a.include_holdout)

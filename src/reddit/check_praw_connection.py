@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import sys
 
+from src.reddit import settings
 from src.reddit.praw_client import fetch_new, missing_credentials
 
 
@@ -17,12 +18,12 @@ def main() -> int:
         print("Copy .env.example to .env and fill it in (see README 'Reddit API (PRAW) setup').")
         return 2
     try:
-        posts = fetch_new("stocks", limit=5)
+        posts = fetch_new(settings.SUBREDDITS[0], limit=5)
     except Exception as e:  # noqa: BLE001 - report any auth/network failure without secrets
         msg = str(e)
         print(f"Connection failed: {type(e).__name__}: {msg[:200]}")
         return 1
-    print(f"OK - authenticated, fetched {len(posts)} posts from r/stocks:")
+    print(f"OK - authenticated, fetched {len(posts)} posts from r/{settings.SUBREDDITS[0]}:")
     for p in posts:
         print(f"  {p['id']}  {p['title'][:90]}")
     return 0

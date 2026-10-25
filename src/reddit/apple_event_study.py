@@ -28,6 +28,9 @@ from src.reddit.weekly_metrics import week_start
 
 log = get_logger("apple_event_study", "pipeline.log")
 
+EVENT_TICKER = "AAPL"          # the Week 1 event study is about Apple's September events
+PRICE_START = "2022-10-01"    # one quarter before the Reddit data, for the first weekly returns
+
 EVENTS = [
     {"year": 2023, "event_name": "Wonderlust", "event_date": "2023-09-12", "event_time": "10:00 PT (17:00 UTC)",
      "products": "iPhone 15 / 15 Pro, Apple Watch Series 9, Apple Watch Ultra 2",
@@ -48,7 +51,7 @@ def load_prices(refresh: bool = False) -> pd.DataFrame:
     path = settings.RAW_PRICES / "AAPL_daily_yfinance.csv"
     meta = settings.RAW_PRICES / "AAPL_daily_yfinance.meta.json"
     if refresh or not path.exists():
-        df = yf.download("AAPL", start="2022-10-01", end=None, auto_adjust=True, progress=False, actions=False)
+        df = yf.download(EVENT_TICKER, start=PRICE_START, end=None, auto_adjust=True, progress=False, actions=False)
         if df.empty:
             raise RuntimeError("yfinance returned no AAPL data")
         if isinstance(df.columns, pd.MultiIndex):
@@ -56,7 +59,7 @@ def load_prices(refresh: bool = False) -> pd.DataFrame:
         df.index.name = "date"
         settings.RAW_PRICES.mkdir(parents=True, exist_ok=True)
         df.to_csv(path)
-        meta.write_text(json.dumps({"ticker": "AAPL", "source": "yfinance", "yfinance_version": yf.__version__,
+        meta.write_text(json.dumps({"ticker": EVENT_TICKER, "source": "yfinance", "yfinance_version": yf.__version__,
                                     "auto_adjust": True, "retrieved_at_utc": utc_now_iso(),
                                     "first_date": str(df.index.min().date()), "last_date": str(df.index.max().date()),
                                     "rows": len(df)}, indent=2))
@@ -89,9 +92,9 @@ def run(refresh_prices: bool = False) -> pd.DataFrame:
     wk.to_csv(settings.PROCESSED / "aapl_weekly_returns.csv", index=False)
 
     reddit = pd.read_csv(settings.PROCESSED / "reddit_weekly.csv")
-    aapl = reddit[reddit["ticker"] == "AAPL"].set_index("week_start")
+    aapl = reddit[reddit["ticker"] == EVENT_TICKER].set_index("week_start")
     by_sub = pd.read_csv(settings.PROCESSED / "reddit_weekly_by_subreddit.csv")
-    by_sub = by_sub[by_sub["ticker"] == "AAPL"].pivot(index="week_start", columns="subreddit", values="posts")
+    by_sub = by_sub[by_sub["ticker"] == EVENT_TICKER].pivot(index="week_start", columns="subreddit", values="posts")
     wkr = wk.set_index("week_start")
 
     ev = pd.DataFrame(EVENTS)

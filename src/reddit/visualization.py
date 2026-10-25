@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
 
 from src.reddit import settings
-from src.reddit.apple_event_study import EVENTS, load_prices
+from src.reddit.apple_event_study import EVENT_TICKER, EVENTS, load_prices
 from src.reddit.utils import get_logger
 
 log = get_logger("visualization", "pipeline.log")
@@ -31,7 +31,7 @@ plt.rcParams.update({
 
 def chart_data() -> pd.DataFrame:
     reddit = pd.read_csv(settings.PROCESSED / "reddit_weekly.csv", parse_dates=["week_start"])
-    a = reddit[reddit["ticker"] == "AAPL"].set_index("week_start")
+    a = reddit[reddit["ticker"] == EVENT_TICKER].set_index("week_start")
     wk = pd.read_csv(settings.PROCESSED / "aapl_weekly_returns.csv", parse_dates=["week_start"]).set_index("week_start")
     df = a[["posts", "posts_observed", "posts_median_4w", "posts_spike_ratio", "posts_spike_flag",
             "comments", "upvotes", "coverage_complete"]].join(wk[["adj_close", "weekly_return", "last_trading_date"]])

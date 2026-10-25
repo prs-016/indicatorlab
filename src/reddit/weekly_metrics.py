@@ -1,4 +1,8 @@
-"""Weekly Reddit chatter metrics per ticker (combined and by subreddit) with 2x spike flags.
+"""Week 1 (legacy) weekly Reddit chatter metrics per ticker (combined and by subreddit) with 2x spike flags.
+
+Week 2 analyses use reddit_weekly.py (shared format, shared spike rule in spike_rule.py). The tables
+written here keep the Week 1 rule so Week 1 results reproduce; every row says so in `spike_rule`.
+`week_start` from this module is shared by all Week 2 code.
 
 Weeks start Monday 00:00 UTC. For each (ticker[, subreddit], week):
   posts     number of matching posts
@@ -32,6 +36,7 @@ METRICS = ["posts", "comments", "upvotes"]
 # Robustness metric: matching posts that moderators/Reddit/authors had NOT removed when archived.
 ALL_METRICS = METRICS + ["posts_visible"]
 MIN_BASELINE_POSTS = 5   # for the ranked spike table only
+SPIKE_RULE_LABEL = "week1: >= 2x median of previous 4 weeks"   # not the shared Week 2 rule
 
 
 def week_start(dates: pd.Series) -> pd.Series:
@@ -74,6 +79,10 @@ def _week_coverage(day_status: pd.DataFrame, weeks: pd.DatetimeIndex, start, end
 
 
 def build(start=settings.START_DATE, end=None) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Write the Week 1 combined and by-subreddit weekly tables and the ranked spike tables.
+
+    Returns (combined, by_subreddit). `end` defaults to the last complete UTC day.
+    """
     end = end or settings.default_end_date()
     mt = pd.read_parquet(settings.PROCESSED / "post_ticker_matches.parquet")
     day_status = pd.read_csv(settings.PROCESSED / "day_status.csv")
@@ -129,6 +138,8 @@ def build(start=settings.START_DATE, end=None) -> tuple[pd.DataFrame, pd.DataFra
                   [f"{m}_zero_base_nonzero" for m in ALL_METRICS] +
                   ["coverage_complete", "days_complete", "days_in_range", "days_failed_or_partial"] +
                   [f"{m}_observed" for m in ALL_METRICS]].sort_values(["week_start", "ticker", "subreddit"])
+    comb_out["spike_rule"] = SPIKE_RULE_LABEL
+    sub_out["spike_rule"] = SPIKE_RULE_LABEL
     comb_out.to_csv(settings.PROCESSED / "reddit_weekly.csv", index=False)
     sub_out.to_csv(settings.PROCESSED / "reddit_weekly_by_subreddit.csv", index=False)
     log.info("reddit_weekly.csv: %d rows (%d weeks, %d complete)", len(comb_out), comb_out["week_start"].nunique(),
@@ -138,6 +149,7 @@ def build(start=settings.START_DATE, end=None) -> tuple[pd.DataFrame, pd.DataFra
 
 
 def spike_table(comb: pd.DataFrame, sub: pd.DataFrame) -> pd.DataFrame:
+    """All Week 1 spike rows (combined and by subreddit) plus the top-50 combined spikes with a real baseline."""
     rows = []
     for label, df in (("all", comb), ("by_subreddit", sub)):
         for m in METRICS:
@@ -155,6 +167,7 @@ def spike_table(comb: pd.DataFrame, sub: pd.DataFrame) -> pd.DataFrame:
             "posts", "posts_median_4w"]
     out = pd.concat(rows, ignore_index=True) if rows else pd.DataFrame(columns=cols)
     out["meets_min_baseline"] = out["posts_median_4w"] >= MIN_BASELINE_POSTS
+    out["spike_rule"] = SPIKE_RULE_LABEL
     out = out.sort_values(["level", "meets_min_baseline", "spike_ratio"], ascending=[True, False, False])
     out.to_csv(settings.TABLES / "chatter_spikes_all.csv", index=False)
     top = out[(out["level"] == "all") & out["meets_min_baseline"]].head(50)
