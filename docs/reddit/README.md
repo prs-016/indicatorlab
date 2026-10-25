@@ -103,6 +103,58 @@ visualization on the days collected so far. It never starts collection.
 The full collection is roughly 15,000 requests (about 9 hours at ~1 request/second; busy
 r/wallstreetbets days need 10–17 pages because the API returns ~100 posts per response).
 
+## Week 2: product subreddits, trusted sentiment, cause vs reaction
+
+All Week 2 research uses data **before 2025-10-01** (`holdout_start` in `config.yaml`). Posts carry a
+`period` column (`research` / `recent`); `build_posts.load_posts()` returns research posts only unless
+asked, and every analysis asserts it saw no holdout week. The last-3-weeks check and the API are the
+only consumers of `recent` rows.
+
+Markets, stocks, subreddits, match patterns, Wikipedia titles, benchmarks, the spike rule and the
+strategy settings live in `config.yaml` (loaded by `src/config.py`). Subreddit types:
+`product` (every post counts for its company), `stock` and `general` (text-matched, the
+`reddit_stock` source) and `sector` (r/hardware; text-matched, counted as `reddit_product`).
+
+```bash
+PY=.venv/bin/python
+# Step 2: survey candidate subreddits (subscribers, first post, 2024 posts/week) -> results/reddit/tables/subreddit_map.csv
+$PY -m src.reddit.subreddit_map --print-config
+# Step 3: collect (resumable). A seeded priority pass first, so labelling can start early, then everything.
+$PY -m src.reddit.collect_reddit collect --start 2023-01-01 --end 2025-09-30 --sample-days-per-year 15
+$PY -m src.reddit.collect_reddit collect --start 2023-01-01 --end 2025-09-30      # run A (research)
+$PY -m src.reddit.collect_reddit collect --start 2025-10-01 --end 2026-10-18      # run B (spike check only)
+$PY -m src.reddit.collect_reddit status --end 2025-09-30                          # posts, failed days, storage
+$PY -m src.reddit.build_posts && $PY -m src.reddit.match_tickers
+# Steps 4-5: draw the hand-labelling samples, then label at http://localhost:8766
+$PY -m src.reddit.label_samples match && $PY -m src.reddit.label_samples sentiment
+$PY -m src.reddit.label_server --rater joshua                 # second rater: --rater <name> --double-only
+$PY -m src.reddit.label_eval match --rater joshua
+$PY -m src.reddit.label_eval sentiment --rater joshua --second <name>
+# Step 5: score every post with the chosen scorer, then the weekly table (shared format)
+$PY -m src.reddit.score_posts
+$PY -m src.reddit.market_data && $PY -m src.reddit.reddit_weekly
+# Step 6, 7, 9
+$PY -m src.reddit.cause_reaction
+$PY -m src.reddit.spike_check_recent
+$PY -m src.reddit.strategy_product_buzz --note "why this run"
+# Step 8: API
+.venv/bin/uvicorn src.api.main:app --port 8000                # http://localhost:8000/docs
+```
+
+* **Spike rule** (`src/reddit/spike_rule.py`): baseline = median of the previous 8 weeks; abnormal =
+  log((x + 1) / (baseline + 1)); spike when the ratio is at least 1.5 and the robust z-score of abnormal,
+  using the median and MAD of *earlier* weeks only (26 needed), is at least 2. `tests/reddit/test_spike_rule.py`
+  checks that changing future weeks never changes past flags.
+* **Retries** (`config.yaml` `reddit.arctic_shift`): about 1 s between requests; on Timeout or Internal
+  server error wait 10-30 s and retry up to 3 times, then the day is logged `failed` and retried on the
+  next run. A page under 100 records ends a day (never followed by more posts in 12,059 Week 1 pages).
+* **Sentiment**: four scorers in `sentiment_scorers.py`; the LLM uses a pinned model
+  (`claude-haiku-5-5`), the fixed prompt `src/reddit/prompts/sentiment_v1.txt`, no thinking, JSON output,
+  and a response cache. The API no longer accepts `temperature`, so reproducibility comes from the pinned
+  model, fixed prompt and cache. The Loughran-McDonald CSV goes in `data/reddit/raw/lexicons/`.
+* **Strategy split**: Reddit data starts in 2023, so train is 2023-01-02..2024-06-30 and test
+  2024-07-01..2025-09-30 (`strategy.reddit_split`), logged as a departure from 2011-2019 / 2020-2025.
+
 ## Collection details
 
 * **Endpoint:** `GET /api/posts/search?subreddit=<s>&after=<epoch>&before=<epoch>&limit=auto&sort=asc`.

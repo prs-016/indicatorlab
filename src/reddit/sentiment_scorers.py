@@ -117,25 +117,25 @@ def llm_prompt(text: str, company: str) -> str:
     return LLM_PROMPT_PATH.read_text(encoding="utf-8").format(company=company, post=body)
 
 
-def _cache_key(prompt: str) -> str:
+def cache_key(prompt: str) -> str:
     return hashlib.sha256(f"{LLM_MODEL}\n{LLM_PROMPT_PATH.name}\n{prompt}".encode()).hexdigest()
 
 
-def _load_cache() -> dict[str, str]:
+def load_cache() -> dict[str, str]:
     if not LLM_CACHE.exists():
         return {}
     with open(LLM_CACHE, encoding="utf-8") as f:
         return {r["key"]: r["label"] for r in map(json.loads, f)}
 
 
-def _request_params(prompt: str) -> dict:
+def request_params(prompt: str) -> dict:
     """One classification request: pinned model, no thinking, low effort, JSON schema output."""
     return {"model": LLM_MODEL, "max_tokens": LLM_MAX_TOKENS, "thinking": {"type": "disabled"},
             "output_config": {"effort": "low", "format": {"type": "json_schema", "schema": LLM_SCHEMA}},
             "messages": [{"role": "user", "content": prompt}]}
 
 
-def _parse_label(message) -> str:
+def parse_label(message) -> str:
     """Label from a structured-output response; refusals and odd stops are recorded, not guessed."""
     if message.stop_reason != "end_turn":
         return f"error:{message.stop_reason}"
@@ -143,7 +143,7 @@ def _parse_label(message) -> str:
     return json.loads(text)["label"]
 
 
-def _client():
+def make_client():
     import anthropic
     from dotenv import load_dotenv
     load_dotenv(settings.ROOT / ".env", override=False)
@@ -154,20 +154,20 @@ def _client():
 
 def score_llm(texts: list[str], companies: list[str]) -> pd.DataFrame:
     """One synchronous request per uncached post (fine for the ~300 labelled posts)."""
-    cache = _load_cache()
+    cache = load_cache()
     prompts = [llm_prompt(t, c) for t, c in zip(texts, companies)]
-    todo = [p for p in dict.fromkeys(prompts) if _cache_key(p) not in cache]
+    todo = [p for p in dict.fromkeys(prompts) if cache_key(p) not in cache]
     if todo:
-        client = _client()
+        client = make_client()
         with open(LLM_CACHE, "a", encoding="utf-8") as f:
             for i, p in enumerate(todo, 1):
-                label = _parse_label(client.messages.create(**_request_params(p)))
-                cache[_cache_key(p)] = label
-                f.write(json.dumps({"key": _cache_key(p), "label": label, "model": LLM_MODEL,
+                label = parse_label(client.messages.create(**request_params(p)))
+                cache[cache_key(p)] = label
+                f.write(json.dumps({"key": cache_key(p), "label": label, "model": LLM_MODEL,
                                     "prompt": LLM_PROMPT_PATH.name}) + "\n")
                 if i % 50 == 0:
                     log.info("llm: %d/%d scored", i, len(todo))
-    labels = [cache[_cache_key(p)] for p in prompts]
+    labels = [cache[cache_key(p)] for p in prompts]
     score = [1.0 if lab == "positive" else -1.0 if lab == "negative" else 0.0 for lab in labels]
     return pd.DataFrame({"label": labels, "score": score})
 
