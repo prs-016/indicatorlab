@@ -1,6 +1,12 @@
-"""Match Reddit posts (title + selftext) to the 10 tracked stocks.
+"""Match Reddit posts (title + selftext) to the tracked stocks in config.yaml.
 
-Three match methods, strongest first:
+How a post is matched depends on its subreddit's type (config.yaml):
+  product          every post counts for the subreddit's company (method `subreddit`):
+                   r/iphone is Apple by definition
+  stock, general,  text matching below; a post may match several stocks
+  sector
+
+Three text-match methods, strongest first:
   cashtag       $AAPL, $aapl            (case-insensitive)
   ticker        AAPL as a whole word    (case-sensitive, upper-case only)
   company_name  Apple, Microsoft, ...   (curated aliases with exclusions)
@@ -17,6 +23,10 @@ Ambiguity handling (see also tests/test_matching.py):
     such as "Big Apple", "Apple Hospitality", "Amazon rainforest", "Nikola Tesla".
   * GOOG (class C) is accepted as a ticker for Alphabet (GOOGL). "Google it" is excluded.
   * "Chase" alone is not matched; only J.P. Morgan variants and "Chase Bank".
+  * Signature and disclosure lines ("Positions: AAPL, MSFT", "Disclosure: long NVDA")
+    are stripped before matching, so a user's standing holdings are not mentions.
+  * `multi_ticker_list` flags posts that text-match MULTI_TICKER_LIST_MIN or more tracked
+    stocks (watch lists, "Mag 7" round-ups); they are kept, and analyses can drop them.
 
 A post contributes at most one row per ticker; `match_method` holds the strongest
 method found, `all_methods` every method that fired.
@@ -31,15 +41,18 @@ import pandas as pd
 
 from src import config
 from src.reddit import settings
-from src.reddit.utils import get_logger
+from src.reddit.utils import REMOVED_TEXT, get_logger
 
 log = get_logger("match_tickers", "pipeline.log")
 
 B = r"(?<![A-Za-z0-9_$])"   # left boundary that also rejects "$" (cashtags handled separately)
 E = r"(?![A-Za-z0-9_])"     # right boundary
 
+# A line that starts (after list/quote/bold markers) with Positions:/Disclosure:/Holdings:.
+SIGNATURE_RE = re.compile(r"^[\s>*_#-]*(?:my |current )?(?:positions?|disclosures?|holdings?)\s*:.*$",
+                          re.I | re.M)
+MULTI_TICKER_LIST_MIN = config.load()["reddit"]["multi_ticker_list_min"]
 URL_RE = re.compile(r"(https?://\S+|www\.\S+|\b[\w.-]+\.(?:com|net|org|io|co)(?:/\S*)?)", re.I)
-REMOVED = {"[removed]", "[deleted]", "[removed by reddit]"}
 
 @dataclass
 class _Compiled:
@@ -78,9 +91,10 @@ METHOD_ORDER = ["cashtag", "ticker", "company_name"]
 
 
 def clean_text(s) -> str:
-    if not isinstance(s, str) or s.strip().lower() in REMOVED:
+    """Post text ready for matching: unescaped, without URLs and signature lines; "" if removed."""
+    if not isinstance(s, str) or s.strip().lower() in REMOVED_TEXT:
         return ""
-    return URL_RE.sub(" ", html.unescape(s))
+    return SIGNATURE_RE.sub(" ", URL_RE.sub(" ", html.unescape(s)))
 
 
 def _contextual_name(c: _Compiled, text: str, context: str) -> re.Match | None:
@@ -145,33 +159,61 @@ def match_post(title: str, selftext: str) -> list[dict]:
     return rows
 
 
-def run() -> pd.DataFrame:
-    posts = pd.read_parquet(settings.PROCESSED / "posts.parquet")
-    log.info("matching %d posts", len(posts))
-    out = []
-    for r in posts[["id", "title", "selftext"]].itertuples(index=False):
-        for m in match_post(r.title, r.selftext):
-            m["post_id"] = r.id
-            out.append(m)
-    mt = pd.DataFrame(out)
-    cols = ["id", "subreddit", "created_utc", "created_dt", "date", "title", "selftext", "score",
-            "num_comments", "permalink", "day_status", "removed_by_category"]
-    df = mt.merge(posts[cols].rename(columns={"id": "post_id"}), on="post_id", how="left")
+POST_COLS = ["id", "subreddit", "subreddit_type", "owner_ticker", "market", "created_utc", "created_dt", "date",
+             "title", "selftext", "score", "num_comments", "permalink", "day_status", "removed_by_category",
+             "removed_flag", "period"]
+OUT_COLS = ["post_id", "market", "subreddit", "subreddit_type", "created_utc", "created_utc_iso", "date", "period",
+            "ticker", "match_method", "all_methods", "matched_text", "found_in", "ambiguous_term", "n_tickers_in_post",
+            "multi_ticker_list", "score", "num_comments", "permalink", "day_status", "removed_by_category",
+            "removed_flag"]
+
+
+def match_subreddit(posts: pd.DataFrame) -> pd.DataFrame:
+    """Match rows for the posts of one subreddit (all rows share one subreddit type)."""
+    kind = posts["subreddit_type"].iloc[0]
+    if kind == "product":
+        m = pd.DataFrame({"post_id": posts["id"].to_numpy(), "ticker": posts["owner_ticker"].to_numpy(),
+                          "match_method": "subreddit", "all_methods": "subreddit", "matched_text": "",
+                          "found_in": "subreddit", "ambiguous_term": False, "n_tickers_in_post": 0})
+    else:
+        out = []
+        for r in posts[["id", "title", "selftext"]].itertuples(index=False):
+            hits = match_post(r.title, r.selftext)
+            for h in hits:
+                h["post_id"] = r.id
+                h["n_tickers_in_post"] = len(hits)
+            out.extend(hits)
+        m = pd.DataFrame(out, columns=["ticker", "match_method", "all_methods", "matched_text", "found_in",
+                                       "ambiguous_term", "post_id", "n_tickers_in_post"])
+    m["multi_ticker_list"] = m["n_tickers_in_post"] >= MULTI_TICKER_LIST_MIN
+    meta = posts.drop(columns=["title", "selftext", "owner_ticker"]).rename(columns={"id": "post_id"})
+    df = m.merge(meta, on="post_id", how="left")
     df["created_utc_iso"] = df["created_dt"].dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    return df[OUT_COLS]
+
+
+def run() -> pd.DataFrame:
+    """Match every subreddit file and write post_ticker_matches.parquet (no post text; join it when needed)."""
+    parts = []
+    for f in sorted(settings.POSTS.glob("*.parquet")):
+        posts = pd.read_parquet(f, columns=POST_COLS)
+        if posts.empty:
+            continue
+        parts.append(match_subreddit(posts))
+        log.info("r/%s (%s): %d posts -> %d match rows", posts["subreddit"].iloc[0], posts["subreddit_type"].iloc[0],
+                 len(posts), len(parts[-1]))
+    df = pd.concat(parts, ignore_index=True).sort_values(["created_utc", "post_id", "ticker"])
     dup = df.duplicated(["post_id", "ticker"]).sum()
     assert dup == 0, f"{dup} duplicate post/ticker rows"
-    df = df[["post_id", "subreddit", "created_utc", "created_utc_iso", "date", "ticker", "match_method",
-             "all_methods", "matched_text", "found_in", "ambiguous_term", "title", "selftext", "score",
-             "num_comments", "permalink", "day_status", "removed_by_category"]].sort_values(["created_utc", "post_id", "ticker"])
     df.to_parquet(settings.PROCESSED / "post_ticker_matches.parquet", index=False)
-    df.to_csv(settings.PROCESSED / "post_ticker_matches.csv", index=False)
-    summary = (df.groupby(["ticker", "match_method"]).size().unstack(fill_value=0)
-               .reindex(columns=METHOD_ORDER, fill_value=0))
-    summary.columns = [f"{m}_posts" for m in METHOD_ORDER]   # avoid a 'ticker' column clashing with the index
+    methods = ["subreddit", *METHOD_ORDER]
+    summary = (df.groupby(["market", "subreddit_type", "ticker", "match_method"]).size().unstack(fill_value=0)
+               .reindex(columns=methods, fill_value=0))
+    summary.columns = [f"{m}_posts" for m in methods]   # avoid a 'ticker' column clashing with the index
     summary["total_posts"] = summary.sum(axis=1)
+    summary["multi_ticker_list_posts"] = df.groupby(["market", "subreddit_type", "ticker"])["multi_ticker_list"].sum()
     summary.to_csv(settings.TABLES / "match_method_summary.csv")
-    log.info("matched rows=%d unique posts=%d\n%s", len(df), df["post_id"].nunique(), summary)
-    log.info("found_in counts: %s", df["found_in"].value_counts().to_dict())
+    log.info("matched rows=%d unique posts=%d", len(df), df["post_id"].nunique())
     return df
 
 

@@ -1,5 +1,7 @@
 
-from src.reddit.match_tickers import match_post
+import pandas as pd
+
+from src.reddit.match_tickers import match_post, match_subreddit
 
 
 def tickers(title, body=""):
@@ -67,3 +69,35 @@ def test_urls_and_removed_bodies_ignored():
     assert "AMZN" not in tickers("Check this", "https://www.amazon.com/dp/123")
     assert "GOOGL" not in tickers("link", "see docs.google.com/abc")
     assert tickers("x", "[removed]") == {}
+
+
+def _posts(sub, kind, owner, texts):
+    n = len(texts)
+    return pd.DataFrame({
+        "id": [f"p{i}" for i in range(n)], "subreddit": sub, "subreddit_type": kind, "owner_ticker": owner,
+        "market": "US", "created_utc": 1_700_000_000, "created_dt": pd.Timestamp("2023-11-14", tz="UTC"),
+        "date": "2023-11-14", "title": texts, "selftext": "", "score": 1, "num_comments": 0, "permalink": "",
+        "day_status": "complete", "removed_by_category": None, "removed_flag": False, "period": "research"})
+
+
+def test_product_subreddit_counts_every_post_for_its_company():
+    out = match_subreddit(_posts("iphone", "product", "AAPL", ["Battery drain on iOS 18", "Samsung is better"]))
+    assert out["ticker"].tolist() == ["AAPL", "AAPL"]
+    assert (out["match_method"] == "subreddit").all() and not out["multi_ticker_list"].any()
+
+
+def test_stock_subreddit_is_text_matched():
+    out = match_subreddit(_posts("stocks", "general", None, ["$NVDA to the moon", "What about bonds?"]))
+    assert out[["post_id", "ticker"]].values.tolist() == [["p0", "NVDA"]]
+
+
+def test_signature_lines_are_not_mentions():
+    assert tickers("Great quarter for the market.\nPositions: AAPL, MSFT calls") == {}
+    assert tickers("**Disclosure:** long NVDA\nAnyway, rates are rising") == {}
+    assert "AAPL" in tickers("AAPL earnings tomorrow\nPositions: none")
+
+
+def test_watch_list_post_is_flagged():
+    text = "My watchlist: AAPL MSFT NVDA TSLA AMZN"
+    out = match_subreddit(_posts("stocks", "general", None, [text]))
+    assert len(out) == 5 and out["multi_ticker_list"].all()

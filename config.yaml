@@ -34,6 +34,7 @@ reddit:
     max_retries: 3              # then the day is logged as failed (never as zero posts)
   collect_start: 2023-01-01
   min_posts_per_week: 20        # subreddits below this (2024 average) are dropped
+  multi_ticker_list_min: 5      # a post text-matching this many tracked stocks is flagged as a list
 
 markets:
   US:
