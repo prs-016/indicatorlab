@@ -23,6 +23,7 @@ import random
 from datetime import date, datetime, timezone
 from pathlib import Path
 
+from src import config
 from src.reddit import settings
 from src.reddit.arctic_client import ArcticShiftClient, ArcticShiftError
 from src.reddit.utils import (
@@ -147,7 +148,7 @@ def run_collect(args) -> None:
     if end >= today and not args.allow_partial_today:
         log.warning("end %s is not a completed UTC day; clamping to %s", end, settings.default_end_date())
         end = settings.default_end_date()
-    subs = args.subreddits or settings.SUBREDDITS
+    subs = args.subreddits or config.subreddits(args.market)
     client = ArcticShiftClient(min_interval=args.interval)
     latest = load_manifest_latest()
     todo = [(d, s) for d in daterange(start, end) for s in subs
@@ -179,7 +180,7 @@ def run_collect(args) -> None:
 def run_coverage(args) -> None:
     client = ArcticShiftClient(min_interval=args.interval)
     rows = []
-    for s in args.subreddits or settings.SUBREDDITS:
+    for s in args.subreddits or config.subreddits(args.market):
         params = {"subreddit": s, "limit": 1, "sort": "asc"}
         row = {"subreddit": s, "retrieval_utc": utc_now_iso(), "request_url": "", "earliest_post_utc": "",
                "earliest_created_utc_epoch": "", "earliest_post_id": "", "earliest_post_title": "",
@@ -264,17 +265,22 @@ def run_status(args) -> None:
     start = date.fromisoformat(args.start)
     end = date.fromisoformat(args.end) if args.end else settings.default_end_date()
     latest = load_manifest_latest()
+    sub_map = config.subreddit_map(args.market)
     rows = []
-    for s in settings.SUBREDDITS:
+    for s in args.subreddits or config.subreddits(args.market):
         days = [d.isoformat() for d in daterange(start, end)]
+        raw_dir = settings.RAW_ARCTIC / s
+        size_mb = sum(f.stat().st_size for f in raw_dir.rglob("*.json.gz")) / 2**20 if raw_dir.exists() else 0.0
+        info = sub_map.get(s.lower(), {})
         st = [latest.get((s, d), {}).get("status", "missing") for d in days]
         n_posts = sum(int(latest[(s, d)]["n_posts"]) for d in days
                       if latest.get((s, d), {}).get("status") == "complete")
         bad = [d for d, x in zip(days, st) if x in ("failed", "partial")]
-        rows.append({"subreddit": s, "start": start.isoformat(), "end": end.isoformat(), "days_expected": len(days),
+        rows.append({"market": args.market, "subreddit": s, "type": info.get("type"), "ticker": info.get("ticker"),
+                     "start": start.isoformat(), "end": end.isoformat(), "days_expected": len(days),
                      "complete": st.count("complete"), "partial": st.count("partial"), "failed": st.count("failed"),
                      "missing": st.count("missing"), "posts_in_complete_days": n_posts,
-                     "failed_or_partial_dates": ";".join(bad)})
+                     "raw_storage_mb": round(size_mb, 1), "failed_or_partial_dates": ";".join(bad)})
         print(f"r/{s}: {rows[-1]['complete']}/{len(days)} complete, partial={rows[-1]['partial']}, "
               f"failed={rows[-1]['failed']}, missing={rows[-1]['missing']}, posts={n_posts:,}")
     out = settings.TABLES / "collection_summary.csv"
@@ -289,6 +295,8 @@ def run_status(args) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
+    ap.add_argument("--market", default=settings.MARKET, choices=config.markets(),
+                    help="subreddits default to every subreddit of this market in config.yaml")
     c = sub.add_parser("collect")
     c.add_argument("--start", default=settings.START_DATE.isoformat())
     c.add_argument("--end", default=None, help="inclusive; default = last complete UTC day")
@@ -310,6 +318,7 @@ def main() -> None:
     t = sub.add_parser("status")
     t.add_argument("--start", default=settings.START_DATE.isoformat())
     t.add_argument("--end", default=None)
+    t.add_argument("--subreddits", nargs="*")
     t.set_defaults(func=run_status)
     args = ap.parse_args()
     args.func(args)
