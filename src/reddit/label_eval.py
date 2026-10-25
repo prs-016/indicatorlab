@@ -1,7 +1,9 @@
 """Evaluate the hand labels (Week 2, Steps 4 and 5).
 
   match      matching precision from the hand-checked sample: per ticker (Wilson 95% CI) and overall,
-             weighting each ticker by its share of text-matched posts (the sample is 10 per ticker)
+             weighting each ticker by its share of text-matched posts (the sample is 10 per ticker).
+             The overall CI is a normal approximation and is too narrow when some tickers score 10/10
+             (their variance term is 0); read the per-ticker Wilson intervals alongside it.
   sentiment  Cohen's kappa between the two raters on the overlap posts, then accuracy and macro-F1
              of each scorer against the primary rater's labels, overall and separately for
              reddit_product and reddit_stock, with bootstrap 95% CIs (1,000 resamples)
@@ -21,7 +23,12 @@ import math
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, cohen_kappa_score, confusion_matrix, f1_score
+from sklearn.metrics import (
+    accuracy_score,
+    cohen_kappa_score,
+    confusion_matrix,
+    f1_score,
+)
 
 from src import config
 from src.reddit import settings
@@ -109,6 +116,17 @@ def _macro_f1(y, p) -> float:
     return f1_score(y, p, labels=LABELS, average="macro", zero_division=0)
 
 
+def choose_scorers(table: pd.DataFrame) -> dict[str, str]:
+    """The fixed choice rule: per source, the highest macro-F1; ties go to the cheaper scorer."""
+    choice = {}
+    for src in SOURCES:
+        t = table[table["source"] == src]
+        if len(t):
+            best = t["macro_f1"].max()
+            choice[src] = next(s for s in SCORER_ORDER if s in set(t.loc[t["macro_f1"] == best, "scorer"]))
+    return choice
+
+
 def compare_scorers(rater: str, scorers: list[str]) -> tuple[pd.DataFrame, dict]:
     """Accuracy and macro-F1 of each scorer vs the rater's labels; returns the table and the choice."""
     items = pd.read_csv(SENTIMENT_OUT, dtype=str, keep_default_na=False)
@@ -141,12 +159,7 @@ def compare_scorers(rater: str, scorers: list[str]) -> tuple[pd.DataFrame, dict]
     table = pd.DataFrame(rows)
     table.insert(0, "market", settings.MARKET)
     table.to_csv(settings.TABLES / "sentiment_scorer_comparison.csv", index=False)
-    choice = {}
-    for src in SOURCES:
-        t = table[table["source"] == src]
-        if len(t):
-            best = t["macro_f1"].max()
-            choice[src] = next(s for s in SCORER_ORDER if s in set(t.loc[t["macro_f1"] == best, "scorer"]))
+    choice = choose_scorers(table)
     pred_out = gold[["item_id", "post_id", "ticker", "source", "label"]].copy()
     for name, p in preds.items():
         pred_out[f"pred_{name}"] = p
