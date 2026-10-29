@@ -1,0 +1,116 @@
+ticker,company_name,is_benchmark,bar_interval,first_date,last_date,row_count,status,file,retrieved_at_utc
+0001.HK,Cheung Kong,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0001.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0002.HK,CLP,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0002.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0003.HK,Hong Kong and China Gas,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0003.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0004.HK,Wharf Holdings,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0004.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0005.HK,HSBC,False,1d,2000-01-03,2026-10-28,6685,downloaded,prices/0005.HK__daily__2000-01-03_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0006.HK,Power Assets,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0006.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0011.HK,Hang Seng Bank,False,1d,,,0,no_reliable_original_history,,2026-10-28T23:07:14+00:00
+0012.HK,Henderson Land,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0012.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0013.HK,Hutchison Whampoa,False,1d,,,0,no_reliable_original_history,,2026-10-28T23:07:14+00:00
+0016.HK,Sun Hung Kai Properties,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0016.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0017.HK,New World Development,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0017.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0019.HK,Swire Pacific A,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0019.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0023.HK,Bank of East Asia,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0023.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0027.HK,Galaxy Entertainment,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0027.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0066.HK,MTR,False,1d,2000-10-09,2026-10-28,6485,downloaded,prices/0066.HK__daily__2000-10-09_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0083.HK,Sino Land,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0083.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0101.HK,Hang Lung Properties,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0101.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0135.HK,Kunlun Energy,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0135.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0144.HK,China Merchants Port,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0144.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0151.HK,Want Want China,False,1d,2008-03-26,2026-10-28,4584,downloaded,prices/0151.HK__daily__2008-03-26_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0175.HK,Geely Automobile,False,1d,2005-09-29,2026-10-28,5197,downloaded,prices/0175.HK__daily__2005-09-29_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0241.HK,Alibaba Health,False,1d,2004-03-22,2026-10-28,5585,downloaded,prices/0241.HK__daily__2004-03-22_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0267.HK,CITIC Pacific,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0267.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0285.HK,BYD Electronic,False,1d,2007-12-20,2026-10-28,4646,downloaded,prices/0285.HK__daily__2007-12-20_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0288.HK,WH Group,False,1d,2014-08-05,2026-10-28,3013,downloaded,prices/0288.HK__daily__2014-08-05_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0291.HK,China Resources Enterprise / China Resources Beer,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0291.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0293.HK,Cathay Pacific,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0293.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0300.HK,MIDEA GROUP,False,1d,2024-07-05,2026-10-28,511,downloaded,prices/0300.HK__daily__2024-07-05_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0316.HK,OOIL,False,1d,2004-04-15,2026-10-28,5567,downloaded,prices/0316.HK__daily__2004-04-15_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0322.HK,Tingyi,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0322.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0386.HK,Sinopec,False,1d,2000-10-19,2026-10-28,6477,downloaded,prices/0386.HK__daily__2000-10-19_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0388.HK,HKEX,False,1d,2000-06-27,2026-10-28,6559,downloaded,prices/0388.HK__daily__2000-06-27_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0494.HK,Li & Fung,False,1d,,,0,no_reliable_original_history,,2026-10-28T23:07:14+00:00
+0669.HK,Techtronic Industries,False,1d,2004-06-14,2026-10-28,5525,downloaded,prices/0669.HK__daily__2004-06-14_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0688.HK,China Overseas Land,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0688.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0700.HK,Tencent,False,1d,2004-06-16,2026-10-28,5523,downloaded,prices/0700.HK__daily__2004-06-16_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0728.HK,CHINA TELECOM,False,1d,2002-11-15,2026-10-28,5936,downloaded,prices/0728.HK__daily__2002-11-15_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0762.HK,China Unicom,False,1d,2000-06-22,2026-10-28,6562,downloaded,prices/0762.HK__daily__2000-06-22_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0823.HK,Link REIT,False,1d,2007-10-31,2026-10-28,4682,downloaded,prices/0823.HK__daily__2007-10-31_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0836.HK,China Resources Power,False,1d,2003-11-12,2026-10-28,5678,downloaded,prices/0836.HK__daily__2003-11-12_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0857.HK,PetroChina,False,1d,2000-04-07,2026-10-28,6616,downloaded,prices/0857.HK__daily__2000-04-07_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0868.HK,Xinyi Glass,False,1d,2005-02-03,2026-10-28,5357,downloaded,prices/0868.HK__daily__2005-02-03_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0881.HK,Zhongsheng,False,1d,2010-03-26,2026-10-28,4087,downloaded,prices/0881.HK__daily__2010-03-26_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0883.HK,CNOOC,False,1d,2004-03-17,2026-10-28,5588,downloaded,prices/0883.HK__daily__2004-03-17_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0939.HK,CCB,False,1d,2005-10-27,2026-10-28,5178,downloaded,prices/0939.HK__daily__2005-10-27_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0941.HK,China Mobile,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/0941.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0960.HK,Longfor,False,1d,2009-11-19,2026-10-28,4174,downloaded,prices/0960.HK__daily__2009-11-19_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0968.HK,Xinyi Solar,False,1d,2013-12-12,2026-10-28,3170,downloaded,prices/0968.HK__daily__2013-12-12_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0981.HK,SMIC,False,1d,2004-03-18,2026-10-28,5587,downloaded,prices/0981.HK__daily__2004-03-18_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+0992.HK,Lenovo,False,1d,2000-03-22,2026-10-28,6628,downloaded,prices/0992.HK__daily__2000-03-22_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1024.HK,Kuaishou,False,1d,2021-02-05,2026-10-28,1406,downloaded,prices/1024.HK__daily__2021-02-05_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1038.HK,CK Infrastructure Holdings,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/1038.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1044.HK,Hengan,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/1044.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1088.HK,China Shenhua,False,1d,2005-06-15,2026-10-28,5271,downloaded,prices/1088.HK__daily__2005-06-15_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1093.HK,CSPC Pharmaceutical,False,1d,2003-05-13,2026-10-28,5809,downloaded,prices/1093.HK__daily__2003-05-13_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1099.HK,Sinopharm,False,1d,2009-09-23,2026-10-28,4213,downloaded,prices/1099.HK__daily__2009-09-23_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1109.HK,China Resources Land,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/1109.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1113.HK,CK Asset Holdings,False,1d,2015-06-03,2026-10-28,2810,downloaded,prices/1113.HK__daily__2015-06-03_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1177.HK,Sino Biopharmaceutical,False,1d,2004-05-12,2026-10-28,5548,downloaded,prices/1177.HK__daily__2004-05-12_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1199.HK,COSCO Pacific,False,1d,2000-01-04,2026-10-28,6684,downloaded,prices/1199.HK__daily__2000-01-04_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1209.HK,CR Mixc Lifestyle,False,1d,2020-12-09,2026-10-28,1446,downloaded,prices/1209.HK__daily__2020-12-09_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1211.HK,BYD,False,1d,2002-07-31,2026-10-28,6013,downloaded,prices/1211.HK__daily__2002-07-31_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1299.HK,AIA,False,1d,2010-10-29,2026-10-28,3940,downloaded,prices/1299.HK__daily__2010-10-29_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1347.HK,HUA HONG SEMICONDUCTOR,False,1d,2014-10-15,2026-10-28,2965,downloaded,prices/1347.HK__daily__2014-10-15_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1378.HK,China Hongqiao,False,1d,2011-03-24,2026-10-28,3839,downloaded,prices/1378.HK__daily__2011-03-24_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1398.HK,ICBC,False,1d,2006-10-27,2026-10-28,4929,downloaded,prices/1398.HK__daily__2006-10-27_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1519.HK,J&T EXPRESS,False,1d,2023-10-27,2026-10-28,738,downloaded,prices/1519.HK__daily__2023-10-27_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1801.HK,INNOVENT BIO,False,1d,2018-10-31,2026-10-28,1966,downloaded,prices/1801.HK__daily__2018-10-31_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1810.HK,Xiaomi,False,1d,2018-07-09,2026-10-28,2045,downloaded,prices/1810.HK__daily__2018-07-09_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1876.HK,Budweiser APAC,False,1d,2019-09-30,2026-10-28,1741,downloaded,prices/1876.HK__daily__2019-09-30_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1880.HK,Belle International,False,1d,,,0,no_reliable_original_history,,2026-10-28T23:07:14+00:00
+1928.HK,Sands China,False,1d,2009-11-30,2026-10-28,4167,downloaded,prices/1928.HK__daily__2009-11-30_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1929.HK,Chow Tai Fook,False,1d,2011-12-15,2026-10-28,3659,downloaded,prices/1929.HK__daily__2011-12-15_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+1997.HK,Wharf REIC,False,1d,2017-11-15,2026-10-28,2201,downloaded,prices/1997.HK__daily__2017-11-15_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2007.HK,Country Garden,False,1d,2007-04-20,2026-10-28,4813,downloaded,prices/2007.HK__daily__2007-04-20_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2015.HK,Li Auto,False,1d,2021-08-12,2026-10-28,1280,downloaded,prices/2015.HK__daily__2021-08-12_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2018.HK,AAC Technologies,False,1d,2005-08-09,2026-10-28,5233,downloaded,prices/2018.HK__daily__2005-08-09_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2020.HK,ANTA Sports,False,1d,2007-07-10,2026-10-28,4760,downloaded,prices/2020.HK__daily__2007-07-10_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2057.HK,ZTO EXPRESS,False,1d,2020-09-29,2026-10-28,1493,downloaded,prices/2057.HK__daily__2020-09-29_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2269.HK,WuXi Biologics,False,1d,2017-06-13,2026-10-28,2310,downloaded,prices/2269.HK__daily__2017-06-13_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2313.HK,Shenzhou International,False,1d,2005-11-24,2026-10-28,5158,downloaded,prices/2313.HK__daily__2005-11-24_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2318.HK,Ping An,False,1d,2004-06-24,2026-10-28,5517,downloaded,prices/2318.HK__daily__2004-06-24_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2319.HK,Mengniu Dairy,False,1d,2004-06-10,2026-10-28,5527,downloaded,prices/2319.HK__daily__2004-06-10_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2331.HK,Li Ning,False,1d,2004-06-28,2026-10-28,5515,downloaded,prices/2331.HK__daily__2004-06-28_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2338.HK,WEICHAI POWER,False,1d,2004-03-11,2026-10-28,5592,downloaded,prices/2338.HK__daily__2004-03-11_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2359.HK,WuXi AppTec,False,1d,2018-12-13,2026-10-28,1935,downloaded,prices/2359.HK__daily__2018-12-13_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2382.HK,Sunny Optical,False,1d,2007-06-15,2026-10-28,4775,downloaded,prices/2382.HK__daily__2007-06-15_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2388.HK,BOC Hong Kong,False,1d,2002-07-25,2026-10-28,6017,downloaded,prices/2388.HK__daily__2002-07-25_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2600.HK,CHALCO,False,1d,2001-12-12,2026-10-28,6178,downloaded,prices/2600.HK__daily__2001-12-12_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2618.HK,JD LOGISTICS,False,1d,2021-05-28,2026-10-28,1332,downloaded,prices/2618.HK__daily__2021-05-28_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2628.HK,China Life,False,1d,2003-12-18,2026-10-28,5652,downloaded,prices/2628.HK__daily__2003-12-18_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2688.HK,ENN Energy,False,1d,2001-05-10,2026-10-28,6332,downloaded,prices/2688.HK__daily__2001-05-10_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+2899.HK,Zijin Mining,False,1d,2003-12-23,2026-10-28,5649,downloaded,prices/2899.HK__daily__2003-12-23_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+3328.HK,Bank of Communications,False,1d,2005-06-23,2026-10-28,5265,downloaded,prices/3328.HK__daily__2005-06-23_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+3690.HK,Meituan,False,1d,2018-09-20,2026-10-28,1992,downloaded,prices/3690.HK__daily__2018-09-20_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+3692.HK,Hansoh Pharma,False,1d,2019-06-14,2026-10-28,1816,downloaded,prices/3692.HK__daily__2019-06-14_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+3750.HK,CATL,False,1d,2025-05-20,2026-10-28,358,downloaded,prices/3750.HK__daily__2025-05-20_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+3968.HK,China Merchants Bank,False,1d,2006-09-22,2026-10-28,4953,downloaded,prices/3968.HK__daily__2006-09-22_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+3988.HK,Bank of China,False,1d,2006-06-01,2026-10-28,5034,downloaded,prices/3988.HK__daily__2006-06-01_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+3993.HK,CMOC,False,1d,2007-04-26,2026-10-28,4809,downloaded,prices/3993.HK__daily__2007-04-26_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+6098.HK,Country Garden Services,False,1d,2018-06-19,2026-10-28,2058,downloaded,prices/6098.HK__daily__2018-06-19_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+6160.HK,BEONE MEDICINES,False,1d,2018-08-08,2026-10-28,2023,downloaded,prices/6160.HK__daily__2018-08-08_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+6181.HK,LAOPU GOLD,False,1d,2024-06-28,2026-10-28,574,downloaded,prices/6181.HK__daily__2024-06-28_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+6618.HK,JD Health,False,1d,2020-12-08,2026-10-28,1447,downloaded,prices/6618.HK__daily__2020-12-08_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+6690.HK,Haier Smart Home,False,1d,2020-12-23,2026-10-28,1436,downloaded,prices/6690.HK__daily__2020-12-23_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+6862.HK,Haidilao,False,1d,2018-09-26,2026-10-28,1989,downloaded,prices/6862.HK__daily__2018-09-26_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+9618.HK,JD.com,False,1d,2020-06-18,2026-10-28,1564,downloaded,prices/9618.HK__daily__2020-06-18_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+9633.HK,Nongfu Spring,False,1d,2020-09-08,2026-10-28,1508,downloaded,prices/9633.HK__daily__2020-09-08_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+9888.HK,Baidu,False,1d,2021-03-23,2026-10-28,1376,downloaded,prices/9888.HK__daily__2021-03-23_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+9901.HK,New Oriental,False,1d,2020-11-09,2026-10-28,1468,downloaded,prices/9901.HK__daily__2020-11-09_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+9961.HK,Trip.com,False,1d,2021-04-19,2026-10-28,1360,downloaded,prices/9961.HK__daily__2021-04-19_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+9988.HK,Alibaba,False,1d,2019-11-26,2026-10-28,1702,downloaded,prices/9988.HK__daily__2019-11-26_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+9992.HK,POP MART,False,1d,2020-12-11,2026-10-28,1444,downloaded,prices/9992.HK__daily__2020-12-11_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+9999.HK,NetEase,False,1d,2020-06-11,2026-10-28,1569,downloaded,prices/9999.HK__daily__2020-06-11_to_2026-10-28.csv,2026-10-28T23:07:14+00:00
+^HSI,,True,1d,1986-12-31,2026-10-28,9828,downloaded,benchmark/Hang_Seng_Index__HSI__daily__1986-12-31_to_2026-10-28.csv,2026-10-28T23:07:14+00:00

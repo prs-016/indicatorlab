@@ -1,0 +1,16 @@
+{
+  "unique_equities": 114,
+  "historical_members_2014_2024": 100,
+  "hsi_members_2024_12_31": 83,
+  "hsi_members_2026_09_07": 95,
+  "equities_downloaded": 110,
+  "equities_without_usable_history": 4,
+  "current_hsi_members_downloaded": 95,
+  "benchmark_first_date": "1986-12-31",
+  "benchmark_last_date": "2026-10-28",
+  "latest_equity_date": "2026-10-28",
+  "requested_through_inclusive": "2026-10-29",
+  "yahoo_exclusive_end": "2026-10-30",
+  "bar_interval": "1d",
+  "retrieved_at_utc": "2026-10-28T23:07:14+00:00"
+}

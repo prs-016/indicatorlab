@@ -1,0 +1,116 @@
+ticker,is_benchmark,bar_interval,status,first_date,last_date,row_count,duplicate_dates,nonpositive_close,missing_adj_close,source,retrieved_at_utc,file,hk_code,company_name,historical_member_2014_2024,is_hsi_2024_12_31,is_hsi_2026_09_07
+0001.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0001.HK__daily__2000-01-04_to_2026-10-28.csv,HK0001,Cheung Kong,True,True,True
+0002.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0002.HK__daily__2000-01-04_to_2026-10-28.csv,HK0002,CLP,True,True,True
+0003.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0003.HK__daily__2000-01-04_to_2026-10-28.csv,HK0003,Hong Kong and China Gas,True,True,True
+0004.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0004.HK__daily__2000-01-04_to_2026-10-28.csv,HK0004,Wharf Holdings,True,False,False
+0005.HK,False,1d,downloaded,2000-01-03,2026-10-28,6685,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0005.HK__daily__2000-01-03_to_2026-10-28.csv,HK0005,HSBC,True,True,True
+0006.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0006.HK__daily__2000-01-04_to_2026-10-28.csv,HK0006,Power Assets,True,True,True
+0011.HK,False,1d,no_reliable_original_history,,,0,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,,HK0011,Hang Seng Bank,True,False,False
+0012.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0012.HK__daily__2000-01-04_to_2026-10-28.csv,HK0012,Henderson Land,True,True,True
+0013.HK,False,1d,no_reliable_original_history,,,0,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,,HK0013,Hutchison Whampoa,True,False,False
+0016.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0016.HK__daily__2000-01-04_to_2026-10-28.csv,HK0016,Sun Hung Kai Properties,True,True,True
+0017.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0017.HK__daily__2000-01-04_to_2026-10-28.csv,HK0017,New World Development,True,False,False
+0019.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0019.HK__daily__2000-01-04_to_2026-10-28.csv,HK0019,Swire Pacific A,True,False,False
+0023.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0023.HK__daily__2000-01-04_to_2026-10-28.csv,HK0023,Bank of East Asia,True,False,False
+0027.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0027.HK__daily__2000-01-04_to_2026-10-28.csv,HK0027,Galaxy Entertainment,True,True,True
+0066.HK,False,1d,downloaded,2000-10-09,2026-10-28,6485,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0066.HK__daily__2000-10-09_to_2026-10-28.csv,HK0066,MTR,True,True,True
+0083.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0083.HK__daily__2000-01-04_to_2026-10-28.csv,HK0083,Sino Land,True,False,False
+0101.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0101.HK__daily__2000-01-04_to_2026-10-28.csv,HK0101,Hang Lung Properties,True,True,True
+0135.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0135.HK__daily__2000-01-04_to_2026-10-28.csv,HK0135,Kunlun Energy,True,False,False
+0144.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0144.HK__daily__2000-01-04_to_2026-10-28.csv,HK0144,China Merchants Port,True,False,False
+0151.HK,False,1d,downloaded,2008-03-26,2026-10-28,4584,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0151.HK__daily__2008-03-26_to_2026-10-28.csv,HK0151,Want Want China,True,False,False
+0175.HK,False,1d,downloaded,2005-09-29,2026-10-28,5197,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0175.HK__daily__2005-09-29_to_2026-10-28.csv,HK0175,Geely Automobile,True,True,True
+0241.HK,False,1d,downloaded,2004-03-22,2026-10-28,5585,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0241.HK__daily__2004-03-22_to_2026-10-28.csv,HK0241,Alibaba Health,True,True,True
+0267.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0267.HK__daily__2000-01-04_to_2026-10-28.csv,HK0267,CITIC Pacific,True,True,True
+0285.HK,False,1d,downloaded,2007-12-20,2026-10-28,4646,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0285.HK__daily__2007-12-20_to_2026-10-28.csv,HK0285,BYD Electronic,True,True,True
+0288.HK,False,1d,downloaded,2014-08-05,2026-10-28,3013,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0288.HK__daily__2014-08-05_to_2026-10-28.csv,HK0288,WH Group,True,True,True
+0291.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0291.HK__daily__2000-01-04_to_2026-10-28.csv,HK0291,China Resources Enterprise / China Resources Beer,True,True,True
+0293.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0293.HK__daily__2000-01-04_to_2026-10-28.csv,HK0293,Cathay Pacific,True,False,False
+0300.HK,False,1d,downloaded,2024-07-05,2026-10-28,511,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0300.HK__daily__2024-07-05_to_2026-10-28.csv,HK0300,MIDEA GROUP,False,False,True
+0316.HK,False,1d,downloaded,2004-04-15,2026-10-28,5567,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0316.HK__daily__2004-04-15_to_2026-10-28.csv,HK0316,OOIL,True,True,True
+0322.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0322.HK__daily__2000-01-04_to_2026-10-28.csv,HK0322,Tingyi,True,True,True
+0386.HK,False,1d,downloaded,2000-10-19,2026-10-28,6477,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0386.HK__daily__2000-10-19_to_2026-10-28.csv,HK0386,Sinopec,True,True,True
+0388.HK,False,1d,downloaded,2000-06-27,2026-10-28,6559,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0388.HK__daily__2000-06-27_to_2026-10-28.csv,HK0388,HKEX,True,True,True
+0494.HK,False,1d,no_reliable_original_history,,,0,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,,HK0494,Li & Fung,True,False,False
+0669.HK,False,1d,downloaded,2004-06-14,2026-10-28,5525,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0669.HK__daily__2004-06-14_to_2026-10-28.csv,HK0669,Techtronic Industries,True,True,True
+0688.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0688.HK__daily__2000-01-04_to_2026-10-28.csv,HK0688,China Overseas Land,True,True,True
+0700.HK,False,1d,downloaded,2004-06-16,2026-10-28,5523,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0700.HK__daily__2004-06-16_to_2026-10-28.csv,HK0700,Tencent,True,True,True
+0728.HK,False,1d,downloaded,2002-11-15,2026-10-28,5936,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0728.HK__daily__2002-11-15_to_2026-10-28.csv,HK0728,CHINA TELECOM,False,False,True
+0762.HK,False,1d,downloaded,2000-06-22,2026-10-28,6562,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0762.HK__daily__2000-06-22_to_2026-10-28.csv,HK0762,China Unicom,True,True,True
+0823.HK,False,1d,downloaded,2007-10-31,2026-10-28,4682,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0823.HK__daily__2007-10-31_to_2026-10-28.csv,HK0823,Link REIT,True,True,True
+0836.HK,False,1d,downloaded,2003-11-12,2026-10-28,5678,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0836.HK__daily__2003-11-12_to_2026-10-28.csv,HK0836,China Resources Power,True,True,True
+0857.HK,False,1d,downloaded,2000-04-07,2026-10-28,6616,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0857.HK__daily__2000-04-07_to_2026-10-28.csv,HK0857,PetroChina,True,True,True
+0868.HK,False,1d,downloaded,2005-02-03,2026-10-28,5357,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0868.HK__daily__2005-02-03_to_2026-10-28.csv,HK0868,Xinyi Glass,True,True,True
+0881.HK,False,1d,downloaded,2010-03-26,2026-10-28,4087,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0881.HK__daily__2010-03-26_to_2026-10-28.csv,HK0881,Zhongsheng,True,True,False
+0883.HK,False,1d,downloaded,2004-03-17,2026-10-28,5588,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0883.HK__daily__2004-03-17_to_2026-10-28.csv,HK0883,CNOOC,True,True,True
+0939.HK,False,1d,downloaded,2005-10-27,2026-10-28,5178,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0939.HK__daily__2005-10-27_to_2026-10-28.csv,HK0939,CCB,True,True,True
+0941.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0941.HK__daily__2000-01-04_to_2026-10-28.csv,HK0941,China Mobile,True,True,True
+0960.HK,False,1d,downloaded,2009-11-19,2026-10-28,4174,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0960.HK__daily__2009-11-19_to_2026-10-28.csv,HK0960,Longfor,True,True,True
+0968.HK,False,1d,downloaded,2013-12-12,2026-10-28,3170,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0968.HK__daily__2013-12-12_to_2026-10-28.csv,HK0968,Xinyi Solar,True,True,True
+0981.HK,False,1d,downloaded,2004-03-18,2026-10-28,5587,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0981.HK__daily__2004-03-18_to_2026-10-28.csv,HK0981,SMIC,True,True,True
+0992.HK,False,1d,downloaded,2000-03-22,2026-10-28,6628,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/0992.HK__daily__2000-03-22_to_2026-10-28.csv,HK0992,Lenovo,True,True,True
+1024.HK,False,1d,downloaded,2021-02-05,2026-10-28,1406,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1024.HK__daily__2021-02-05_to_2026-10-28.csv,HK1024,Kuaishou,True,True,True
+1038.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1038.HK__daily__2000-01-04_to_2026-10-28.csv,HK1038,CK Infrastructure Holdings,True,True,True
+1044.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1044.HK__daily__2000-01-04_to_2026-10-28.csv,HK1044,Hengan,True,True,True
+1088.HK,False,1d,downloaded,2005-06-15,2026-10-28,5271,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1088.HK__daily__2005-06-15_to_2026-10-28.csv,HK1088,China Shenhua,True,True,True
+1093.HK,False,1d,downloaded,2003-05-13,2026-10-28,5809,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1093.HK__daily__2003-05-13_to_2026-10-28.csv,HK1093,CSPC Pharmaceutical,True,True,True
+1099.HK,False,1d,downloaded,2009-09-23,2026-10-28,4213,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1099.HK__daily__2009-09-23_to_2026-10-28.csv,HK1099,Sinopharm,True,True,True
+1109.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1109.HK__daily__2000-01-04_to_2026-10-28.csv,HK1109,China Resources Land,True,True,True
+1113.HK,False,1d,downloaded,2015-06-03,2026-10-28,2810,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1113.HK__daily__2015-06-03_to_2026-10-28.csv,HK1113,CK Asset Holdings,True,True,True
+1177.HK,False,1d,downloaded,2004-05-12,2026-10-28,5548,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1177.HK__daily__2004-05-12_to_2026-10-28.csv,HK1177,Sino Biopharmaceutical,True,True,True
+1199.HK,False,1d,downloaded,2000-01-04,2026-10-28,6684,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1199.HK__daily__2000-01-04_to_2026-10-28.csv,HK1199,COSCO Pacific,True,True,False
+1209.HK,False,1d,downloaded,2020-12-09,2026-10-28,1446,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1209.HK__daily__2020-12-09_to_2026-10-28.csv,HK1209,CR Mixc Lifestyle,True,True,True
+1211.HK,False,1d,downloaded,2002-07-31,2026-10-28,6013,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1211.HK__daily__2002-07-31_to_2026-10-28.csv,HK1211,BYD,True,True,True
+1299.HK,False,1d,downloaded,2010-10-29,2026-10-28,3940,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1299.HK__daily__2010-10-29_to_2026-10-28.csv,HK1299,AIA,True,True,True
+1347.HK,False,1d,downloaded,2014-10-15,2026-10-28,2965,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1347.HK__daily__2014-10-15_to_2026-10-28.csv,HK1347,HUA HONG SEMICONDUCTOR,False,False,True
+1378.HK,False,1d,downloaded,2011-03-24,2026-10-28,3839,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1378.HK__daily__2011-03-24_to_2026-10-28.csv,HK1378,China Hongqiao,True,True,True
+1398.HK,False,1d,downloaded,2006-10-27,2026-10-28,4929,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1398.HK__daily__2006-10-27_to_2026-10-28.csv,HK1398,ICBC,True,True,True
+1519.HK,False,1d,downloaded,2023-10-27,2026-10-28,738,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1519.HK__daily__2023-10-27_to_2026-10-28.csv,HK1519,J&T EXPRESS,False,False,True
+1801.HK,False,1d,downloaded,2018-10-31,2026-10-28,1966,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1801.HK__daily__2018-10-31_to_2026-10-28.csv,HK1801,INNOVENT BIO,False,False,True
+1810.HK,False,1d,downloaded,2018-07-09,2026-10-28,2045,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1810.HK__daily__2018-07-09_to_2026-10-28.csv,HK1810,Xiaomi,True,True,True
+1876.HK,False,1d,downloaded,2019-09-30,2026-10-28,1741,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1876.HK__daily__2019-09-30_to_2026-10-28.csv,HK1876,Budweiser APAC,True,True,True
+1880.HK,False,1d,no_reliable_original_history,,,0,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,,HK1880,Belle International,True,False,False
+1928.HK,False,1d,downloaded,2009-11-30,2026-10-28,4167,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1928.HK__daily__2009-11-30_to_2026-10-28.csv,HK1928,Sands China,True,True,True
+1929.HK,False,1d,downloaded,2011-12-15,2026-10-28,3659,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1929.HK__daily__2011-12-15_to_2026-10-28.csv,HK1929,Chow Tai Fook,True,True,True
+1997.HK,False,1d,downloaded,2017-11-15,2026-10-28,2201,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/1997.HK__daily__2017-11-15_to_2026-10-28.csv,HK1997,Wharf REIC,True,True,True
+2007.HK,False,1d,downloaded,2007-04-20,2026-10-28,4813,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2007.HK__daily__2007-04-20_to_2026-10-28.csv,HK2007,Country Garden,True,False,False
+2015.HK,False,1d,downloaded,2021-08-12,2026-10-28,1280,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2015.HK__daily__2021-08-12_to_2026-10-28.csv,HK2015,Li Auto,True,True,True
+2018.HK,False,1d,downloaded,2005-08-09,2026-10-28,5233,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2018.HK__daily__2005-08-09_to_2026-10-28.csv,HK2018,AAC Technologies,True,False,False
+2020.HK,False,1d,downloaded,2007-07-10,2026-10-28,4760,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2020.HK__daily__2007-07-10_to_2026-10-28.csv,HK2020,ANTA Sports,True,True,True
+2057.HK,False,1d,downloaded,2020-09-29,2026-10-28,1493,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2057.HK__daily__2020-09-29_to_2026-10-28.csv,HK2057,ZTO EXPRESS,False,False,True
+2269.HK,False,1d,downloaded,2017-06-13,2026-10-28,2310,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2269.HK__daily__2017-06-13_to_2026-10-28.csv,HK2269,WuXi Biologics,True,True,True
+2313.HK,False,1d,downloaded,2005-11-24,2026-10-28,5158,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2313.HK__daily__2005-11-24_to_2026-10-28.csv,HK2313,Shenzhou International,True,True,True
+2318.HK,False,1d,downloaded,2004-06-24,2026-10-28,5517,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2318.HK__daily__2004-06-24_to_2026-10-28.csv,HK2318,Ping An,True,True,True
+2319.HK,False,1d,downloaded,2004-06-10,2026-10-28,5527,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2319.HK__daily__2004-06-10_to_2026-10-28.csv,HK2319,Mengniu Dairy,True,True,True
+2331.HK,False,1d,downloaded,2004-06-28,2026-10-28,5515,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2331.HK__daily__2004-06-28_to_2026-10-28.csv,HK2331,Li Ning,True,True,True
+2338.HK,False,1d,downloaded,2004-03-11,2026-10-28,5592,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2338.HK__daily__2004-03-11_to_2026-10-28.csv,HK2338,WEICHAI POWER,False,False,True
+2359.HK,False,1d,downloaded,2018-12-13,2026-10-28,1935,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2359.HK__daily__2018-12-13_to_2026-10-28.csv,HK2359,WuXi AppTec,True,True,True
+2382.HK,False,1d,downloaded,2007-06-15,2026-10-28,4775,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2382.HK__daily__2007-06-15_to_2026-10-28.csv,HK2382,Sunny Optical,True,True,True
+2388.HK,False,1d,downloaded,2002-07-25,2026-10-28,6017,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2388.HK__daily__2002-07-25_to_2026-10-28.csv,HK2388,BOC Hong Kong,True,True,True
+2600.HK,False,1d,downloaded,2001-12-12,2026-10-28,6178,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2600.HK__daily__2001-12-12_to_2026-10-28.csv,HK2600,CHALCO,False,False,True
+2618.HK,False,1d,downloaded,2021-05-28,2026-10-28,1332,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2618.HK__daily__2021-05-28_to_2026-10-28.csv,HK2618,JD LOGISTICS,False,False,True
+2628.HK,False,1d,downloaded,2003-12-18,2026-10-28,5652,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2628.HK__daily__2003-12-18_to_2026-10-28.csv,HK2628,China Life,True,True,True
+2688.HK,False,1d,downloaded,2001-05-10,2026-10-28,6332,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2688.HK__daily__2001-05-10_to_2026-10-28.csv,HK2688,ENN Energy,True,True,True
+2899.HK,False,1d,downloaded,2003-12-23,2026-10-28,5649,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/2899.HK__daily__2003-12-23_to_2026-10-28.csv,HK2899,Zijin Mining,True,True,True
+3328.HK,False,1d,downloaded,2005-06-23,2026-10-28,5265,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/3328.HK__daily__2005-06-23_to_2026-10-28.csv,HK3328,Bank of Communications,True,False,False
+3690.HK,False,1d,downloaded,2018-09-20,2026-10-28,1992,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/3690.HK__daily__2018-09-20_to_2026-10-28.csv,HK3690,Meituan,True,True,True
+3692.HK,False,1d,downloaded,2019-06-14,2026-10-28,1816,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/3692.HK__daily__2019-06-14_to_2026-10-28.csv,HK3692,Hansoh Pharma,True,True,True
+3750.HK,False,1d,downloaded,2025-05-20,2026-10-28,358,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/3750.HK__daily__2025-05-20_to_2026-10-28.csv,HK3750,CATL,False,False,True
+3968.HK,False,1d,downloaded,2006-09-22,2026-10-28,4953,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/3968.HK__daily__2006-09-22_to_2026-10-28.csv,HK3968,China Merchants Bank,True,True,True
+3988.HK,False,1d,downloaded,2006-06-01,2026-10-28,5034,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/3988.HK__daily__2006-06-01_to_2026-10-28.csv,HK3988,Bank of China,True,True,True
+3993.HK,False,1d,downloaded,2007-04-26,2026-10-28,4809,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/3993.HK__daily__2007-04-26_to_2026-10-28.csv,HK3993,CMOC,False,False,True
+6098.HK,False,1d,downloaded,2018-06-19,2026-10-28,2058,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/6098.HK__daily__2018-06-19_to_2026-10-28.csv,HK6098,Country Garden Services,True,False,False
+6160.HK,False,1d,downloaded,2018-08-08,2026-10-28,2023,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/6160.HK__daily__2018-08-08_to_2026-10-28.csv,HK6160,BEONE MEDICINES,False,False,True
+6181.HK,False,1d,downloaded,2024-06-28,2026-10-28,574,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/6181.HK__daily__2024-06-28_to_2026-10-28.csv,HK6181,LAOPU GOLD,False,False,True
+6618.HK,False,1d,downloaded,2020-12-08,2026-10-28,1447,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/6618.HK__daily__2020-12-08_to_2026-10-28.csv,HK6618,JD Health,True,True,True
+6690.HK,False,1d,downloaded,2020-12-23,2026-10-28,1436,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/6690.HK__daily__2020-12-23_to_2026-10-28.csv,HK6690,Haier Smart Home,True,True,True
+6862.HK,False,1d,downloaded,2018-09-26,2026-10-28,1989,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/6862.HK__daily__2018-09-26_to_2026-10-28.csv,HK6862,Haidilao,True,True,True
+9618.HK,False,1d,downloaded,2020-06-18,2026-10-28,1564,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/9618.HK__daily__2020-06-18_to_2026-10-28.csv,HK9618,JD.com,True,True,True
+9633.HK,False,1d,downloaded,2020-09-08,2026-10-28,1508,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/9633.HK__daily__2020-09-08_to_2026-10-28.csv,HK9633,Nongfu Spring,True,True,True
+9888.HK,False,1d,downloaded,2021-03-23,2026-10-28,1376,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/9888.HK__daily__2021-03-23_to_2026-10-28.csv,HK9888,Baidu,True,True,True
+9901.HK,False,1d,downloaded,2020-11-09,2026-10-28,1468,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/9901.HK__daily__2020-11-09_to_2026-10-28.csv,HK9901,New Oriental,True,True,True
+9961.HK,False,1d,downloaded,2021-04-19,2026-10-28,1360,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/9961.HK__daily__2021-04-19_to_2026-10-28.csv,HK9961,Trip.com,True,True,True
+9988.HK,False,1d,downloaded,2019-11-26,2026-10-28,1702,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/9988.HK__daily__2019-11-26_to_2026-10-28.csv,HK9988,Alibaba,True,True,True
+9992.HK,False,1d,downloaded,2020-12-11,2026-10-28,1444,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/9992.HK__daily__2020-12-11_to_2026-10-28.csv,HK9992,POP MART,False,False,True
+9999.HK,False,1d,downloaded,2020-06-11,2026-10-28,1569,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,prices/9999.HK__daily__2020-06-11_to_2026-10-28.csv,HK9999,NetEase,True,True,True
+^HSI,True,1d,downloaded,1986-12-31,2026-10-28,9828,0,0,0,https://finance.yahoo.com/,2026-10-28T23:07:14+00:00,benchmark/Hang_Seng_Index__HSI__daily__1986-12-31_to_2026-10-28.csv,,,,,

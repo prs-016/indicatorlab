@@ -1,0 +1,31 @@
+{
+  "status": "pass_with_source_warnings",
+  "assertions": {
+    "unique_equities_114": true,
+    "historical_members_100": true,
+    "end_2024_members_83": true,
+    "current_2026_members_95": true,
+    "downloaded_equities_110": true,
+    "unavailable_set_expected": true,
+    "all_end_2024_members_downloaded": true,
+    "all_current_members_downloaded": true,
+    "benchmark_starts_1986_12_31": true,
+    "benchmark_within_7_calendar_days_of_request": true,
+    "all_equity_files_have_date_ranges_in_names": true,
+    "benchmark_file_name_identifies_hsi_and_date_range": true,
+    "price_file_index_matches_coverage": true,
+    "no_critical_price_file_failures": true,
+    "manifest_has_no_duplicate_dates": true,
+    "manifest_has_no_nonpositive_close": true,
+    "manifest_has_no_missing_adj_close": true
+  },
+  "equity_price_rows": 498219,
+  "benchmark_rows": 9828,
+  "price_files_checked": 110,
+  "requested_through_inclusive": "2026-10-29",
+  "benchmark_latest_date": "2026-10-28",
+  "current_members_reaching_benchmark_latest_date": 95,
+  "current_members_downloaded": 95,
+  "ohlc_consistency_warning_rows": 646,
+  "ohlc_warning_note": "Yahoo contains a small number of rows where open/close falls outside reported high-low. Values are preserved and flagged rather than altered."
+}

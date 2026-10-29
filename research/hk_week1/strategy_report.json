@@ -1,0 +1,175 @@
+{
+  "evaluation_start": "2021-04-07",
+  "evaluation_end": "2024-12-31",
+  "benchmark_metrics": {
+    "Start date": "2021-04-07",
+    "End date": "2024-12-31",
+    "Observations": 920,
+    "Cumulative return": -0.3004328304918229,
+    "Annualized return": -0.09323081246394838,
+    "Annualized volatility": 0.25736740329868174,
+    "Sharpe ratio": -0.2520681721251084,
+    "Maximum drawdown": -0.5015942876594952
+  },
+  "results": [
+    {
+      "Strategy key": "mom_5d",
+      "Strategy": "5-day momentum",
+      "What it does": "Ranks stocks by their past 5-day return and buys the top two weekly.",
+      "Mean rank IC": -0.029467196139421666,
+      "IC observations": 195,
+      "Keep or drop": "Drop",
+      "Decision reason": "Negative IC and Sharpe suggest short-term noise and reversal. Frequent changes also made this the highest-turnover strategy.",
+      "Start date": "2021-04-07",
+      "End date": "2024-12-31",
+      "Observations": 920,
+      "Cumulative return": -0.31510800865231425,
+      "Annualized return": -0.09848128714745674,
+      "Annualized volatility": 0.26429545731999154,
+      "Sharpe ratio": -0.26067032929981554,
+      "Maximum drawdown": -0.5460782889144552,
+      "Excess annualized return vs HSI": -0.005250474683508366,
+      "Rebalances": 196,
+      "Total one-way turnover": 216.7557414049069,
+      "Estimated transaction costs": 0.21675574140490692
+    },
+    {
+      "Strategy key": "mom_20d",
+      "Strategy": "20-day momentum",
+      "What it does": "Ranks stocks by their past 20-day return and buys the top two weekly.",
+      "Mean rank IC": 0.0044455688659248704,
+      "IC observations": 195,
+      "Keep or drop": "Keep",
+      "Decision reason": "IC and Sharpe were slightly positive. Keep it as a simple baseline, but the edge is weak and needs a full-universe retest.",
+      "Start date": "2021-04-07",
+      "End date": "2024-12-31",
+      "Observations": 920,
+      "Cumulative return": -0.017399690436328052,
+      "Annualized return": -0.004796413272728839,
+      "Annualized volatility": 0.25610914463492646,
+      "Sharpe ratio": 0.1092091537409715,
+      "Maximum drawdown": -0.4714417591364136,
+      "Excess annualized return vs HSI": 0.08843439919121954,
+      "Rebalances": 196,
+      "Total one-way turnover": 115.81520768550052,
+      "Estimated transaction costs": 0.11581520768550052
+    },
+    {
+      "Strategy key": "mom_60d",
+      "Strategy": "60-day momentum",
+      "What it does": "Ranks stocks by their past 60-day return and buys the top two weekly.",
+      "Mean rank IC": -0.008231772668805287,
+      "IC observations": 195,
+      "Keep or drop": "Drop",
+      "Decision reason": "Both IC and Sharpe were negative, so the slower signal did not predict the next week's relative winners.",
+      "Start date": "2021-04-07",
+      "End date": "2024-12-31",
+      "Observations": 920,
+      "Cumulative return": -0.14752049129726086,
+      "Annualized return": -0.042776329616252995,
+      "Annualized volatility": 0.22638237637240122,
+      "Sharpe ratio": -0.07948896135433471,
+      "Maximum drawdown": -0.3502462024951528,
+      "Excess annualized return vs HSI": 0.05045448284769538,
+      "Rebalances": 196,
+      "Total one-way turnover": 77.19806660479536,
+      "Estimated transaction costs": 0.07719806660479536
+    },
+    {
+      "Strategy key": "ma_10_30",
+      "Strategy": "10/30-day moving-average momentum",
+      "What it does": "Ranks stocks by how far their 10-day average is above their 30-day average.",
+      "Mean rank IC": -0.011228762354697112,
+      "IC observations": 195,
+      "Keep or drop": "Keep",
+      "Decision reason": "It had the best Sharpe and was the only strategy with a positive cumulative return. Its slightly negative IC means it still needs a larger retest.",
+      "Start date": "2021-04-07",
+      "End date": "2024-12-31",
+      "Observations": 920,
+      "Cumulative return": 0.069768890066779,
+      "Annualized return": 0.01864510646273576,
+      "Annualized volatility": 0.2446721257533463,
+      "Sharpe ratio": 0.19804976588393713,
+      "Maximum drawdown": -0.3429910038848428,
+      "Excess annualized return vs HSI": 0.11187591892668414,
+      "Rebalances": 196,
+      "Total one-way turnover": 91.32506567591358,
+      "Estimated transaction costs": 0.09132506567591359
+    },
+    {
+      "Strategy key": "risk_adj_mom_20d",
+      "Strategy": "20-day risk-adjusted momentum",
+      "What it does": "Ranks 20-day return after dividing it by recent 20-day volatility.",
+      "Mean rank IC": -0.005377954268696111,
+      "IC observations": 195,
+      "Keep or drop": "Drop",
+      "Decision reason": "Volatility scaling did not improve stock ranking. IC and Sharpe stayed negative.",
+      "Start date": "2021-04-07",
+      "End date": "2024-12-31",
+      "Observations": 920,
+      "Cumulative return": -0.20002588224564333,
+      "Annualized return": -0.05929980364578025,
+      "Annualized volatility": 0.24066440181366508,
+      "Sharpe ratio": -0.13325547986575273,
+      "Maximum drawdown": -0.5255850392587931,
+      "Excess annualized return vs HSI": 0.03393100881816813,
+      "Rebalances": 196,
+      "Total one-way turnover": 123.83124107675765,
+      "Estimated transaction costs": 0.12383124107675765
+    }
+  ],
+  "annual_returns": {
+    "5-day momentum": {
+      "2021": -0.1986072276506392,
+      "2022": -0.32047070412916434,
+      "2023": 0.0019408009707742035,
+      "2024": 0.2552389865572695
+    },
+    "20-day momentum": {
+      "2021": -0.1708787609258966,
+      "2022": -0.15048599401059393,
+      "2023": 0.011907340695300528,
+      "2024": 0.3786294969384021
+    },
+    "60-day momentum": {
+      "2021": -0.1071309016069758,
+      "2022": 0.020288240613757447,
+      "2023": -0.15843951941542012,
+      "2024": 0.11195686848200825
+    },
+    "10/30-day moving-average momentum": {
+      "2021": -0.16127451860450193,
+      "2022": 0.020131200500017155,
+      "2023": 0.0037338263029842444,
+      "2024": 0.24564857512658023
+    },
+    "20-day risk-adjusted momentum": {
+      "2021": -0.26479295252703827,
+      "2022": -0.11693384497108328,
+      "2023": 0.13839663642039568,
+      "2024": 0.08237918236910602
+    },
+    "Hang Seng Index": {
+      "2021": -0.18403374097111902,
+      "2022": -0.1545564057318417,
+      "2023": -0.1382115587136845,
+      "2024": 0.1767166987616311
+    }
+  },
+  "assumptions": {
+    "universe": [
+      "0700.HK",
+      "0005.HK",
+      "1299.HK",
+      "0941.HK",
+      "0388.HK"
+    ],
+    "benchmark": "^HSI",
+    "top_n": 2,
+    "cost_rate": 0.001,
+    "risk_free_rate": 0.0,
+    "rebalance_frequency": "weekly",
+    "execution": "next close with positive volume for all selected stocks",
+    "board_lot_rounding": false
+  }
+}

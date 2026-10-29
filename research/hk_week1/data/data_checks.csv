@@ -1,0 +1,7 @@
+Ticker,First date,Last date,Trading days,Missing vs HSI,Duplicate dates,Rows missing OHLCV,Invalid close,Impossible OHLC,Negative volume,Zero volume,Flat OHLC + zero volume,Daily moves over 25%
+0700.HK,2021-01-04,2024-12-31,982,0,0,0,0,0,0,4,4,0
+0005.HK,2021-01-04,2024-12-31,982,0,0,0,0,0,0,4,4,0
+1299.HK,2021-01-04,2024-12-31,982,0,0,0,0,0,0,6,6,0
+0941.HK,2021-01-04,2024-12-31,982,0,0,0,0,0,0,6,6,0
+0388.HK,2021-01-04,2024-12-31,982,0,0,0,0,0,0,6,6,0
+^HSI,2021-01-04,2024-12-31,982,0,0,0,0,0,0,0,0,0
