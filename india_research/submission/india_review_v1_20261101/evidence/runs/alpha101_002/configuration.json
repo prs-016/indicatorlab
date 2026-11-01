@@ -1,0 +1,31 @@
+{
+  "label": "PROVISIONAL",
+  "factor": "alpha101_002",
+  "start": "2021-01-04",
+  "end": "2024-12-31",
+  "top_n": 2,
+  "rebalance_frequency": "W-FRI",
+  "cost_bps": 10.0,
+  "annualization": 252,
+  "annual_risk_free": 0.0,
+  "min_signal_names": 8,
+  "universe": [
+    "RELIANCE.NS",
+    "TCS.NS",
+    "INFY.NS",
+    "HDFCBANK.NS",
+    "ICICIBANK.NS",
+    "SBIN.NS",
+    "KOTAKBANK.NS",
+    "AXISBANK.NS"
+  ],
+  "benchmark": "^NSEI",
+  "prior_sessions": 25,
+  "input_start": "2020-11-26",
+  "execution": "strictly subsequent eligible close",
+  "tie_rule": "descending score then ascending ticker",
+  "ic_horizon": "actual execution close to next actual execution close, ranked across all eight names",
+  "sharpe": "daily net excess mean / sample std * sqrt(252); zero risk-free",
+  "cash_interest": 0,
+  "terminal_liquidation": false
+}
