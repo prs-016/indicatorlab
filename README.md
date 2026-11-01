@@ -1,10 +1,15 @@
 # IndicatorLab
 
-IndicatorLab is a DS3 financial-market research project. This branch contains the
-India data adapter, isolated original Vibe-Trading factor/IC integration,
-Jack-inspired portfolio accounting, offline tests and a ten-strategy review.
-The eight completed portfolio diagnostics are PROVISIONAL; two other factors
-are non-evaluable under the fixed eight-stock baseline.
+IndicatorLab is a DS3 financial-market research project. Attention data
+(Reddit, Wikipedia, search trends) and India equities research are both part
+of the project; markets, stocks and sources live in `config.yaml`. Reddit
+pipeline (Joshua): [`docs/reddit/README.md`](docs/reddit/README.md).
+
+This branch contains the India data adapter, isolated original Vibe-Trading
+factor/IC integration, Jack-inspired portfolio accounting, offline tests and a
+ten-strategy review. The eight completed portfolio diagnostics are
+PROVISIONAL; two other factors are non-evaluable under the fixed eight-stock
+baseline.
 
 ## India submission: reviewer entry point
 
@@ -48,6 +53,8 @@ that original workspace; use the portable report/log for reviewer-accessible lin
 See [India methodology](docs/india_backtesting_methodology.md) and
 [code review](code_review.md). No commit, push, PR, merge or publication follows
 from the submission-preparation checks.
+
+A clean starter template for data science and machine learning projects at UC San Diego's DS3.
 
 ## DS3 template reference
 

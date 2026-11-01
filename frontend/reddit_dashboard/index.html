@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indicator Lab Reddit</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root {
+  --surface-0: #f4f3ef; --surface-1: #fcfcfb; --border: #e6e5e0;
+  --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #85847e;
+  --series-1: #2a78d6; --series-2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --incomplete: #c3c2b7;
+  --good: #008300; --warn: #c98500; --bad: #e34948;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-0: #121211; --surface-1: #1a1a19; --border: #2e2e2c;
+    --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e88;
+    --series-1: #3987e5; --series-2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --incomplete: #4a4a46;
+    --good: #2fa52f; --warn: #e0a020; --bad: #e66767;
+  }
+}
+:root[data-theme="dark"] {
+  --surface-0: #121211; --surface-1: #1a1a19; --border: #2e2e2c;
+  --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e88;
+  --series-1: #3987e5; --series-2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --incomplete: #4a4a46;
+  --good: #2fa52f; --warn: #e0a020; --bad: #e66767;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--surface-0); color: var(--text-primary);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 24px 16px 64px; }
+header { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
+h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 15px; margin: 0 0 12px; }
+.sub { color: var(--text-secondary); font-size: 13px; }
+.muted { color: var(--text-muted); font-size: 12px; }
+section { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
+.card .big { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 8px 0 6px; }
+.bar > div { height: 100%; background: var(--series-1); border-radius: 3px; }
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--text-secondary); }
+.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
+button { font: inherit; cursor: pointer; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
+  border-radius: 7px; padding: 6px 12px; }
+button:hover { border-color: var(--text-muted); }
+button.primary { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+button[disabled] { opacity: .55; cursor: default; }
+.seg { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.seg button { padding: 4px 10px; font-size: 13px; }
+.seg button.on { background: var(--text-primary); color: var(--surface-1); border-color: var(--text-primary); }
+.chartbox { position: relative; height: 320px; }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { color: var(--text-secondary); font-weight: 500; font-size: 12px; }
+td.num, th.num { text-align: right; }
+.yes { color: var(--series-2); font-weight: 600; }
+.note { border-left: 3px solid var(--warn); padding: 8px 12px; color: var(--text-secondary); font-size: 13px; margin: 0 0 12px; background: color-mix(in srgb, var(--warn) 8%, transparent); }
+pre { background: var(--surface-0); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11.5px; overflow-x: auto; margin: 10px 0 0; color: var(--text-secondary); }
+img.chart { width: 100%; border: 1px solid var(--border); border-radius: 6px; background: #fcfcfb; margin-top: 10px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 12px; height: 10px; border-radius: 2px; display: inline-block; }
+details summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Indicator Lab — Reddit chatter &amp; stock returns</h1>
+      <div class="sub">r/stocks · r/investing · r/wallstreetbets · <span id="range"></span> · weeks start Monday 00:00 UTC</div>
+    </div>
+    <div style="text-align:right">
+      <button class="primary" id="rebuild">Rebuild analysis on collected data</button>
+      <div class="muted" id="rebuildStatus" style="margin-top:6px"></div>
+    </div>
+  </header>
+
+  <section>
+    <h2>Historical collection (Arctic Shift)</h2>
+    <div class="grid3" id="collect"></div>
+    <div class="muted" id="eta" style="margin-top:10px"></div>
+    <details><summary>Collector log (latest lines)</summary><pre id="log"></pre></details>
+  </section>
+
+  <section>
+    <h2>Weekly chatter by ticker <span class="muted">(all three subreddits combined)</span></h2>
+    <p class="note" id="partialNote" hidden></p>
+    <div class="seg" id="tickers"></div>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--series-1)"></i>weekly matching posts</span>
+      <span><i class="sw" style="background:var(--series-2)"></i>spike week (≥ 2× median of previous 4 weeks)</span>
+      <span><i class="sw" style="background:var(--incomplete)"></i>incomplete collection (observed so far)</span>
+      <span><i class="sw" style="background:var(--text-secondary);height:2px"></i>4-week median</span>
+    </div>
+    <div class="chartbox"><canvas id="weekly"></canvas></div>
+    <div class="muted" id="weeklyStats" style="margin-top:8px"></div>
+  </section>
+
+  <section>
+    <h2>Apple September event study</h2>
+    <div class="tablewrap"><table id="events"></table></div>
+    <div class="muted" style="margin-top:6px">Weekly return = last adjusted close of the Mon–Sun week ÷ previous week's − 1 (yfinance, split/dividend adjusted).</div>
+    <img class="chart" id="chart1" alt="AAPL Reddit posts vs AAPL price with Apple event dates and spike weeks">
+    <img class="chart" id="chart2" alt="Zoomed windows around each Apple September event">
+  </section>
+
+  <section>
+    <h2>Top chatter spikes <span class="muted">(all subreddits, baseline ≥ 5 posts/week)</span></h2>
+    <div class="tablewrap"><table id="spikes"></table></div>
+  </section>
+
+  <div class="grid3" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:16px">
+    <section style="margin:0">
+      <h2>Matches by method</h2>
+      <div class="tablewrap"><table id="matches"></table></div>
+    </section>
+    <section style="margin:0">
+      <h2>Earliest available post per subreddit</h2>
+      <div class="tablewrap"><table id="coverage"></table></div>
+    </section>
+  </div>
+
+  <section style="margin-top:16px" id="strategyLog">
+    <header style="margin-bottom:10px">
+      <div>
+        <h2 style="margin:0">Strategy Log</h2>
+        <div class="muted">Append-only — every test is recorded, including failures. Nothing is deleted or overwritten.</div>
+      </div>
+      <div style="text-align:right">
+        <button class="primary" id="runStrategies">Run 5 strategy tests</button>
+        <div class="muted" id="strategyStatus" style="margin-top:6px"></div>
+      </div>
+    </header>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px">
+      <label class="muted" for="runSelect">Reddit backtest run</label>
+      <select id="runSelect" style="font:inherit;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface-1);color:var(--text-primary)"></select>
+    </div>
+    <div class="legend" id="equityLegend"></div>
+    <div class="chartbox" style="height:280px"><canvas id="equity"></canvas></div>
+    <div class="muted" style="margin:6px 0 14px">Growth of $1, net of 10 bps per unit turnover. Signal from Reddit week s (Mon–Sun UTC) → enter first open of week s+1 → exit first open of week s+2.</div>
+    <div class="tablewrap"><table id="strategyLogTable"></table></div>
+    <div class="muted" style="margin-top:8px">Verdict rule (fixed in advance): fewer than 52 evaluation weeks → insufficient data; net Sharpe ≥ 0.5 and t ≥ 2 → promising (needs an out-of-sample check); Sharpe &gt; 0 → weak; otherwise failed.
+      Vibe-Trading rows are separate Alpha101 benchmarks (daily rank IC vs next-day return on the S&amp;P 500, 2021–2024, survivorship-biased); they are not Reddit signals.</div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt = (n, d = 0) => n == null || Number.isNaN(n) ? "—" : Number(n).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d });
+const pct = (n) => n == null ? "—" : (n >= 0 ? "+" : "") + (n * 100).toFixed(2) + "%";
+const get = (u) => fetch(u, { cache: "no-store" }).then(r => r.json());
+const TICKERS = ["AAPL","MSFT","NVDA","TSLA","AMZN","META","GOOGL","AMD","NFLX","JPM"];
+let ticker = "AAPL", chart;
+
+function table(el, cols, rows) {
+  if (!rows.length) { el.innerHTML = '<tr><td class="muted">No data yet — run the analysis.</td></tr>'; return; }
+  el.innerHTML = "<thead><tr>" + cols.map(c => `<th class="${c.num ? "num" : ""}">${c.h}</th>`).join("") + "</tr></thead><tbody>" +
+    rows.map(r => "<tr>" + cols.map(c => `<td class="${c.num ? "num" : ""}">${c.f ? c.f(r) : (r[c.k] ?? "—")}</td>`).join("") + "</tr>").join("") + "</tbody>";
+}
+
+async function loadStatus() {
+  const s = await get("/api/status");
+  $("range").textContent = `${s.range[0]} → ${s.range[1]}`;
+  $("collect").innerHTML = s.subreddits.map(x => {
+    const p = x.complete / x.expected;
+    const bad = x.failed + x.partial;
+    return `<div class="card"><div class="sub">r/${x.subreddit}</div>
+      <div class="big">${fmt(x.complete)} <span class="muted">/ ${fmt(x.expected)} days</span></div>
+      <div class="bar"><div style="width:${(p * 100).toFixed(1)}%"></div></div>
+      <div class="muted">${fmt(x.posts)} posts collected · contiguous through ${x.contiguous_through ?? "—"}</div>
+      <div style="margin-top:6px">${bad ? `<span class="pill"><i class="dot" style="background:var(--bad)"></i>${x.failed} failed · ${x.partial} partial</span>`
+        : `<span class="pill"><i class="dot" style="background:var(--good)"></i>no failed days</span>`}</div></div>`;
+  }).join("");
+  const e = s.eta;
+  $("eta").textContent = e ? (e.active ? `Collector running · ${e.per_minute} subreddit-days/min · ${fmt(e.remaining_pairs)} remaining · ETA ${e.eta_utc ?? "—"}`
+    : `Collector idle · ${fmt(e.remaining_pairs)} subreddit-days remaining`) : "";
+  $("log").textContent = s.log_tail.join("\n");
+  const anyMissing = s.subreddits.some(x => x.complete < x.expected);
+  $("partialNote").hidden = !anyMissing;
+  const through = s.subreddits.map(x => x.contiguous_through).filter(Boolean).sort()[0] ?? "—";
+  const remaining = s.subreddits.reduce((a, x) => a + x.expected - x.complete, 0);
+  $("partialNote").textContent = (e && e.active)
+    ? `Collection is running, so the analysis below covers only the days collected so far (through ${through}; last rebuilt ${s.processed_updated ?? "never"}). Weeks without full coverage are grey and have no spike ratio.`
+    : `Data is complete through ${through}. ${remaining} newer subreddit-day(s) have not been collected yet — run collect_reddit.py collect, then Rebuild, to extend it (last rebuilt ${s.processed_updated ?? "never"}). Weeks without full coverage are grey and have no spike ratio.`;
+}
+
+async function loadWeekly() {
+  const { rows } = await get(`/api/weekly?ticker=${ticker}`);
+  const labels = rows.map(r => r.week_start);
+  const vals = rows.map(r => r.coverage_complete ? r.posts : r.posts_observed);
+  const colors = rows.map(r => r.posts_spike_flag ? css("--series-2") : (r.coverage_complete ? css("--series-1") : css("--incomplete")));
+  const data = { labels, datasets: [
+    { type: "line", label: "4-week median", data: rows.map(r => r.posts_median_4w), borderColor: css("--text-secondary"),
+      borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4, spanGaps: false, order: 0 },
+    { type: "bar", label: "posts", data: vals, backgroundColor: colors, borderRadius: { topLeft: 3, topRight: 3 },
+      borderSkipped: "bottom", categoryPercentage: 0.9, barPercentage: 0.92, order: 1 },
+  ]};
+  const opts = {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { display: false }, tooltip: { callbacks: {
+      title: (it) => `Week of ${it[0].label}`,
+      label: () => null,
+      afterBody: (it) => { const r = rows[it[0].dataIndex];
+        if (!r.coverage_complete) return [`posts observed: ${fmt(r.posts_observed)}`, "collection incomplete for this week"];
+        return [`posts: ${fmt(r.posts)}`, `4-week median: ${fmt(r.posts_median_4w, 1)}`,
+                `spike ratio: ${r.posts_spike_ratio == null ? "undefined" : fmt(r.posts_spike_ratio, 2) + "×"}${r.posts_spike_flag ? "  ← spike" : ""}`,
+                `comments: ${fmt(r.comments)} · upvotes: ${fmt(r.upvotes)}`]; } } } },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: css("--text-muted"), maxTicksLimit: 12, maxRotation: 0 } },
+      y: { beginAtZero: true, grid: { color: css("--border") }, border: { display: false }, ticks: { color: css("--text-muted") },
+           title: { display: true, text: `${ticker} posts / week`, color: css("--text-secondary") } } } };
+  if (chart) chart.destroy();
+  chart = new Chart($("weekly"), { data, options: opts });
+  const comp = rows.filter(r => r.coverage_complete);
+  const spikes = rows.filter(r => r.posts_spike_flag);
+  $("weeklyStats").textContent = `${comp.length} complete weeks · ${spikes.length} post-spike weeks` +
+    (comp.length ? ` · mean ${fmt(comp.reduce((a, r) => a + r.posts, 0) / comp.length, 1)} posts/week` : "");
+}
+
+function tickerButtons() {
+  $("tickers").innerHTML = TICKERS.map(t => `<button class="${t === ticker ? "on" : ""}" data-t="${t}">${t}</button>`).join("");
+  $("tickers").querySelectorAll("button").forEach(b => b.onclick = () => { ticker = b.dataset.t; tickerButtons(); loadWeekly(); });
+}
+
+async function loadTables() {
+  const bust = "?t=" + Date.now();
+  $("chart1").src = "/charts/aapl_chatter_vs_price.png" + bust;
+  $("chart2").src = "/charts/aapl_event_windows.png" + bust;
+  const [ev, sp, mt, cv] = await Promise.all(["events","spikes","matches","coverage"].map(k => get("/api/" + k)));
+  table($("events"), [
+    { h: "Event", f: r => `${r.event_name} <span class="muted">${r.event_date}</span>` },
+    { h: "Week of", k: "event_week_start" },
+    { h: "Reddit coverage", f: r => r.reddit_coverage_complete ? "complete" : '<span class="muted">not yet collected</span>' },
+    { h: "Posts", num: 1, f: r => fmt(r.posts) }, { h: "4w median", num: 1, f: r => fmt(r.posts_median_4w, 1) },
+    { h: "Spike ratio", num: 1, f: r => r.posts_spike_ratio == null ? "—" : fmt(r.posts_spike_ratio, 2) + "×" },
+    { h: "2× spike", f: r => r.reddit_coverage_complete ? (r.posts_spike_flag ? '<span class="yes">yes</span>' : "no") : "—" },
+    { h: "Event-week return", num: 1, f: r => pct(r.event_week_return) },
+    { h: "Next-week return", num: 1, f: r => pct(r.next_week_return) },
+  ], ev.rows);
+  table($("spikes"), [
+    { h: "#", k: "rank" }, { h: "Week of", k: "week_start" }, { h: "Ticker", k: "ticker" }, { h: "Metric", k: "metric" },
+    { h: "Value", num: 1, f: r => fmt(r.value) }, { h: "4w median", num: 1, f: r => fmt(r.median_4w, 1) },
+    { h: "Ratio", num: 1, f: r => fmt(r.spike_ratio, 2) + "×" },
+  ], sp.rows.slice(0, 20));
+  table($("matches"), [
+    { h: "Ticker", k: "ticker" }, { h: "Cashtag", num: 1, f: r => fmt(r.cashtag_posts) }, { h: "Ticker symbol", num: 1, f: r => fmt(r.ticker_posts) },
+    { h: "Company name", num: 1, f: r => fmt(r.company_name_posts) }, { h: "Total", num: 1, f: r => fmt(r.total_posts) },
+  ], mt.rows);
+  table($("coverage"), [
+    { h: "Subreddit", f: r => "r/" + r.subreddit }, { h: "Earliest post (UTC)", k: "earliest_post_utc" },
+    { h: "Post ID", k: "earliest_post_id" }, { h: "Verified", f: r => r.verified ? "yes" : "no" },
+  ], cv.rows);
+}
+
+// ---------------------------------------------------------------- Strategy Log
+const SERIES_VARS = { S1: "--series-1", S2: "--series-2", S3: "--s3", S4: "--s4", S5: "--s5", B0: "--text-secondary" };
+let equityChart, selectedRun = null;
+
+function verdictPill(v) {
+  const s = String(v ?? "");
+  const c = s.startsWith("PROMISING") || s === "OK" ? "--good" : s.startsWith("WEAK") ? "--warn"
+          : s.startsWith("FAILED") ? "--bad" : "--text-muted";
+  return `<span class="pill"><i class="dot" style="background:var(${c})"></i>${s}</span>`;
+}
+
+async function loadStrategyLog() {
+  const [logRes, run] = await Promise.all([get("/api/strategy_log"), get("/api/strategy_run" + (selectedRun ? `?run_id=${selectedRun}` : ""))]);
+  const rows = logRes.rows.slice().reverse();   // newest first
+  const pctS = (x) => x == null ? "—" : (x * 100).toFixed(1) + "%";
+  const sgn = (x) => x == null ? "—" : (x >= 0 ? "+" : "") + (x * 100).toFixed(1) + "%";
+  const el = $("strategyLogTable");
+  if (!rows.length) { el.innerHTML = '<tr><td class="muted">No strategy runs logged yet.</td></tr>'; }
+  else {
+    const head = ["Run", "Source", "ID", "Strategy", "Period", "Weeks (inv.)", "Total net", "Ann. net", "Sharpe", "t", "Max DD", "Hit rate", "IC mean", "IR", "Verdict"];
+    el.innerHTML = "<thead><tr>" + head.map((h, i) => `<th class="${i >= 5 && i <= 13 ? "num" : ""}">${h}</th>`).join("") + "</tr></thead><tbody>" +
+      rows.map(r => {
+        const vt = String(r.source).startsWith("vibe");
+        return `<tr><td class="muted">${r.run_id}</td><td>${vt ? "Vibe-Trading benchmark" : (r.strategy_id === "B0" ? "benchmark" : "Reddit indicator")}</td>
+          <td>${r.strategy_id.replace("alpha101_", "α")}</td><td title="${(r.rule ?? "").replace(/"/g, "&quot;")}">${r.strategy_name}</td>
+          <td class="muted">${r.eval_start_week} → ${r.eval_end_week}</td>
+          <td class="num">${vt ? "—" : `${fmt(r.eval_weeks)} (${fmt(r.invested_weeks)})`}</td>
+          <td class="num">${sgn(r.total_return_net)}</td><td class="num">${sgn(r.ann_return_net)}</td>
+          <td class="num">${fmt(r.sharpe_net, 2)}</td><td class="num">${fmt(r.t_stat_net, 2)}</td>
+          <td class="num">${r.max_drawdown_net == null ? "—" : (r.max_drawdown_net * 100).toFixed(1) + "%"}</td>
+          <td class="num">${pctS(r.hit_rate_invested)}</td><td class="num">${fmt(r.ic_mean, 4)}</td><td class="num">${fmt(r.ir, 4)}</td>
+          <td>${verdictPill(r.verdict)}</td></tr>`;
+      }).join("") + "</tbody>";
+  }
+  const sel = $("runSelect");
+  sel.innerHTML = run.runs.slice().reverse().map(r => `<option ${r === run.run_id ? "selected" : ""}>${r}</option>`).join("");
+  sel.onchange = () => { selectedRun = sel.value; loadStrategyLog(); };
+  const ids = Object.keys(run.series ?? {});
+  $("equityLegend").innerHTML = ids.map(id => `<span><i class="sw" style="background:var(${SERIES_VARS[id]})${id === "B0" ? ";height:2px" : ""}"></i>${id} ${run.series[id].name}</span>`).join("");
+  if (equityChart) equityChart.destroy();
+  if (!ids.length) return;
+  const weeks = [...new Set(ids.flatMap(id => run.series[id].weeks))].sort();
+  equityChart = new Chart($("equity"), {
+    type: "line",
+    data: { labels: weeks, datasets: ids.map(id => {
+      const s = run.series[id], m = Object.fromEntries(s.weeks.map((w, i) => [w, i]));
+      return { label: `${id} ${s.name}`, data: weeks.map(w => m[w] == null ? null : s.growth[m[w]]),
+        borderColor: css(SERIES_VARS[id]), borderWidth: id === "B0" ? 1.5 : 2, borderDash: id === "B0" ? [5, 4] : [],
+        pointRadius: 0, pointHoverRadius: 4, spanGaps: true, _s: s, _m: m };
+    }) },
+    options: { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: "index", intersect: false },
+      plugins: { legend: { display: false }, tooltip: { callbacks: {
+        title: (it) => `Signal week ${it[0].label}`,
+        label: (c) => { const ds = c.dataset, i = ds._m[c.label]; if (i == null) return null;
+          return `${ds.label}: $${fmt(c.raw, 3)} (week ${sgn(ds._s.net[i])}) · ${ds._s.positions[i]}`; } } } },
+      scales: { x: { grid: { display: false }, ticks: { color: css("--text-muted"), maxTicksLimit: 10, maxRotation: 0 } },
+        y: { grid: { color: css("--border") }, border: { display: false }, ticks: { color: css("--text-muted"), callback: v => "$" + v.toFixed(2) },
+             title: { display: true, text: "growth of $1 (net)", color: css("--text-secondary") } } } },
+  });
+}
+
+async function pollStrategies() {
+  const s = await get("/api/run_strategies");
+  $("runStrategies").disabled = s.running;
+  $("strategyStatus").textContent = s.running ? `Running since ${s.started}…` : s.error ? `Last run failed: ${s.error.slice(0, 160)}`
+    : s.finished ? `Last run finished ${s.finished} — appended to the log` : "Refreshes signals from collected data, then backtests and logs S1–S5 + benchmark";
+  return s;
+}
+$("runStrategies").onclick = async () => {
+  await fetch("/api/run_strategies", { method: "POST" });
+  selectedRun = null;
+  const t = setInterval(async () => { const s = await pollStrategies(); if (!s.running) { clearInterval(t); loadStrategyLog(); loadStatus(); loadWeekly(); } }, 2000);
+  pollStrategies();
+};
+
+async function pollRebuild() {
+  const s = await get("/api/rebuild");
+  const btn = $("rebuild");
+  btn.disabled = s.running;
+  $("rebuildStatus").textContent = s.running ? `Running ${s.step}…` : s.error ? `Last rebuild failed: ${s.error.slice(0, 160)}`
+    : s.finished ? `Last rebuild finished ${s.finished}` : "Reruns posts → matching → weekly → event study → charts";
+  return s;
+}
+$("rebuild").onclick = async () => {
+  await fetch("/api/rebuild", { method: "POST" });
+  const t = setInterval(async () => { const s = await pollRebuild();
+    if (!s.running) { clearInterval(t); loadStatus(); loadWeekly(); loadTables(); } }, 2000);
+  pollRebuild();
+};
+
+tickerButtons();
+loadStatus(); loadWeekly(); loadTables(); pollRebuild(); loadStrategyLog(); pollStrategies();
+setInterval(loadStatus, 30000);
+</script>
+</body>
+</html>
