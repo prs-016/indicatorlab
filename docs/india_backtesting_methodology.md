@@ -430,3 +430,39 @@ prior files remain unchanged. See
 PROVISIONAL backtests are separated from two non-evaluable applicability studies.
 Earlier comparisons/results are preserved. No repeat, final Keep/Drop, different
 convention or publication is authorized by the consumed ILLIQ approval.
+
+### Qlib158 strategies 11–15: unchanged baseline and cached-score execution
+
+The separately approved five-factor diagnostic uses research_v4 and exactly the
+existing 2021–2024 eight-stock/top-two weekly, subsequent eligible-close, 10-bps
+absolute-turnover cost, original execution-aligned rank-IC and daily net Sharpe
+methodology. No Qlib runtime or dependency is introduced. The original modules
+are invoked through the same isolated Vibe worker; the parent retains its own
+src package. Score directions and declared metadata are unchanged.
+
+STD20/RSV20 need 20 rows; SUMP20/WVMA20 need 21 and CORD10 needs 11 because their
+rolling inputs include a preceding observation. All receive 25 prior sessions.
+A single score cache per factor serves coverage, weekly selection diagnostics
+and simulation; no second real-data factor computation or convention comparison
+is needed. The conservative expansion gate requires 7,920 finite evaluation
+scores and 209 uniquely identified eligible weekly pairs, with 208 nonterminal
+candidates, no unexplained NaNs, numerical failures or material input issue.
+A failure stops that portfolio and records N/A; it never creates replacement scores.
+
+Constant per-stock price/volume multipliers largely cancel in normalized ratios,
+but time-varying corporate-action factors can affect rolling windows. CORD's
+original volume +1 constant prevents exact volume-unit invariance. WVMA zero
+volume contributes zero, unlike ILLIQ's zero denominator; a zero weighted mean
+is undefined. Existing v4 quantity evidence is reused rather than claiming full
+historical volume certification. No historical point-in-time claim is made.
+
+The five approved Qlib158 diagnostics completed with 7,920 finite evaluation
+scores and unique selections at all 209 weekly candidates each. No original
+numerical warnings, evaluation NaNs/infinities or weekly boundary ties occurred.
+Cached scores were used for all 208 executions/207 IC intervals per factor;
+all 990 return dates and every execution/label are pre-cutoff. Saved NAV, costs,
+Sharpe, IC and benchmark identities reconcile. The complete suite passed 388
+cases; prior results/data/reports remain unchanged. See the new
+`india_research/reports/india_strategies_11_15_PROVISIONAL_20261101T212235Z.md`.
+No repeat, alternative convention, score inversion, final label or publication
+is authorized by these completed diagnostics.
