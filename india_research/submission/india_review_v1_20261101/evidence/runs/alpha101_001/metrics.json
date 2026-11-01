@@ -1,0 +1,28 @@
+{
+  "label": "PROVISIONAL",
+  "factor": "alpha101_001",
+  "execution_aligned_mean_rank_ic": -0.02375876643569079,
+  "valid_ic_intervals": 206,
+  "undefined_ic_intervals": 1,
+  "net_daily_annualized_sharpe": 0.076889466769413,
+  "benchmark_daily_annualized_sharpe": 0.9789603453445075,
+  "net_cumulative_return": -0.01593235435462892,
+  "gross_cumulative_return": 0.3068277357056264,
+  "benchmark_cumulative_return": 0.6730324369182363,
+  "net_max_drawdown": -0.2677215178505836,
+  "evaluation_observations": 990,
+  "input_sessions": 1015,
+  "prior_sessions": 25,
+  "rebalance_executions": 208,
+  "stock_trade_legs": 698,
+  "total_absolute_nav_turnover": 283.4361680012215,
+  "sum_cost_fractions": 0.2834361680012215,
+  "executed_targets_membership_depends_on_ticker": 162,
+  "executed_targets_all_eight_tied": 1,
+  "quality_flags_by_kind": {
+    "repeated_close": 12
+  },
+  "first_execution": "2021-01-11",
+  "last_execution": "2024-12-30",
+  "no_final_keep_drop": true
+}

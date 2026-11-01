@@ -1,0 +1,13 @@
+[
+  "PROVISIONAL; one approved #2 diagnostic only; no final Keep/Drop.",
+  "Pre-July-2023 Reliance vendor non-split price/volume normalization remains independently unexplained.",
+  "Kotak March 1, 2024 five-vendor-share quantity discrepancy retained, not repaired or explained.",
+  "Exactly twelve recovered quantities use verified surrounding frozen vendor units; no full historical nominal-volume certification.",
+  "Frozen vendor adjustment vintage is not historically point-in-time. Later share metadata is not holdout price use.",
+  "Original correlation NaNs remain NaN; fewer than eight scores skips a target and preserves existing holdings.",
+  "Execution-aligned IC intervals can span more than one week when a signal is skipped; no fabricated weekly label.",
+  "Calendar structural checks pass but exhaustive amendment inventory certainty is not claimed; strict manifest flags remain false.",
+  "Nifty 50 is a price index; adjusted stock histories include cash-dividend adjustments.",
+  "Fixed eight-stock universe, fractional targets, flat turnover costs and close/positive-volume fill proxies; no spread/impact/tax model.",
+  "Initial cash days included; cash interest/risk-free zero; no final liquidation or post-cutoff observations."
+]
