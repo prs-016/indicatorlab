@@ -1,5 +1,9 @@
 # DS3 Project Template
 
+> **Indicator Lab.** Attention data (Reddit, Wikipedia, search trends) for US, Indian and Hong Kong
+> stocks, tested as trading signals. Markets, stocks and sources live in `config.yaml`.
+> Reddit pipeline (Joshua): [`docs/reddit/README.md`](docs/reddit/README.md).
+
 A clean starter template for data science and machine learning projects at UC San Diego's DS3.
 
 ## What this template includes
