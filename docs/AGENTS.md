@@ -107,44 +107,47 @@ if you need tool-specific extras.)
      Replace every [bracketed] placeholder below.
      ============================================================ -->
 
+
 # AGENTS.md
 
 ## Project overview
 
-[One or two sentences: what does this project do, and for whom? e.g.
-"A pipeline that predicts campus dining hall wait times from historical
-swipe data, built for UCSD Housing & Dining."]
+Indicator Lab (DS3, UC San Diego): weekly attention data (Wikipedia page views and edits, Reddit
+chatter and sentiment, search-trend alternatives) for US stocks, tested as trading signals, built so
+Indian and Hong Kong stocks can be added as a config change. For the DS3 team and mentors.
 
-**Status:** [prototype / active development / deployed]
-**Primary language(s)/framework(s):** [e.g. Python 3.11, pandas,
-scikit-learn, FastAPI, React]
+**Status:** active development (Week 2)
+**Primary language(s)/framework(s):** Python 3.11+, pandas, numpy, requests, yfinance, FastAPI, pytest
 
 ## Repo structure
-
-This project follows the DS3 project template
-(https://github.com/ucsdds3/ds3-project-template). Reusable logic lives
-in `src/`; notebooks are for exploration and should import from `src/`
-rather than redefining logic inline.
 
 ```
 .
 ├── README.md
+├── config.yaml        # markets, stocks, subreddits, Wikipedia titles, spike rule, holdout, splits
 ├── .env.example
 ├── requirements.txt
-├── notebooks/        # exploration, EDA, prototyping — not the source of truth for pipeline logic
-├── src/               # the actual reusable code — import this from notebooks
-├── tests/             # pytest-style tests for src/
-├── data/
-│   ├── raw/           # never edit by hand, never overwrite
-│   └── processed/
-├── results/
-├── models/
-├── frontend/          # [delete this line if unused] UI/web app code
-└── infra/             # [delete this line if unused] deployment/cloud config
+├── pytest.ini         # puts the repo root on sys.path for `pytest`
+├── notebooks/
+│   └── wikipedia.ipynb   # Week 2 Wikipedia results; imports everything from src/
+├── src/
+│   ├── config.py          # loader for config.yaml (`from src import config`)
+│   ├── wiki_attention.py  # page views (+ redirects), Monday weeks, shared spike rule `flag_spikes`
+│   ├── wiki_edits.py      # revision history, weekly edits, reverts, summary keyword tags
+│   ├── wiki_prices.py     # weekly returns, returns 1-4 weeks after, abnormal returns, bootstrap CIs
+│   ├── wiki_pipeline.py   # pulls + caches everything, writes the shared weekly table
+│   ├── wiki_analysis.py   # spike-vs-normal returns, edit timing, tags, tone, last-3-weeks table
+│   ├── wiki_strategy.py   # Wikipedia-only strategy with random-portfolio baseline
+│   ├── trends_compare.py  # Google Trends alternatives (GDELT, trendspy) vs Wikipedia views
+│   └── api/               # FastAPI app: main.py + one router per source
+├── tests/             # pytest tests for src/ (no network: HTTP calls are mocked)
+├── docs/              # AGENTS.md, DesignDoc.md, codeReviewer.md, docs/wikipedia/ reports
+├── data/              # git-ignored; raw/ never edited by hand
+│   ├── raw/wikipedia/  # views_{research,recent}/, revisions_{research,recent}/<lang>/, prices/
+│   ├── processed/wikipedia/
+│   └── shared/        # attention_weekly_<source>_{research,recent}.csv in the team format
+└── results/           # git-ignored outputs (tables, strategy runs)
 ```
-
-[Adjust the tree above to match what you actually have, and delete rows
-that don't apply, e.g. no `frontend/` if there's no UI.]
 
 ## Dev environment / setup
 
@@ -155,52 +158,49 @@ pip install -r requirements.txt
 cp .env.example .env   # then fill in your own local values — never commit .env
 ```
 
-[Add anything project-specific: a database that needs to be running
-locally, an API key required to run anything, a dataset that needs to be
-downloaded first, etc.]
+- `WIKIMEDIA_CONTACT` in `.env` is required for any Wikipedia pull (Wikimedia rejects clients without a
+  contact address in the User-Agent).
+- Data is not in git. Rebuild it with the pipeline below (about 25 minutes the first time, then cached).
 
 ## Running things
 
-- Run the main pipeline: `[e.g. python -m src.pipeline]`
-- Launch notebooks: `jupyter lab notebooks/`
-- [Any other entry point: a Streamlit app, a FastAPI server, a training
-  script — give the exact command.]
+- Pull/refresh Wikipedia data and rebuild the weekly tables: `python -m src.wiki_pipeline`
+- Wikipedia-only strategy (train/test, 200 random portfolios): `python -m src.wiki_strategy`
+- Results notebook: `jupyter lab notebooks/wikipedia.ipynb` (Restart and Run All; needs the pipeline output)
+- API: `uvicorn src.api.main:app --reload --port 8000`, docs at http://localhost:8000/docs
+  (`/tickers`, `/attention`, `/price`)
 
 ## Testing
 
 - Unit tests live in `tests/` and run with:
   ```bash
-  pytest
+  pytest                          # from the repo root
+  pytest --cov=src --cov-report=term-missing
   ```
-- Some validation also happens inline in notebooks (e.g. sanity-checking
-  shapes/values after a transform) — [say which notebooks, if any, are
-  load-bearing for correctness rather than pure exploration].
-- Before opening a PR: run `pytest` and make sure it passes. New logic in
-  `src/` should come with a test — either in `tests/` or a clear
-  assertion-based check in the relevant notebook.
+- Tests never touch the network: Wikimedia, MediaWiki and API data are mocked or built in memory.
+- `notebooks/wikipedia.ipynb` asserts its data coverage (holdout split, date ranges) at the top.
+- Before opening a PR: run `pytest` and `ruff check src/ tests/`, and run the `ds3-code-review` skill.
 
 ## Code style & conventions
 
-- Follow PEP 8. [`ruff check src/` / `flake8 src/` if the team uses a
-  linter — say which one.]
-- Every public function/class in `src/` needs a docstring (what it does,
-  params, return value).
-- No magic numbers in logic — use a named constant or a config value, and
-  say where the number comes from if it's empirical (e.g. a tuned
-  threshold).
-- [Any project-specific conventions: naming schemes for experiment
-  outputs, a required random seed for reproducibility, a specific
-  logging setup, etc.]
+- Follow PEP 8; lint with `ruff check src/ tests/`.
+- Every public function/class in `src/` needs a docstring (what it does, params, return value).
+- No magic numbers in logic: thresholds and windows live in `config.yaml` or as named constants.
+- No hardcoded tickers, subreddits or Wikipedia languages inside functions: read them from `config.yaml`.
+- Weeks are labelled by their Monday (Monday-Sunday weeks). Every output table has a `market` column.
+- Holdout: research, spike studies and strategy tests use data before `holdout_start` (2025-10-01).
+  Recent data lives in separate `*_recent` files and is only for the dashboard and spike checks.
+- One spike rule for every source (`config.yaml` `spike`, past weeks only): `src/wiki_attention.flag_spikes`.
 
 ## Git / PR workflow
 
 - One GitHub Issue per task/bug/feature.
-- Work happens on a branch (`feature/your-task`), never directly on
-  `main`.
+- Work happens on your own branch (`wikipedia`, `reddit`, `india`, `jack`), never directly on `main`.
+- Push with `git` from the command line (no web uploads). Small commits with clear messages,
+  e.g. `wiki: fix z-score to use past weeks only`.
 - Open a PR when ready; **only mentors/PMs approve and merge to `main`**
   — do not merge your own PR even if checks pass.
-- Before opening a PR, it's worth running the `ds3-code-review` skill on
-  your branch to catch structure/style/testing issues yourself first.
+- Run the `ds3-code-review` skill before every push and say so in the PR description.
 
 ## Keeping this file up to date
 
@@ -222,22 +222,25 @@ task done. Do this even if the person didn't explicitly ask you to.
 - Mention in your summary to the user that you updated AGENTS.md, so
   they can sanity-check it before it lands in the PR.
 
+
 ## Things the agent should never do in this repo
 
 - Never commit or hardcode secrets, API keys, or `.env` contents.
 - Never push directly to `main` or merge a PR.
 - Never delete or overwrite anything in `data/raw/`.
+- Never commit data files, `__pycache__/`, `.xlsx` or notebook checkpoints.
 - Never install packages beyond what's needed without calling it out and
   updating `requirements.txt`.
-- [Add anything else specific to your project — e.g. "never regenerate
-  `results/` files without being asked, they're checked in as the record
-  of the last approved run."]
+- Never use holdout data (on/after 2025-10-01) for research, spike studies or strategy tests.
 - Never finish a task that changed structure/commands/conventions
   without also updating AGENTS.md — see "Keeping this file up to date"
   above.
 
 ## Useful context
 
-[Anything else an agent (or new teammate) would want to know: links to a
-`DesignDoc.md`, the dataset's source/license, known gotchas, an
-in-progress area of the code that's intentionally unfinished, etc.]
+- Week 2 tasks: `Indicator_Lab_Week_2_Tasks.pdf` (not in git). Wikipedia results: `docs/wikipedia/week2_report.md`.
+- Page views: Wikimedia REST pageviews API (`user` agent, from 2015-07-01). An article's views include
+  every redirect to it, so renamed articles keep their history.
+- Known data caveat: `Meta_Platforms` only became the company's own article in late 2019; before that,
+  Facebook's company attention sat on the `Facebook` article. `Alphabet_Inc.` gets far fewer views than `Google`.
+- Reddit pipeline (Joshua): `docs/reddit/README.md` on the `reddit` branch.

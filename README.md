@@ -1,5 +1,31 @@
 # DS3 Project Template
 
+> **Indicator Lab.** Attention data (Reddit, Wikipedia, search trends) for US, Indian and Hong Kong
+> stocks, tested as trading signals. Markets, stocks and sources live in `config.yaml`.
+> Agent/teammate guide: [`docs/AGENTS.md`](docs/AGENTS.md).
+
+## Wikipedia attention (James)
+
+Weekly Wikipedia page views and edits for the tracked stocks, with one spike rule shared with the Reddit
+side, returns after spikes, edit-summary tags, a Wikipedia-only strategy and API routes.
+
+```bash
+cp .env.example .env              # set WIKIMEDIA_CONTACT to your email (Wikimedia requires a contact)
+python -m src.wiki_pipeline       # pull views, edits and prices (cached), write data/shared/ tables
+python -m src.wiki_strategy       # Wikipedia-only strategy vs SPY, equal weight and 200 random portfolios
+jupyter lab notebooks/wikipedia.ipynb   # Week 2 results (Restart and Run All)
+uvicorn src.api.main:app --reload # /tickers, /attention, /price
+pytest                            # tests, no network needed
+```
+
+- **Source:** Wikimedia pageviews API (people only, from Jul 2015; each article counted with all its
+  redirects) and the MediaWiki revisions API (edit summaries).
+- **Spike rule:** baseline = median of the previous 8 weeks; abnormal = log((views + 1) / (baseline + 1));
+  spike if views are at least 1.5x the baseline and the robust z-score of abnormal, against the median and
+  MAD of *earlier* weeks only (26 needed), is at least 2. Weeks are labelled by their Monday.
+- **Holdout:** research uses data before 2025-10-01; recent data sits in separate `*_recent` files.
+- Results: [`docs/wikipedia/week2_report.md`](docs/wikipedia/week2_report.md).
+
 A clean starter template for data science and machine learning projects at UC San Diego's DS3.
 
 ## What this template includes
