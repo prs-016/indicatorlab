@@ -96,7 +96,7 @@ def score_llm_batched(df: pd.DataFrame) -> pd.Series:
         with open(settings.PROCESSED / "llm_sentiment_cache.jsonl", "a", encoding="utf-8") as f:
             for res in client.messages.batches.results(batch.id):
                 if res.result.type != "succeeded":
-                    continue   # errored/expired requests stay uncached and are retried next run
+                    continue   # errored/expired requests stay uncached; --rescore retries just those
                 key = by_id[res.custom_id]
                 cache[key] = parse_label(res.result.message)
                 f.write(json.dumps({"key": key, "label": cache[key], "model": LLM_MODEL}) + "\n")
