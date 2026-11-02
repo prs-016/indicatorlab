@@ -10,7 +10,8 @@
 
 Choice rule, fixed before any scorer was run on the labels: for each source, the scorer with the
 highest macro-F1 wins; ties go to the cheaper scorer (vader, lm, finbert, llm in that order).
-Skipped posts and "unsure" match checks are left out and counted.
+Skipped posts and "unsure" match checks are left out and counted. A scorer that cannot run (no word
+list, no API key) is left out too, and sentiment_choice.json names it, so a partial comparison shows.
 
     python -m src.reddit.label_eval match --rater joshua
     python -m src.reddit.label_eval sentiment --rater joshua --second james
@@ -66,6 +67,8 @@ def match_precision(rater: str) -> pd.DataFrame:
     """Per-ticker and weighted overall precision of the text matcher."""
     items = pd.read_csv(MATCH_OUT, dtype=str)
     lab = items.merge(_labels_frame("match", rater)[["item_id", "label"]], on="item_id", how="left")
+    if not lab["label"].isin(["correct", "incorrect"]).any():
+        raise SystemExit(f"no match checks from {rater} yet: label them with src.reddit.label_server first")
     meta = json.loads(MATCH_OUT.with_suffix(".meta.json").read_text())
     pop = {t: n for t, n in meta["strata"]}
     rows = []
@@ -133,16 +136,19 @@ def compare_scorers(rater: str, scorers: list[str]) -> tuple[pd.DataFrame, dict]
     gold = items.merge(_labels_frame("sentiment", rater)[["item_id", "label"]], on="item_id")
     n_skip = int((gold["label"] == "skip").sum())
     gold = gold[gold["label"] != "skip"].reset_index(drop=True)
+    if gold.empty:
+        raise SystemExit(f"no sentiment labels from {rater} yet: label them with src.reddit.label_server first")
     texts = (gold["title"] + "\n\n" + gold["body"]).str.strip().tolist()
     names = {t: c["name"] for t, c in config.stocks(settings.MARKET).items()}
     companies = gold["ticker"].map(names).tolist()
     rng = np.random.default_rng(SEED)
-    rows, preds = [], {}
+    rows, preds, skipped = [], {}, []
     for name in scorers:
         try:
             preds[name] = run_scorer(name, texts, companies)["label"].to_numpy()
         except (FileNotFoundError, RuntimeError) as e:
             log.warning("scorer %s skipped: %s", name, e)
+            skipped.append(name)
             continue
         for src in ["all", *SOURCES]:
             m = np.ones(len(gold), bool) if src == "all" else (gold["source"] == src).to_numpy()
@@ -165,6 +171,7 @@ def compare_scorers(rater: str, scorers: list[str]) -> tuple[pd.DataFrame, dict]
         pred_out[f"pred_{name}"] = p
     pred_out.to_csv(settings.TABLES / "sentiment_predictions_on_labels.csv", index=False)
     meta = {"rater": rater, "n_labelled": int(len(gold)), "n_skipped": n_skip, "choice": choice,
+            "scorers_compared": list(preds), "scorers_skipped": skipped,
             "rule": "highest macro-F1 per source; ties to the cheaper scorer (vader < lm < finbert < llm)"}
     (settings.TABLES / "sentiment_choice.json").write_text(json.dumps(meta, indent=2))
     log.info("scorer choice: %s", choice)
