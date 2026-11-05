@@ -1,0 +1,50 @@
+{
+  "as_of": "2026-11-04",
+  "market": "Hong Kong",
+  "stocks": [
+    {
+      "ticker": "0700.HK",
+      "name_en": "Tencent Holdings Limited",
+      "name_zh": "騰訊控股有限公司",
+      "wikipedia_title_en": "Tencent",
+      "wikipedia_title_zh": "騰訊",
+      "subreddits": ["HongKongStocks", "ChinaStocks", "stocks", "investing"]
+    },
+    {
+      "ticker": "0005.HK",
+      "name_en": "HSBC Holdings plc",
+      "name_zh": "滙豐控股有限公司",
+      "wikipedia_title_en": "HSBC",
+      "wikipedia_title_zh": "滙豐",
+      "subreddits": ["HongKongStocks", "UKInvesting", "stocks", "investing"]
+    },
+    {
+      "ticker": "1299.HK",
+      "name_en": "AIA Group Limited",
+      "name_zh": "友邦保險控股有限公司",
+      "wikipedia_title_en": "AIA Group",
+      "wikipedia_title_zh": "友邦保險",
+      "subreddits": ["HongKongStocks", "ChinaStocks", "stocks", "investing"]
+    },
+    {
+      "ticker": "0941.HK",
+      "name_en": "China Mobile Limited",
+      "name_zh": "中國移動有限公司",
+      "wikipedia_title_en": "China Mobile",
+      "wikipedia_title_zh": "中國移動",
+      "subreddits": ["HongKongStocks", "ChinaStocks", "stocks", "investing"]
+    },
+    {
+      "ticker": "0388.HK",
+      "name_en": "Hong Kong Exchanges and Clearing Limited",
+      "name_zh": "香港交易及結算所有限公司",
+      "wikipedia_title_en": "Hong Kong Exchanges and Clearing",
+      "wikipedia_title_zh": "香港交易所",
+      "subreddits": ["HongKongStocks", "HongKong", "stocks", "investing"]
+    }
+  ],
+  "notes": [
+    "Wikipedia titles were checked in both English and Chinese.",
+    "Subreddits are discovery targets, not authoritative market-data sources."
+  ]
+}

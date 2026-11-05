@@ -1,0 +1,126 @@
+reading,observed_at_utc,provider,ticker,price_hkd,provider_time,request_latency_ms,status,note
+1,2026-11-05T00:36:57.853+00:00,Yahoo chart 1m,1299.HK,76.94999694824219,2026-11-04T08:08:00+00:00,268.4,ok,
+1,2026-11-05T00:36:57.854+00:00,Yahoo chart 1m,0005.HK,136.39999389648438,2026-11-04T08:08:00+00:00,268.8,ok,
+1,2026-11-05T00:36:57.858+00:00,Yahoo chart 1m,0941.HK,80.5,2026-11-04T08:08:00+00:00,272.1,ok,
+1,2026-11-05T00:36:57.917+00:00,Yahoo chart 1m,0388.HK,384.0,2026-11-04T08:08:00+00:00,330.1,ok,
+1,2026-11-05T00:36:58.078+00:00,Yahoo chart 1m,0700.HK,401.6000061035156,2026-11-04T08:08:00+00:00,493.4,ok,
+1,2026-11-05T00:36:58.456+00:00,Tencent quote,0005.HK,136.4,2026/11/04 16:08:17,871.4,ok,
+1,2026-11-05T00:36:58.493+00:00,Tencent quote,0700.HK,401.6,2026/11/04 16:08:16,908.1,ok,
+1,2026-11-05T00:36:58.494+00:00,Tencent quote,1299.HK,76.95,2026/11/04 16:08:17,908.6,ok,
+1,2026-11-05T00:36:58.537+00:00,Tencent quote,0388.HK,384.0,2026/11/04 16:08:17,950.0,ok,
+1,2026-11-05T00:36:58.637+00:00,Tencent quote,0941.HK,80.5,2026/11/04 16:08:17,1051.1,ok,
+1,2026-11-05T00:37:00.634+00:00,Eastmoney,0005.HK,136.4,2026-11-04T08:08:08+00:00,3049.5,ok,
+1,2026-11-05T00:37:00.639+00:00,Eastmoney,0700.HK,401.6,2026-11-04T08:08:08+00:00,3054.4,ok,
+1,2026-11-05T00:37:00.640+00:00,Eastmoney,0388.HK,384.0,2026-11-04T08:08:08+00:00,3052.9,ok,
+1,2026-11-05T00:37:00.640+00:00,Eastmoney,0941.HK,80.5,2026-11-04T08:08:09+00:00,3053.8,ok,
+1,2026-11-05T00:37:00.648+00:00,Eastmoney,1299.HK,76.95,2026-11-04T08:08:09+00:00,3062.7,ok,
+1,2026-11-05T00:37:00.649+00:00,Futu OpenD,0700.HK,,,0.4,unavailable,Futu OpenD is not running on localhost:11111.
+1,2026-11-05T00:37:00.649+00:00,HKEX official,0700.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+1,2026-11-05T00:37:00.649+00:00,Futu OpenD,0005.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+1,2026-11-05T00:37:00.649+00:00,HKEX official,0005.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+1,2026-11-05T00:37:00.650+00:00,Futu OpenD,1299.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+1,2026-11-05T00:37:00.650+00:00,HKEX official,1299.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+1,2026-11-05T00:37:00.650+00:00,Futu OpenD,0941.HK,,,0.1,unavailable,Futu OpenD is not running on localhost:11111.
+1,2026-11-05T00:37:00.650+00:00,HKEX official,0941.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+1,2026-11-05T00:37:00.650+00:00,Futu OpenD,0388.HK,,,0.1,unavailable,Futu OpenD is not running on localhost:11111.
+1,2026-11-05T00:37:00.650+00:00,HKEX official,0388.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+2,2026-11-05T00:37:01.945+00:00,Yahoo chart 1m,0941.HK,80.5,2026-11-04T08:08:00+00:00,285.7,ok,
+2,2026-11-05T00:37:01.946+00:00,Yahoo chart 1m,0005.HK,136.39999389648438,2026-11-04T08:08:00+00:00,290.9,ok,
+2,2026-11-05T00:37:01.947+00:00,Yahoo chart 1m,0388.HK,384.0,2026-11-04T08:08:00+00:00,283.9,ok,
+2,2026-11-05T00:37:01.947+00:00,Yahoo chart 1m,1299.HK,76.94999694824219,2026-11-04T08:08:00+00:00,289.6,ok,
+2,2026-11-05T00:37:01.983+00:00,Yahoo chart 1m,0700.HK,401.6000061035156,2026-11-04T08:08:00+00:00,331.6,ok,
+2,2026-11-05T00:37:02.472+00:00,Tencent quote,0700.HK,401.6,2026/11/04 16:08:16,820.0,ok,
+2,2026-11-05T00:37:02.475+00:00,Tencent quote,0941.HK,80.5,2026/11/04 16:08:17,813.7,ok,
+2,2026-11-05T00:37:02.476+00:00,Tencent quote,1299.HK,76.95,2026/11/04 16:08:17,818.2,ok,
+2,2026-11-05T00:37:02.476+00:00,Tencent quote,0005.HK,136.4,2026/11/04 16:08:17,820.0,ok,
+2,2026-11-05T00:37:02.477+00:00,Tencent quote,0388.HK,384.0,2026/11/04 16:08:17,813.0,ok,
+2,2026-11-05T00:37:04.581+00:00,Eastmoney,0388.HK,384.0,2026-11-04T08:08:08+00:00,2917.2,ok,
+2,2026-11-05T00:37:04.582+00:00,Eastmoney,0005.HK,136.4,2026-11-04T08:08:08+00:00,2925.3,ok,
+2,2026-11-05T00:37:05.902+00:00,Eastmoney,0700.HK,401.6,2026-11-04T08:08:08+00:00,4248.3,ok,
+2,2026-11-05T00:37:06.266+00:00,Eastmoney,1299.HK,76.95,2026-11-04T08:08:09+00:00,4606.6,ok,
+2,2026-11-05T00:37:09.877+00:00,Eastmoney,0941.HK,80.5,2026-11-04T08:08:09+00:00,8214.6,ok,
+2,2026-11-05T00:37:09.879+00:00,Futu OpenD,0700.HK,,,0.9,unavailable,Futu OpenD is not running on localhost:11111.
+2,2026-11-05T00:37:09.879+00:00,HKEX official,0700.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+2,2026-11-05T00:37:09.879+00:00,Futu OpenD,0005.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+2,2026-11-05T00:37:09.879+00:00,HKEX official,0005.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+2,2026-11-05T00:37:09.879+00:00,Futu OpenD,1299.HK,,,0.4,unavailable,Futu OpenD is not running on localhost:11111.
+2,2026-11-05T00:37:09.879+00:00,HKEX official,1299.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+2,2026-11-05T00:37:09.880+00:00,Futu OpenD,0941.HK,,,0.4,unavailable,Futu OpenD is not running on localhost:11111.
+2,2026-11-05T00:37:09.880+00:00,HKEX official,0941.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+2,2026-11-05T00:37:09.880+00:00,Futu OpenD,0388.HK,,,0.3,unavailable,Futu OpenD is not running on localhost:11111.
+2,2026-11-05T00:37:09.880+00:00,HKEX official,0388.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+3,2026-11-05T00:37:11.126+00:00,Yahoo chart 1m,0700.HK,401.6000061035156,2026-11-04T08:08:00+00:00,240.7,ok,
+3,2026-11-05T00:37:11.140+00:00,Yahoo chart 1m,0388.HK,384.0,2026-11-04T08:08:00+00:00,243.4,ok,
+3,2026-11-05T00:37:11.154+00:00,Yahoo chart 1m,0005.HK,136.39999389648438,2026-11-04T08:08:00+00:00,265.0,ok,
+3,2026-11-05T00:37:11.154+00:00,Yahoo chart 1m,0941.HK,80.5,2026-11-04T08:08:00+00:00,260.6,ok,
+3,2026-11-05T00:37:11.159+00:00,Yahoo chart 1m,1299.HK,76.94999694824219,2026-11-04T08:08:00+00:00,267.7,ok,
+3,2026-11-05T00:37:11.712+00:00,Tencent quote,0388.HK,384.0,2026/11/04 16:08:17,813.8,ok,
+3,2026-11-05T00:37:11.717+00:00,Tencent quote,1299.HK,76.95,2026/11/04 16:08:17,824.5,ok,
+3,2026-11-05T00:37:11.718+00:00,Tencent quote,0005.HK,136.4,2026/11/04 16:08:17,828.2,ok,
+3,2026-11-05T00:37:11.718+00:00,Tencent quote,0700.HK,401.6,2026/11/04 16:08:16,831.4,ok,
+3,2026-11-05T00:37:11.723+00:00,Tencent quote,0941.HK,80.5,2026/11/04 16:08:17,828.8,ok,
+3,2026-11-05T00:37:14.325+00:00,Eastmoney,0941.HK,80.5,2026-11-04T08:08:09+00:00,3429.6,ok,
+3,2026-11-05T00:37:14.340+00:00,Eastmoney,0005.HK,136.4,2026-11-04T08:08:08+00:00,3449.7,ok,
+3,2026-11-05T00:37:15.945+00:00,Eastmoney,0388.HK,384.0,2026-11-04T08:08:08+00:00,5046.6,ok,
+3,2026-11-05T00:37:16.284+00:00,Eastmoney,1299.HK,76.95,2026-11-04T08:08:09+00:00,5390.6,ok,
+3,2026-11-05T00:37:17.676+00:00,Eastmoney,0700.HK,401.6,2026-11-04T08:08:08+00:00,6788.8,ok,
+3,2026-11-05T00:37:17.678+00:00,Futu OpenD,0700.HK,,,0.5,unavailable,Futu OpenD is not running on localhost:11111.
+3,2026-11-05T00:37:17.678+00:00,HKEX official,0700.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+3,2026-11-05T00:37:17.678+00:00,Futu OpenD,0005.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+3,2026-11-05T00:37:17.678+00:00,HKEX official,0005.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+3,2026-11-05T00:37:17.678+00:00,Futu OpenD,1299.HK,,,0.1,unavailable,Futu OpenD is not running on localhost:11111.
+3,2026-11-05T00:37:17.678+00:00,HKEX official,1299.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+3,2026-11-05T00:37:17.678+00:00,Futu OpenD,0941.HK,,,0.3,unavailable,Futu OpenD is not running on localhost:11111.
+3,2026-11-05T00:37:17.678+00:00,HKEX official,0941.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+3,2026-11-05T00:37:17.679+00:00,Futu OpenD,0388.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+3,2026-11-05T00:37:17.679+00:00,HKEX official,0388.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+4,2026-11-05T00:37:18.949+00:00,Yahoo chart 1m,0005.HK,136.39999389648438,2026-11-04T08:08:00+00:00,264.7,ok,
+4,2026-11-05T00:37:18.949+00:00,Yahoo chart 1m,0700.HK,401.6000061035156,2026-11-04T08:08:00+00:00,266.5,ok,
+4,2026-11-05T00:37:18.953+00:00,Yahoo chart 1m,1299.HK,76.94999694824219,2026-11-04T08:08:00+00:00,264.7,ok,
+4,2026-11-05T00:37:18.956+00:00,Yahoo chart 1m,0941.HK,80.5,2026-11-04T08:08:00+00:00,265.1,ok,
+4,2026-11-05T00:37:19.018+00:00,Yahoo chart 1m,0388.HK,384.0,2026-11-04T08:08:00+00:00,323.3,ok,
+4,2026-11-05T00:37:19.614+00:00,Tencent quote,1299.HK,76.95,2026/11/04 16:08:17,924.9,ok,
+4,2026-11-05T00:37:19.618+00:00,Tencent quote,0700.HK,401.6,2026/11/04 16:08:16,934.6,ok,
+4,2026-11-05T00:37:19.617+00:00,Tencent quote,0941.HK,80.5,2026/11/04 16:08:17,924.2,ok,
+4,2026-11-05T00:37:19.617+00:00,Tencent quote,0388.HK,384.0,2026/11/04 16:08:17,921.6,ok,
+4,2026-11-05T00:37:19.621+00:00,Tencent quote,0005.HK,136.4,2026/11/04 16:08:17,936.4,ok,
+4,2026-11-05T00:37:21.227+00:00,Eastmoney,1299.HK,76.95,2026-11-04T08:08:09+00:00,2536.8,ok,
+4,2026-11-05T00:37:21.500+00:00,Eastmoney,0700.HK,401.6,2026-11-04T08:08:08+00:00,2815.7,ok,
+4,2026-11-05T00:37:22.017+00:00,Eastmoney,0941.HK,80.5,2026-11-04T08:08:09+00:00,3323.6,ok,
+4,2026-11-05T00:37:22.296+00:00,Eastmoney,0388.HK,384.0,2026-11-04T08:08:08+00:00,3600.7,ok,
+4,2026-11-05T00:37:22.396+00:00,Eastmoney,0005.HK,136.4,2026-11-04T08:08:08+00:00,3710.6,ok,
+4,2026-11-05T00:37:22.397+00:00,Futu OpenD,0700.HK,,,0.6,unavailable,Futu OpenD is not running on localhost:11111.
+4,2026-11-05T00:37:22.397+00:00,HKEX official,0700.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+4,2026-11-05T00:37:22.398+00:00,Futu OpenD,0005.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+4,2026-11-05T00:37:22.398+00:00,HKEX official,0005.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+4,2026-11-05T00:37:22.398+00:00,Futu OpenD,1299.HK,,,0.1,unavailable,Futu OpenD is not running on localhost:11111.
+4,2026-11-05T00:37:22.398+00:00,HKEX official,1299.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+4,2026-11-05T00:37:22.398+00:00,Futu OpenD,0941.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+4,2026-11-05T00:37:22.398+00:00,HKEX official,0941.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+4,2026-11-05T00:37:22.398+00:00,Futu OpenD,0388.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+4,2026-11-05T00:37:22.398+00:00,HKEX official,0388.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+5,2026-11-05T00:37:23.671+00:00,Yahoo chart 1m,0005.HK,136.39999389648438,2026-11-04T08:08:00+00:00,264.9,ok,
+5,2026-11-05T00:37:23.679+00:00,Yahoo chart 1m,1299.HK,76.94999694824219,2026-11-04T08:08:00+00:00,270.2,ok,
+5,2026-11-05T00:37:23.679+00:00,Yahoo chart 1m,0941.HK,80.5,2026-11-04T08:08:00+00:00,267.1,ok,
+5,2026-11-05T00:37:23.749+00:00,Yahoo chart 1m,0388.HK,384.0,2026-11-04T08:08:00+00:00,334.8,ok,
+5,2026-11-05T00:37:23.751+00:00,Yahoo chart 1m,0700.HK,401.6000061035156,2026-11-04T08:08:00+00:00,348.3,ok,
+5,2026-11-05T00:37:24.486+00:00,Tencent quote,1299.HK,76.95,2026/11/04 16:08:17,1077.1,ok,
+5,2026-11-05T00:37:24.506+00:00,Tencent quote,0005.HK,136.4,2026/11/04 16:08:17,1099.1,ok,
+5,2026-11-05T00:37:24.506+00:00,Tencent quote,0388.HK,384.0,2026/11/04 16:08:17,1091.8,ok,
+5,2026-11-05T00:37:24.511+00:00,Tencent quote,0941.HK,80.5,2026/11/04 16:08:17,1098.0,ok,
+5,2026-11-05T00:37:24.519+00:00,Tencent quote,0700.HK,401.6,2026/11/04 16:08:16,1115.5,ok,
+5,2026-11-05T00:37:26.422+00:00,Eastmoney,0388.HK,384.0,2026-11-04T08:08:08+00:00,3007.3,ok,
+5,2026-11-05T00:37:26.450+00:00,Eastmoney,0941.HK,80.5,2026-11-04T08:08:09+00:00,3036.2,ok,
+5,2026-11-05T00:37:26.453+00:00,Eastmoney,1299.HK,76.95,2026-11-04T08:08:09+00:00,3042.3,ok,
+5,2026-11-05T00:37:26.456+00:00,Eastmoney,0700.HK,401.6,2026-11-04T08:08:08+00:00,3050.9,ok,
+5,2026-11-05T00:37:27.141+00:00,Eastmoney,0005.HK,136.4,2026-11-04T08:08:08+00:00,3732.5,ok,
+5,2026-11-05T00:37:27.142+00:00,Futu OpenD,0700.HK,,,0.7,unavailable,Futu OpenD is not running on localhost:11111.
+5,2026-11-05T00:37:27.142+00:00,HKEX official,0700.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+5,2026-11-05T00:37:27.142+00:00,Futu OpenD,0005.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+5,2026-11-05T00:37:27.142+00:00,HKEX official,0005.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+5,2026-11-05T00:37:27.142+00:00,Futu OpenD,1299.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+5,2026-11-05T00:37:27.142+00:00,HKEX official,1299.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+5,2026-11-05T00:37:27.143+00:00,Futu OpenD,0941.HK,,,0.2,unavailable,Futu OpenD is not running on localhost:11111.
+5,2026-11-05T00:37:27.143+00:00,HKEX official,0941.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.
+5,2026-11-05T00:37:27.143+00:00,Futu OpenD,0388.HK,,,0.1,unavailable,Futu OpenD is not running on localhost:11111.
+5,2026-11-05T00:37:27.143+00:00,HKEX official,0388.HK,,,0.0,manual_or_licensed,Authoritative exchange source; no anonymous public real-time quote API.

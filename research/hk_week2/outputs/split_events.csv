@@ -1,0 +1,7 @@
+ticker,event_date,split_ratio,bonus_issue_check,source
+0005.HK,,,No separate bonus-issue field is exposed by Yahoo; verify against issuer filings for execution-price work.,Yahoo Finance corporate actions
+0388.HK,,,No separate bonus-issue field is exposed by Yahoo; verify against issuer filings for execution-price work.,Yahoo Finance corporate actions
+0700.HK,2014-05-15,5.0,Yahoo classifies this as a split; bonus issues are not separately identified.,Yahoo Finance corporate actions
+0941.HK,,,No separate bonus-issue field is exposed by Yahoo; verify against issuer filings for execution-price work.,Yahoo Finance corporate actions
+1299.HK,,,No separate bonus-issue field is exposed by Yahoo; verify against issuer filings for execution-price work.,Yahoo Finance corporate actions
+^HSI,,,No separate bonus-issue field is exposed by Yahoo; verify against issuer filings for execution-price work.,Yahoo Finance corporate actions

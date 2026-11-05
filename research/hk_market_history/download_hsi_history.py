@@ -61,6 +61,21 @@ OFFICIAL_HSI_2026 = [
     (101, "HANG LUNG PPT"),
 ]
 
+# Appendix 1 of the 22 November 2024 review release.  Keep this as an exact
+# published roster rather than inferring membership from which securities have
+# price files: Hang Seng Bank (0011) has no reliable free Yahoo history after
+# its delisting, while a price file alone does not prove index membership.
+OFFICIAL_HSI_2024_CODES = {
+    5, 939, 1299, 1398, 388, 2318, 3988, 3968, 2628, 2388, 11,
+    9988, 3690, 1211, 9618, 669, 1024, 2015, 2020, 9961, 175, 27,
+    6690, 9633, 9888, 2319, 288, 66, 2313, 1928, 291, 2331, 6862,
+    9901, 322, 1044, 1876, 1929, 881, 700, 1810, 981, 9999, 992,
+    285, 883, 857, 1088, 1, 386, 2899, 267, 2382, 1378, 868, 968,
+    316, 941, 2, 6, 3, 2688, 762, 836, 1038, 16, 823, 1109, 1113,
+    688, 12, 1997, 960, 1209, 101, 2269, 1093, 1177, 6618, 1099,
+    241, 3692, 2359,
+}
+
 MANUAL_HISTORICAL = {
     "HK0011": "Hang Seng Bank",
     "HK0013": "Hutchison Whampoa",
@@ -106,7 +121,7 @@ def build_universe(reference_map: Path, requested_through: str) -> pd.DataFrame:
             "hk_code": code,
             "company_name": row.company_name,
             "historical_member_2014_2024": True,
-            "is_hsi_2024_12_31": bool(row.price_start <= cutoff <= row.price_end),
+            "is_hsi_2024_12_31": int(code[2:]) in OFFICIAL_HSI_2024_CODES,
             "historical_membership_first_observation": (
                 row.price_start.date().isoformat() if pd.notna(row.price_start) else ""
             ),
@@ -122,21 +137,20 @@ def build_universe(reference_map: Path, requested_through: str) -> pd.DataFrame:
             "hk_code": code,
             "company_name": name,
             "historical_member_2014_2024": True,
-            "is_hsi_2024_12_31": False,
+            "is_hsi_2024_12_31": int(code[2:]) in OFFICIAL_HSI_2024_CODES,
             "historical_membership_first_observation": "",
             "historical_membership_last_observation": "",
             "historical_membership_source": SECONDARY_HISTORY_URL,
         })
 
     # LINK REIT is present in the official end-2024 and 2026 HSI lists but was
-    # omitted from the secondary reconstruction. Keeping it here makes the
-    # official end-2024 count reconcile to 83.
+    # omitted from the secondary reconstruction.
     records.setdefault("HK0823", {})
     records["HK0823"].update({
         "hk_code": "HK0823",
         "company_name": "Link REIT",
         "historical_member_2014_2024": True,
-        "is_hsi_2024_12_31": True,
+        "is_hsi_2024_12_31": 823 in OFFICIAL_HSI_2024_CODES,
         "historical_membership_first_observation": "",
         "historical_membership_last_observation": "",
         "historical_membership_source": OFFICIAL_2024_URL,
@@ -148,7 +162,7 @@ def build_universe(reference_map: Path, requested_through: str) -> pd.DataFrame:
             "hk_code": code,
             "company_name": name,
             "historical_member_2014_2024": False,
-            "is_hsi_2024_12_31": False,
+            "is_hsi_2024_12_31": code in {f"HK{item:04d}" for item in OFFICIAL_HSI_2024_CODES},
             "historical_membership_first_observation": "",
             "historical_membership_last_observation": "",
             "historical_membership_source": "",

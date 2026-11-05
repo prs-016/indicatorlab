@@ -1,0 +1,7 @@
+source,anonymous_access,observed_result,median_latency_ms,role,limitation
+Yahoo Finance chart API,yes,25/25 successful,268.8,free one-minute research feed,delayed and not exchange-licensed for execution
+Tencent quote endpoint,yes,25/25 successful,908.6,fast public cross-check,unofficial undocumented endpoint
+Eastmoney quote endpoint,yes,25/25 successful,3062.7,public cross-check,slower and unofficial for HK execution
+Google Finance web page,yes,5/5 closing prices matched,not measured,independent visible close check,web page rather than supported quote API
+Futu OpenD,no,not installed locally,not applicable,licensed real-time route,requires Futu account OpenD and entitlements
+HKEX market data,no anonymous API,manual/licensed route,not applicable,authoritative exchange source,real-time redistribution and API access require a licensed product

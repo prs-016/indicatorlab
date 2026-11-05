@@ -1,0 +1,6 @@
+ticker,trade_date,yahoo_close,tencent_close,eastmoney_close,google_finance_close,max_absolute_difference,google_finance_url,status
+0700.HK,2026-11-04,401.60,401.60,401.60,401.60,0.00,https://www.google.com/finance/quote/0700:HKG,pass
+0005.HK,2026-11-04,136.40,136.40,136.40,136.40,0.00,https://www.google.com/finance/quote/0005:HKG,pass
+1299.HK,2026-11-04,76.95,76.95,76.95,76.95,0.00,https://www.google.com/finance/quote/1299:HKG,pass
+0941.HK,2026-11-04,80.50,80.50,80.50,80.50,0.00,https://www.google.com/finance/quote/0941:HKG,pass
+0388.HK,2026-11-04,384.00,384.00,384.00,384.00,0.00,https://www.google.com/finance/quote/0388:HKG,pass

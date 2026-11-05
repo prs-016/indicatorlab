@@ -1,0 +1,10 @@
+{
+  "current_constituents": 95,
+  "membership_intervals": 101,
+  "review_count_checks_passed": 19,
+  "review_count_checks_total": 19,
+  "latest_market_date": "2026-11-04",
+  "downloaded_price_files_including_benchmark": 111,
+  "symbols_with_ohlc_consistency_warnings": 91,
+  "source_warning": "Yahoo contains OHLC consistency warnings; preserved and counted rather than repaired."
+}

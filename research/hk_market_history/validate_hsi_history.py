@@ -87,7 +87,14 @@ def main() -> None:
         "current_2026_members_95": int(universe["is_hsi_2026_09_07"].sum()) == 95,
         "downloaded_equities_110": len(downloaded) == 110,
         "unavailable_set_expected": unavailable == EXPECTED_UNAVAILABLE,
-        "all_end_2024_members_downloaded": end_2024["status"].eq("downloaded").all(),
+        "end_2024_members_82_downloaded_one_documented_unavailable": (
+            int(end_2024["status"].eq("downloaded").sum()) == 82
+            and dict(
+                end_2024.loc[
+                    end_2024["status"].ne("downloaded"), ["ticker", "status"]
+                ].itertuples(index=False, name=None)
+            ) == {"0011.HK": "no_reliable_original_history"}
+        ),
         "all_current_members_downloaded": current["status"].eq("downloaded").all(),
         "benchmark_starts_1986_12_31": benchmark.first_date == "1986-12-31",
         "benchmark_within_7_calendar_days_of_request": (

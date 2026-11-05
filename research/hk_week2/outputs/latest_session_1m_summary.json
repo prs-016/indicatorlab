@@ -1,0 +1,62 @@
+[
+  {
+    "ticker": "0700.HK",
+    "session_date": "2026-11-04",
+    "first_bar_hkt": "2026-11-04T09:30:00+08:00",
+    "last_bar_hkt": "2026-11-04T16:08:00+08:00",
+    "bar_count": 331,
+    "non_one_minute_gaps_including_lunch": 2,
+    "first_price": 394.20001220703125,
+    "last_price": 401.6000061035156,
+    "source": "Yahoo Finance chart API",
+    "retrieved_at_utc": "2026-11-05T00:37:41.564885+00:00"
+  },
+  {
+    "ticker": "0005.HK",
+    "session_date": "2026-11-04",
+    "first_bar_hkt": "2026-11-04T09:30:00+08:00",
+    "last_bar_hkt": "2026-11-04T16:08:00+08:00",
+    "bar_count": 331,
+    "non_one_minute_gaps_including_lunch": 2,
+    "first_price": 133.1999969482422,
+    "last_price": 136.39999389648438,
+    "source": "Yahoo Finance chart API",
+    "retrieved_at_utc": "2026-11-05T00:37:41.808521+00:00"
+  },
+  {
+    "ticker": "1299.HK",
+    "session_date": "2026-11-04",
+    "first_bar_hkt": "2026-11-04T09:30:00+08:00",
+    "last_bar_hkt": "2026-11-04T16:08:00+08:00",
+    "bar_count": 320,
+    "non_one_minute_gaps_including_lunch": 11,
+    "first_price": 75.8499984741211,
+    "last_price": 76.94999694824219,
+    "source": "Yahoo Finance chart API",
+    "retrieved_at_utc": "2026-11-05T00:37:41.943833+00:00"
+  },
+  {
+    "ticker": "0941.HK",
+    "session_date": "2026-11-04",
+    "first_bar_hkt": "2026-11-04T09:30:00+08:00",
+    "last_bar_hkt": "2026-11-04T16:08:00+08:00",
+    "bar_count": 331,
+    "non_one_minute_gaps_including_lunch": 2,
+    "first_price": 80.5999984741211,
+    "last_price": 80.5,
+    "source": "Yahoo Finance chart API",
+    "retrieved_at_utc": "2026-11-05T00:37:42.077337+00:00"
+  },
+  {
+    "ticker": "0388.HK",
+    "session_date": "2026-11-04",
+    "first_bar_hkt": "2026-11-04T09:30:00+08:00",
+    "last_bar_hkt": "2026-11-04T16:08:00+08:00",
+    "bar_count": 329,
+    "non_one_minute_gaps_including_lunch": 4,
+    "first_price": 376.3999938964844,
+    "last_price": 384.0,
+    "source": "Yahoo Finance chart API",
+    "retrieved_at_utc": "2026-11-05T00:37:42.333230+00:00"
+  }
+]
