@@ -136,6 +136,8 @@ Indian and Hong Kong stocks can be added as a config change. For the DS3 team an
 │   ├── wiki_edits.py      # revision history, weekly edits, reverts, summary keyword tags
 │   ├── wiki_prices.py     # weekly returns, returns 1-4 weeks after, abnormal returns, bootstrap CIs
 │   ├── wiki_pipeline.py   # pulls + caches everything, writes the shared weekly table
+│   ├── wiki_titles.py     # checks every configured Wikipedia title against Wikipedia and Wikidata
+│   ├── wiki_sentiment.py  # FinBERT sentiment of the article text added each week, returns tests
 │   ├── wiki_analysis.py   # spike-vs-normal returns, edit timing, tags, tone, last-3-weeks table
 │   ├── wiki_strategy.py   # Wikipedia-only strategy with random-portfolio baseline
 │   ├── trends_compare.py  # Google Trends alternatives (GDELT, trendspy) vs Wikipedia views
@@ -146,6 +148,7 @@ Indian and Hong Kong stocks can be added as a config change. For the DS3 team an
 │   ├── raw/wikipedia/  # views_{research,recent}/, revisions_{research,recent}/<lang>/, prices/
 │   ├── processed/wikipedia/
 │   └── shared/        # attention_weekly_<source>_{research,recent}.csv in the team format
+│                      # (+ attention_weekly_wikipedia.csv, both periods, read by src/reddit)
 └── results/           # git-ignored outputs (tables, strategy runs)
 ```
 
@@ -165,6 +168,9 @@ cp .env.example .env   # then fill in your own local values — never commit .en
 ## Running things
 
 - Pull/refresh Wikipedia data and rebuild the weekly tables: `python -m src.wiki_pipeline`
+- Check the configured Wikipedia titles (run after adding a stock or language): `python -m src.wiki_titles`
+- Edit sentiment (FinBERT; the first run downloads the model and one diff per stock-week, then caches):
+  `python -m src.wiki_sentiment`, or `python -m src.wiki_sentiment analyse` for the returns tests only
 - Wikipedia-only strategy (train/test, 200 random portfolios): `python -m src.wiki_strategy`
 - Results notebook: `jupyter lab notebooks/wikipedia.ipynb` (Restart and Run All; needs the pipeline output)
 - API: `uvicorn src.api.main:app --reload --port 8000`, docs at http://localhost:8000/docs
@@ -241,6 +247,10 @@ task done. Do this even if the person didn't explicitly ask you to.
 - Week 2 tasks: `Indicator_Lab_Week_2_Tasks.pdf` (not in git). Wikipedia results: `docs/wikipedia/week2_report.md`.
 - Page views: Wikimedia REST pageviews API (`user` agent, from 2015-07-01). An article's views include
   every redirect to it, so renamed articles keep their history.
-- Known data caveat: `Meta_Platforms` only became the company's own article in late 2019; before that,
-  Facebook's company attention sat on the `Facebook` article. `Alphabet_Inc.` gets far fewer views than `Google`.
+- Matching stocks to articles (`config.yaml`, `wikipedia: {lang: title or [titles]}`): use the company's
+  own article, never a product. A language may list several company articles; they are summed (GOOGL:
+  `Alphabet_Inc.` + `Google`, the operating company with ~5x the views). Each title counts from the first
+  full week after its first revision of `min_article_bytes`, so redirect years are skipped: META's data
+  starts in late Nov 2019, when `Facebook, Inc.` stopped redirecting to the `Facebook` product article.
+  `python -m src.wiki_titles` fails on a missing, redirect or disambiguation title.
 - Reddit pipeline (Joshua): `docs/reddit/README.md` on the `reddit` branch.

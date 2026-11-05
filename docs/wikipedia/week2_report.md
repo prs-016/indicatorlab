@@ -1,28 +1,51 @@
 # Wikipedia attention: Week 2 report (James)
 
-Run date: 2026-10-30. Everything below is produced by `python -m src.wiki_pipeline` and
+Run date: 2026-11-04 (company-to-article matching refined; see 1b). Everything below is produced by `python -m src.wiki_pipeline` and
 `notebooks/wikipedia.ipynb` (Restart and Run All). Research numbers use data before 2025-10-01 only.
 
 ## 1. Re-pull outside the holdout
 
 | | Research | Recent (dashboard and spike check only) |
 |---|---|---|
-| Daily views | 2015-07-01 to 2025-09-30 | 2025-10-01 to 2026-10-25 |
+| Daily views | 2015-07-01 to 2025-09-30 | 2025-10-01 to 2026-11-01 |
 | Files | `data/raw/wikipedia/views_research/` | `data/raw/wikipedia/views_recent/` |
-| Weekly table | `data/shared/attention_weekly_wikipedia_research.csv` (534 weeks x 51 stocks x 2 sources) | `..._recent.csv` (56 weeks) |
+| Weekly table | `data/shared/attention_weekly_wikipedia_research.csv` (534 weeks x 51 stocks x 2 sources) | `..._recent.csv` (57 weeks) |
 
 - 51 stocks: the 10 tracked ones plus the PDF's 50-stock strategy universe. All have every day from
-  2015-07-01, with no zero-view days.
+  2015-07-01, with no zero-view days, except META (from 2019-11-25, see 1b).
+- `data/shared/attention_weekly_wikipedia.csv` has both periods in one file, for Joshua's `src/reddit` code.
 - **Article views include every redirect to the article.** Page views are counted under the title a
   reader asked for, so a renamed article's old views sit under the old title. Without this, Tesla
   (`Tesla_Motors` until 2017) and Meta (`Facebook,_Inc.` until Oct 2021) would show almost no views
   before their renames.
-- **Caveat, META:** the company only got its own article in late 2019. Before that, Facebook's company
-  attention sat on the `Facebook` article, which also covers the product. META's views are 0.02-0.2M a
-  year in 2015-2019 versus 2.5-8.4M a year in 2020-2024. Its pre-2020 spikes (57 in total, the most of any stock)
-  are mostly noise. Treat META as starting in 2020.
-- **Caveat, GOOGL:** `Alphabet_Inc.` gets about a quarter of the views of `Google` (e.g. 39k vs 152k in
-  one 2019 week). Worth agreeing with Joshua whether `Google` (or both) should be the title in `config.yaml`.
+- META and GOOGL are matched differently from the other stocks; see section 1b.
+
+## 1b. Matching stocks to articles
+
+`python -m src.wiki_titles` checks every title in `config.yaml` against Wikipedia and Wikidata. All 52
+titles pass: each is the article itself (not a redirect or a disambiguation page), and each Wikidata item
+lists the stock's ticker, except Netflix's, which has no ticker field.
+
+- **META starts in late Nov 2019.** Until then `Facebook, Inc.` (renamed `Meta Platforms` in Oct 2021) was an
+  80-byte redirect to the `Facebook` product article. So META's 2015-2019 "views" (150-600 a day vs
+  5,000-23,000 after) and edits were redirect noise, and they produced 57 spikes, the most of any stock.
+  A title now counts from the first full week after its first revision of at least
+  `min_article_bytes` (400). Redirects are under 200 bytes and a new stub is about 400. META's series
+  starts on 2019-11-25 (the split from `Facebook` was drafted on Sunday Nov 24). The `Facebook` product article is not added: it is the product, as
+  `iPhone` would be for Apple.
+- **GOOGL = `Alphabet_Inc.` + `Google`.** `Google` (Google LLC, the operating company) gets about 5x
+  Alphabet's views (26k vs 6k a day in 2019) and existed before Alphabet (created 10 Aug 2015). Its
+  Wikidata item lists GOOGL/GOOG, and Joshua's Reddit rules already match "Google" for GOOGL. Weekly
+  changes of the two articles' views correlate only 0.22-0.27, so Alphabet alone missed most of
+  GOOGL's attention. Views, edits and edit sentiment are now summed over both, each from its own start.
+  `config.yaml` titles can be a list per language for this.
+- **Redirects stay in.** Old names carry most of some stocks' views: `The_Home_Depot` 82% of HD's,
+  `Cisco_Systems` 65% of CSCO's, `Advanced_Micro_Devices` 60% of AMD's, `Salesforce.com` 52% of CRM's.
+  Across all 2,145 redirects, the largest that are not a name of the company are merged product or brand
+  pages, each at most 2.2% of a stock's views (e.g. `Goldman_Sachs_controversies`, `PediaSure` for ABT,
+  `Nvidia_Shield`). So no exclusion list is needed.
+- **Vandal blanking is ignored.** 29 of the 51 articles were blanked at least once (size under 400 bytes
+  for a few minutes). Only the first article-sized revision sets the start, so these keep their full history.
 
 ## 2. `flag_spikes` fixed (look-ahead)
 
@@ -33,7 +56,7 @@ Run date: 2026-10-30. Everything below is produced by `python -m src.wiki_pipeli
 - `test_changing_future_weeks_leaves_past_flags_unchanged` changes only the weeks after t and checks that
   baseline, abnormal, rz and spike up to t are identical. It passes, as do the three week-1 tests. The
   log-2 test now passes `offset=0`, because the shared rule adds 1.
-- Research flags: 2.7% of stock-weeks spike on views and 2.7% on edits.
+- Research flags: 2.6% of stock-weeks spike on views and 2.7% on edits.
 
 ## 3. Returns after a spike
 
@@ -43,11 +66,11 @@ neighbouring weeks overlap. Abnormal = return minus 52-week beta x SPY.
 
 | Universe | Spike source | k=1 | k=2 | k=3 | k=4 |
 |---|---|---|---|---|---|
-| 10 tracked (223 spikes) | views, raw | +0.50 [-0.29, 1.26] | +0.55 [-0.56, 1.56] | +0.25 [-1.16, 1.75] | +0.15 [-1.85, 2.17] |
-| 10 tracked | views, abnormal | +0.16 [-0.46, 0.81] | +0.17 [-0.84, 1.15] | -0.14 [-1.33, 1.10] | -0.56 [-2.19, 1.05] |
-| 51 stocks (734 spikes) | views, raw | +0.27 [-0.09, 0.63] | +0.42 [-0.08, 0.95] | +0.61 [-0.03, 1.32] | +0.66 [-0.27, 1.57] |
-| 51 stocks | views, abnormal | +0.13 [-0.15, 0.43] | +0.09 [-0.34, 0.51] | +0.09 [-0.43, 0.67] | -0.04 [-0.86, 0.69] |
-| 51 stocks (735 spikes) | edits, abnormal | +0.18 [-0.12, 0.46] | +0.28 [-0.15, 0.69] | +0.32 [-0.27, 0.92] | +0.56 [-0.16, 1.25] |
+| 10 tracked (191 spikes) | views, raw | +0.49 [-0.41, 1.38] | +0.73 [-0.49, 1.91] | +0.46 [-1.09, 2.15] | +0.48 [-1.73, 2.77] |
+| 10 tracked | views, abnormal | +0.13 [-0.60, 0.89] | +0.29 [-0.79, 1.44] | +0.02 [-1.27, 1.53] | -0.27 [-2.23, 1.56] |
+| 51 stocks (702 spikes) | views, raw | +0.24 [-0.13, 0.62] | +0.44 [-0.09, 0.98] | +0.66 [-0.04, 1.40] | +0.73 [-0.21, 1.65] |
+| 51 stocks | views, abnormal | +0.11 [-0.18, 0.42] | +0.10 [-0.34, 0.54] | +0.12 [-0.43, 0.70] | +0.03 [-0.78, 0.81] |
+| 51 stocks (730 spikes) | edits, abnormal | +0.19 [-0.11, 0.47] | +0.26 [-0.15, 0.66] | +0.30 [-0.31, 0.89] | +0.48 [-0.18, 1.21] |
 
 **Finding:** no reliable difference. Spike weeks are followed by slightly higher raw returns, but none
 of the 24 intervals (raw and abnormal, views and edits, k = 1-4) excludes zero. On abnormal returns,
@@ -60,10 +83,10 @@ Week t's views end on Sunday, after week t's last close, so `ret_next1` starts a
 Weekly per company: edits, distinct editors, bytes added/removed, reverts (`revert|rv|rvv|undid|undo`,
 whole words) and keyword tags (`config.yaml` `wikipedia.edit_tags`). Tables: `data/processed/wikipedia/weekly_edits_*.csv`.
 
-- **Volume:** TSLA (15 edits a week) and NFLX (14) are the most edited. AMD (2.9) and META (3.1) are the least.
-  About 14% of edits are reverts (12,466 of 88,352 across 51 stocks).
-- **Tags in view-spike weeks vs other weeks (lift):** layoff 5.0x, CEO/executive 4.0x, acquisition/merger
-  3.5x, stock/shares 2.8x, legal 2.6x, earnings 2.5x, product/launch 2.3x. Edits overall are 2.3x higher.
+- **Volume:** TSLA (15 edits a week) and NFLX (14) are the most edited of the tracked stocks. AMD (2.9) and MSFT
+  (3.7) are the least. About 14% of edits are reverts (12,738 of 90,825 across 51 stocks).
+- **Tags in view-spike weeks vs other weeks (lift):** layoff 4.7x, CEO/executive 4.0x, acquisition/merger
+  3.4x, stock/shares 2.6x, legal 2.5x, product/launch 2.4x, earnings 2.4x. Edits overall are 2.3x higher.
   Tags tell you what happened, e.g. TSLA has many legal (0.37 a week) and CEO (0.29) edits.
 - **Tone:** VADER calls 73% of non-empty summaries neutral, and 20% of summaries are empty. As the PDF
   expected, summaries are short and dry, and **the keyword tags carry far more information than tone**.
@@ -72,17 +95,47 @@ whole words) and keyword tags (`config.yaml` `wikipedia.edit_tags`). Tables: `da
 
   | Event | Signal | week t-2 | t-1 | t | t+1 | t+2 |
   |---|---|---|---|---|---|---|
-  | views spike (51 stocks) | edits spike | 1.35 | **2.41** | **3.76** | 1.06 | 0.96 |
-  | big price move (top 5% abs. abnormal return) | edits spike | 1.11 | 1.06 | **1.72** | 1.11 | 1.03 |
-  | big price move | views spike | 1.22 | 1.43 | **3.10** | 1.67 | 1.38 |
+  | views spike (51 stocks) | edits spike | 1.47 | **2.46** | **3.92** | 1.21 | 0.95 |
+  | big price move (top 5% abs. abnormal return) | edits spike | 1.09 | 1.09 | **1.80** | 1.14 | 1.04 |
+  | big price move | views spike | 1.22 | 1.57 | **3.14** | 1.77 | 1.44 |
 
   Edit bursts mostly come **in the same week** as view spikes and big price moves, not after them. They
-  also come noticeably often **the week before** a view spike (2.4x), but not the week before a price
-  move. Day by day (198 view-spike weeks with edits within 7 days), the busiest edit day falls a median
+  also come noticeably often **the week before** a view spike (2.5x), but not the week before a price
+  move. Day by day (190 view-spike weeks with edits within 7 days), the busiest edit day falls a median
   of **0 days** from the busiest views day, spread evenly from -7 to +7. Days tied for the most edits
   count as their mean day; a first-day rule had wrongly suggested that edits come half a day earlier.
   So edits are a "something happened" signal at the same speed as views. They show no sign of running
   ahead of prices.
+
+## 5b. Sentiment of the text editors add (FinBERT)
+
+Edit summaries say little, so this scores the article text itself (`src/wiki_sentiment.py`). For each
+stock-week it takes the net change from the revision live at Monday 00:00 to the one live at the end of
+the week (so vandalism reverted within the week drops out). It keeps the new or changed prose sentences
+(5+ words; no infobox, table or moved paragraphs), and FinBERT (`ProsusAI/finbert`, trained on financial
+news) labels each one positive, negative or neutral. A week is "negative" when it adds more negative than
+positive sentences. The data covers the 10 tracked stocks (GOOGL: both articles; META from Nov 2019)
+in the research period.
+
+- **Volume:** 4,553 stock-weeks had edits and 3,628 added at least one sentence: 32,672 sentences in all.
+  69% are neutral, 16% negative and 14% positive. 1,073 weeks were mostly negative and 1,069 mostly positive.
+- **Much of the "new" text is old history.** 28% of sentences name only years at least 2 years before the
+  week, because editors re-add or rewrite history sections. These are a little less negative
+  (14.5% vs 17.2%).
+- **Returns (abnormal, in %, 95% block-bootstrap CIs):**
+
+  | Comparison | same week | k=1 | k=2 | k=3 | k=4 |
+  |---|---|---|---|---|---|
+  | negative-edit weeks vs the rest (1,073 vs 2,555) | +0.00 [-0.32, 0.34] | -0.10 [-0.40, 0.22] | -0.22 [-0.66, 0.21] | -0.05 [-0.69, 0.52] | +0.20 [-0.48, 0.88] |
+  | positive-edit weeks vs the rest (1,069 vs 2,559) | -0.03 [-0.37, 0.29] | +0.04 [-0.31, 0.38] | -0.10 [-0.62, 0.39] | -0.10 [-0.73, 0.50] | -0.25 [-1.00, 0.40] |
+  | view-spike weeks: negative vs positive edits (67 vs 43) | -1.49 [-4.00, 0.90] | +0.82 [-1.18, 2.81] | +1.43 [-1.32, 4.19] | -0.28 [-3.39, 2.73] | +0.28 [-3.25, 3.85] |
+
+**Finding:** edit sentiment carries no return signal. All 15 intervals include zero, and the correlation
+of a week's net tone with its abnormal return is 0.01 (same week) and -0.01 (next week). The only hint is
+in view-spike weeks: when editors add negative text to a stock everyone is reading, it did 1.5% worse that
+week than when they added positive text. That gap is too uncertain (67 vs 43 weeks) to use, and it is a
+reaction, not a prediction. Wikipedia text follows the news, and old history drowns out what is new.
+`results/wikipedia/edit_sentiment_{returns,summary}.csv`; rerun with `python -m src.wiki_sentiment analyse`.
 
 ## 6. Last-3-weeks spike check (looking only)
 
@@ -144,10 +197,10 @@ Rules were fixed before the first run (`src/wiki_strategy.py`):
 
 | Period | Trades | CAGR | Sharpe | Max DD | SPY Sharpe | Equal-weight Sharpe | Random median Sharpe | % random beaten |
 |---|---|---|---|---|---|---|---|---|
-| Train 2016-2019 | 54 | -0.7% | -0.32 | -5.4% | 1.11 | 1.56 | 0.37 | 2% |
-| Test 2020-Sep 2025 | 92 | 3.3% | 0.94 | -5.7% | 0.78 | 0.96 | 0.41 | 96% |
+| Train 2016-2019 | 51 | -0.8% | -0.38 | -5.5% | 1.11 | 1.56 | 0.32 | 2% |
+| Test 2020-Sep 2025 | 88 | 3.4% | 1.02 | -5.9% | 0.78 | 0.96 | 0.38 | 98% |
 
-**Decision: Keep on watch.** It beat 96% of random portfolios in test and beat SPY's Sharpe there, but
+**Decision: Keep on watch.** It beat 98% of random portfolios in test and beat SPY's Sharpe there, but
 beat only 2% in train. That is the same pattern as the PDF's tgqm example, so the test result may be
 specific to 2020-2025. The strategy is in cash most of the time (a few positions at 10% each), so its
 CAGR is small even when its Sharpe is good. Next: run each signal alone and see what the edit-burst
@@ -160,12 +213,13 @@ signal (views up week over week, or edits at least 2x the median).
 ## Notes for Joshua
 
 1. My weekly rows are in `data/shared/attention_weekly_wikipedia_{research,recent}.csv`, with one row
-   per (week, ticker, source), where source is `wikipedia_views` or `wikipedia_edits`. Your
-   `spike_check_recent.py` reads `attention_weekly_wikipedia.csv` (one file). Point it at the `_recent` file.
+   per (week, ticker, source), where source is `wikipedia_views` or `wikipedia_edits`. The pipeline also
+   writes `attention_weekly_wikipedia.csv` (both periods), the file your `spike_check_recent.py` and
+   `strategy_product_buzz.py` read, so they work unchanged.
 2. `strategy_product_buzz.weekly_features` joins `views` and `edits` from one row per (ticker, week). With
    two sources per week, collapse them first:
    `wiki.groupby(["ticker", "week"])[["views", "edits"]].first()`.
 3. `flag_spikes` in `src/wiki_attention.py` is the same rule as your `spike_rule.flag_spikes`. Both can be
    replaced by the shared `spikes.py` once it is on `main`.
-4. `src/api/main.py` includes only my router on this branch. When both PRs land, it needs both
-   `include_router` lines.
+4. In `config.yaml`, GOOGL's Wikipedia title is now a list (`[Alphabet_Inc., Google]`). Read titles with
+   `wiki_pipeline.article_titles`, not as a string. The merge with `main` keeps both API routers.

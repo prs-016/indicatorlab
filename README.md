@@ -12,14 +12,18 @@ side, returns after spikes, edit-summary tags, a Wikipedia-only strategy and API
 ```bash
 cp .env.example .env              # set WIKIMEDIA_CONTACT to your email (Wikimedia requires a contact)
 python -m src.wiki_pipeline       # pull views, edits and prices (cached), write data/shared/ tables
+python -m src.wiki_titles         # check every configured title against Wikipedia and Wikidata
 python -m src.wiki_strategy       # Wikipedia-only strategy vs SPY, equal weight and 200 random portfolios
+python -m src.wiki_sentiment      # FinBERT sentiment of the text added to each article, returns tests
 jupyter lab notebooks/wikipedia.ipynb   # Week 2 results (Restart and Run All)
 uvicorn src.api.main:app --reload # /tickers, /attention, /price
 pytest                            # tests, no network needed
 ```
 
 - **Source:** Wikimedia pageviews API (people only, from Jul 2015; each article counted with all its
-  redirects) and the MediaWiki revisions API (edit summaries).
+  redirects) and the MediaWiki revisions and compare APIs (edit summaries, added text).
+- **Matching:** each stock's company article(s) in `config.yaml`, counted from when the page became an
+  article (META from late Nov 2019; GOOGL = `Alphabet_Inc.` + `Google`).
 - **Spike rule:** baseline = median of the previous 8 weeks; abnormal = log((views + 1) / (baseline + 1));
   spike if views are at least 1.5x the baseline and the robust z-score of abnormal, against the median and
   MAD of *earlier* weeks only (26 needed), is at least 2. Weeks are labelled by their Monday.
