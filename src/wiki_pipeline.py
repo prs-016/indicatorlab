@@ -5,10 +5,12 @@
 Research data (before the holdout, config `holdout_start`) and recent data are stored in separate
 files; the recent files are for the dashboard and the last-3-weeks spike check only.
 
-  data/raw/wikipedia/views_{research,recent}/<ticker>.csv      daily views (article + redirects)
+  data/raw/wikipedia/views_{research,recent}/<ticker>.csv      daily views: the stock's total, then each article
   data/raw/wikipedia/revisions_{research,recent}/<lang>/<ticker>.csv  revisions, edit summaries
+                                                   (a stock's 2nd+ article in a language: <ticker>__<title>.csv)
   data/raw/wikipedia/prices/daily_close_<market>.csv           Yahoo adjusted closes
   data/shared/attention_weekly_wikipedia_{research,recent}.csv  shared weekly table (team format)
+  data/shared/attention_weekly_wikipedia.csv                   both periods together, for the Reddit code
   data/processed/wikipedia/weekly_edits_{research,recent}.csv  edits, editors, bytes, reverts, tags
   data/processed/wikipedia/weekly_prices.csv                   returns 1-4 weeks after, abnormal returns
 """
@@ -20,7 +22,7 @@ import numpy as np
 import pandas as pd
 
 from src import config
-from src.wiki_attention import article_views, flag_spikes, weekly
+from src.wiki_attention import article_views, flag_spikes, week_start, weekly
 from src.wiki_edits import edit_table, load_revisions, weekly_edits
 from src.wiki_prices import weekly_panel
 
@@ -55,8 +57,8 @@ def windows(end: pd.Timestamp | None = None) -> dict[str, tuple[pd.Timestamp, pd
             "recent": (holdout, end or last_complete_sunday())}
 
 
-def universe(market: str = "US", strategy: bool = True) -> dict[str, dict[str, str]]:
-    """Ticker -> {language: article title}: the tracked stocks, plus the strategy universe if asked."""
+def universe(market: str = "US", strategy: bool = True) -> dict[str, dict[str, str | list[str]]]:
+    """Ticker -> {language: article title(s)}: the tracked stocks, plus the strategy universe if asked."""
     out = {t: dict(cfg["wikipedia"]) for t, cfg in config.stocks(market).items()}
     if strategy:
         extra = config.load()["wikipedia"]["strategy_universe"].get(market) or {}
@@ -64,43 +66,106 @@ def universe(market: str = "US", strategy: bool = True) -> dict[str, dict[str, s
     return out
 
 
+def article_titles(titles: dict[str, str | list[str]]) -> list[tuple[str, str]]:
+    """(language, title) pairs of one stock; a language may list several articles (GOOGL: Alphabet and Google)."""
+    return [(lang, t) for lang, ts in titles.items() for t in ([ts] if isinstance(ts, str) else ts)]
+
+
+def title_key(lang: str, title: str) -> str:
+    """Column name of one article in the views cache and key of `article_starts`, e.g. 'en:Google'."""
+    return f"{lang}:{title}"
+
+
+def cache_stem(ticker: str, titles: dict, lang: str, title: str) -> str:
+    """Revision and diff cache name: the ticker for a stock's first article in a language, else ticker__title."""
+    first = next(t for lg, t in article_titles(titles) if lg == lang)
+    return ticker if title == first else f"{ticker}__{title}"
+
+
+def article_start(revs: pd.DataFrame, min_bytes: int | None = None) -> pd.Timestamp:
+    """Monday of the first full week in which a page was an article (a revision of >= `min_bytes`).
+
+    Before that the title was missing or a redirect (Meta_Platforms redirected to Facebook until
+    Nov 2019), so its views and edits were not the company article's. Only the first article-sized
+    revision counts: vandals often blank a page for a few minutes, which does not end it.
+    """
+    min_bytes = min_bytes or config.load()["wikipedia"]["min_article_bytes"]
+    big = revs.loc[revs["size"] >= min_bytes, "timestamp"]
+    if big.empty:
+        raise ValueError("the page was never an article")
+    monday = week_start(pd.DatetimeIndex([big.min()]))[0]
+    return monday if big.min() == monday else monday + pd.Timedelta(days=7)
+
+
 def _cached_end(f: Path) -> pd.Timestamp:
     """Last date in a cached date-indexed CSV."""
     return pd.read_csv(f, index_col=0, parse_dates=True).index.max()
 
 
-def load_views(ticker: str, titles: dict[str, str], win: dict, raw: Path = RAW) -> pd.Series:
-    """Daily views of one stock's articles summed over languages, cached per period.
+def load_views(ticker: str, titles: dict, win: dict, starts: dict[str, pd.Timestamp] | None = None,
+               raw: Path = RAW) -> pd.Series:
+    """Daily views of one stock: its articles summed, each from its `starts` week (see `article_start`).
 
-    Both periods are pulled together (one request per title) when either cache file is missing or
-    the recent file ends before the requested end (so a weekly rerun picks up the new weeks).
+    The cache keeps each article's own views next to the total, so the total is recomputed from them.
+    Days before every article's start are dropped. Both periods are pulled together (one request per
+    title) when a cache file is missing, lists other articles than the config, or the recent file ends
+    before the requested end (so a weekly rerun picks up the new weeks).
     """
+    keys = [title_key(lang, t) for lang, t in article_titles(titles)]
     files = {p: raw / f"views_{p}" / f"{ticker}.csv" for p in PERIODS}
-    if not all(f.exists() for f in files.values()) or _cached_end(files["recent"]) < win["recent"][1]:
+    cached = {p: pd.read_csv(f, index_col=0, parse_dates=True) for p, f in files.items() if f.exists()}
+    if len(keys) == 1:   # a cache written before per-article columns: its one column is that article
+        cached = {p: c if keys[0] in c else c.iloc[:, :1].set_axis(keys, axis=1) for p, c in cached.items()}
+    if (len(cached) < len(PERIODS) or any(not set(keys) <= set(c) for c in cached.values())
+            or cached["recent"].index.max() < win["recent"][1]):
         start, end = win["research"][0], win["recent"][1]
-        s = sum(article_views(title, start, end, lang) for lang, title in titles.items()).rename(ticker)
-        for p, (a, b) in win.items():
-            files[p].parent.mkdir(parents=True, exist_ok=True)
-            s.loc[a:b].rename_axis("date").to_csv(files[p])
-    return pd.concat([pd.read_csv(files[p], index_col=0, parse_dates=True).iloc[:, 0] for p in PERIODS])
+        raw_views = pd.DataFrame({title_key(lang, t): article_views(t, start, end, lang)
+                                  for lang, t in article_titles(titles)})
+        cached = {p: raw_views.loc[a:b] for p, (a, b) in win.items()}
+    starts = starts or {}
+    out = []
+    for p, c in cached.items():
+        c = c[keys]
+        total = pd.concat([c[k].where(c.index >= starts.get(k, c.index.min())) for k in keys], axis=1)
+        c.insert(0, ticker, total.sum(axis=1, min_count=1))
+        files[p].parent.mkdir(parents=True, exist_ok=True)
+        c.rename_axis("date").to_csv(files[p])
+        out.append(c[ticker].dropna())
+    return pd.concat(out)
 
 
-def load_edits(ticker: str, titles: dict[str, str], win: dict, raw: Path = RAW) -> pd.DataFrame:
-    """Revisions of one stock's articles across both periods, each period cached in its own file.
+def title_revisions(ticker: str, titles: dict, win: dict, raw: Path = RAW) -> pd.DataFrame:
+    """Revisions of each of one stock's articles across both periods (`lang`, `title`, `key` columns).
 
-    The recent cache is pulled again when the recent window has grown since it was written.
+    Each period is cached in its own file; the recent one is pulled again when the recent window has
+    grown since it was written. `before_start` marks the revision live when the research window opens.
     """
     revs = []
     for p, (a, b) in win.items():
-        for lang, title in titles.items():
-            f = raw / f"revisions_{p}" / lang / f"{ticker}.csv"
+        for lang, title in article_titles(titles):
+            stem = cache_stem(ticker, titles, lang, title)
+            f = raw / f"revisions_{p}" / lang / f"{stem}.csv"
             if p == "recent" and f.exists() and _views_behind(raw, ticker, b):
                 f.unlink()
-            revs.append(load_revisions(ticker, title, a, b, raw / f"revisions_{p}" / lang, lang).assign(lang=lang))
+            revs.append(load_revisions(stem, title, a, b, raw / f"revisions_{p}" / lang, lang)
+                        .assign(lang=lang, title=title, key=title_key(lang, title)))
     # the earlier period's last revision is the later period's `before_start`; keep one copy
-    df = pd.concat(revs).drop_duplicates(["lang", "revid"]).sort_values("timestamp")
+    df = pd.concat(revs).drop_duplicates(["key", "revid"]).sort_values("timestamp")
     df["before_start"] = df["timestamp"] < win["research"][0]
-    return pd.concat([edit_table(g) for _, g in df.groupby("lang")]).sort_values("timestamp")
+    return df
+
+
+def article_starts(revs: pd.DataFrame) -> dict[str, pd.Timestamp]:
+    """`title_key` -> first full week as an article, for the revisions of `title_revisions`."""
+    return {k: article_start(g) for k, g in revs.groupby("key")}
+
+
+def load_edits(ticker: str, titles: dict, win: dict, raw: Path = RAW) -> pd.DataFrame:
+    """Edits of one stock's articles across both periods, each article from its first week as an article."""
+    revs = title_revisions(ticker, titles, win, raw)
+    starts = article_starts(revs)
+    e = pd.concat([edit_table(g) for _, g in revs.groupby("key")])
+    return e[e["timestamp"] >= e["key"].map(starts)].sort_values("timestamp")
 
 
 def _views_behind(raw: Path, ticker: str, end: pd.Timestamp) -> bool:
@@ -151,7 +216,8 @@ def build(market: str = "US", end: pd.Timestamp | None = None) -> None:
     att, edits_all = [], []
     for ticker, titles in universe(market).items():
         log.info("%s: views and edits", ticker)
-        wv = weekly(load_views(ticker, titles, win))
+        starts = article_starts(title_revisions(ticker, titles, win))
+        wv = weekly(load_views(ticker, titles, win, starts))
         e = load_edits(ticker, titles, win)
         we = weekly_edits(e, wv.index)
         att.append(attention_rows(wv, we["edits"], ticker, market))
@@ -161,6 +227,9 @@ def build(market: str = "US", end: pd.Timestamp | None = None) -> None:
             f = shared_path(p) if name == "attention" else PROCESSED / f"weekly_edits_{p}.csv"
             f.parent.mkdir(parents=True, exist_ok=True)
             part.assign(week=part["week"].dt.strftime("%Y-%m-%d")).to_csv(f, index=False)
+        if name == "attention":   # src/reddit reads one file; its own split keeps it before the holdout
+            df.assign(week=df["week"].dt.strftime("%Y-%m-%d")).to_csv(SHARED / "attention_weekly_wikipedia.csv",
+                                                                      index=False)
     tickers = list(universe(market))
     panel = weekly_panel(load_prices(tickers, market, win["recent"][1]), tickers, config.benchmark(market), market)
     panel.assign(week=panel["week"].dt.strftime("%Y-%m-%d")).to_csv(PROCESSED / "weekly_prices.csv", index=False)

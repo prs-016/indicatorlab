@@ -62,13 +62,14 @@ def revisions(title: str, start: pd.Timestamp, end: pd.Timestamp, lang: str = "e
     return df.drop_duplicates("revid").sort_values("timestamp").reset_index(drop=True)
 
 
-def load_revisions(ticker: str, title: str, start: pd.Timestamp, end: pd.Timestamp, cache_dir: Path,
+def load_revisions(name: str, title: str, start: pd.Timestamp, end: pd.Timestamp, cache_dir: Path,
                    lang: str = "en") -> pd.DataFrame:
-    """Revisions for one stock's article, read from `cache_dir/<ticker>.csv` or pulled and cached there.
+    """Revisions of one article, read from `cache_dir/<name>.csv` or pulled and cached there.
 
-    Use one cache directory per period (research, recent): a cached file is reused as is.
+    `name` is usually the ticker. Use one cache directory per period (research, recent): a cached
+    file is reused as is.
     """
-    f = Path(cache_dir) / f"{ticker}.csv"
+    f = Path(cache_dir) / f"{name}.csv"
     if f.exists():
         return pd.read_csv(f, parse_dates=["timestamp"], keep_default_na=False,
                            dtype={"comment": str, "user": str})

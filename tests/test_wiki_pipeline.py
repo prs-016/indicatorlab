@@ -8,7 +8,10 @@ from src.trends_compare import cached_series, gdelt_daily, tracking_correlation
 from src.wiki_attention import redirects
 from src.wiki_pipeline import (
     SHARED_COLS,
+    article_start,
+    article_titles,
     attention_rows,
+    cache_stem,
     last_complete_sunday,
     split_period,
     universe,
@@ -128,8 +131,8 @@ def test_load_views_splits_periods_and_refreshes_a_stale_recent_file(tmp_path, m
 def test_load_edits_keeps_one_copy_of_the_boundary_revision(tmp_path):
     from src.wiki_pipeline import load_edits
     cols = "revid,timestamp,user,size,comment,before_start\n"
-    research = cols + "1,2025-08-31 10:00:00,a,100,,True\n2,2025-09-10 10:00:00,b,150,earnings,False\n"
-    recent = cols + "2,2025-09-10 10:00:00,b,150,earnings,True\n3,2025-10-02 10:00:00,c,120,rv,False\n"
+    research = cols + "1,2025-08-31 10:00:00,a,1000,,True\n2,2025-09-10 10:00:00,b,1050,earnings,False\n"
+    recent = cols + "2,2025-09-10 10:00:00,b,1050,earnings,True\n3,2025-10-02 10:00:00,c,1020,rv,False\n"
     for p, text in (("research", research), ("recent", recent)):
         d = tmp_path / f"revisions_{p}" / "en"
         d.mkdir(parents=True)
@@ -141,3 +144,61 @@ def test_load_edits_keeps_one_copy_of_the_boundary_revision(tmp_path):
     e = load_edits("X", {"en": "X"}, win, raw=tmp_path)
     assert e["revid"].tolist() == [2, 3] and e["delta"].tolist() == [50, -30]
     assert e["revert"].tolist() == [False, True] and e["tag_earnings"].tolist() == [True, False]
+
+
+def test_article_titles_and_cache_names_allow_several_articles_per_language():
+    titles = {"en": ["Alphabet_Inc.", "Google"], "de": "Alphabet_Inc."}
+    assert article_titles(titles) == [("en", "Alphabet_Inc."), ("en", "Google"), ("de", "Alphabet_Inc.")]
+    assert cache_stem("GOOGL", titles, "en", "Alphabet_Inc.") == "GOOGL"   # existing caches keep their name
+    assert cache_stem("GOOGL", titles, "en", "Google") == "GOOGL__Google"
+    assert cache_stem("GOOGL", titles, "de", "Alphabet_Inc.") == "GOOGL"
+
+
+def test_article_start_skips_the_redirect_years_but_not_later_blanking():
+    revs = pd.DataFrame({"timestamp": pd.to_datetime(["2013-06-01", "2019-09-12", "2019-11-27",
+                                                      "2021-01-20", "2021-01-21"]),
+                         "size": [22, 80, 3688, 0, 41000]})          # redirect, redirect, split out, blanked
+    assert article_start(revs, 400) == pd.Timestamp("2019-12-02")    # the Monday after the Wednesday split
+    assert article_start(revs.iloc[:2], 20) == pd.Timestamp("2013-06-03")
+    assert article_start(revs.assign(timestamp=pd.Timestamp("2019-12-02")).iloc[2:], 400) == pd.Timestamp("2019-12-02")
+
+
+def test_load_views_sums_articles_from_their_start_and_reuses_an_old_single_column_cache(tmp_path, monkeypatch):
+    from src import wiki_pipeline
+    pulls = []
+
+    def fake_views(title, start, end, lang):
+        pulls.append(title)
+        return pd.Series({"A": 1, "B": 10}[title], index=pd.date_range(start, end))
+
+    monkeypatch.setattr(wiki_pipeline, "article_views", fake_views)
+    win = {"research": (pd.Timestamp("2025-09-01"), pd.Timestamp("2025-09-30")),
+           "recent": (pd.Timestamp("2025-10-01"), pd.Timestamp("2025-10-12"))}
+    starts = {"en:A": pd.Timestamp("2025-09-08"), "en:B": pd.Timestamp("2025-09-15")}
+    v = wiki_pipeline.load_views("X", {"en": ["A", "B"]}, win, starts, raw=tmp_path)
+    assert v.index.min() == pd.Timestamp("2025-09-08")                        # before both starts: dropped
+    assert v.loc["2025-09-14"] == 1 and v.loc["2025-09-15"] == 11 and pulls == ["A", "B"]
+    cached = pd.read_csv(tmp_path / "views_recent" / "X.csv", index_col=0)
+    assert list(cached.columns) == ["X", "en:A", "en:B"]
+    for p in ("research", "recent"):                                         # cache from before this change
+        f = tmp_path / f"views_{p}" / "Y.csv"
+        cached = pd.read_csv(tmp_path / f"views_{p}" / "X.csv", index_col=0)
+        cached[["en:A"]].rename(columns={"en:A": "Y"}).to_csv(f)
+    assert wiki_pipeline.load_views("Y", {"en": "A"}, win, raw=tmp_path).eq(1).all() and len(pulls) == 2
+
+
+def test_load_edits_drops_edits_from_before_the_page_was_an_article(tmp_path):
+    from src.wiki_pipeline import load_edits
+    cols = "revid,timestamp,user,size,comment,before_start\n"
+    research = cols + ("1,2019-08-31 10:00:00,a,80,,True\n2,2019-09-04 10:00:00,b,90,fix redirect,False\n"
+                       "3,2019-09-11 10:00:00,c,3000,split from Facebook,False\n4,2019-09-17 10:00:00,d,3100,,False\n")
+    for p, text in (("research", research), ("recent", cols)):
+        d = tmp_path / f"revisions_{p}" / "en"
+        d.mkdir(parents=True)
+        (d / "X.csv").write_text(text)
+    (tmp_path / "views_recent").mkdir()
+    (tmp_path / "views_recent" / "X.csv").write_text("date,X\n2019-10-06,1\n")
+    win = {"research": (pd.Timestamp("2019-09-01"), pd.Timestamp("2019-09-30")),
+           "recent": (pd.Timestamp("2019-10-01"), pd.Timestamp("2019-10-06"))}
+    e = load_edits("X", {"en": "X"}, win, raw=tmp_path)
+    assert e["revid"].tolist() == [4] and e["key"].tolist() == ["en:X"]      # article from Mon Sep 16

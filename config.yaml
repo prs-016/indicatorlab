@@ -86,6 +86,8 @@ markets:
           ambiguous_name: Amazon
       META:
         name: Meta Platforms
+        # Meta_Platforms (then "Facebook, Inc.") was a redirect to the Facebook product article until Nov 2019,
+        # so META's Wikipedia data starts then (wikipedia.min_article_bytes); the product article is not added.
         wikipedia: {en: Meta_Platforms}
         reddit: {product: [facebook, OculusQuest, instagram], stock: []}
         match:
@@ -103,7 +105,10 @@ markets:
                             AAPL, MSFT, 'GOOGL?', AMZN, NVDA, NFLX, TSLA, '\$META', META]
       GOOGL:
         name: Alphabet / Google
-        wikipedia: {en: Alphabet_Inc.}
+        # Google (Google LLC, the operating company) gets ~5x Alphabet's views and existed before Alphabet
+        # (Aug 2015); its Wikidata item lists GOOGL/GOOG and the Reddit rules match "Google" too. Views,
+        # edits and edit sentiment are summed over both articles.
+        wikipedia: {en: [Alphabet_Inc., Google]}
         reddit: {product: [google, Android, GooglePixel], stock: []}
         match:
           symbols: [GOOGL, GOOG]
@@ -156,6 +161,9 @@ wikipedia:
   # An article's views = its current title plus every redirect to it, so renamed articles keep their
   # history (Meta_Platforms was Facebook,_Inc. until Oct 2021; Tesla,_Inc. was Tesla_Motors until 2017).
   include_redirects: true
+  # A title counts from the first full week after its first revision of this size. Redirects are under
+  # ~200 bytes and a new stub ~400 (Alphabet_Inc., Aug 2015); later blanking by vandals is ignored.
+  min_article_bytes: 400
   # Edit summaries: reverts and keyword tags (case-insensitive regexes, matched as whole words).
   revert_pattern: 'revert\w*|rvv?|undid|undo\w*'
   edit_tags:
