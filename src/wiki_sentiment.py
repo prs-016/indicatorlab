@@ -6,7 +6,8 @@ week (Monday 00:00 UTC) to the one live at its end, so vandalism reverted within
 Only new or changed sentences are scored, each by the model in config.yaml (`wikipedia.sentiment`),
 by default FinBERT (ProsusAI/finbert, trained on financial news: positive / negative / neutral).
 
-    python -m src.wiki_sentiment            # tracked stocks, research period; cached, safe to rerun
+    python -m src.wiki_sentiment            # tracked stocks, research period: fetch, score, then `analyse`
+    python -m src.wiki_sentiment analyse    # only the returns tests, from the saved scores
 """
 import html
 import re
@@ -26,6 +27,9 @@ SENTENCE_END = re.compile(r"(?<=[.!?])\s+(?=[A-Z\"'(\x01\x02])")
 DOT = "\x03"                # a full stop that does not end a sentence: "U.S.", "Inc.", "Lawrence E. Page"
 ABBREV = re.compile(r"\b(?:[A-Z]|Inc|Corp|Co|Ltd|Jr|Sr|Mr|Mrs|Ms|Dr|St|vs|No)\.")
 LABELS = ["positive", "negative", "neutral"]
+YEAR = re.compile(r"\b(?:19[5-9]\d|20[0-4]\d)\b")
+CHECKPOINT_WEEKS = 50       # save the diff cache this often, so an interrupted run loses little
+STALE_YEARS = 2             # a sentence whose latest year is this much older than its week is old history
 
 
 def params() -> dict:
@@ -105,25 +109,27 @@ def added_sentences(diff_html: str, min_words: int = 5) -> list[str]:
 
 def week_sentences(ticker: str, revs: pd.DataFrame, weeks: pd.DatetimeIndex, cache_file: Path,
                    lang: str = "en") -> pd.DataFrame:
-    """Added sentences per week (one row per sentence; '' for a week that added none), cached per stock.
+    """Added sentences per week (one row per sentence; '' for a week that added none), cached per article.
 
-    Interrupted runs resume: weeks already in `cache_file` are not fetched again.
+    The cache is saved every CHECKPOINT_WEEKS fetched weeks, so an interrupted run resumes: weeks already
+    in `cache_file` are not fetched again.
     """
     p = params()
     pairs = week_pairs(revs, weeks)
     f = Path(cache_file)
-    done = pd.read_csv(f, parse_dates=["week"], keep_default_na=False) if f.exists() else None
-    todo = pairs if done is None else pairs[~pairs["week"].isin(done["week"])]
+    cols = ["ticker", "week", "from_rev", "to_rev", "sentence"]
+    out = pd.read_csv(f, parse_dates=["week"], keep_default_na=False) if f.exists() else pd.DataFrame(columns=cols)
+    todo = pairs[~pairs["week"].isin(out["week"])]
     rows = []
-    for w in todo.itertuples():
+    for i, w in enumerate(todo.itertuples(), 1):
         sents = added_sentences(compare(w.from_rev, w.to_rev, lang), p["min_words"])[: p["max_sentences_week"]]
         rows += [{"ticker": ticker, "week": w.week, "from_rev": w.from_rev, "to_rev": w.to_rev, "sentence": s}
                  for s in sents or [""]]
-    new = pd.DataFrame(rows, columns=["ticker", "week", "from_rev", "to_rev", "sentence"])
-    out = new if done is None else pd.concat([done, new], ignore_index=True)
-    if len(new):
-        f.parent.mkdir(parents=True, exist_ok=True)
-        out.to_csv(f, index=False)
+        if i % CHECKPOINT_WEEKS == 0 or i == len(todo):
+            out = pd.concat([out, pd.DataFrame(rows, columns=cols)], ignore_index=True)
+            rows = []
+            f.parent.mkdir(parents=True, exist_ok=True)
+            out.to_csv(f, index=False)
     return out[out["week"].isin(pairs["week"])].reset_index(drop=True)
 
 
@@ -161,6 +167,16 @@ def weekly_sentiment(scored: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def stale(scored: pd.DataFrame) -> pd.Series:
+    """True for sentences about old history: every year they name is >= STALE_YEARS before their week.
+
+    Editors often re-add or rewrite history sections, so much "new" text is not news; sentences
+    naming no year are not stale.
+    """
+    latest = scored["sentence"].str.findall(YEAR).apply(lambda ys: max(map(int, ys)) if ys else np.nan)
+    return latest <= pd.to_datetime(scored["week"]).dt.year - STALE_YEARS
+
+
 def sentiment_returns(weekly: pd.DataFrame, prices: pd.DataFrame, view_spikes: pd.DataFrame | None = None,
                       n_resamples: int = 1000, seed: int = 42) -> pd.DataFrame:
     """Abnormal returns in weeks whose edits were mostly negative (positive) minus other scored weeks.
@@ -190,21 +206,28 @@ def build(period: str = "research", tickers: list[str] | None = None) -> pd.Data
     from src.wiki_pipeline import (
         PROCESSED,
         RAW,
+        article_starts,
+        cache_stem,
         last_complete_sunday,
+        title_revisions,
         universe,
         windows,
     )
-    start, end = windows(last_complete_sunday())[period]
+    win = windows(last_complete_sunday())
+    start, end = win[period]
     first_monday = start + pd.Timedelta(days=(7 - start.dayofweek) % 7)
     weeks = pd.date_range(first_monday, end - pd.Timedelta(days=6), freq="7D")   # full weeks only
     frames = []
     for tk, titles in universe("US", strategy=False).items():
         if tickers and tk not in tickers:
             continue
-        lang = next(iter(titles))
-        revs = pd.read_csv(RAW / f"revisions_{period}" / lang / f"{tk}.csv", parse_dates=["timestamp"])
-        frames.append(week_sentences(tk, revs, weeks, RAW / f"diffs_{period}" / lang / f"{tk}.csv", lang))
-        print(tk, len(frames[-1]), "rows", flush=True)
+        revs = title_revisions(tk, titles, win)
+        starts = article_starts(revs)
+        for key, r in revs.groupby("key"):   # each article from its first week as an article
+            lang, title = r["lang"].iloc[0], r["title"].iloc[0]
+            cache = RAW / f"diffs_{period}" / lang / f"{cache_stem(tk, titles, lang, title)}.csv"
+            frames.append(week_sentences(tk, r, weeks[weeks >= starts[key]], cache, lang))
+            print(tk, title, len(frames[-1]), "rows", flush=True)
     sents = pd.concat(frames, ignore_index=True)
     has = sents["sentence"].ne("")
     scores = score(sents.loc[has, "sentence"].tolist())
@@ -216,5 +239,39 @@ def build(period: str = "research", tickers: list[str] | None = None) -> pd.Data
     return weekly
 
 
+def analyse(period: str = "research") -> dict:
+    """Label shares, stale share and `sentiment_returns` from the saved scores; writes results/wikipedia/."""
+    from src.wiki_analysis import spike_flags
+    from src.wiki_pipeline import PROCESSED, ROOT, shared_path
+    from src.wiki_prices import research_only
+    sc = pd.read_csv(PROCESSED / f"edit_sentiment_sentences_{period}.csv", parse_dates=["week"],
+                     keep_default_na=False)
+    sc = sc[sc["sentence"] != ""]
+    weekly = pd.read_csv(PROCESSED / f"edit_sentiment_weekly_{period}.csv", parse_dates=["week"])
+    prices = research_only(pd.read_csv(PROCESSED / "weekly_prices.csv", parse_dates=["week"]),
+                           pd.Timestamp(config.holdout_start()))
+    spikes = spike_flags(pd.read_csv(shared_path(period)), "wikipedia_views")[["week", "ticker", "spike"]]
+    boot = config.load()["wikipedia"]["bootstrap"]
+    res = sentiment_returns(weekly, prices, spikes, boot["n_resamples"], boot["seed"])
+    scored = weekly[weekly["n_sent"] > 0].merge(prices, on=["ticker", "week"])
+    is_stale = stale(sc)
+    summary = {"ticker_weeks_with_edits": len(weekly), "ticker_weeks_scored": int((weekly["n_sent"] > 0).sum()),
+               "sentences": len(sc), **{f"share_{k}": v for k, v in sc["label"].value_counts(normalize=True).items()},
+               "share_stale": is_stale.mean(), "share_negative_stale": sc.loc[is_stale, "label"].eq("negative").mean(),
+               "share_negative_fresh": sc.loc[~is_stale, "label"].eq("negative").mean(),
+               "corr_net_same_week": scored["net"].corr(scored["abn_ret"]),
+               "corr_net_next_week": scored["net"].corr(scored["abn_ret_next1"])}
+    out = ROOT / "results" / "wikipedia"
+    out.mkdir(parents=True, exist_ok=True)
+    res.to_csv(out / "edit_sentiment_returns.csv", index=False)
+    pd.Series(summary).to_csv(out / "edit_sentiment_summary.csv", header=["value"])
+    return {"summary": summary, "returns": res}
+
+
 if __name__ == "__main__":
-    build("research")
+    import sys
+    if sys.argv[1:] != ["analyse"]:
+        build("research")
+    r = analyse("research")
+    print(pd.Series(r["summary"]).round(3).to_string())
+    print(r["returns"].round(4).to_string(index=False))

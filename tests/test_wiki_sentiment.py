@@ -7,6 +7,7 @@ from src.wiki_sentiment import (
     clean_wikitext,
     score,
     sentiment_returns,
+    stale,
     week_pairs,
     week_sentences,
     weekly_sentiment,
@@ -111,3 +112,10 @@ def test_added_sentences_do_not_split_at_abbreviations():
     body = _row("Google has worked with the U.S. Department of Defense on drones. Alphabet Inc. later sold it.")
     assert added_sentences(body) == ["Google has worked with the U.S. Department of Defense on drones.",
                                      "Alphabet Inc. later sold it."]
+
+
+def test_stale_marks_sentences_about_old_years_only():
+    scored = pd.DataFrame({"week": pd.to_datetime(["2024-03-04"] * 4),
+                           "sentence": ["In 1998 the firm was founded in a garage.", "In 2023 it cut 12,000 jobs.",
+                                        "It bought X in 2004 and sold it in 2024.", "Shares fell after the report."]})
+    assert stale(scored).tolist() == [True, False, False, False]
