@@ -71,13 +71,18 @@ row with zero posts (or no run), no successful weekly run in 7 days, and a weekl
 
 Prerequisites: `brew install awscli aws-sam-cli colima docker docker-buildx`, then `colima start`.
 
-1. **Stop using the root user.** In the console, create an IAM user for yourself with
-   `AdministratorAccess` and MFA, then `aws configure` (region `us-west-2`) with that user's keys.
+1. **Stop using the root user.**
+   - In the console, create an IAM user for yourself with `AdministratorAccess`.
+   - On that user's page, choose **Create access key → Command Line Interface (CLI)**.
+   - Run `aws configure`: paste the key yourself, region `us-west-2`, output `json`.
+   - `aws sts get-caller-identity` must end in `user/<you>`, not `root`.
 2. **Shared stack:** `infra/shared/deploy.sh you@example.com`. If the bucket name is taken, pass a second
    argument (e.g. `indicatorlab-data-ucsd`) and tell the team; code reads it from `INDICATORLAB_BUCKET`.
-3. **Secrets:** fill `.env` (from `.env.example`), then `infra/scripts/put_secrets.sh`.
-4. **Teammates:** create IAM users `jamal`, `jack`, `james` (console access, "must reset password"),
-   add them to `indicatorlab-team`, and send each their sign-in link privately. Post in the chat when done.
+3. **Secrets:** fill `.env` (from `.env.example`), then `infra/scripts/put_secrets.sh`. Empty values are
+   skipped, so rerun it when a key (e.g. the Vibe-Trading key) arrives.
+4. **Teammates:** `infra/scripts/create_team_users.sh`.
+   - It creates `jamal`, `jack` and `james` in `indicatorlab-team` with one-time passwords.
+   - DM each person their username and password. Then post in the chat (text below).
 5. **Seed the Reddit corpus** (once, from your laptop, about 3 GB):
    `INDICATORLAB_BUCKET=indicatorlab-data .venv/bin/python -m src.reddit.pipeline --mode seed`
 6. **Fill the trailing week** (optional; otherwise the first hourly runs catch up over a few hours):
@@ -86,6 +91,30 @@ Prerequisites: `brew install awscli aws-sam-cli colima docker docker-buildx`, th
 8. **Check:** `aws lambda invoke --function-name indicatorlab-reddit-hourly out.json`, then wait for an
    unattended hourly run and look for a new `raw/reddit/date=…` object; run the weekly task once with
    `aws ecs run-task` (or the console) and check `processed/reddit_weekly.parquet` was updated.
+
+## First login (Jamal, Jack, James)
+
+1. Open the sign-in URL from Joshua's DM (`https://<account-id>.signin.aws.amazon.com/console`).
+2. Sign in with your username and one-time password, then set your own password.
+3. Optional but recommended: add MFA under **IAM → Users → you → Security credentials**.
+4. For scripts and deploys, use **Create access key → Command Line Interface (CLI)** on the same page,
+   then `aws configure` with region `us-west-2`.
+5. Check with `aws sts get-caller-identity` and `aws s3 ls s3://indicatorlab-data/`.
+
+Keys go in your own `~/.aws` and in `.env`, never in the repo. Shared secrets are read from SSM, e.g.
+`aws ssm get-parameter --name /indicatorlab/vibe_api_key --with-decryption`.
+
+## Chat post (when the shared stack is up)
+
+> AWS shared resources are up (us-west-2):
+> - S3: `indicatorlab-data` (raw/, processed/, backtests/)
+> - DynamoDB: `indicatorlab-live-india`, `indicatorlab-live-hk` (key `symbol`, on-demand)
+> - Secrets: SSM `/indicatorlab/*`
+> - Budget alert: $20/month
+>
+> Your login is in your DM. First-login steps and who uses what: `infra/README.md` on the `reddit` branch.
+> Please sign in today and run `aws s3 ls s3://indicatorlab-data/` to confirm access. Tell me if anything
+> is denied.
 
 ## Cost on the free plan
 
