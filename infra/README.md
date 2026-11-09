@@ -43,6 +43,18 @@ Live quote item (both tables, one per symbol, overwritten each poll): `symbol` (
 `0700.HK`), `price`, `change_pct`, `volume`, `ts_exchange` (ISO 8601, exchange time), `ts_received`
 (ISO 8601 UTC), `source` (e.g. `tencent`).
 
+## Dashboard hosting (`infra/dashboard/`)
+
+The Week 1 Reddit dashboard, published as a static snapshot. `src/reddit/dashboard_export.py`
+writes every endpoint the page reads as JSON. The files go to a private S3 bucket served over
+HTTPS by CloudFront (origin access control).
+
+- **Publish or refresh:** `infra/dashboard/deploy.sh`. It exports, deploys the stack, syncs the
+  files and invalidates the cache, then prints the URL.
+- **Not on AWS:** the Rebuild and Run-strategies buttons only work on a laptop
+  (`python -m src.reddit.dashboard_server`).
+- **Sentiment:** added after the FinBERT rescore. James's Dashboard v1 later replaces this page.
+
 ## Reddit pipeline (`infra/reddit/`)
 
 One arm64 image (`infra/reddit/Dockerfile`, FinBERT baked in) runs both jobs from `src/reddit/pipeline.py`:
