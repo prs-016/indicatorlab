@@ -27,6 +27,14 @@ strategy:
   split: {train: [2011-01-01, 2019-12-31], test: [2020-01-01, 2025-09-30]}
   reddit_split: {train: [2023-01-02, 2024-06-30], test: [2024-07-01, 2025-09-30]}
 
+# One sentiment scorer for Reddit and Wikipedia (src/sentiment/finbert_scorer.py).
+# Bump `revision` deliberately: it is part of every cached score's key (model_version).
+sentiment:
+  model: ProsusAI/finbert                                 # financial-news FinBERT: positive / negative / neutral
+  revision: 0bc2ac10dda6929bcb1f77ccc43c7ec5c424f031    # pinned Hugging Face commit of the model
+  batch_size: 32
+  max_tokens: 512                                         # BERT input limit; longer text is truncated
+
 reddit:
   arctic_shift:
     base_url: https://arctic-shift.photon-reddit.com/api
