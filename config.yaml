@@ -27,6 +27,16 @@ strategy:
   split: {train: [2011-01-01, 2019-12-31], test: [2020-01-01, 2025-09-30]}
   reddit_split: {train: [2023-01-02, 2024-06-30], test: [2024-07-01, 2025-09-30]}
 
+# One sentiment scorer for Reddit and Wikipedia (src/sentiment/finbert_scorer.py).
+# Bump `revision` deliberately: it is part of every cached score's key (model_version).
+sentiment:
+  model: ProsusAI/finbert                                 # financial-news FinBERT: positive / negative / neutral
+  revision: 0bc2ac10dda6929bcb1f77ccc43c7ec5c424f031    # pinned Hugging Face commit of the model
+  batch_size: 32
+  max_tokens: 512                                         # BERT input limit; longer text is truncated
+  labeler_model: claude-opus-5-5                          # writes the answer key the scorers are graded on
+  labeler_effort: medium                                  # Opus 5.5 always thinks; effort sets how much
+
 reddit:
   arctic_shift:
     base_url: https://arctic-shift.photon-reddit.com/api
@@ -36,6 +46,14 @@ reddit:
   collect_start: 2023-01-01
   min_posts_per_week: 20        # subreddits below this (2024 average) are dropped
   multi_ticker_list_min: 5      # a post text-matching this many tracked stocks is flagged as a list
+  # Sentiment-label pool before the corpus starts (src/reddit/label_pool.py): seeded random days per
+  # (subreddit, year), kept apart from the research corpus so weekly tables never see partial years.
+  label_pool:
+    start: 2016-06-01           # team train split starts here
+    end: 2022-12-31             # the full corpus covers 2023-01-01 onward
+    days_per_year: 5
+    max_pages: 10               # at most ~1,000 posts per (subreddit, day); busier days are cut (noted)
+    seed: 42
 
 markets:
   US:

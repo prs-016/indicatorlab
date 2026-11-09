@@ -66,12 +66,48 @@ def test_text_scorer_reads_each_post_once_and_saves_one_row_per_ticker(corpus, m
     assert len(pd.read_parquet(sp.SENTIMENT_PATH)) == 4
 
 
+def _stub_finbert(g):
+    """FinBERT stand-in: every row positive with fixed probabilities."""
+    return pd.DataFrame({"label": "positive", "score": 0.7, "sentiment_pos": 0.8, "sentiment_neg": 0.1,
+                         "sentiment_neu": 0.1, "model_version": "ProsusAI/finbert@test"}, index=g.index)
+
+
 def test_the_choice_file_picks_a_scorer_per_source(corpus, monkeypatch):
     sp.CHOICE.write_text(json.dumps({"choice": {"reddit_product": "vader", "reddit_stock": "finbert"}}))
     calls = []
     monkeypatch.setattr(sp, "run_scorer", _stub_scorer(calls))
+    monkeypatch.setattr(sp, "_score_finbert", _stub_finbert)
     out = sp.run(None, confirm_llm_cost=False, rescore=False).set_index("post_id")
     assert out.loc["i1", "scorer"] == "vader" and out.loc["s2", "scorer"] == "finbert"
+    assert list(out.reset_index().columns) == sp.SCORE_COLS
+    assert out.loc["s2", "sentiment_pos"] == 0.8 and out.loc["s2", "model_version"] == "ProsusAI/finbert@test"
+    assert pd.isna(out.loc["i1", "sentiment_pos"])          # VADER has no class probabilities
+
+
+def test_finbert_path_caches_probabilities(corpus, monkeypatch):
+    from src.sentiment import finbert_scorer as fs
+    seen = []
+
+    def fake_classifier(*a, **k):
+        def clf(texts, **kw):
+            seen.extend(texts)
+            return [[{"label": "positive", "score": 0.6}, {"label": "negative", "score": 0.3},
+                     {"label": "neutral", "score": 0.1}] for _ in texts]
+        return clf
+    monkeypatch.setattr(fs, "_classifier", fake_classifier)
+    monkeypatch.setattr(sp, "FINBERT_CACHE", corpus / "sentiment_cache")
+    out = sp.run("finbert", confirm_llm_cost=False, rescore=False)
+    assert out["sentiment_score"].round(6).eq(0.3).all() and out["model_version"].str.startswith("ProsusAI/").all()
+    n = len(seen)
+    sp.run("finbert", confirm_llm_cost=False, rescore=True)     # rescore reads the cache, not the model
+    assert len(seen) == n
+
+
+def test_multi_ticker_posts_are_scored_on_their_own_sentences():
+    title, body = "AAPL vs NVDA", "AAPL guidance was cut. NVDA crushed it and raised guidance!"
+    assert sp.ticker_snippet(title, body, "NVDA") == "AAPL vs NVDA NVDA crushed it and raised guidance!"
+    assert sp.ticker_snippet(title, body, "AAPL") == "AAPL vs NVDA AAPL guidance was cut."
+    assert sp.ticker_snippet("Big tech", "they all look cheap", "MSFT") == "Big tech they all look cheap"
 
 
 def test_saved_subreddits_are_not_scored_again_unless_asked(corpus, monkeypatch):
