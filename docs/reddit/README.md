@@ -155,6 +155,38 @@ $PY -m src.reddit.strategy_product_buzz --note "why this run"
 * **Strategy split**: Reddit data starts in 2023, so train is 2023-01-02..2024-06-30 and test
   2024-07-01..2025-09-30 (`strategy.reddit_split`), logged as a departure from 2011-2019 / 2020-2025.
 
+## Week 3: FinBERT, the Claude answer key, AWS and the `/reddit/*` API
+
+```bash
+PY=.venv/bin/python
+# Label sample over 2016-06 .. 2025-09: seeded random pre-2023 days (kept out of the corpus), then the draw
+$PY -m src.reddit.label_pool collect && $PY -m src.reddit.label_pool build
+$PY -m src.reddit.label_samples sentiment
+# Answer key written by Claude Opus (no hand labels); prints the cost and sends nothing without --confirm-cost
+$PY -m src.reddit.auto_label --confirm-cost
+$PY -m src.reddit.label_eval sentiment --rater claude-opus --scorers vader finbert llm   # + --second james
+# Production scoring (cached by post_id, ticker, model_version), weekly tables, report
+$PY -m src.reddit.score_posts --scorer finbert
+$PY -m src.reddit.reddit_weekly
+$PY -m src.reddit.week3_report
+# AWS pipeline modes (see infra/README.md); INDICATORLAB_ROOT_URI=<local dir> runs them without AWS
+$PY -m src.reddit.pipeline --mode hourly|weekly|seed
+# API: /reddit/attention, /reddit/sentiment, /reddit/top-posts (src/api/reddit_routes.py)
+INDICATORLAB_DATA_URI=data/reddit/processed .venv/bin/uvicorn src.api.main:app --port 8000
+```
+
+* **Shared scorer** (`src/sentiment/finbert_scorer.py`, built from James's `wiki_sentiment` classifier):
+  ProsusAI/finbert at the revision pinned in `config.yaml` `sentiment`, all three probabilities kept, text =
+  title + " " + body. A post naming several tracked stocks is scored per ticker on the sentences that name it.
+* **Answer key** (`src/reddit/auto_label.py`, prompt `prompts/label_v1.txt`): Claude Opus labels every
+  sampled (post, ticker) as positive / negative / neutral / skip with a one-line rationale, in the
+  `label_server` file format. It is model-made, and the Haiku scorer shares its model family; the week 3
+  report states both caveats. James's 50 blind labels (`sentiment_second_rater.csv`) give the kappa check.
+* **Attention record** (`reddit_weekly.parquet`, `_by_type`, `reddit_top_posts`): the shared columns
+  `ticker, market, source, week, value, baseline, ratio, spike, sentiment_pos/neg/neu, n_scored`.
+  Research files stop before 2025-10-01; `*_recent.parquet` hold later weeks for display only.
+* The Week 2 routes (`src/api/reddit.py`: `/sentiment`, `/spikes`) were replaced by the `/reddit/*` router.
+
 ## Collection details
 
 * **Endpoint:** `GET /api/posts/search?subreddit=<s>&after=<epoch>&before=<epoch>&limit=auto&sort=asc`.
