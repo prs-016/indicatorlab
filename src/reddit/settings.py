@@ -6,6 +6,7 @@ All paths are under the repository root so every module runs as
 """
 from __future__ import annotations
 
+import os
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
@@ -25,7 +26,7 @@ RESULTS = ROOT / "results" / "reddit"
 CHARTS = RESULTS / "charts"
 TABLES = RESULTS / "tables"
 STRATEGY_LOGS = RESULTS / "strategy_logs"
-LOGS = ROOT / "logs" / "reddit"
+LOGS = Path(os.environ.get("REDDIT_LOG_DIR", ROOT / "logs" / "reddit"))   # /tmp on AWS Lambda (read-only code dir)
 DASHBOARD = ROOT / "frontend" / "reddit_dashboard"
 
 MANIFEST = RAW / "manifest.csv"

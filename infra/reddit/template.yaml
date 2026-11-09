@@ -1,0 +1,294 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >-
+  Indicator Lab Reddit pipeline: an hourly container Lambda (feeds "Hot right now") and a weekly Fargate
+  task (rebuilds the research tables), both on EventBridge Scheduler, with CloudWatch alarms to email.
+  Deploy with infra/reddit/deploy.sh, which builds and pushes the image and passes ImageUri.
+
+Parameters:
+  ImageUri:
+    Type: String
+    Description: ECR image built from infra/reddit/Dockerfile (deploy.sh fills this in).
+  BucketName:
+    Type: String
+    Default: indicatorlab-data
+  AlertEmail:
+    Type: String
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Public subnets of the default VPC (the task gets a public IP, so no NAT gateway is needed).
+  SecurityGroupId:
+    Type: AWS::EC2::SecurityGroup::Id
+    Description: The default VPC security group is fine (outbound only).
+  SchedulesState:
+    Type: String
+    Default: ENABLED
+    AllowedValues: [ENABLED, DISABLED]
+
+Resources:
+  # ------------------------------------------------------------------ hourly
+  HourlyFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: indicatorlab-reddit-hourly
+      PackageType: Image
+      ImageUri: !Ref ImageUri
+      Architectures: [arm64]
+      MemorySize: 3008
+      Timeout: 900
+      EphemeralStorage:
+        Size: 2048
+      Environment:
+        Variables:
+          INDICATORLAB_BUCKET: !Ref BucketName
+          PIPELINE_MODE: hourly
+      Policies:
+        - S3CrudPolicy:
+            BucketName: !Ref BucketName
+      LoggingConfig:
+        LogGroup: !Ref HourlyLogGroup
+
+  HourlyLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /indicatorlab/reddit-hourly
+      RetentionInDays: 14
+
+  # ------------------------------------------------------------------ weekly
+  Cluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      ClusterName: indicatorlab
+
+  WeeklyLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /indicatorlab/reddit-weekly
+      RetentionInDays: 14
+
+  WeeklyExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: indicatorlab-reddit-weekly-exec
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ecs-tasks.amazonaws.com}
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
+  WeeklyTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: indicatorlab-reddit-weekly-task
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: ecs-tasks.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: data-bucket
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: [s3:ListBucket]
+                Resource: !Sub arn:aws:s3:::${BucketName}
+              - Effect: Allow
+                Action: [s3:GetObject, s3:PutObject, s3:DeleteObject]
+                Resource: !Sub arn:aws:s3:::${BucketName}/*
+
+  WeeklyTask:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: indicatorlab-reddit-weekly
+      RequiresCompatibilities: [FARGATE]
+      NetworkMode: awsvpc
+      Cpu: "2048"
+      Memory: "16384"
+      EphemeralStorage:
+        SizeInGiB: 40          # the corpus state (~3 GB) is mirrored from S3 for each run
+      RuntimePlatform:
+        CpuArchitecture: ARM64
+        OperatingSystemFamily: LINUX
+      ExecutionRoleArn: !GetAtt WeeklyExecutionRole.Arn
+      TaskRoleArn: !GetAtt WeeklyTaskRole.Arn
+      ContainerDefinitions:
+        - Name: reddit-weekly
+          Image: !Ref ImageUri
+          Essential: true
+          EntryPoint: [python, -m, src.reddit.pipeline]
+          Command: [--mode, weekly]
+          WorkingDirectory: /var/task
+          Environment:
+            - Name: INDICATORLAB_BUCKET
+              Value: !Ref BucketName
+            - Name: REDDIT_LOG_DIR
+              Value: /var/task/logs/reddit
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref WeeklyLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: weekly
+
+  # ------------------------------------------------------------------ schedules
+  SchedulerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: indicatorlab-reddit-scheduler
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: scheduler.amazonaws.com}
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: run-reddit-jobs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: lambda:InvokeFunction
+                Resource: !GetAtt HourlyFunction.Arn
+              - Effect: Allow
+                Action: ecs:RunTask
+                Resource: !Ref WeeklyTask
+              - Effect: Allow
+                Action: iam:PassRole
+                Resource: [!GetAtt WeeklyExecutionRole.Arn, !GetAtt WeeklyTaskRole.Arn]
+
+  HourlySchedule:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      Name: indicatorlab-reddit-hourly
+      ScheduleExpression: rate(1 hour)
+      FlexibleTimeWindow: {Mode: "OFF"}
+      State: !Ref SchedulesState
+      Target:
+        Arn: !GetAtt HourlyFunction.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+        Input: '{"mode": "hourly"}'
+        RetryPolicy: {MaximumRetryAttempts: 0}     # the next hour picks up from the high-water mark anyway
+
+  WeeklySchedule:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      Name: indicatorlab-reddit-weekly
+      ScheduleExpression: cron(0 8 ? * MON *)       # Monday 08:00 UTC: last week's days are complete
+      ScheduleExpressionTimezone: UTC
+      FlexibleTimeWindow: {Mode: "OFF"}
+      State: !Ref SchedulesState
+      Target:
+        Arn: !GetAtt Cluster.Arn
+        RoleArn: !GetAtt SchedulerRole.Arn
+        EcsParameters:
+          TaskDefinitionArn: !Ref WeeklyTask
+          LaunchType: FARGATE
+          PlatformVersion: LATEST
+          NetworkConfiguration:
+            AwsvpcConfiguration:
+              Subnets: !Ref SubnetIds
+              SecurityGroups: [!Ref SecurityGroupId]
+              AssignPublicIp: ENABLED
+
+  # ------------------------------------------------------------------ alarms
+  AlertTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: indicatorlab-reddit-alerts
+      Subscription:
+        - Protocol: email
+          Endpoint: !Ref AlertEmail
+
+  AlertTopicPolicy:
+    Type: AWS::SNS::TopicPolicy
+    Properties:
+      Topics: [!Ref AlertTopic]
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal: {Service: events.amazonaws.com}
+            Action: sns:Publish
+            Resource: !Ref AlertTopic
+
+  HourlyErrorsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: indicatorlab-reddit-hourly-errors
+      AlarmDescription: The hourly Reddit run failed.
+      Namespace: AWS/Lambda
+      MetricName: Errors
+      Dimensions: [{Name: FunctionName, Value: !Ref HourlyFunction}]
+      Statistic: Sum
+      Period: 3600
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      TreatMissingData: notBreaching
+      AlarmActions: [!Ref AlertTopic]
+
+  HourlyNoPostsAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: indicatorlab-reddit-hourly-no-posts
+      AlarmDescription: Two hourly runs in a row returned zero posts, or did not run at all.
+      Namespace: IndicatorLab/Reddit
+      MetricName: PostsFetched
+      Dimensions: [{Name: Mode, Value: hourly}]
+      Statistic: Sum
+      Period: 3600
+      EvaluationPeriods: 2
+      DatapointsToAlarm: 2
+      Threshold: 0
+      ComparisonOperator: LessThanOrEqualToThreshold
+      TreatMissingData: breaching
+      AlarmActions: [!Ref AlertTopic]
+
+  WeeklyMissedAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: indicatorlab-reddit-weekly-missed
+      AlarmDescription: No successful weekly Reddit rebuild in the last 7 days.
+      Namespace: IndicatorLab/Reddit
+      MetricName: WeeklyRunSucceeded
+      Dimensions: [{Name: Mode, Value: weekly}]
+      Statistic: Sum
+      Period: 86400
+      EvaluationPeriods: 7
+      DatapointsToAlarm: 7
+      Threshold: 1
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: breaching
+      AlarmActions: [!Ref AlertTopic]
+
+  WeeklyFailedRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: indicatorlab-reddit-weekly-failed
+      Description: Email as soon as the weekly task stops with a non-zero exit code.
+      EventPattern:
+        source: [aws.ecs]
+        detail-type: [ECS Task State Change]
+        detail:
+          clusterArn: [!GetAtt Cluster.Arn]
+          lastStatus: [STOPPED]
+          containers:
+            exitCode: [{anything-but: 0}]
+      Targets:
+        - Id: alert-topic
+          Arn: !Ref AlertTopic
+
+Outputs:
+  HourlyFunctionName:
+    Value: !Ref HourlyFunction
+  ClusterArn:
+    Value: !GetAtt Cluster.Arn
+  WeeklyTaskDefinition:
+    Value: !Ref WeeklyTask
+  AlertTopicArn:
+    Value: !Ref AlertTopic
