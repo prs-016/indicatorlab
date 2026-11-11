@@ -15,8 +15,9 @@ python -m src.wiki_pipeline       # pull views, edits and prices (cached), write
 python -m src.wiki_titles         # check every configured title against Wikipedia and Wikidata
 python -m src.wiki_strategy       # Wikipedia-only strategy vs SPY, equal weight and 200 random portfolios
 python -m src.wiki_sentiment      # FinBERT sentiment of the text added to each article, returns tests
+python -m src.wiki_export         # attention records for the API: data/processed/wiki_*.parquet
 jupyter lab notebooks/wikipedia.ipynb   # Week 2 results (Restart and Run All)
-uvicorn src.api.main:app --reload # /tickers, /attention, /price
+uvicorn src.api.main:app --reload # /health, /attention/{ticker}, /sentiment, /spikes, /hot, /live, /runs
 pytest                            # tests, no network needed
 ```
 
@@ -28,7 +29,10 @@ pytest                            # tests, no network needed
   spike if views are at least 1.5x the baseline and the robust z-score of abnormal, against the median and
   MAD of *earlier* weeks only (26 needed), is at least 2. Weeks are labelled by their Monday.
 - **Holdout:** research uses data before 2025-10-01; recent data sits in separate `*_recent` files.
-- Results: [`docs/wikipedia/week2_report.md`](docs/wikipedia/week2_report.md).
+  Strategy tests use the team split: train Jun 2016 to Dec 2021, test Jan 2022 to Sep 2025.
+- **Sentiment:** FinBERT through the scorer shared with Reddit (`src/sentiment/finbert_scorer.py`).
+- Results: [`docs/wikipedia/week2_report.md`](docs/wikipedia/week2_report.md),
+  [`docs/wikipedia/week3_report.md`](docs/wikipedia/week3_report.md).
 
 A clean starter template for data science and machine learning projects at UC San Diego's DS3.
 

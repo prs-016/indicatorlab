@@ -140,12 +140,17 @@ Indian and Hong Kong stocks can be added as a config change. For the DS3 team an
 │   ├── wiki_sentiment.py  # FinBERT sentiment of the article text added each week, returns tests
 │   ├── wiki_analysis.py   # spike-vs-normal returns, edit timing, tags, tone, last-3-weeks table
 │   ├── wiki_strategy.py   # Wikipedia-only strategy with random-portfolio baseline
+│   ├── wiki_export.py     # attention records (wiki_weekly / wiki_current / prices_weekly parquet) for the API
+│   ├── sentiment/finbert_scorer.py  # FinBERT scorer shared by Reddit and Wikipedia (+ rerun cache)
 │   ├── trends_compare.py  # Google Trends alternatives (GDELT, trendspy) vs Wikipedia views
-│   └── api/               # FastAPI app: main.py + one router per source
+│   └── api/               # FastAPI app: main.py, one router per source, dashboard.py (Week 3 routes),
+│                          # storage.py (reads data/ locally or s3://indicatorlab-data on AWS)
 ├── tests/             # pytest tests for src/ (no network: HTTP calls are mocked)
+│   └── fixtures/api/  # small parquet/JSON tables for the API tests (make_fixtures.py rebuilds them)
 ├── docs/              # AGENTS.md, DesignDoc.md, codeReviewer.md, docs/wikipedia/ reports
 ├── data/              # git-ignored; raw/ never edited by hand
 │   ├── raw/wikipedia/  # views_{research,recent}/, revisions_{research,recent}/<lang>/, prices/
+│   ├── processed/     # wiki_weekly / wiki_current / prices_weekly.parquet (the bucket's processed/ layout)
 │   ├── processed/wikipedia/
 │   └── shared/        # attention_weekly_<source>_{research,recent}.csv in the team format
 │                      # (+ attention_weekly_wikipedia.csv, both periods, read by src/reddit)
@@ -171,10 +176,13 @@ cp .env.example .env   # then fill in your own local values — never commit .en
 - Check the configured Wikipedia titles (run after adding a stock or language): `python -m src.wiki_titles`
 - Edit sentiment (FinBERT; the first run downloads the model and one diff per stock-week, then caches):
   `python -m src.wiki_sentiment`, or `python -m src.wiki_sentiment analyse` for the returns tests only
-- Wikipedia-only strategy (train/test, 200 random portfolios): `python -m src.wiki_strategy`
+- Wikipedia-only strategy (team train/test split, 200 random portfolios): `python -m src.wiki_strategy`
+- Attention records for the API and dashboard: `python -m src.wiki_export` (after the pipeline and sentiment)
 - Results notebook: `jupyter lab notebooks/wikipedia.ipynb` (Restart and Run All; needs the pipeline output)
 - API: `uvicorn src.api.main:app --reload --port 8000`, docs at http://localhost:8000/docs
-  (`/tickers`, `/attention`, `/price`)
+  (Week 2: `/tickers`, `/attention`, `/price`; Week 3: `/health`, `/attention/{ticker}`, `/sentiment/{ticker}`,
+  `/spikes`, `/hot`, `/live/{market}`, `/runs`). It reads `data/` unless `INDICATORLAB_DATA` is set
+  (e.g. `s3://indicatorlab-data`, which needs `boto3` and AWS credentials); see `.env.example`.
 
 ## Testing
 
