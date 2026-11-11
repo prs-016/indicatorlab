@@ -3,21 +3,22 @@
 Edit summaries are mostly bookkeeping ("ce", "add link"; 73% neutral under VADER), so this scores the
 article text itself. For each week it takes the net change from the revision live at the start of the
 week (Monday 00:00 UTC) to the one live at its end, so vandalism reverted within the week drops out.
-Only new or changed sentences are scored, each by the model in config.yaml (`wikipedia.sentiment`),
-by default FinBERT (ProsusAI/finbert, trained on financial news: positive / negative / neutral).
+Only new or changed sentences are scored, by the FinBERT scorer shared with Reddit
+(src/sentiment/finbert_scorer.py: ProsusAI/finbert, trained on financial news), so both sources report
+the same columns: sentiment_pos, sentiment_neg, sentiment_neu and sentiment_net = pos - neg.
 
     python -m src.wiki_sentiment            # tracked stocks, research period: fetch, score, then `analyse`
     python -m src.wiki_sentiment analyse    # only the returns tests, from the saved scores
 """
 import html
 import re
-from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from src import config
+from src.sentiment import finbert_scorer
 from src.wiki_attention import ACTION_API_URL, REQUEST_TIMEOUT_S, SESSION, user_agent
 
 INS, END = "\x01", "\x02"   # mark inserted text so it survives the wikitext clean-up
@@ -26,7 +27,6 @@ TABLE_LINE = re.compile(r"^\s*(?:[|!]|\{\||\|\})")   # infobox fields and table 
 SENTENCE_END = re.compile(r"(?<=[.!?])\s+(?=[A-Z\"'(\x01\x02])")
 DOT = "\x03"                # a full stop that does not end a sentence: "U.S.", "Inc.", "Lawrence E. Page"
 ABBREV = re.compile(r"\b(?:[A-Z]|Inc|Corp|Co|Ltd|Jr|Sr|Mr|Mrs|Ms|Dr|St|vs|No)\.")
-LABELS = ["positive", "negative", "neutral"]
 YEAR = re.compile(r"\b(?:19[5-9]\d|20[0-4]\d)\b")
 CHECKPOINT_WEEKS = 50       # save the diff cache this often, so an interrupted run loses little
 STALE_YEARS = 2             # a sentence whose latest year is this much older than its week is old history
@@ -133,38 +133,27 @@ def week_sentences(ticker: str, revs: pd.DataFrame, weeks: pd.DatetimeIndex, cac
     return out[out["week"].isin(pairs["week"])].reset_index(drop=True)
 
 
-@lru_cache(maxsize=2)
-def _classifier(model: str):
-    import torch
-    from transformers import pipeline
-    device = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
-    return pipeline("text-classification", model=model, top_k=None, device=device)
-
-
-def score(sentences: list[str], model: str | None = None, batch_size: int | None = None) -> pd.DataFrame:
-    """One row per sentence: `label` (positive/negative/neutral) and each label's probability `p_<label>`."""
+def score(sentences: list[str], cache_file: Path | None = None) -> pd.DataFrame:
+    """The shared FinBERT scorer's columns per sentence (label, sentiment_pos/neg/neu/net)."""
     p = params()
-    clf = _classifier(model or p["model"])
-    res = clf(list(sentences), batch_size=batch_size or p["batch_size"], truncation=True) if sentences else []
-    probs = pd.DataFrame([{f"p_{d['label'].lower()}": d["score"] for d in r} for r in res],
-                         columns=[f"p_{lab}" for lab in LABELS])
-    probs.insert(0, "label", probs.idxmax(axis=1).str[2:] if len(probs) else pd.Series(dtype=str))
-    return probs
+    return finbert_scorer.score(list(sentences), cache_file, p["model"], p["batch_size"])
 
 
 def weekly_sentiment(scored: pd.DataFrame) -> pd.DataFrame:
-    """Per ticker-week: sentences scored, positive / negative counts, `net` = (pos - neg) / n and `tone`.
+    """Per ticker-week: the mean of each probability, sentiment_net = pos - neg, n_scored, and label counts.
 
-    `tone` is the mean of p_positive - p_negative. Weeks whose edits added no sentence have n_sent 0.
+    `n_pos` / `n_neg` count sentences labelled positive / negative (a week is "negative" when n_neg > n_pos).
+    Weeks whose edits added no sentence have n_scored 0 and NaN probabilities.
     """
-    s = scored.assign(has=scored["sentence"].ne(""), pos=scored["label"].eq("positive"),
-                      neg=scored["label"].eq("negative"),
-                      t=(scored["p_positive"] - scored["p_negative"]).where(scored["sentence"].ne("")))
+    s = scored[scored["sentence"].ne("")].assign(pos=lambda d: d["label"].eq("positive"),
+                                                 neg=lambda d: d["label"].eq("negative"))
     g = s.groupby(["ticker", "week"])
-    out = pd.DataFrame({"n_sent": g["has"].sum(), "n_pos": g["pos"].sum(), "n_neg": g["neg"].sum(),
-                        "tone": g["t"].mean()}).reset_index()
-    out["net"] = (out["n_pos"] - out["n_neg"]) / out["n_sent"].replace(0, np.nan)
-    return out
+    out = g[["sentiment_pos", "sentiment_neg", "sentiment_neu"]].mean()
+    out["sentiment_net"] = out["sentiment_pos"] - out["sentiment_neg"]
+    out = out.assign(n_scored=g.size(), n_pos=g["pos"].sum(), n_neg=g["neg"].sum())
+    weeks = scored[["ticker", "week"]].drop_duplicates().set_index(["ticker", "week"])
+    out = weeks.join(out).reset_index()
+    return out.fillna({"n_scored": 0, "n_pos": 0, "n_neg": 0}).astype({"n_scored": int, "n_pos": int, "n_neg": int})
 
 
 def stale(scored: pd.DataFrame) -> pd.Series:
@@ -186,7 +175,7 @@ def sentiment_returns(weekly: pd.DataFrame, prices: pd.DataFrame, view_spikes: p
     view-spike weeks are compared: negative-edit spikes minus positive-edit spikes.
     """
     from src.wiki_prices import bootstrap_diff
-    d = weekly[weekly["n_sent"] > 0].merge(prices, on=["ticker", "week"])
+    d = weekly[weekly["n_scored"] > 0].merge(prices, on=["ticker", "week"])
     d = d.assign(negative=d["n_neg"] > d["n_pos"], positive=d["n_pos"] > d["n_neg"])
     groups = {"negative edits vs rest": (d, "negative"), "positive edits vs rest": (d, "positive")}
     if view_spikes is not None:
@@ -230,7 +219,7 @@ def build(period: str = "research", tickers: list[str] | None = None) -> pd.Data
             print(tk, title, len(frames[-1]), "rows", flush=True)
     sents = pd.concat(frames, ignore_index=True)
     has = sents["sentence"].ne("")
-    scores = score(sents.loc[has, "sentence"].tolist())
+    scores = score(sents.loc[has, "sentence"].tolist(), PROCESSED / "finbert_cache.csv")
     scored = sents.join(scores.set_index(sents.index[has]))
     PROCESSED.mkdir(parents=True, exist_ok=True)
     scored.to_csv(PROCESSED / f"edit_sentiment_sentences_{period}.csv", index=False)
@@ -253,14 +242,14 @@ def analyse(period: str = "research") -> dict:
     spikes = spike_flags(pd.read_csv(shared_path(period)), "wikipedia_views")[["week", "ticker", "spike"]]
     boot = config.load()["wikipedia"]["bootstrap"]
     res = sentiment_returns(weekly, prices, spikes, boot["n_resamples"], boot["seed"])
-    scored = weekly[weekly["n_sent"] > 0].merge(prices, on=["ticker", "week"])
+    scored = weekly[weekly["n_scored"] > 0].merge(prices, on=["ticker", "week"])
     is_stale = stale(sc)
-    summary = {"ticker_weeks_with_edits": len(weekly), "ticker_weeks_scored": int((weekly["n_sent"] > 0).sum()),
+    summary = {"ticker_weeks_with_edits": len(weekly), "ticker_weeks_scored": int((weekly["n_scored"] > 0).sum()),
                "sentences": len(sc), **{f"share_{k}": v for k, v in sc["label"].value_counts(normalize=True).items()},
                "share_stale": is_stale.mean(), "share_negative_stale": sc.loc[is_stale, "label"].eq("negative").mean(),
                "share_negative_fresh": sc.loc[~is_stale, "label"].eq("negative").mean(),
-               "corr_net_same_week": scored["net"].corr(scored["abn_ret"]),
-               "corr_net_next_week": scored["net"].corr(scored["abn_ret_next1"])}
+               "corr_net_same_week": scored["sentiment_net"].corr(scored["abn_ret"]),
+               "corr_net_next_week": scored["sentiment_net"].corr(scored["abn_ret_next1"])}
     out = ROOT / "results" / "wikipedia"
     out.mkdir(parents=True, exist_ok=True)
     res.to_csv(out / "edit_sentiment_returns.csv", index=False)

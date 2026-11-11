@@ -70,32 +70,33 @@ def test_week_sentences_caches_and_resumes(tmp_path, monkeypatch):
     assert calls == [(1, 2), (2, 3)] and out["sentence"].tolist()[-1] == ""
 
 
-def test_score_maps_model_output_to_labels(monkeypatch):
-    def fake_clf(texts, **kw):
-        return [[{"label": "negative", "score": 0.8}, {"label": "positive", "score": 0.1},
-                 {"label": "neutral", "score": 0.1}] for _ in texts]
-
-    monkeypatch.setattr(wiki_sentiment, "_classifier", lambda model: fake_clf)
+def test_score_uses_the_shared_scorer_columns(monkeypatch):
+    from src.sentiment import finbert_scorer
+    monkeypatch.setattr(finbert_scorer, "probabilities", lambda texts, model, batch_size: pd.DataFrame(
+        {"positive": 0.1, "negative": 0.8, "neutral": 0.1}, index=range(len(texts))))
     out = score(["a", "b"])
-    assert out["label"].tolist() == ["negative", "negative"] and np.isclose(out["p_negative"], 0.8).all()
+    assert out["label"].tolist() == ["negative", "negative"] and np.isclose(out["sentiment_neg"], 0.8).all()
+    assert np.isclose(out["sentiment_net"], -0.7).all()
 
 
 def test_weekly_sentiment_counts_and_net():
     w = pd.Timestamp("2024-01-08")
     scored = pd.DataFrame({"ticker": ["A", "A", "A", "B"], "week": [w] * 4,
                            "sentence": ["x", "y", "z", ""], "label": ["positive", "negative", "negative", None],
-                           "p_positive": [0.9, 0.1, 0.0, np.nan], "p_negative": [0.0, 0.8, 0.9, np.nan]})
+                           "sentiment_pos": [0.9, 0.1, 0.0, np.nan], "sentiment_neg": [0.0, 0.8, 0.9, np.nan],
+                           "sentiment_neu": [0.1, 0.1, 0.1, np.nan]})
     out = weekly_sentiment(scored).set_index("ticker")
-    assert out.loc["A", ["n_sent", "n_pos", "n_neg"]].tolist() == [3, 1, 2]
-    assert np.isclose(out.loc["A", "net"], -1 / 3) and np.isclose(out.loc["A", "tone"], (0.9 - 0.7 - 0.9) / 3)
-    assert out.loc["B", "n_sent"] == 0 and np.isnan(out.loc["B", "net"])
+    assert out.loc["A", ["n_scored", "n_pos", "n_neg"]].tolist() == [3, 1, 2]
+    assert np.isclose(out.loc["A", "sentiment_net"], (0.9 - 0.7 - 0.9) / 3)
+    assert np.isclose(out.loc["A", "sentiment_neu"], 0.1)
+    assert out.loc["B", "n_scored"] == 0 and np.isnan(out.loc["B", "sentiment_net"])
 
 
 def test_sentiment_returns_finds_lower_returns_after_negative_edits():
     rng = np.random.default_rng(0)
     weeks = pd.date_range("2020-01-06", periods=200, freq="7D")
     neg = rng.random(200) < 0.3
-    weekly = pd.DataFrame({"ticker": "A", "week": weeks, "n_sent": 3, "n_pos": np.where(neg, 0, 2),
+    weekly = pd.DataFrame({"ticker": "A", "week": weeks, "n_scored": 3, "n_pos": np.where(neg, 0, 2),
                            "n_neg": np.where(neg, 2, 0)})
     abn = rng.normal(0, 0.01, 200) - np.where(neg, 0.03, 0)
     prices = pd.DataFrame({"ticker": "A", "week": weeks, "abn_ret": abn,

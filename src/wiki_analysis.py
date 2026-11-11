@@ -5,6 +5,7 @@
   daily_peak_lag    days between the peak-views day and the peak-edits day around view spikes
   tag_lift          how much more often each summary tag appears in view-spike weeks
   summary_tone      VADER tone of edit summaries (do summaries carry tone at all?)
+  summary_tone_compare  VADER vs the shared FinBERT scorer on the same summaries (Week 3)
   last_weeks_table  Wikipedia columns of the last-3-weeks spike check (with Joshua)
 """
 import numpy as np
@@ -113,6 +114,31 @@ def summary_tone(comments: pd.Series) -> dict:
     return {"n_summaries": len(c), "share_empty": 1 - len(c) / len(comments),
             "share_neutral": float(np.mean(np.abs(s) < VADER_CUTOFF)),
             "share_positive": float(np.mean(s >= VADER_CUTOFF)), "share_negative": float(np.mean(s <= -VADER_CUTOFF))}
+
+
+def summary_tone_compare(comments: pd.Series, cache_file=None) -> pd.DataFrame:
+    """Label shares of non-empty edit summaries under VADER and FinBERT, and how often the two agree.
+
+    One row per scorer (vader, finbert) with share_neutral / share_positive / share_negative, plus an
+    `agree` row: the share of summaries both label the same, overall and within each VADER label.
+    """
+    from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
+    from src.sentiment.finbert_scorer import score
+    c = comments[comments.fillna("").str.strip() != ""].tolist()
+    sia = SentimentIntensityAnalyzer()
+    v = np.array([sia.polarity_scores(t)["compound"] for t in c])
+    labels = pd.DataFrame({"vader": np.where(v >= VADER_CUTOFF, "positive",
+                                             np.where(v <= -VADER_CUTOFF, "negative", "neutral")),
+                           "finbert": score(c, cache_file)["label"].to_numpy()})
+    rows = {k: {f"share_{lab}": (labels[k] == lab).mean() for lab in ("neutral", "positive", "negative")}
+            for k in ("vader", "finbert")}
+    same = labels["vader"] == labels["finbert"]
+    rows["agree"] = {f"share_{lab}": same[labels["vader"] == lab].mean() for lab in ("neutral", "positive", "negative")}
+    out = pd.DataFrame(rows).T
+    out["overall"] = [np.nan, np.nan, same.mean()]
+    out["n_summaries"] = len(c)
+    return out
 
 
 def last_weeks_table(att_recent: pd.DataFrame, prices: pd.DataFrame, weeks: list[str], tickers: list[str]) -> pd.DataFrame:
