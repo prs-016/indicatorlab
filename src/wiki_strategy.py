@@ -11,7 +11,8 @@ Rules, fixed before the first run (parameters in config.yaml `wikipedia.strategy
   sizing    equal weight across open positions, at most 10% per stock, rest in cash
   regime    50% of that exposure while SPY closed below its 200-day average the day before
   costs     10 bps per unit of turnover (config `strategy.cost_bps`)
-Test: research data only, train 2016-2019 and test 2020 to Sep 2025 (Wikipedia starts Jul 2015).
+Test: research data only, the team split in config.yaml `wikipedia.split` (Week 3: train Jun 2016 to
+Dec 2021, test Jan 2022 to Sep 2025; Wikipedia starts Jul 2015).
 Benchmarks: SPY, the equal-weight universe, and 200 random portfolios that keep every trade's dates
 (same number of names, holding periods, sizing and regime) but pick a random stock not already held.
 

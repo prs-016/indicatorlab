@@ -182,8 +182,9 @@ wikipedia:
     batch_size: 32
   edit_burst_ratio: 2.0       # an edit burst: edits >= 2x their 8-week median (Product Buzz Lead, step 3)
   bootstrap: {n_resamples: 1000, ci: 0.95, seed: 42}
-  # Wikipedia starts Jul 2015 and spike flags need 8 + 26 weeks of history, so train starts in 2016.
-  split: {train: [2016-01-01, 2019-12-31], test: [2020-01-01, 2025-09-30]}
+  # Team split (Week 3 guide), shared with Reddit, India and HK. Wikipedia starts Jul 2015 and spike flags
+  # need 8 + 26 weeks of history, so the earliest usable train start is 2016.
+  split: {train: [2016-06-01, 2021-12-31], test: [2022-01-01, 2025-09-30]}
   # Wikipedia-only strategy (rules fixed before the first run; see src/wiki_strategy.py).
   strategy:
     hold_weeks: 4              # time-limit exit
@@ -237,3 +238,16 @@ wikipedia:
       INTC: {en: Intel}
       SBUX: {en: Starbucks}
       BA: {en: Boeing}
+
+# The dashboard API (src/api/, Week 3). Data comes from the attention record tables the pipelines write
+# under processed/ (S3 bucket indicatorlab-data, or data/ locally) and the live quote tables.
+api:
+  cache_seconds: 600          # reread a table at most every 10 minutes
+  hot_ratio: 1.0              # "hot": trailing-7-day attention above its 8-week baseline
+  repeat_weeks: 3             # a spike "repeats" if the same source spiked in the 3 weeks before
+  # Trading sessions for the open/closed flag (exchange holidays are not modelled yet).
+  sessions:
+    us: {tz: America/New_York, hours: [["09:30", "16:00"]]}
+    india: {tz: Asia/Kolkata, hours: [["09:15", "15:30"]]}
+    hk: {tz: Asia/Hong_Kong, hours: [["09:30", "12:00"], ["13:00", "16:00"]]}
+  live_tables: {india: indicatorlab-live-india, hk: indicatorlab-live-hk}

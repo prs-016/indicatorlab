@@ -1,0 +1,20 @@
+[
+ {
+  "symbol": "TCS.NS",
+  "price": 4100.5,
+  "change_pct": -0.4,
+  "volume": 120000,
+  "ts_exchange": "2026-11-10T15:29:58+05:30",
+  "ts_received": "2026-11-10T09:59:59Z",
+  "source": "yahoo"
+ },
+ {
+  "symbol": "RELIANCE.NS",
+  "price": 2950.0,
+  "change_pct": 1.2,
+  "volume": 900000,
+  "ts_exchange": "2026-11-10T15:29:59+05:30",
+  "ts_received": "2026-11-10T10:00:00Z",
+  "source": "yahoo"
+ }
+]
