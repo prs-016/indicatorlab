@@ -2,7 +2,7 @@
 
 ## Result
 
-Seven of the eight operational checklist lines are complete. The only partial item is a literal real-time 09:30–16:05 HKT polling run: the poller is implemented and the latest completed session was replay-audited, but it would be misleading to label that replay as a live observation.
+The local data and research implementation is substantially complete, but the full assignment workflow is not finished. Step 3 still needs a literal live 09:30-16:05 HKT polling run. Step 6 has working HSI loader code, but the separate personal fork, `hsi-universe` branch, issue, pull request and requested review have not been completed. Step 7 has local strategy evidence, but the original five momentum diagnostics used top 10 rather than the specified top 2 and have not been logged to the shared Google Sheet.
 
 The data and engineering controls pass:
 
@@ -26,6 +26,30 @@ Signals are calculated after the close and executed at the next close. All strat
 | 20-day risk-adjusted momentum | Top 10 by momentum ÷ volatility, weekly | 0.011 | 0.310 | 100.0% | Watch | Strong test, but the train percentile was only 86.5%. |
 | TGQM composite | Monthly 50% 12-to-1 momentum, 30% low volatility, 20% reversal; inverse-vol top 10, 15% cap, 50% exposure below HSI 200DMA | 0.096 | 0.613 | 97.5% | **Keep** | Cleared the 90% random hurdle in train and test and beat the HSI test Sharpe of 0.092. |
 
+## Five advanced candidates
+
+These are institutional-style price/volume models, not proprietary strategies from a specific firm. Each has multiple signals, explicit entry and exit rules, capped inverse-volatility sizing, a regime rule, 10 bps one-way turnover costs, next-close execution and the effective-dated HSI universe. The decision requires positive holdout IC, a holdout Sharpe above the HSI, at least the 90th percentile of 200 matched random portfolios and a positive training Sharpe.
+
+| Strategy | What it does | Test IC | Test Sharpe | % random beaten | Decision | Why |
+|---|---|---:|---:|---:|---|---|
+| Residual Momentum + Low Risk | Combines market-neutralized momentum with low idiosyncratic volatility | 0.083 | 0.639 | 98.0% | **Keep** | Strongest advanced Sharpe and positive ranking power after removing broad-market movement. |
+| Multi-Horizon Trend Consensus | Combines 1-, 3- and 12-to-1-month momentum | 0.066 | 0.530 | 94.5% | **Keep** | Agreement across horizons reduced reliance on one noisy momentum window. |
+| Breakout + Volume Confirmation | Combines 63-day breakouts, medium momentum and unusual volume | 0.041 | 0.425 | 65.5% | Drop | The return looked good, but matched random portfolios reproduced or beat it too often. |
+| Crash-Aware Defensive Reversal | Combines short reversal, low downside risk and low market beta | 0.059 | 0.434 | 98.5% | **Keep** | Defensive stock selection added useful ranking power in stressed regimes. |
+| Regime-Adaptive Factor Ensemble | Uses momentum/trend/volume in bull regimes and reversal/low-risk signals in bear regimes | 0.072 | 0.472 | 92.5% | **Keep** | The factor switch stayed predictive in the holdout and cleared the random hurdle. |
+
+## Five non-momentum candidates
+
+These candidates avoid positive trend and breakout ranking. Four use risk, liquidity, dividend or range information without ranking past return direction. Oversold Mean Reversion uses recent returns contrarily rather than following momentum. The same point-in-time universe, next-close timing, sizing, costs and random-baseline controls apply.
+
+| Strategy | What it does | Test IC | Test Sharpe | % random beaten | Decision | Why |
+|---|---|---:|---:|---:|---|---|
+| Defensive Low Risk | Combines low beta, low downside deviation and low idiosyncratic volatility | 0.084 | 0.494 | 98.5% | **Keep** | Positive holdout ranking power and a result that random selection rarely reproduced. |
+| Oversold Mean Reversion | Buys short-term losers below their 20-day average with low RSI | -0.012 | 0.054 | 46.5% | Drop | The holdout IC turned negative and the Sharpe did not beat the HSI. |
+| Liquidity Quality | Favors high, stable traded value and low Amihud price impact | 0.049 | 0.351 | 82.0% | Drop | Positive result, but it failed the 90th-percentile random hurdle. |
+| Shareholder Yield Quality | Combines dividend yield, payment frequency and low downside risk | 0.066 | 0.670 | 100.0% | **Keep** | Strongest non-momentum Sharpe and no matched random portfolio beat it. |
+| Volatility Compression | Selects narrow ranges, stable volatility and small overnight gaps | 0.079 | 0.609 | 98.0% | **Keep** | Strong holdout IC, lower drawdown and a high random percentile. |
+
 The generic assignment standard asks for a 2011 training start, but point-in-time membership begins in late 2014. The train therefore starts in 2015 rather than fabricating pre-source membership.
 
 ## Data and live-source findings
@@ -42,6 +66,12 @@ The generic assignment standard asks for a 2011 training start, but point-in-tim
 
 - `outputs/HK_Week2_Checklist_and_Strategies.xlsx`: meeting-ready workbook.
 - `outputs/strategy_results.csv`: train/test results and decisions.
+- `outputs/advanced_strategy_results.csv`: train/test results for five advanced candidates.
+- `outputs/advanced_strategy_requirements.csv`: the eight required design fields for every advanced candidate.
+- `outputs/advanced_strategy_log.md`: concise advanced IC, Sharpe, decision and explanation table.
+- `outputs/non_momentum_strategy_results.csv`: train/test evidence for five non-momentum candidates.
+- `outputs/non_momentum_strategy_requirements.csv`: the eight required design fields for every non-momentum candidate.
+- `outputs/non_momentum_strategy_log.md`: concise non-momentum IC, Sharpe, decision and explanation table.
 - `outputs/random_baseline_results.csv`: all 2,400 random-period outcomes.
 - `outputs/hsi_membership_intervals.csv`: effective-dated membership table.
 - `outputs/hsi_review_count_checks.csv`: 19 official count controls.
@@ -49,6 +79,7 @@ The generic assignment standard asks for a 2011 training start, but point-in-tim
 - `outputs/live_source_readings.csv`: five repeat readings per public provider and focus ticker.
 - `live_poller.py`: one-minute full-session poller.
 - `hk_attention_config.json`: English/Chinese names, Wikipedia titles and subreddit targets.
+- `WHERE_TO_FIND_HK_WORK.md`: path map for Steps 2-7 and reproduction commands.
 
 ## Reproduce
 
@@ -60,6 +91,8 @@ python3 research/hk_market_history/download_hsi_history.py \
 python3 research/hk_market_history/validate_hsi_history.py research/hk_market_history
 python3 research/hk_week2/build_week2_evidence.py
 python3 research/hk_week2/backtest_hsi_strategies.py
+python3 research/hk_week2/backtest_advanced_hsi_strategies.py
+python3 research/hk_week2/backtest_non_momentum_hsi_strategies.py
 
 # Start before 09:30 HKT and leave running until after 16:05 HKT.
 python3 research/hk_week2/live_poller.py

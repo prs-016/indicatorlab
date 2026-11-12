@@ -1879,6 +1879,23 @@ def _cap_rows(records: list, max_rows: int) -> list | dict[str, object]:
 
 
 @mcp.tool
+def get_hk_quotes(
+    symbols: _lenient_str_list,
+    source: str = "auto",
+    max_age_seconds: float = 1200,
+) -> str:
+    """Fetch HK quote snapshots with provider time, currency, age and delay.
+
+    Yahoo HK quotes are 15 minutes delayed. Auto tries Tencent for missing or
+    stale Yahoo quotes; Tencent/Futu delay remains unknown. Futu requires local
+    OpenD quote rights and is explicit-only. Use get_market_data for bar history.
+    """
+    return _get_registry().execute("get_hk_quotes", {
+        "symbols": symbols, "source": source, "max_age_seconds": max_age_seconds,
+    })
+
+
+@mcp.tool
 def get_market_data(
     codes: _lenient_str_list,
     start_date: str,

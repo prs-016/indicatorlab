@@ -38,6 +38,7 @@ LIST_DICT_PARAMS = {
     "analyze_options_payoff": ("legs", "scenario_iv_values"),
     "run_swarm": ("variables",),
     "get_market_data": ("codes",),
+    "get_hk_quotes": ("symbols",),
     "get_fund_flow": ("codes",),
     "get_stock_profile": ("sections",),
     "run_shadow_backtest": ("markets",),
@@ -113,6 +114,29 @@ def test_coerce_json_string_passes_through_everything_else(mcp_server) -> None:
     # Non-JSON strings pass through so pydantic raises its normal type error.
     assert coerce("us") == "us"
     assert coerce("not json") == "not json"
+
+
+def test_hk_quotes_dispatches_coerced_symbols(mcp_server, monkeypatch) -> None:
+    """The MCP quote surface reaches the registry with its normalized array."""
+    from types import SimpleNamespace
+
+    captured = {}
+
+    def execute(name, params):
+        captured.update(name=name, params=params)
+        return '{"ok": true, "quotes": []}'
+
+    monkeypatch.setattr(
+        mcp_server, "_get_registry", lambda: SimpleNamespace(execute=execute)
+    )
+    result = asyncio.run(
+        mcp_server.mcp.call_tool("get_hk_quotes", {"symbols": '["0700.HK"]'})
+    )
+    assert captured == {
+        "name": "get_hk_quotes",
+        "params": {"symbols": ["0700.HK"], "source": "auto", "max_age_seconds": 1200},
+    }
+    assert '"ok": true' in _text(result)
 
 
 # ---------------------------------------------------------------------------

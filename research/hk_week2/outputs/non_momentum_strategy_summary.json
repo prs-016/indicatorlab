@@ -1,0 +1,20 @@
+{
+  "strategies_tested": 5,
+  "random_runs_per_strategy": 200,
+  "train": [
+    "2015-01-01",
+    "2019-12-31"
+  ],
+  "test": [
+    "2020-01-01",
+    "2025-09-30"
+  ],
+  "top_n": 10,
+  "decisions": {
+    "defensive_low_risk": "Keep",
+    "oversold_mean_reversion": "Drop",
+    "liquidity_quality": "Drop",
+    "shareholder_yield_quality": "Keep",
+    "volatility_compression": "Keep"
+  }
+}
