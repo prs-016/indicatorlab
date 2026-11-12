@@ -81,7 +81,8 @@ def test_spikes_empty_week_and_holdout_week(client):
     assert client.get("/spikes", params={"week": "2024-01-01"}).json() == []
     r = client.get("/spikes", params={"week": "2025-09-29"})
     assert r.status_code == 422 and "holdout" in r.json()["detail"]
-    assert client.get("/spikes").json()[0]["ticker"] == "AAPL"                    # default: latest research week
+    latest = client.get("/spikes").json()                                         # default: latest research week
+    assert latest[0]["ticker"] == "AAPL" and latest[0]["week"] == "2025-09-22"
 
 
 def test_hot_keeps_ratios_above_one_sorted_with_todays_move(client):
@@ -132,3 +133,18 @@ def test_runs_proxy_sends_the_key_server_side_only(client, monkeypatch):
     assert seen == {"url": "http://vibe.local:8899/runs", "headers": {"Authorization": "Bearer secret"}}
     client.get("/runs/a b")
     assert seen["url"].endswith("/runs/a%20b")
+
+
+def test_prices_are_research_weeks_only_and_unknown_ticker_is_404(client):
+    rows = client.get("/prices/aapl").json()
+    assert [r["week"] for r in rows] == ["2025-09-15"]                 # the Sep 29 week ends in the holdout
+    assert rows[0]["close"] == 230.0 and rows[0]["abn_ret"] == 0.01
+    assert client.get("/prices/ZZZZ").status_code == 404
+
+
+def test_edits_lists_a_weeks_summaries_with_tags_oldest_first(client):
+    rows = client.get("/edits/AAPL", params={"week": "2025-09-15"}).json()
+    assert [r["comment"] for r in rows] == ["Added Q4 earnings", "Reverted vandalism"]
+    assert rows[0]["tags"] == ["earnings"] and rows[1]["revert"] is True
+    assert client.get("/edits/AAPL", params={"week": "2025-09-08"}).json() == []
+    assert client.get("/edits/AAPL", params={"week": "2025-09-29"}).status_code == 422

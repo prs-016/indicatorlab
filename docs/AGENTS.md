@@ -141,17 +141,20 @@ Indian and Hong Kong stocks can be added as a config change. For the DS3 team an
 │   ├── wiki_analysis.py   # spike-vs-normal returns, edit timing, tags, tone, last-3-weeks table
 │   ├── wiki_strategy.py   # Wikipedia-only strategy with random-portfolio baseline
 │   ├── wiki_complex.py    # Week 3 complex strategies S1-S3, full evaluation, Vibe-Trading export
-│   ├── wiki_export.py     # attention records (wiki_weekly / wiki_current / prices_weekly parquet) for the API
+│   ├── wiki_export.py     # attention records (wiki_weekly / wiki_current / prices_weekly / wiki_edit_summaries parquet) for the API
 │   ├── sentiment/finbert_scorer.py  # Joshua's FinbertScorer, shared by Reddit and Wikipedia (+ ScoreCache)
 │   ├── trends_compare.py  # Google Trends alternatives (GDELT, trendspy) vs Wikipedia views
 │   └── api/               # FastAPI app: main.py, one router per source, dashboard.py (Week 3 routes),
 │                          # storage.py (reads data/ locally or s3://indicatorlab-data on AWS)
+├── frontend/
+│   ├── reddit_dashboard/  # Joshua's Week 2 Reddit page
+│   └── dashboard/     # dashboard v1 (static HTML + Chart.js 4.4.1; API URL in config.js)
 ├── tests/             # pytest tests for src/ (no network: HTTP calls are mocked)
 │   └── fixtures/api/  # small parquet/JSON tables for the API tests (make_fixtures.py rebuilds them)
 ├── docs/              # AGENTS.md, DesignDoc.md, codeReviewer.md, docs/wikipedia/ reports
 ├── data/              # git-ignored; raw/ never edited by hand
 │   ├── raw/wikipedia/  # views_{research,recent}/, revisions_{research,recent}/<lang>/, prices/
-│   ├── processed/     # wiki_weekly / wiki_current / prices_weekly.parquet (the bucket's processed/ layout)
+│   ├── processed/     # wiki_weekly / wiki_current / prices_weekly / wiki_edit_summaries.parquet (the bucket's processed/ layout)
 │   ├── processed/wikipedia/
 │   └── shared/        # attention_weekly_<source>_{research,recent}.csv in the team format
 │                      # (+ attention_weekly_wikipedia.csv, both periods, read by src/reddit)
@@ -184,9 +187,12 @@ cp .env.example .env   # then fill in your own local values — never commit .en
 - Attention records for the API and dashboard: `python -m src.wiki_export` (after the pipeline and sentiment)
 - Results notebook: `jupyter lab notebooks/wikipedia.ipynb` (Restart and Run All; needs the pipeline output)
 - API: `uvicorn src.api.main:app --reload --port 8000`, docs at http://localhost:8000/docs
-  (Week 2: `/tickers`, `/attention`, `/price`; Week 3: `/health`, `/attention/{ticker}`, `/sentiment/{ticker}`,
-  `/spikes`, `/hot`, `/live/{market}`, `/runs`). It reads `data/` unless `INDICATORLAB_DATA` is set
+  (Week 2: `/tickers`, `/attention`, `/price`; Week 3: `/health`, `/attention/{ticker}`, `/prices/{ticker}`,
+  `/edits/{ticker}`, `/sentiment/{ticker}`, `/spikes`, `/hot`, `/live/{market}`, `/runs`). It reads `data/` unless `INDICATORLAB_DATA` is set
   (e.g. `s3://indicatorlab-data`, which needs `boto3` and AWS credentials); see `.env.example`.
+- Dashboard v1: start the API with `CORS_ORIGINS=http://localhost:5173`, then
+  `python -m http.server 5173 -d frontend/dashboard` and open http://localhost:5173.
+  Details, `?api=` override and deploy steps: `frontend/dashboard/README.md`.
 
 ## Testing
 

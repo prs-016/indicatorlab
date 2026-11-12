@@ -32,9 +32,17 @@ pd.DataFrame({"ticker": ["AAPL", "MSFT", "RELIANCE.NS"], "market": ["us", "us", 
               "ratio": [3.0, 0.8, 1.5], "spike": pd.array([True, False, None], "boolean"), "sentiment_pos": None,
               "sentiment_neg": None, "sentiment_neu": None, "n_scored": 0,
               "as_of": pd.Timestamp("2026-11-10")}).to_parquet(HERE / "processed" / "wiki_current.parquet", index=False)
-pd.DataFrame({"ticker": ["AAPL", "MSFT"], "market": "us", "week": pd.Timestamp("2025-09-15"),
-              "abn_ret": [0.01, -0.05], "abn_ret_next1": [-0.03, 0.01]}).to_parquet(
+pd.DataFrame({"ticker": ["AAPL", "MSFT", "AAPL"], "market": "us",
+              "week": pd.to_datetime(["2025-09-15", "2025-09-15", "2025-09-29"]),   # Sep 29: holdout week
+              "close": [230.0, 510.0, 255.0], "ret": [0.02, -0.04, 0.03],
+              "abn_ret": [0.01, -0.05, 0.02], "abn_ret_next1": [-0.03, 0.01, 0.0]}).to_parquet(
     HERE / "processed" / "prices_weekly.parquet", index=False)
+pd.DataFrame({"ticker": "AAPL", "market": "us", "week": pd.to_datetime(["2025-09-15", "2025-09-15", "2025-09-29"]),
+              "timestamp": pd.to_datetime(["2025-09-16 10:00", "2025-09-15 08:00", "2025-09-30 09:00"]),
+              "title": "Apple_Inc.", "comment": ["Reverted vandalism", "Added Q4 earnings", "later edit"],
+              "delta": [-120.0, 340.0, 5.0], "revert": [True, False, False],
+              "tag_earnings": [False, True, False], "tag_legal": False}).to_parquet(
+    HERE / "processed" / "wiki_edit_summaries.parquet", index=False)
 (HERE / "live" / "india.json").write_text(json.dumps([
     {"symbol": "TCS.NS", "price": 4100.5, "change_pct": -0.4, "volume": 120000, "ts_exchange": "2026-11-10T15:29:58+05:30",
      "ts_received": "2026-11-10T09:59:59Z", "source": "yahoo"},

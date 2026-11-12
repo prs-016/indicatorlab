@@ -4,13 +4,16 @@
   GET /attention/{ticker}            weekly attention records (?source=reddit|wikipedia&market=&from=&to=)
   GET /sentiment/{ticker}            weekly sentiment: Reddit by subreddit group, Wikipedia edits
   GET /spikes                        every stock that spiked in a week (?week=YYYY-MM-DD&market=)
+  GET /prices/{ticker}               weekly close, return and abnormal return (?market=&from=&to=)
+  GET /edits/{ticker}                one week's Wikipedia edit summaries (?week=YYYY-MM-DD&market=)
   GET /hot                           stocks above their 8-week baseline right now (?market=us|india|hk|all)
   GET /live/{market}                 latest quote per symbol, and whether the market is open
   GET /runs, GET /runs/{run_id}      backtest results, proxied from the Vibe-Trading server
 
 Tables (processed/ in the bucket, see src/api/storage.py): wiki_weekly / reddit_weekly.parquet and
-wiki_current / reddit_current.parquet in the attention record format, prices_weekly.parquet for moves.
-Research endpoints (/attention, /sentiment, /spikes) never return a week that ends on or after the
+wiki_current / reddit_current.parquet in the attention record format, prices_weekly.parquet for moves,
+wiki_edit_summaries.parquet for edit summaries.
+Research endpoints (/attention, /sentiment, /spikes, /prices, /edits) never return a week that ends on or after the
 holdout start; /hot and /live are display of the current week, which the holdout rule allows.
 """
 from __future__ import annotations
@@ -69,6 +72,7 @@ class SentimentWeek(BaseModel):
 
 
 class Spike(BaseModel):
+    week: date
     ticker: str
     market: str
     source: str
@@ -78,6 +82,22 @@ class Spike(BaseModel):
     abn_ret_week: float | None
     abn_ret_next_week: float | None
     timing: str | None    # "after": the bigger abnormal move was the spike week itself; "before": the next week
+
+
+class PriceWeek(BaseModel):
+    week: date
+    close: float | None
+    ret: float | None
+    abn_ret: float | None    # return minus beta x benchmark return
+
+
+class EditSummary(BaseModel):
+    timestamp: datetime
+    title: str
+    comment: str
+    delta: float | None      # bytes added (negative: removed)
+    revert: bool
+    tags: list[str]          # summary keyword groups from config.yaml wikipedia.edit_tags
 
 
 class HotRow(BaseModel):
@@ -237,10 +257,7 @@ def spikes(storage: StorageDep, week: date | None = None, market: str | None = N
     if not frames:
         return []
     att = pd.concat(frames, ignore_index=True)
-    w = pd.Timestamp(week) if week else att["week"].max()
-    if w + pd.Timedelta(days=6) >= _holdout():
-        raise HTTPException(422, f"week {w.date()} is in the holdout (from {_holdout().date()}); "
-                                 "use /hot for the current week")
+    w = _research_week(week) if week else att["week"].max()
     if market:
         att = att[att["market"] == market.lower()]
     now = att[(att["week"] == w) & att["spike"]]
@@ -254,11 +271,55 @@ def spikes(storage: StorageDep, week: date | None = None, market: str | None = N
         a = _num(p["abn_ret"].get((r.ticker, r.market))) if "abn_ret" in p else None
         n = _num(p["abn_ret_next1"].get((r.ticker, r.market))) if "abn_ret_next1" in p else None
         pos, neg = getattr(r, "sentiment_pos", None), getattr(r, "sentiment_neg", None)
-        rows.append({"ticker": r.ticker, "market": r.market, "source": r.source, "ratio": _num(r.ratio),
+        rows.append({"week": w.date(), "ticker": r.ticker, "market": r.market, "source": r.source,
+                     "ratio": _num(r.ratio),
                      "sentiment_net": _num(pos - neg) if pos is not None and neg is not None else None,
                      "repeat": (r.ticker, r.source) in repeat, "abn_ret_week": a, "abn_ret_next_week": n,
                      "timing": None if a is None or n is None else ("after" if abs(a) >= abs(n) else "before")})
     return rows
+
+
+def _research_week(week: date) -> pd.Timestamp:
+    w = pd.Timestamp(week)
+    if w + pd.Timedelta(days=6) >= _holdout():
+        raise HTTPException(422, f"week {w.date()} is in the holdout (from {_holdout().date()})")
+    return w
+
+
+@router.get("/prices/{ticker}", response_model=list[PriceWeek])
+def prices(ticker: str, storage: StorageDep, market: str | None = None,
+           start: Annotated[date | None, Query(alias="from")] = None,
+           end: Annotated[date | None, Query(alias="to")] = None) -> list[dict]:
+    """Weekly close, return and abnormal return for one stock, oldest first (research weeks only)."""
+    p = research_weeks(storage.table("processed/prices_weekly.parquet"))
+    t = ticker.upper()
+    p = p[p["ticker"] == t] if not p.empty else p
+    if p.empty:
+        raise HTTPException(404, f"unknown ticker {t}: no prices for it")
+    if market:
+        p = p[p["market"] == market.lower()]
+    if start:
+        p = p[p["week"] >= pd.Timestamp(start)]
+    if end:
+        p = p[p["week"] <= pd.Timestamp(end)]
+    return _rows(p.sort_values("week")[list(PriceWeek.model_fields)])
+
+
+@router.get("/edits/{ticker}", response_model=list[EditSummary])
+def edits(ticker: str, week: date, storage: StorageDep, market: str | None = None) -> list[dict]:
+    """Wikipedia edits to a stock's article(s) in one research week, oldest first (empty if none)."""
+    w = _research_week(week)
+    e = storage.table("processed/wiki_edit_summaries.parquet")
+    if e.empty:
+        return []
+    e = e[(e["ticker"] == ticker.upper()) & (pd.to_datetime(e["week"]) == w)]
+    if market:
+        e = e[e["market"] == market.lower()]
+    tag_cols = [c for c in e.columns if c.startswith("tag_")]
+    tags = e[tag_cols].apply(lambda r: [c.removeprefix("tag_") for c in tag_cols if r[c]], axis=1) \
+        if len(e) else pd.Series(dtype=object)
+    out = e.assign(tags=tags)[list(EditSummary.model_fields)].sort_values("timestamp")
+    return [{**r, "delta": _num(r["delta"]), "revert": bool(r["revert"])} for r in out.to_dict("records")]
 
 
 def market_open(market: str, now: datetime | None = None) -> tuple[bool, datetime]:

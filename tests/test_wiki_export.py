@@ -37,3 +37,16 @@ def test_current_record_with_a_missing_day_has_no_value():
     daily = pd.Series(100.0, index=pd.date_range("2024-01-01", "2024-09-25")).drop(pd.Timestamp("2024-09-22"))
     r = current_record(daily, "AAPL", "US")
     assert np.isnan(r["value"]) and not r["spike"]
+
+
+def test_edit_summaries_keep_whole_research_weeks_and_drop_usernames():
+    from src.wiki_export import edit_summaries
+    revs = pd.DataFrame({"revid": [1, 2, 3, 4], "user": "someone", "size": [100, 150, 140, 160],
+                         "timestamp": pd.to_datetime(["2025-09-14", "2025-09-16", "2025-09-24", "2025-09-30"]),
+                         "comment": [None, "Q3 earnings", "Reverted vandalism", "late"],
+                         "before_start": [True, False, False, False], "title": "Apple_Inc."})
+    e = edit_summaries(revs, "AAPL", "US", pd.Timestamp("2025-10-01"))
+    assert e["comment"].tolist() == ["Q3 earnings", "Reverted vandalism"]   # Sep 30 is in the Sep 29 week
+    assert e["delta"].tolist() == [50, -10] and e["revert"].tolist() == [False, True]
+    assert e["tag_earnings"].tolist() == [True, False] and "user" not in e
+    assert (e["market"] == "us").all()

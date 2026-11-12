@@ -70,7 +70,8 @@ python -m src.wiki_sentiment      # FinBERT sentiment of the text added to each 
 python -m src.wiki_complex        # Week 3 strategies S1-S3: IC, Sharpe vs SPY, random entry timing, drop-one, deflated Sharpe
 python -m src.wiki_export         # attention records for the API: data/processed/wiki_*.parquet
 jupyter lab notebooks/wikipedia.ipynb   # Week 2 results (Restart and Run All)
-uvicorn src.api.main:app --reload # /health, /attention/{ticker}, /sentiment, /spikes, /hot, /live, /runs
+uvicorn src.api.main:app --reload # /health, /attention/{ticker}, /prices, /edits, /sentiment, /spikes, /hot, /live, /runs
+python -m http.server 5173 -d frontend/dashboard   # dashboard v1 (see frontend/dashboard/README.md)
 pytest                            # tests, no network needed
 ```
 

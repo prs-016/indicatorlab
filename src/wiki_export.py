@@ -10,7 +10,9 @@ week (src/wiki_sentiment.py). Edits ride along in the same row as `edits`, `edit
   wiki_weekly.parquet    research weeks only (ending before the holdout), from the shared weekly table
   wiki_current.parquet   "Hot right now": trailing 7 days of views to the last day Wikimedia has
                          published, against the median of the 8 full weeks before them
-  prices_weekly.parquet  research weeks of the weekly price panel (for the API's /spikes)
+  prices_weekly.parquet  research weeks of the weekly price panel (for the API's /spikes and /prices)
+  wiki_edit_summaries.parquet  research-period edits (time, summary, size change, revert, tags; no
+                         usernames), for the dashboard's "What happened" panel (/edits)
 
     python -m src.wiki_export            # writes them to data/processed/, the bucket's processed/ layout
 """
@@ -19,12 +21,14 @@ import pandas as pd
 
 from src import config
 from src.wiki_attention import flag_spikes, week_start, weekly
+from src.wiki_edits import edit_table
 
 RECORD_COLS = ["ticker", "market", "source", "week", "value", "baseline", "ratio", "spike",
                "sentiment_pos", "sentiment_neg", "sentiment_neu", "n_scored"]
 EDIT_COLS = ["edits", "edits_baseline", "edits_ratio", "edits_spike"]
 MARKET_NAMES = {"US": "us", "IN": "india", "HK": "hk"}   # config codes -> the record's market names
 SENT_COLS = ["sentiment_pos", "sentiment_neg", "sentiment_neu", "n_scored"]
+SUMMARY_COLS = ["ticker", "market", "week", "timestamp", "title", "comment", "delta", "revert"]
 TRAILING_DAYS = 7
 
 
@@ -73,16 +77,41 @@ def current_record(daily: pd.Series, ticker: str, market: str) -> dict:
             "sentiment_neu": np.nan, "n_scored": 0, "as_of": as_of}
 
 
+def edit_summaries(revs: pd.DataFrame, ticker: str, market: str, holdout: pd.Timestamp) -> pd.DataFrame:
+    """One row per edit in a week ending before the holdout: week, time, article, summary, size change,
+    revert and tag flags."""
+    e = edit_table(revs.assign(comment=revs["comment"].fillna("")))
+    e = e.assign(ticker=ticker, market=MARKET_NAMES[market], week=week_start(e["timestamp"]))
+    e = e[e["week"] + pd.Timedelta(days=6) < holdout]
+    tags = [c for c in e.columns if c.startswith("tag_")]
+    return e[SUMMARY_COLS + tags].reset_index(drop=True)
+
+
 def build(market: str = "US") -> dict[str, pd.DataFrame]:
-    """Write wiki_weekly.parquet and wiki_current.parquet from the pipeline's files."""
-    from src.wiki_pipeline import PROCESSED, RAW, ROOT, shared_path, universe
+    """Write the wiki_*.parquet tables and prices_weekly.parquet from the pipeline's files."""
+    from src.wiki_pipeline import (
+        PROCESSED,
+        RAW,
+        ROOT,
+        article_titles,
+        cache_stem,
+        shared_path,
+        universe,
+    )
     holdout = pd.Timestamp(config.holdout_start())
-    sent_f = PROCESSED / "edit_sentiment_weekly_research.csv"
-    sent = pd.read_csv(sent_f) if sent_f.exists() else None
+    # edit sentiment for every stock (`python -m src.wiki_sentiment strategy`), else the tracked stocks only
+    sent_f = next((f for f in (PROCESSED / "edit_sentiment_weekly_research_strategy.csv",
+                               PROCESSED / "edit_sentiment_weekly_research.csv") if f.exists()), None)
+    sent = pd.read_csv(sent_f) if sent_f else None
     wk = weekly_records(pd.read_csv(shared_path("research")), sent)
     wk = wk[wk["week"] + pd.Timedelta(days=6) < holdout]
-    rows = []
-    for ticker in universe(market):
+    rows, summaries = [], []
+    for ticker, titles in universe(market).items():
+        for lang, title in article_titles(titles):   # the cached research-period revisions, no network
+            f = RAW / "revisions_research" / lang / f"{cache_stem(ticker, titles, lang, title)}.csv"
+            if f.exists():
+                revs = pd.read_csv(f, parse_dates=["timestamp"]).assign(title=title)
+                summaries.append(edit_summaries(revs, ticker, market, holdout))
         views = [pd.read_csv(RAW / f"views_{p}" / f"{ticker}.csv", index_col=0, parse_dates=True)[ticker]
                  for p in ("research", "recent")]
         rows.append(current_record(pd.concat(views), ticker, market))
@@ -94,7 +123,9 @@ def build(market: str = "US") -> dict[str, pd.DataFrame]:
     wk.to_parquet(out / "wiki_weekly.parquet", index=False)
     cur.to_parquet(out / "wiki_current.parquet", index=False)
     prices.to_parquet(out / "prices_weekly.parquet", index=False)
-    return {"weekly": wk, "current": cur, "prices": prices}
+    edits = pd.concat(summaries, ignore_index=True)
+    edits.to_parquet(out / "wiki_edit_summaries.parquet", index=False)
+    return {"weekly": wk, "current": cur, "prices": prices, "edits": edits}
 
 
 if __name__ == "__main__":

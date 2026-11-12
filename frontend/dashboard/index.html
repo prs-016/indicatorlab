@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indicator Lab Dashboard</title>
+<script src="config.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* Tokens from frontend/reddit_dashboard so both pages look the same. Series colours were checked with the
+   dataviz palette validator in light and dark mode (blue/orange/green and blue/amber/green both pass). */
+:root {
+  --surface-0: #f4f3ef; --surface-1: #fcfcfb; --border: #e6e5e0;
+  --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #85847e;
+  --series-1: #2a78d6; --series-2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --good: #008300; --warn: #c98500; --bad: #e34948;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface-0: #121211; --surface-1: #1a1a19; --border: #2e2e2c;
+    --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e88;
+    --series-1: #3987e5; --series-2: #d95926; --s3: #199e70; --s4: #c98500;
+    --good: #2fa52f; --warn: #e0a020; --bad: #e66767;
+  }
+}
+:root[data-theme="dark"] {
+  --surface-0: #121211; --surface-1: #1a1a19; --border: #2e2e2c;
+  --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e88;
+  --series-1: #3987e5; --series-2: #d95926; --s3: #199e70; --s4: #c98500;
+  --good: #2fa52f; --warn: #e0a020; --bad: #e66767;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--surface-0); color: var(--text-primary);
+  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; }
+main { max-width: 1180px; margin: 0 auto; padding: 20px 16px 64px; }
+header.top { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+h1 { font-size: 21px; margin: 0 0 2px; letter-spacing: -0.01em; }
+h2 { font-size: 15px; margin: 0 0 4px; }
+.sub { color: var(--text-secondary); font-size: 13px; }
+.muted { color: var(--text-muted); font-size: 12px; }
+nav { display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 14px; }
+nav a { color: var(--text-secondary); text-decoration: none; padding: 8px 12px; border-bottom: 2px solid transparent; font-size: 13.5px; }
+nav a.on { color: var(--text-primary); border-bottom-color: var(--text-primary); font-weight: 600; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-bottom: 14px; }
+section { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 14px; }
+.sechead { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+button, select, input { font: inherit; color: var(--text-primary); background: var(--surface-1); border: 1px solid var(--border); border-radius: 7px; padding: 5px 10px; }
+button { cursor: pointer; }
+button:hover { border-color: var(--text-muted); }
+.seg { display: inline-flex; flex-wrap: wrap; gap: 4px; }
+.seg button { padding: 4px 10px; font-size: 13px; }
+.seg button[aria-pressed="true"] { background: var(--text-primary); color: var(--surface-1); border-color: var(--text-primary); }
+.tablewrap { overflow-x: auto; }
+.tablewrap.tall { max-height: 360px; overflow-y: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+th { color: var(--text-secondary); font-weight: 500; font-size: 12px; position: sticky; top: 0; background: var(--surface-1); }
+td.num, th.num { text-align: right; }
+td.wrap { white-space: normal; min-width: 260px; }
+tr.click { cursor: pointer; }
+tr.click:hover td { background: color-mix(in srgb, var(--text-muted) 8%, transparent); }
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 1px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--text-secondary); }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; color: var(--text-secondary); margin: 0 0 8px; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.sw { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+.chartbox { position: relative; height: 260px; }
+.chartbox.short { height: 200px; }
+.note { border-left: 3px solid var(--warn); padding: 8px 12px; color: var(--text-secondary); font-size: 13px; margin: 0 0 12px;
+  background: color-mix(in srgb, var(--warn) 8%, transparent); border-radius: 0 6px 6px 0; }
+.empty { color: var(--text-muted); padding: 18px 4px; }
+.counts { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 4px 0 12px; }
+.counts div { font-size: 12px; color: var(--text-secondary); }
+.counts b { display: block; font-size: 20px; color: var(--text-primary); font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.tile { border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+.tile .sym { font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.tile .px { font-size: 18px; margin-top: 4px; }
+.cols2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: 14px; }
+.cols2 > section { margin: 0; min-width: 0; }
+section { min-width: 0; }
+ul.edits { list-style: none; margin: 0; padding: 0; }
+ul.edits li { padding: 7px 0; border-bottom: 1px solid var(--border); font-size: 13px; overflow-wrap: anywhere; }
+ul.edits li:last-child { border-bottom: 0; }
+a { color: var(--series-1); }
+details summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; margin-top: 10px; }
+.placeholder { padding: 28px 8px; text-align: center; color: var(--text-secondary); }
+</style>
+</head>
+<body>
+<main>
+  <header class="top">
+    <div>
+      <h1>Indicator Lab</h1>
+      <div class="sub">Reddit and Wikipedia attention, sentiment and prices · US, India and Hong Kong</div>
+    </div>
+    <div class="muted" style="text-align:right">Data as of <span id="asOf">…</span><br><span id="apiUrl"></span></div>
+  </header>
+
+  <nav id="nav" aria-label="Pages">
+    <a href="#/hot" data-page="hot">Hot right now</a>
+    <a href="#/stock" data-page="stock">Stock view</a>
+    <a href="#/spikes" data-page="spikes">This week's spikes</a>
+    <a href="#/live" data-page="live">Live markets</a>
+    <a href="#/runs" data-page="runs">Strategy results</a>
+    <a href="#/cross" data-page="cross">Cross-market</a>
+  </nav>
+
+  <div class="filters">
+    <span class="muted">Market</span>
+    <div class="seg" id="marketSeg" role="group" aria-label="Market"></div>
+  </div>
+
+  <div id="page"></div>
+</main>
+
+<script>
+"use strict";
+// ---------------------------------------------------------------------------- basics
+const API = (new URLSearchParams(location.search).get("api") || window.INDICATORLAB_API || "").replace(/\/$/, "");
+const MARKETS = [["all", "All"], ["us", "US"], ["india", "India"], ["hk", "HK"]];
+const MARKET_NAME = { us: "US", india: "India", hk: "HK" };
+const HOT_REFRESH_MS = 5 * 60 * 1000;      // guide: page 1 refreshes every 5 minutes
+const LIVE_REFRESH_MS = 5 * 1000;          // guide: live quotes every 5 seconds
+const SENT_NEUTRAL = 0.05;                 // |pos - neg| below this shows as a neutral chip
+const RANGES = [["1y", "1Y", 1], ["2y", "2Y", 2], ["5y", "5Y", 5], ["all", "All", null]];   // default 2Y (guide)
+
+const $ = (id) => document.getElementById(id);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (n, d = 2) => n == null || Number.isNaN(n) ? "—" : Number(n).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d });
+const pct = (x, d = 1) => x == null ? "—" : (x >= 0 ? "+" : "") + (x * 100).toFixed(d) + "%";
+const safeUrl = (u) => /^https?:\/\//i.test(u ?? "") ? u : null;
+const addDays = (iso, n) => { const d = new Date(iso + "T00:00:00Z"); d.setUTCDate(d.getUTCDate() + n); return d.toISOString().slice(0, 10); };
+const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } },
+                set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* private window: fine */ } } };
+
+class ApiError extends Error { constructor(status, msg) { super(msg); this.status = status; } }
+async function get(path, params = {}) {
+  const u = new URL(API + path);
+  Object.entries(params).forEach(([k, v]) => v != null && v !== "" && u.searchParams.set(k, v));
+  let r;
+  try { r = await fetch(u, { cache: "no-store" }); } catch { throw new ApiError(0, `Can't reach the API at ${API}`); }
+  if (!r.ok) {
+    let detail = r.statusText;
+    try { const b = await r.json(); detail = typeof b.detail === "string" ? b.detail : JSON.stringify(b.detail); } catch { /* not JSON */ }
+    throw new ApiError(r.status, detail);
+  }
+  return r.json();
+}
+
+const state = { page: "hot", market: store.get("market") || "all", ticker: "AAPL", tmarket: "us", range: "2y",
+                selWeek: null, spikeWeek: null };
+let timers = [], charts = [];
+function clearPage() { timers.forEach(clearInterval); timers = []; charts.forEach(c => c.destroy()); charts = []; }
+const errBox = (e) => `<p class="note">${esc(e.message)}</p>`;
+
+function sentChip(net) {
+  if (net == null) return '<span class="muted">no text scored</span>';
+  const [lab, c] = net > SENT_NEUTRAL ? ["positive", "--series-1"] : net < -SENT_NEUTRAL ? ["negative", "--series-2"] : ["neutral", "--text-muted"];
+  return `<span class="pill" title="net ${fmt(net, 3)} (P(pos) − P(neg))"><i class="dot" style="background:var(${c})"></i>${lab}</span>`;
+}
+function table(cols, rows, { onRow, cls = "" } = {}) {
+  if (!rows.length) return '<div class="empty">Nothing to show.</div>';
+  const head = cols.map(c => `<th class="${c.num ? "num" : ""}" scope="col">${c.h}</th>`).join("");
+  const body = rows.map((r, i) => `<tr class="${onRow ? "click" : ""}" data-i="${i}" ${onRow ? 'tabindex="0"' : ""}>` +
+    cols.map(c => `<td class="${c.num ? "num" : ""} ${c.wrap ? "wrap" : ""}">${c.f(r)}</td>`).join("") + "</tr>").join("");
+  return `<div class="tablewrap ${cls}"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+function wireRows(el, rows, onRow) {
+  el.querySelectorAll("tr.click").forEach(tr => {
+    const go = () => onRow(rows[+tr.dataset.i]);
+    tr.onclick = go; tr.onkeydown = (e) => { if (e.key === "Enter") go(); };
+  });
+}
+function seg(el, opts, cur, onPick) {
+  el.innerHTML = opts.map(([v, lab]) => `<button type="button" data-v="${v}" aria-pressed="${v === cur}">${lab}</button>`).join("");
+  el.querySelectorAll("button").forEach(b => b.onclick = () => onPick(b.dataset.v));
+}
+
+async function loadAsOf() {
+  $("apiUrl").textContent = API;
+  try {
+    const h = await get("/health");
+    const t = Object.values(h.tables).filter(Boolean).sort().pop();
+    $("asOf").textContent = t ? new Date(t).toLocaleString() : "—";
+  } catch (e) { $("asOf").textContent = "API unreachable"; }
+}
+
+// ---------------------------------------------------------------------------- routing
+function route() {
+  const [page, a, b] = location.hash.replace(/^#\/?/, "").split("/");
+  state.page = PAGES[page] ? page : "hot";
+  if (state.page === "stock" && a) { state.ticker = decodeURIComponent(a).toUpperCase(); if (b) state.tmarket = b; }
+  if (state.page === "spikes" && a) state.spikeWeek = a;
+  document.querySelectorAll("#nav a").forEach(x => x.classList.toggle("on", x.dataset.page === state.page));
+  seg($("marketSeg"), MARKETS, state.market, (v) => { state.market = v; store.set("market", v); route(); });
+  clearPage();
+  PAGES[state.page]($("page"));
+}
+const qm = () => state.market === "all" ? undefined : state.market;
+
+// ---------------------------------------------------------------------------- page 1: Hot right now
+async function pageHot(el) {
+  el.innerHTML = `<section><div class="sechead"><div><h2>Hot right now</h2>
+    <div class="sub">Reddit updated hourly, Wikipedia daily. Trailing 7 days of attention against the median of the previous 8 full weeks; listed when the ratio is above 1.</div></div>
+    <div class="muted" id="hotAsOf"></div></div><div id="hotBody"><div class="empty">Loading…</div></div></section>`;
+  const load = async () => {
+    try {
+      const rows = await get("/hot", { market: state.market });
+      const asOf = rows.map(r => r.as_of).filter(Boolean).sort().pop();
+      $("hotAsOf").textContent = (asOf ? `Attention through ${asOf.slice(0, 10)} · ` : "") + `refreshed ${new Date().toLocaleTimeString()}`;
+      const body = $("hotBody");
+      body.innerHTML = table([
+        { h: "Ticker", f: r => `<b>${esc(r.ticker)}</b>` },
+        { h: "Market", f: r => MARKET_NAME[r.market] ?? esc(r.market) },
+        { h: "Source", f: r => r.source === "reddit" ? "Reddit" : "Wikipedia" },
+        { h: "Ratio vs baseline", num: 1, f: r => fmt(r.ratio) + "×" },
+        { h: "Spike", f: r => r.spike ? '<span class="pill"><i class="dot" style="background:var(--series-2)"></i>spike</span>' : '<span class="muted">—</span>' },
+        { h: "Sentiment", f: r => sentChip(r.sentiment_net) },
+        { h: "Today's change", num: 1, f: r => r.price_change_today_pct == null ? '<span class="muted" title="no live feed for this market yet">—</span>' : (r.price_change_today_pct >= 0 ? "+" : "") + fmt(r.price_change_today_pct) + "%" },
+      ], rows, { onRow: true });
+      wireRows(body, rows, r => location.hash = `#/stock/${encodeURIComponent(r.ticker)}/${r.market}`);
+      if (!rows.length) body.innerHTML = '<div class="empty">No stock is above its baseline right now in this market.</div>';
+    } catch (e) { $("hotBody").innerHTML = errBox(e); }
+  };
+  await load();
+  timers.push(setInterval(load, HOT_REFRESH_MS));
+}
+
+// ---------------------------------------------------------------------------- page 2: Stock view
+let tickerList = null;
+async function tickers() {
+  if (tickerList) return tickerList;
+  try {
+    const t = await get("/tickers");
+    const m = { US: "us", IN: "india", HK: "hk" };
+    tickerList = t.tickers.map(x => ({ ticker: x.ticker, market: m[x.market] ?? x.market.toLowerCase(), name: x.name }));
+  } catch {
+    tickerList = (await get("/hot").catch(() => [])).map(r => ({ ticker: r.ticker, market: r.market, name: "" }));
+  }
+  return tickerList;
+}
+
+// draws the selected week as a thin vertical rule on every stock-view chart
+const weekMarker = { id: "weekMarker", afterDatasetsDraw(chart) {
+  const i = chart.data.labels.indexOf(state.selWeek);
+  if (i < 0) return;
+  const x = chart.scales.x.getPixelForValue(i), { top, bottom } = chart.chartArea, ctx = chart.ctx;
+  ctx.save(); ctx.strokeStyle = css("--text-muted"); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x, top); ctx.lineTo(x, bottom); ctx.stroke(); ctx.restore();
+} };
+
+function lineOpts(yTitle, extra = {}) {
+  return {
+    responsive: true, maintainAspectRatio: false, animation: false,
+    interaction: { mode: "index", intersect: false },
+    plugins: { legend: { display: false }, tooltip: { filter: (it) => !it.dataset._ref } },
+    scales: {
+      x: { grid: { display: false }, ticks: { color: css("--text-muted"), maxRotation: 0, autoSkipPadding: 18,
+           maxTicksLimit: Math.max(3, Math.floor(innerWidth / 120)) } },
+      y: { grid: { color: css("--border") }, border: { display: false }, ticks: { color: css("--text-muted") },
+           title: { display: true, text: yTitle, color: css("--text-secondary") }, ...extra.y },
+    },
+    onClick: (evt, _els, chart) => {
+      const p = chart.getElementsAtEventForMode(evt, "index", { intersect: false }, false)[0];
+      if (p) selectWeek(chart.data.labels[p.index]);
+    },
+  };
+}
+const legendHtml = (items) => items.map(([lab, v, note]) => `<span><i class="sw" style="background:var(${v})"></i>${lab}${note ? ` <span class="muted">${note}</span>` : ""}</span>`).join("");
+
+async function pageStock(el) {
+  el.innerHTML = `<section><div class="sechead"><div><h2 id="stTitle">Stock view</h2><div class="sub">Research weeks only (before 2025-10-01). Click any week, or a spike dot, to see what happened.</div></div>
+      <div class="filters" style="margin:0"><label class="muted" for="stTicker">Ticker</label>
+        <input id="stTicker" list="tickerOpts" size="10" autocomplete="off" value="${esc(state.ticker)}"><datalist id="tickerOpts"></datalist>
+        <div class="seg" id="rangeSeg" role="group" aria-label="Date range"></div></div></div>
+    <div id="stErr"></div>
+    <h2>Weekly price</h2><div class="chartbox short"><canvas id="cPrice" aria-label="Weekly closing price"></canvas></div>
+  </section>
+  <section><h2>Attention vs its 8-week baseline</h2>
+    <div class="legend" id="attLegend"></div>
+    <div class="chartbox"><canvas id="cAtt" aria-label="Attention ratios to baseline"></canvas></div>
+    <details><summary>Show as a table</summary><div id="attTable"></div></details>
+  </section>
+  <section><h2>Net sentiment <span class="muted">(P(positive) − P(negative), weekly mean)</span></h2>
+    <div class="legend" id="sentLegend"></div>
+    <div class="chartbox short"><canvas id="cSent" aria-label="Weekly net sentiment"></canvas></div>
+  </section>
+  <section id="happened"><h2>What happened</h2><div class="empty">Pick a week on a chart.</div></section>`;
+  const list = await tickers();
+  const shown = list.filter(t => state.market === "all" || t.market === state.market);
+  $("tickerOpts").innerHTML = shown.map(t => `<option value="${esc(t.ticker)}">${esc(t.name ?? "")} · ${MARKET_NAME[t.market] ?? ""}</option>`).join("");
+  $("stTicker").onchange = () => {
+    const t = $("stTicker").value.trim().toUpperCase(), hit = list.find(x => x.ticker === t);
+    location.hash = `#/stock/${encodeURIComponent(t)}/${hit ? hit.market : state.tmarket}`;
+  };
+  seg($("rangeSeg"), RANGES.map(([v, l]) => [v, l]), state.range, (v) => { state.range = v; route(); });
+  const meta = list.find(x => x.ticker === state.ticker);
+  if (meta) state.tmarket = meta.market;
+  $("stTitle").textContent = `${state.ticker}${meta?.name ? " · " + meta.name : ""} · ${MARKET_NAME[state.tmarket] ?? ""}`;
+
+  let att = [], px = [], sent = [];
+  try {
+    [att, px, sent] = await Promise.all([
+      get(`/attention/${encodeURIComponent(state.ticker)}`, { market: state.tmarket }),
+      get(`/prices/${encodeURIComponent(state.ticker)}`, { market: state.tmarket }).catch(e => e.status === 404 ? [] : Promise.reject(e)),
+      get(`/sentiment/${encodeURIComponent(state.ticker)}`, { market: state.tmarket }),
+    ]);
+  } catch (e) { $("stErr").innerHTML = errBox(e); return; }
+
+  // one week axis for all three charts, cut to the chosen range
+  const all = [...new Set([...att.map(r => r.week), ...px.map(r => r.week)])].sort();
+  const end = all[all.length - 1], years = RANGES.find(r => r[0] === state.range)[2];
+  const labels = years ? all.filter(w => w >= addDays(end, -365 * years)) : all;
+  const at = (rows, key) => { const m = new Map(rows.map(r => [r.week, r])); return labels.map(w => m.get(w)?.[key] ?? null); };
+  const wiki = att.filter(r => r.source === "wikipedia"), red = att.filter(r => r.source === "reddit");
+
+  charts.push(new Chart($("cPrice"), { type: "line", plugins: [weekMarker],
+    data: { labels, datasets: [{ label: "Close", data: at(px, "close"), borderColor: css("--text-primary"), borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, spanGaps: true }] },
+    options: lineOpts("close") }));
+
+  // attention ratios on one log axis (ratios are multiplicative: 2× and 0.5× sit the same distance from 1)
+  const floorR = (v) => v == null ? null : Math.max(v, 0.05);
+  const series = [
+    { lab: "Reddit mentions", v: "--series-1", data: at(red, "ratio").map(floorR), spike: at(red, "spike"), n: red.length },
+    { lab: "Wikipedia views", v: "--series-2", data: at(wiki, "ratio").map(floorR), spike: at(wiki, "spike"), n: wiki.length },
+    { lab: "Wikipedia edits", v: "--s3", data: at(wiki, "edits_ratio").map(floorR), spike: at(wiki, "edits_spike"), n: wiki.length },
+  ];
+  $("attLegend").innerHTML = legendHtml(series.map(s => [s.lab, s.v, s.n ? "" : "(no data yet)"])) +
+    `<span><i class="sw" style="background:var(--text-muted);height:1px"></i>baseline = 1×</span><span><i class="dot" style="background:var(--text-secondary)"></i>spike week</span>`;
+  const attDs = series.map(s => ({ label: s.lab, data: s.data, borderColor: css(s.v), backgroundColor: css(s.v), borderWidth: 2,
+    pointRadius: s.spike.map(x => x ? 4 : 0), pointHoverRadius: 5, pointBorderColor: css("--surface-1"), pointBorderWidth: 2, spanGaps: false }));
+  attDs.push({ label: "baseline", _ref: true, data: labels.map(() => 1), borderColor: css("--text-muted"), borderWidth: 1, borderDash: [4, 4], pointRadius: 0, pointHoverRadius: 0 });
+  const attOpts = lineOpts("ratio to baseline (log scale)", { y: { type: "logarithmic",
+    afterBuildTicks: (ax) => { ax.ticks = [0.0625, 0.125, 0.25, 0.5, 1, 2, 4, 8, 16, 32, 64].filter(v => v >= ax.min && v <= ax.max).map(v => ({ value: v })); },
+    ticks: { color: css("--text-muted"), callback: (v) => (v < 1 ? fmt(v, v < 0.25 ? 3 : 2) : fmt(v, 0)) + "×" } } });
+  attOpts.plugins.tooltip.callbacks = { label: (c) => `${c.dataset.label}: ${fmt(c.raw)}×${series[c.datasetIndex]?.spike[c.dataIndex] ? "  ← spike" : ""}` };
+  charts.push(new Chart($("cAtt"), { type: "line", plugins: [weekMarker], data: { labels, datasets: attDs }, options: attOpts }));
+  $("attTable").innerHTML = table([{ h: "Week", f: r => r.w }, ...series.map((s, j) => ({ h: s.lab, num: 1, f: r => r.v[j] == null ? "—" : fmt(r.v[j]) + "×" + (r.s[j] ? " •" : "") }))],
+    labels.map((w, i) => ({ w, v: series.map(s => s.data[i]), s: series.map(s => s.spike[i]) })).reverse(), { cls: "tall" });
+
+  // sentiment: investor and company/product subreddits, and the text added to the Wikipedia article
+  const grp = (src, g) => sent.filter(r => r.source === src && (Array.isArray(g) ? g.includes(r.group) : r.group === g));
+  const sser = [
+    { lab: "Reddit investor subreddits", v: "--series-1", rows: grp("reddit", ["investor", "all"]) },
+    { lab: "Reddit company/product subreddits", v: "--s4", rows: grp("reddit", "product") },
+    { lab: "Wikipedia edits", v: "--s3", rows: grp("wikipedia", "edits") },
+  ];
+  $("sentLegend").innerHTML = legendHtml(sser.map(s => [s.lab, s.v, s.rows.length ? "" : "(no data yet)"]));
+  const sentDs = sser.map(s => ({ label: s.lab, data: at(s.rows, "sentiment_net"), borderColor: css(s.v), borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, spanGaps: false }));
+  sentDs.push({ label: "zero", _ref: true, data: labels.map(() => 0), borderColor: css("--text-muted"), borderWidth: 1, pointRadius: 0, pointHoverRadius: 0 });
+  const sOpts = lineOpts("net sentiment");
+  sOpts.plugins.tooltip.callbacks = { label: (c) => `${c.dataset.label}: ${fmt(c.raw, 3)}` };
+  charts.push(new Chart($("cSent"), { type: "line", plugins: [weekMarker], data: { labels, datasets: sentDs }, options: sOpts }));
+
+  // default "what happened" week: the latest spike in range, else the latest week
+  const spikeWeeks = labels.filter((w, i) => series.some(s => s.spike[i]));
+  selectWeek(labels.includes(state.selWeek) ? state.selWeek : spikeWeeks[spikeWeeks.length - 1] ?? end);
+}
+
+async function redditPosts(ticker, week) {
+  // the guide's /reddit/top-posts, else the spike-week sample posts of Joshua's Week 2 sentiment route
+  try { return (await get("/reddit/top-posts", { ticker, week })).posts ?? []; } catch { /* not built yet */ }
+  for (const path of ["/reddit/sentiment", "/sentiment"]) {
+    try {
+      const b = await get(path, { ticker, start: week, end: addDays(week, 6) });
+      return Object.values(b.sources ?? {}).flat().filter(w => w.week?.slice(0, 10) === week).flatMap(w => w.sample_posts ?? []);
+    } catch { /* try the next */ }
+  }
+  return null;
+}
+
+async function selectWeek(week) {
+  state.selWeek = week;
+  charts.forEach(c => c.draw());
+  const box = $("happened");
+  if (!box || !week) return;
+  box.innerHTML = `<h2>What happened · week of ${esc(week)}</h2><div class="cols2"><section><h2>Wikipedia edits</h2><div id="whEdits" class="empty">Loading…</div></section>
+    <section><h2>Top Reddit posts</h2><div id="whPosts" class="empty">Loading…</div></section></div>`;
+  get(`/edits/${encodeURIComponent(state.ticker)}`, { week, market: state.tmarket }).then(rows => {
+    $("whEdits").className = "";
+    $("whEdits").innerHTML = rows.length ? `<ul class="edits">${rows.map(r => `<li><span class="muted">${esc(r.timestamp.replace("T", " ").slice(0, 16))} UTC · ${r.delta == null ? "" : (r.delta >= 0 ? "+" : "") + fmt(r.delta, 0) + " bytes"}</span>
+      ${r.revert ? '<span class="pill">revert</span>' : ""} ${r.tags.map(t => `<span class="pill">${esc(t.replace(/_/g, " "))}</span>`).join(" ")}<br>${esc(r.comment) || '<span class="muted">(no summary)</span>'}</li>`).join("")}</ul>`
+      : '<div class="empty">No edits that week.</div>';
+  }).catch(e => { $("whEdits").innerHTML = errBox(e); });
+  redditPosts(state.ticker, week).then(posts => {
+    const el = $("whPosts");
+    if (posts == null) { el.innerHTML = '<div class="empty">Reddit posts aren\'t available from the API yet.</div>'; return; }
+    el.className = "";
+    el.innerHTML = posts.length ? `<ul class="edits">${posts.map(p => { const u = safeUrl(p.url);
+      return `<li>${u ? `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(p.title)}</a>` : esc(p.title)}<br><span class="muted">r/${esc(p.subreddit)} · ${fmt(p.score, 0)} points · ${fmt(p.num_comments, 0)} comments${p.sentiment_label ? " · " + esc(p.sentiment_label) : ""}</span></li>`; }).join("")}</ul>`
+      : '<div class="empty">No Reddit posts for that week (Reddit samples exist for spike weeks only).</div>';
+  });
+}
+
+// ---------------------------------------------------------------------------- page 3: This week's spikes
+async function pageSpikes(el) {
+  el.innerHTML = `<section><div class="sechead"><div><h2>Spikes by week</h2>
+      <div class="sub">Weekly spikes under the shared rule (at least 1.5× the 8-week median and a robust z-score of 2 or more against earlier weeks). The latest week shown is the last research week; the current week is on Hot right now.</div></div>
+      <div class="filters" style="margin:0"><button id="spPrev" aria-label="Previous week">←</button>
+        <input type="date" id="spWeek" aria-label="Week (Monday)"><button id="spNext" aria-label="Next week">→</button></div></div>
+    <div class="counts" id="spCounts"></div><div id="spBody"><div class="empty">Loading…</div></div></section>`;
+  const show = async (week) => {
+    try {
+      const rows = await get("/spikes", { week, market: qm() });
+      const w = week ?? rows[0]?.week;
+      if (w) { state.spikeWeek = w; $("spWeek").value = w; }
+      const by = {};
+      rows.forEach(r => { const k = r.ticker + "|" + r.market; (by[k] ??= new Set()).add(r.source); });
+      const sets = Object.values(by);
+      const n = (f) => sets.filter(f).length;
+      $("spCounts").innerHTML = `<div><b>${n(s => s.has("reddit") && !s.has("wikipedia"))}</b>Reddit only</div>
+        <div><b>${n(s => s.has("wikipedia") && !s.has("reddit"))}</b>Wikipedia only</div><div><b>${n(s => s.size === 2)}</b>both</div>`;
+      const body = $("spBody");
+      body.innerHTML = rows.length ? table([
+        { h: "Ticker", f: r => `<b>${esc(r.ticker)}</b>` },
+        { h: "Market", f: r => MARKET_NAME[r.market] ?? esc(r.market) },
+        { h: "Source", f: r => r.source === "reddit" ? "Reddit" : "Wikipedia" },
+        { h: "Size", num: 1, f: r => fmt(r.ratio) + "×" },
+        { h: "Sentiment", f: r => sentChip(r.sentiment_net) },
+        { h: "Spiked in last 3 weeks", f: r => r.repeat ? "yes" : "no" },
+        { h: "Bigger price move", f: r => r.timing === "after" ? "spike week" : r.timing === "before" ? "the week after" : "—" },
+        { h: "Abnormal return, spike week", num: 1, f: r => pct(r.abn_ret_week) },
+        { h: "Abnormal return, week after", num: 1, f: r => pct(r.abn_ret_next_week) },
+      ], rows, { onRow: true }) : '<div class="empty">No spikes that week in this market.</div>';
+      wireRows(body, rows, r => { state.selWeek = r.week; location.hash = `#/stock/${encodeURIComponent(r.ticker)}/${r.market}`; });
+    } catch (e) {
+      $("spCounts").innerHTML = "";
+      $("spBody").innerHTML = e.status === 422 ? errBox(e) :
+        errBox(new Error(e.status === 0 ? e.message : `${e.message}. If this says a ticker is required, the API's /spikes still belongs to the Week 2 Reddit route (see frontend/dashboard/README.md).`));
+    }
+  };
+  $("spWeek").onchange = () => show($("spWeek").value);
+  $("spPrev").onclick = () => state.spikeWeek && show(addDays(state.spikeWeek, -7));
+  $("spNext").onclick = () => state.spikeWeek && show(addDays(state.spikeWeek, 7));
+  await show(state.spikeWeek ?? undefined);
+}
+
+// ---------------------------------------------------------------------------- page 4: Live markets
+async function pageLive(el) {
+  const ms = ["india", "hk"].filter(m => state.market === "all" || state.market === m);
+  if (!ms.length) { el.innerHTML = '<section><div class="placeholder">No live feed for US stocks. Pick India, HK or All.</div></section>'; return; }
+  el.innerHTML = `<div class="cols2">${ms.map(m => `<section><div class="sechead"><div><h2>${MARKET_NAME[m]}</h2><div class="muted" id="lvT_${m}"></div></div><span id="lvS_${m}"></span></div><div id="lvB_${m}" class="empty">Loading…</div></section>`).join("")}</div>
+    <p class="muted">Prices refresh every 5 seconds. "Hot" marks stocks on the Hot right now list.</p>`;
+  const load = () => ms.forEach(async (m) => {
+    try {
+      const b = await get(`/live/${m}`);
+      $(`lvT_${m}`).textContent = `Local time ${b.local_time.slice(11, 16)}`;
+      $(`lvS_${m}`).innerHTML = `<span class="pill"><i class="dot" style="background:var(${b.open ? "--good" : "--text-muted"})"></i>${b.open ? "open" : "closed"}</span>`;
+      const box = $(`lvB_${m}`);
+      if (!b.quotes.length) { box.className = "empty"; box.textContent = "No quotes yet: the live feed for this market isn't running."; return; }
+      box.className = "grid";
+      box.innerHTML = b.quotes.map(q => `<div class="tile"><div class="sym">${esc(q.symbol)}${q.hot ? '<span class="pill">hot</span>' : ""}</div>
+        <div class="px">${fmt(q.price)}</div>
+        <div class="muted">${q.change_pct == null ? "—" : (q.change_pct >= 0 ? "▲ +" : "▼ ") + fmt(q.change_pct) + "%"}${b.open ? "" : ` · last at ${esc((q.ts_exchange ?? "").slice(11, 16))}`}</div></div>`).join("");
+    } catch (e) { $(`lvB_${m}`).innerHTML = errBox(e); }
+  });
+  load();
+  timers.push(setInterval(() => { if (!document.hidden) load(); }, LIVE_REFRESH_MS));
+}
+
+// ---------------------------------------------------------------------------- pages 5-6: placeholders
+async function pageRuns(el) {
+  el.innerHTML = `<section><h2>Strategy results</h2><div class="sub">Coming next week: each strategy's equity curve against its benchmark, train and test Sharpe, the random-baseline percentile and KEEP/DROP, matching the Strategy Log.</div><div id="runsBody" class="empty">Checking the Vibe-Trading server…</div></section>`;
+  try {
+    const runs = await get("/runs");
+    const list = Array.isArray(runs) ? runs : runs.runs ?? [];
+    $("runsBody").className = "";
+    $("runsBody").innerHTML = `<p class="muted">${list.length} run(s) on the Vibe-Trading server.</p>` +
+      table([{ h: "Run", f: r => esc(typeof r === "string" ? r : r.run_id ?? r.id ?? JSON.stringify(r)) }], list);
+  } catch (e) { $("runsBody").innerHTML = `<div class="placeholder">${esc(e.message)}</div>`; }
+}
+function pageCross(el) {
+  el.innerHTML = `<section><h2>Cross-market comparison</h2><div class="placeholder">For each factor, IC and Sharpe side by side for US, India and HK.<br>Filled in once the cross-market runner (open-source part B) exists.</div></section>`;
+}
+
+const PAGES = { hot: pageHot, stock: pageStock, spikes: pageSpikes, live: pageLive, runs: pageRuns, cross: pageCross };
+window.addEventListener("hashchange", route);
+loadAsOf();
+route();
+</script>
+</body>
+</html>

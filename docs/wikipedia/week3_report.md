@@ -75,6 +75,8 @@ This supports scoring the article text rather than the summaries.
 - `wiki_current.parquet` holds "Hot right now": the last 7 published days of views, against the median of
   the 8 full weeks before them, using the same spike rule.
 - `prices_weekly.parquet` holds research weeks of the weekly price panel.
+- `wiki_edit_summaries.parquet` holds each research-week edit (time, summary, size, revert) for the
+  dashboard's "What happened" panel; editor names are left out.
 
 They go to `data/processed/`, which matches the bucket's `processed/` layout.
 
@@ -84,6 +86,8 @@ They go to `data/processed/`, which matches the bucket's `processed/` layout.
 |---|---|---|
 | `GET /health` | write time of each table | |
 | `GET /attention/{ticker}?source=&market=&from=&to=` | `*_weekly.parquet` | research weeks only; 404 for an unknown ticker |
+| `GET /prices/{ticker}?market=&from=&to=` | `prices_weekly.parquet` | weekly close, return and abnormal return; research weeks only |
+| `GET /edits/{ticker}?week=&market=` | `wiki_edit_summaries.parquet` | that week's edits, oldest first, with keyword tags; 422 for a holdout week |
 | `GET /sentiment/{ticker}?market=` | `*_weekly.parquet` | Reddit by `group` (investor / product), Wikipedia edits |
 | `GET /spikes?week=&market=` | `*_weekly.parquet`, prices | size, sentiment, repeat (spiked in the 3 weeks before), and whether the bigger abnormal move came in the spike week or the week after; 422 for a holdout week |
 | `GET /hot?market=` | `*_current.parquet`, live tables | ratio above 1, sorted, with today's move from the live table |
@@ -93,7 +97,7 @@ They go to `data/processed/`, which matches the bucket's `processed/` layout.
 `src/api/storage.py` reads `data/` locally, or `s3://indicatorlab-data` when `INDICATORLAB_DATA` points
 there. It caches each table for 10 minutes (`api.cache_seconds`). CORS is limited to `CORS_ORIGINS`.
 
-Tests: `tests/test_api_dashboard.py` runs 12 TestClient tests on fixture tables in `tests/fixtures/api/`,
+Tests: `tests/test_api_dashboard.py` runs 14 TestClient tests on fixture tables in `tests/fixtures/api/`,
 on the dashboard router alone (in the merged app Joshua's Week 2 router still owns `/spikes`), and
 `tests/test_api_storage.py` covers the S3 and DynamoDB reads with a mocked boto3.
 They cover an unknown ticker (404), an empty week, a holdout week, the check that no research route
@@ -101,6 +105,23 @@ returns weeks from 2025-10-01 on, market hours, and the key staying server side.
 
 A check on real data: `/spikes?week=2025-09-08` puts ORCL first, with views 9.6x baseline in the week of
 Oracle's September earnings jump (+23% abnormal return that week).
+
+### Dashboard v1
+
+`frontend/dashboard/` is a static page on Joshua's Reddit dashboard styles and Chart.js 4.4.1. How to run
+and deploy it is in `frontend/dashboard/README.md`.
+- **Real data:** pages 1-3 (Hot right now, Stock view, This week's spikes).
+- **Wired to fixture data:** page 4 (Live markets), until the live tables exist.
+- **Placeholders:** pages 5-6 (Strategy results, Cross-market).
+
+Every page has the market filter and the "data as of" time. The stock view shows:
+- price;
+- Reddit mentions, Wikipedia views and Wikipedia edits as ratios to their baseline, on one log axis;
+- net sentiment;
+- a "What happened" panel with that week's Wikipedia edits and Reddit posts.
+
+Checked by screenshot in light mode, dark mode and at phone width. Reddit panels say "no data yet" until
+Joshua's tables are in `data/processed/`. Page 3 needs his routes moved under `/reddit/` (see Open items).
 
 ## 4. Three complex strategies (US)
 
@@ -186,5 +207,5 @@ then set the costs.
   the current week. This needs a decision from Anay or Prakhar.
 - **Waiting on others:** the AWS resources (bucket, tables, SSM, ECR) from Joshua; the live tables from
   Jamal and Jack; the Reddit `reddit_weekly.parquet` / `reddit_current.parquet` from Joshua.
-- **Not started yet:** the Wikipedia pull on AWS, the App Runner deploy, dashboard v1, the upstream
+- **Not started yet:** the Wikipedia pull on AWS, the App Runner deploy, the upstream
   Wikipedia loader, the India run of the complex strategies, and the 50 blind labels for Joshua's kappa.
