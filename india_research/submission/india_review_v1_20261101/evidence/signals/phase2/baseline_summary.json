@@ -1,0 +1,226 @@
+{
+  "alpha101_033": {
+    "sessions": 990,
+    "total_scores": 7920,
+    "finite_scores": 7920,
+    "nan_scores": 0,
+    "infinite_scores": 0,
+    "nan_by_symbol": {
+      "RELIANCE.NS": 0,
+      "TCS.NS": 0,
+      "INFY.NS": 0,
+      "HDFCBANK.NS": 0,
+      "ICICIBANK.NS": 0,
+      "SBIN.NS": 0,
+      "KOTAKBANK.NS": 0,
+      "AXISBANK.NS": 0
+    },
+    "weekly_candidates": 209,
+    "weekly_eight_finite": 209,
+    "weekly_unique_top_two": 209,
+    "weekly_boundary_ties": 0,
+    "weekly_all_eight_tied": 0,
+    "nonterminal_eligible": 208,
+    "selected_pair_counts": {
+      "RELIANCE.NS": 52,
+      "TCS.NS": 58,
+      "INFY.NS": 59,
+      "HDFCBANK.NS": 40,
+      "ICICIBANK.NS": 35,
+      "SBIN.NS": 65,
+      "KOTAKBANK.NS": 50,
+      "AXISBANK.NS": 59
+    },
+    "raw_output_numerics": {
+      "infinite": 0,
+      "nan": 0,
+      "warnings": []
+    },
+    "nan_causes_evaluation": {},
+    "all_input_nan_causes": {},
+    "zero_volume_evaluation": 0,
+    "minimum_absolute_nonzero_denominator": 249.8433837890625,
+    "zero_denominator_cells": 0,
+    "near_boundary_ties_1e_10": 0
+  },
+  "alpha101_101": {
+    "sessions": 990,
+    "total_scores": 7920,
+    "finite_scores": 7920,
+    "nan_scores": 0,
+    "infinite_scores": 0,
+    "nan_by_symbol": {
+      "RELIANCE.NS": 0,
+      "TCS.NS": 0,
+      "INFY.NS": 0,
+      "HDFCBANK.NS": 0,
+      "ICICIBANK.NS": 0,
+      "SBIN.NS": 0,
+      "KOTAKBANK.NS": 0,
+      "AXISBANK.NS": 0
+    },
+    "weekly_candidates": 209,
+    "weekly_eight_finite": 209,
+    "weekly_unique_top_two": 209,
+    "weekly_boundary_ties": 0,
+    "weekly_all_eight_tied": 0,
+    "nonterminal_eligible": 208,
+    "selected_pair_counts": {
+      "RELIANCE.NS": 61,
+      "TCS.NS": 56,
+      "INFY.NS": 50,
+      "HDFCBANK.NS": 59,
+      "ICICIBANK.NS": 45,
+      "SBIN.NS": 44,
+      "KOTAKBANK.NS": 62,
+      "AXISBANK.NS": 41
+    },
+    "raw_output_numerics": {
+      "infinite": 0,
+      "nan": 0,
+      "warnings": []
+    },
+    "nan_causes_evaluation": {},
+    "all_input_nan_causes": {},
+    "zero_volume_evaluation": 0,
+    "minimum_absolute_nonzero_denominator": 1.7739426344479292,
+    "zero_denominator_cells": 0,
+    "near_boundary_ties_1e_10": 0
+  },
+  "alpha101_054": {
+    "sessions": 990,
+    "total_scores": 7920,
+    "finite_scores": 7920,
+    "nan_scores": 0,
+    "infinite_scores": 0,
+    "nan_by_symbol": {
+      "RELIANCE.NS": 0,
+      "TCS.NS": 0,
+      "INFY.NS": 0,
+      "HDFCBANK.NS": 0,
+      "ICICIBANK.NS": 0,
+      "SBIN.NS": 0,
+      "KOTAKBANK.NS": 0,
+      "AXISBANK.NS": 0
+    },
+    "weekly_candidates": 209,
+    "weekly_eight_finite": 209,
+    "weekly_unique_top_two": 209,
+    "weekly_boundary_ties": 0,
+    "weekly_all_eight_tied": 0,
+    "nonterminal_eligible": 208,
+    "selected_pair_counts": {
+      "RELIANCE.NS": 51,
+      "TCS.NS": 65,
+      "INFY.NS": 67,
+      "HDFCBANK.NS": 40,
+      "ICICIBANK.NS": 38,
+      "SBIN.NS": 64,
+      "KOTAKBANK.NS": 50,
+      "AXISBANK.NS": 43
+    },
+    "raw_output_numerics": {
+      "infinite": 0,
+      "nan": 0,
+      "warnings": []
+    },
+    "nan_causes_evaluation": {},
+    "all_input_nan_causes": {},
+    "zero_volume_evaluation": 0,
+    "minimum_absolute_nonzero_denominator": 5245641870460.487,
+    "zero_denominator_cells": 0,
+    "near_boundary_ties_1e_10": 0
+  },
+  "alpha101_014": {
+    "sessions": 990,
+    "total_scores": 7920,
+    "finite_scores": 7920,
+    "nan_scores": 0,
+    "infinite_scores": 0,
+    "nan_by_symbol": {
+      "RELIANCE.NS": 0,
+      "TCS.NS": 0,
+      "INFY.NS": 0,
+      "HDFCBANK.NS": 0,
+      "ICICIBANK.NS": 0,
+      "SBIN.NS": 0,
+      "KOTAKBANK.NS": 0,
+      "AXISBANK.NS": 0
+    },
+    "weekly_candidates": 209,
+    "weekly_eight_finite": 209,
+    "weekly_unique_top_two": 209,
+    "weekly_boundary_ties": 0,
+    "weekly_all_eight_tied": 0,
+    "nonterminal_eligible": 208,
+    "selected_pair_counts": {
+      "RELIANCE.NS": 56,
+      "TCS.NS": 67,
+      "INFY.NS": 51,
+      "HDFCBANK.NS": 45,
+      "ICICIBANK.NS": 40,
+      "SBIN.NS": 45,
+      "KOTAKBANK.NS": 62,
+      "AXISBANK.NS": 52
+    },
+    "raw_output_numerics": {
+      "infinite": 0,
+      "nan": 72,
+      "warnings": []
+    },
+    "nan_causes_evaluation": {},
+    "all_input_nan_causes": {
+      "warmup": 72
+    },
+    "zero_volume_evaluation": 0,
+    "minimum_absolute_nonzero_denominator": 2885578.5207501035,
+    "zero_denominator_cells": 0,
+    "near_boundary_ties_1e_10": 0
+  },
+  "academic_illiq": {
+    "sessions": 990,
+    "total_scores": 7920,
+    "finite_scores": 7920,
+    "nan_scores": 0,
+    "infinite_scores": 0,
+    "nan_by_symbol": {
+      "RELIANCE.NS": 0,
+      "TCS.NS": 0,
+      "INFY.NS": 0,
+      "HDFCBANK.NS": 0,
+      "ICICIBANK.NS": 0,
+      "SBIN.NS": 0,
+      "KOTAKBANK.NS": 0,
+      "AXISBANK.NS": 0
+    },
+    "weekly_candidates": 209,
+    "weekly_eight_finite": 209,
+    "weekly_unique_top_two": 209,
+    "weekly_boundary_ties": 0,
+    "weekly_all_eight_tied": 0,
+    "nonterminal_eligible": 208,
+    "selected_pair_counts": {
+      "RELIANCE.NS": 0,
+      "TCS.NS": 92,
+      "INFY.NS": 48,
+      "HDFCBANK.NS": 0,
+      "ICICIBANK.NS": 3,
+      "SBIN.NS": 57,
+      "KOTAKBANK.NS": 127,
+      "AXISBANK.NS": 91
+    },
+    "raw_output_numerics": {
+      "infinite": 0,
+      "nan": 168,
+      "warnings": []
+    },
+    "nan_causes_evaluation": {},
+    "all_input_nan_causes": {
+      "warmup": 168
+    },
+    "zero_volume_evaluation": 0,
+    "minimum_absolute_nonzero_denominator": 193694781.47372794,
+    "zero_denominator_cells": 0,
+    "near_boundary_ties_1e_10": 0
+  }
+}
