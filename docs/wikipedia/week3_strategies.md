@@ -93,3 +93,35 @@ Indicators (6): views spike, edit burst, news tags, 20-day breakout, volume rati
   - (a) drop the volume condition;
   - (b) also accept a 50-day-average trend instead of the 20-day high;
   - (c) also accept a views ratio of at least 1.5 instead of a full spike.
+
+## S4. Sentiment-confirmed attention (added 2026-11-11, before S4's first run)
+Added after S1-S3 because the guide's entry layer is "stock selection from attention + sentiment", and
+none of S1-S3 used sentiment. S1-S3 are unchanged. Written knowing that S1-S3 were all DROP and that, in
+Week 2, weekly edit sentiment had no detectable link with returns (every bootstrap CI included 0).
+
+Indicators (4): views ratio, edit sentiment change, 50-day trend, SPY 200-day trend.
+Sources: Wikipedia (views; FinBERT sentiment of the text added to the article) and Yahoo price.
+
+- **Sentiment measure:**
+  - Week W's `sentiment_net` is the mean of P(positive) minus P(negative) over the sentences added to the
+    article that week. It is scored by the shared FinBERT scorer (`src/sentiment/finbert_scorer.py`),
+    with the Week 2 filters: at least 5 words, at most 60 sentences per stock-week.
+  - Sentiment change = week W's `sentiment_net` minus the mean of the scored weeks among the previous 26
+    weeks. At least 8 scored weeks are needed; otherwise it is undefined.
+- **Layer 1, regime:** the common SPY rule.
+- **Layer 2, entry (weekly), all must hold for week W:**
+  1. Views at least 1.2x their 8-week median (views ratio ≥ 1.2).
+  2. Sentiment change above 0, with at least 3 sentences scored that week.
+  3. Friday's close above the 50-day average.
+- **Layer 3, exit (first that hits):**
+  - Sentiment change below 0 for 2 scored weeks in a row. Weeks with no scored sentence don't count
+    either way.
+  - An 8% trailing stop.
+  - 6 weeks held.
+- **IC signal:** week W's sentiment change against week W+1's return, among stocks with a defined value.
+- **Universe:** the 51 US stocks once their edit sentiment is scored. If that scoring has not finished,
+  S4 runs on the stocks that have it (the 10 tracked stocks), and the log says so.
+- **Loosening if under 30 train entries, in order:**
+  - (a) at least 1 sentence scored instead of 3;
+  - (b) views ratio at least 1.0 instead of 1.2.
+- **Trials:** S4 and each loosening are added to the trial count (28 or more with S1-S3's 6 runs).
