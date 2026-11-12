@@ -3,7 +3,8 @@
   GET /tickers
       every stock and source in the shared weekly tables, with first week, last week and week count
   GET /attention?ticker=AAPL&start=2024-01-01&end=2025-09-30&source=wikipedia,reddit_product
-      weekly rows of the shared table; a source matches exactly or as a prefix
+      weekly rows of the shared table (Week 2 format; the dashboard uses /attention/{ticker}, the
+      Week 3 attention record, in src/api/dashboard.py); a source matches exactly or as a prefix
       (`wikipedia` = wikipedia_views + wikipedia_edits); no source = all sources
   GET /price?ticker=AAPL&start=...&end=...
       weekly close, return, returns 1 to 4 weeks after, and abnormal returns against the benchmark

@@ -140,6 +140,7 @@ Indian and Hong Kong stocks can be added as a config change. For the DS3 team an
 │   ├── wiki_sentiment.py  # FinBERT sentiment of the article text added each week, returns tests
 │   ├── wiki_analysis.py   # spike-vs-normal returns, edit timing, tags, tone, last-3-weeks table
 │   ├── wiki_strategy.py   # Wikipedia-only strategy with random-portfolio baseline
+│   ├── wiki_complex.py    # Week 3 complex strategies S1-S3, full evaluation, Vibe-Trading export
 │   ├── wiki_export.py     # attention records (wiki_weekly / wiki_current / prices_weekly parquet) for the API
 │   ├── sentiment/finbert_scorer.py  # FinBERT scorer shared by Reddit and Wikipedia (+ rerun cache)
 │   ├── trends_compare.py  # Google Trends alternatives (GDELT, trendspy) vs Wikipedia views
@@ -177,6 +178,9 @@ cp .env.example .env   # then fill in your own local values — never commit .en
 - Edit sentiment (FinBERT; the first run downloads the model and one diff per stock-week, then caches):
   `python -m src.wiki_sentiment`, or `python -m src.wiki_sentiment analyse` for the returns tests only
 - Wikipedia-only strategy (team train/test split, 200 random portfolios): `python -m src.wiki_strategy`
+- Week 3 complex strategies (rules: `docs/wikipedia/week3_strategies.md`, fixed before the first run):
+  `python -m src.wiki_complex`; add `--vibe` to also write Vibe-Trading run dirs to `~/.vibe-trading/runs/`.
+  First run pulls Yahoo OHLCV into `data/raw/wikipedia/prices/ohlcv_US.parquet` (network).
 - Attention records for the API and dashboard: `python -m src.wiki_export` (after the pipeline and sentiment)
 - Results notebook: `jupyter lab notebooks/wikipedia.ipynb` (Restart and Run All; needs the pipeline output)
 - API: `uvicorn src.api.main:app --reload --port 8000`, docs at http://localhost:8000/docs

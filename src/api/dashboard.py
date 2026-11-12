@@ -145,12 +145,21 @@ def research_weeks(df: pd.DataFrame) -> pd.DataFrame:
     return df[w + pd.Timedelta(days=6) < _holdout()].assign(week=w)
 
 
+def spike_flags(df: pd.DataFrame) -> pd.DataFrame:
+    """`spike` as a plain bool (a missing flag is no spike), so one gap cannot fail a whole response."""
+    if df.empty or "spike" not in df:
+        return df
+    return df.assign(spike=df["spike"].astype("boolean").fillna(False).astype(bool))
+
+
 def weekly(storage: Storage, source: str) -> pd.DataFrame:
-    return research_weeks(storage.table(f"processed/{TABLE_PREFIX[source]}_weekly.parquet"))
+    """A source's weekly attention records, holdout weeks removed (for the research routes)."""
+    return spike_flags(research_weeks(storage.table(f"processed/{TABLE_PREFIX[source]}_weekly.parquet")))
 
 
 def current(storage: Storage, source: str) -> pd.DataFrame:
-    return storage.table(f"processed/{TABLE_PREFIX[source]}_current.parquet")
+    """A source's "Hot right now" records for the current week (display only, so no holdout cut)."""
+    return spike_flags(storage.table(f"processed/{TABLE_PREFIX[source]}_current.parquet"))
 
 
 def _sources(source: str | None) -> list[str]:
@@ -228,7 +237,6 @@ def spikes(storage: StorageDep, week: date | None = None, market: str | None = N
     if not frames:
         return []
     att = pd.concat(frames, ignore_index=True)
-    att["spike"] = att["spike"].fillna(False).astype(bool)
     w = pd.Timestamp(week) if week else att["week"].max()
     if w + pd.Timedelta(days=6) >= _holdout():
         raise HTTPException(422, f"week {w.date()} is in the holdout (from {_holdout().date()}); "
@@ -239,11 +247,12 @@ def spikes(storage: StorageDep, week: date | None = None, market: str | None = N
     earlier = att[(att["week"] < w) & (att["week"] >= w - pd.Timedelta(weeks=_api()["repeat_weeks"])) & att["spike"]]
     repeat = set(zip(earlier["ticker"], earlier["source"]))
     prices = research_weeks(storage.table("processed/prices_weekly.parquet"))
-    p = prices[prices["week"] == w].set_index("ticker") if not prices.empty else pd.DataFrame()
+    p = (prices[prices["week"] == w].drop_duplicates(["ticker", "market"]).set_index(["ticker", "market"])
+         if not prices.empty else pd.DataFrame())
     rows = []
     for r in now.sort_values("ratio", ascending=False).itertuples():
-        a = _num(p["abn_ret"].get(r.ticker)) if "abn_ret" in p else None
-        n = _num(p["abn_ret_next1"].get(r.ticker)) if "abn_ret_next1" in p else None
+        a = _num(p["abn_ret"].get((r.ticker, r.market))) if "abn_ret" in p else None
+        n = _num(p["abn_ret_next1"].get((r.ticker, r.market))) if "abn_ret_next1" in p else None
         pos, neg = getattr(r, "sentiment_pos", None), getattr(r, "sentiment_neg", None)
         rows.append({"ticker": r.ticker, "market": r.market, "source": r.source, "ratio": _num(r.ratio),
                      "sentiment_net": _num(pos - neg) if pos is not None and neg is not None else None,
@@ -279,7 +288,7 @@ def hot(storage: StorageDep, market: Literal["us", "india", "hk", "all"] = "all"
     change = {q["symbol"]: q.get("change_pct") for m in ("india", "hk") for q in storage.live(m)}
     net = cur["sentiment_pos"] - cur["sentiment_neg"] if "sentiment_pos" in cur else pd.Series(None, index=cur.index)
     out = pd.DataFrame({"ticker": cur["ticker"], "market": cur["market"], "source": cur["source"],
-                        "ratio": cur["ratio"], "spike": cur["spike"].astype(bool), "sentiment_net": net,
+                        "ratio": cur["ratio"], "spike": cur["spike"], "sentiment_net": net,
                         "price_change_today_pct": cur["ticker"].map(change),
                         "as_of": cur.get("as_of")})
     return _rows(out.sort_values("ratio", ascending=False))

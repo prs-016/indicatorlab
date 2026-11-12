@@ -34,3 +34,14 @@ def test_score_caches_by_text_and_model_revision(tmp_path, monkeypatch):
     monkeypatch.setattr(finbert_scorer, "revision", lambda model: "new")
     score(["b"], f)                                      # a new model revision rescores
     assert calls[-1] == ["b"]
+
+
+def test_first_use_records_the_downloaded_snapshot_not_a_placeholder(tmp_path, monkeypatch):
+    downloaded = []
+    monkeypatch.setattr(finbert_scorer, "probabilities", _fake([]))
+    monkeypatch.setattr(finbert_scorer, "revision", lambda model: "abc" if downloaded else None)
+    monkeypatch.setattr(finbert_scorer, "load_model", lambda model: downloaded.append(model))
+    f = tmp_path / "cache.csv"
+    score(["a beat"], f)
+    assert downloaded == [finbert_scorer.MODEL]
+    assert pd.read_csv(f)["model"].tolist() == [f"{finbert_scorer.MODEL}@abc"]

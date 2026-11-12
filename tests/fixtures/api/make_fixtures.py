@@ -24,12 +24,12 @@ pd.concat([wiki("AAPL", [False, False, True, True, True, True], -0.1),
            wiki("MSFT", [False, False, True, False, False, False], 0.3)]).to_parquet(
     HERE / "processed" / "wiki_weekly.parquet", index=False)
 pd.DataFrame({"ticker": "AAPL", "market": "us", "source": "reddit", "week": weeks, "value": 50.0,
-              "baseline": 25.0, "ratio": 2.0, "spike": [False, False, True, False, False, True],
+              "baseline": 25.0, "ratio": 2.0, "spike": pd.array([None, False, True, False, False, True], "boolean"),
               "group": "investor", "sentiment_pos": 0.5, "sentiment_neg": 0.1, "sentiment_neu": 0.4,
               "n_scored": 10}).to_parquet(HERE / "processed" / "reddit_weekly.parquet", index=False)
 pd.DataFrame({"ticker": ["AAPL", "MSFT", "RELIANCE.NS"], "market": ["us", "us", "india"], "source": "wikipedia",
               "week": pd.Timestamp("2026-11-09"), "value": [900.0, 80, 300], "baseline": [300.0, 100, 200],
-              "ratio": [3.0, 0.8, 1.5], "spike": [True, False, False], "sentiment_pos": None,
+              "ratio": [3.0, 0.8, 1.5], "spike": pd.array([True, False, None], "boolean"), "sentiment_pos": None,
               "sentiment_neg": None, "sentiment_neu": None, "n_scored": 0,
               "as_of": pd.Timestamp("2026-11-10")}).to_parquet(HERE / "processed" / "wiki_current.parquet", index=False)
 pd.DataFrame({"ticker": ["AAPL", "MSFT"], "market": "us", "week": pd.Timestamp("2025-09-15"),

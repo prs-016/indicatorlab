@@ -91,12 +91,88 @@ They go to `data/processed/`, which matches the bucket's `processed/` layout.
 `src/api/storage.py` reads `data/` locally, or `s3://indicatorlab-data` when `INDICATORLAB_DATA` points
 there. It caches each table for 10 minutes (`api.cache_seconds`). CORS is limited to `CORS_ORIGINS`.
 
-Tests: `tests/test_api_dashboard.py` runs 10 TestClient tests on fixture tables in `tests/fixtures/api/`.
+Tests: `tests/test_api_dashboard.py` runs 12 TestClient tests on fixture tables in `tests/fixtures/api/`,
+on the dashboard router alone (in the merged app Joshua's Week 2 router still owns `/spikes`), and
+`tests/test_api_storage.py` covers the S3 and DynamoDB reads with a mocked boto3.
 They cover an unknown ticker (404), an empty week, a holdout week, the check that no research route
 returns weeks from 2025-10-01 on, market hours, and the key staying server side.
 
 A check on real data: `/spikes?week=2025-09-08` puts ORCL first, with views 9.6x baseline in the week of
 Oracle's September earnings jump (+23% abnormal return that week).
+
+## 4. Three complex strategies (US)
+
+The rules are in `docs/wikipedia/week3_strategies.md`, written before the first run and unchanged since.
+Each strategy has 5 or 6 indicators from 2 sources (Wikipedia; Yahoo price and volume) and 3 or 4
+layers: regime, entry, and exit/risk. S1 uses attention as a risk filter. Run with
+`python -m src.wiki_complex`; it writes `results/wikipedia/week3_strategy_log_us.csv`,
+`week3_drop_one_us.csv`, and the trades, weights and daily returns per strategy.
+
+**Setup.** Costs are 10 bps per unit of turnover. Sizing is inverse 63-day volatility, capped at 10%.
+Week W signals trade at the first close of W+1. The random baseline is 200 runs with random entry timing
+(seed 42), keeping each trade's stock, weight and holding length. The deflated Sharpe counts 27 trials:
+the 20 Vibe factor strategies, Wiki Attention Breakout, and the 6 runs below. SPY Sharpe is 1.00 in train
+and 0.66 in test.
+
+| Strategy | Entries train / test | Sharpe train / test | CAGR train / test | Max DD train / test | % random beaten train / test | IC train / test | Deflated Sharpe | Decision |
+|---|---|---|---|---|---|---|---|---|
+| S1 Attention-gated momentum | 320 / 226 | 1.12 / 0.25 | 15.3% / 2.2% | -17.0% / -19.9% | 26% / 0.5% | 0.004 / 0.011 | 0.17 | DROP |
+| S2 Attention reversal | 686 / 458 | 0.91 / -0.25 | 6.3% / -1.6% | -7.7% / -14.1% | 71% / 18.5% | -0.001 / -0.013 | 0.03 | DROP |
+| S3 News-tagged breakout | 1 / 1 | 0.29 / 0.41 | 0.1% / 0.3% | -0.5% / -1.0% | 54% / 62% | 0.008 / 0.008 | 0.25 | DROP |
+| S3, loosening (a) no volume | 6 / 1 | 0.88 / 0.41 | 0.4% / 0.3% | -0.7% / -1.0% | 91% / 62% | 0.008 / 0.008 | 0.25 | DROP |
+| S3, loosening (b) + 50-day trend | 13 / 14 | 0.56 / 0.92 | 0.6% / 1.9% | -1.6% / -2.3% | 67% / 82.5% | 0.008 / 0.008 | 0.64 | DROP |
+| S3, loosening (c) + views ratio 1.5 | 13 / 14 | 0.56 / 0.92 | 0.6% / 1.9% | -1.6% / -2.3% | 67% / 82.5% | 0.008 / 0.008 | 0.64 | DROP |
+
+**Why each is dropped:**
+- **S1:** its test Sharpe (0.25) is below SPY's, and it beats few random-timing runs. Random entry dates on
+  the same stocks do better (median Sharpe 1.26 train, 1.06 test), so the gain comes from which stocks it
+  holds, not when. Its momentum IC is close to 0.
+- **S2:** good in train, but it loses money in test and beats only 18.5% of random runs there.
+- **S3:** too rare. In train, only 23 of 14,841 stock-weeks have a views spike, an edit burst and an
+  earnings or product tag, before the price conditions are applied. Even fully loosened it has 13 entries,
+  below the guide's 30. Step (c) adds nothing, because a views ratio of at least 1.5 is almost the same set
+  of weeks as a spike (408 vs 406). Its test result (Sharpe 0.92, above SPY) is on 14 trades, and it beats
+  82.5% of random runs, not 90%.
+
+**Drop-one** (`week3_drop_one_us.csv`; Sharpe change train / test when the indicator is removed):
+- **S1:**
+  - Dropping the 50-day trend changes the Sharpe by -0.14 / +0.49 (test 0.74).
+  - The attention gates matter little: z-score +0.05 / +0.07, edit-burst breadth +0.10 / -0.02.
+  - The regime layer: +0.03 / -0.14.
+- **S2:** dropping the volume filter gives +0.15 / +0.76, and dropping the attention filter gives
+  -0.27 / +0.59.
+- **S3 (step c):**
+  - The news tags carry it in train (-0.37 when dropped).
+  - The regime and volume rows change nothing: SPY was above its 200-day average whenever S3 held a
+    stock, and volume was already dropped by loosening.
+
+These are diagnostics only. The rules are not changed after seeing test results, and a variant built
+from them would be a new trial.
+
+**Vibe-Trading cross-check.** `python -m src.wiki_complex --vibe` writes each final version as a
+Vibe run dir in `~/.vibe-trading/runs/indicatorlab_wiki_*_us/`. Each has `config.json`, a `SignalEngine`
+that reads the target weights from `code/weights.csv`, `source: yfinance` and `slippage_us: 0.001`.
+Run one from its directory:
+
+```bash
+cd ~/.vibe-trading/runs/indicatorlab_wiki_s1_us
+PYTHONPATH="<Vibe checkout>/agent" <venv>/bin/python -m backtest.runner "$PWD"
+```
+
+US codes are written as `TICKER.US`, because Vibe reads a bare `BRK-B` as a China B share. Vibe fills at
+the next open, and with `position_adjustment: hold` it applies entries and exits but not the weekly
+resizes, so its numbers are a check rather than an exact replay:
+
+| Strategy | Vibe Sharpe train / test | Ours | Daily return correlation train / test |
+|---|---|---|---|
+| S1 | 1.14 / 0.56 | 1.12 / 0.25 | 0.97 / 0.95 |
+| S2 | 0.70 / -0.10 | 0.91 / -0.25 | 0.93 / 0.96 |
+| S3 (step c) | 0.48 / 0.87 | 0.56 / 0.92 | 0.98 / 0.99 |
+
+No decision changes: S1's Vibe test Sharpe is still below SPY's 0.66.
+
+**India** follows once Jamal's `config/india_wiki_titles.csv` exists. Vibe's `india_equity` engine will
+then set the costs.
 
 ## Open items
 
@@ -109,5 +185,4 @@ Oracle's September earnings jump (+23% abnormal return that week).
 - **Waiting on others:** the AWS resources (bucket, tables, SSM, ECR) from Joshua; the live tables from
   Jamal and Jack; the Reddit `reddit_weekly.parquet` / `reddit_current.parquet` from Joshua.
 - **Not started yet:** the Wikipedia pull on AWS, the App Runner deploy, dashboard v1, the upstream
-  Wikipedia loader, 3 complex strategies with the full evaluation (IC, drop-one, deflated Sharpe), and
-  the 50 blind labels for Joshua's kappa.
+  Wikipedia loader, the India run of the complex strategies, and the 50 blind labels for Joshua's kappa.

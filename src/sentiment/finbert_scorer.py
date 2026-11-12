@@ -46,11 +46,16 @@ def load_model(model: str = MODEL):
     return tok, m, device
 
 
-def revision(model: str = MODEL) -> str:
-    """The downloaded snapshot's commit hash (Hugging Face cache folder name); 'local' for a model folder."""
+def revision(model: str = MODEL) -> str | None:
+    """The downloaded snapshot's commit hash (its Hugging Face cache folder name).
+
+    'local' when `model` is a folder on disk; None when the model has not been downloaded yet.
+    """
+    if Path(model).is_dir():
+        return "local"
     from huggingface_hub import try_to_load_from_cache
     path = try_to_load_from_cache(model, "config.json")
-    return Path(path).parent.name if isinstance(path, str) else "local"
+    return Path(path).parent.name if isinstance(path, str) else None
 
 
 def probabilities(texts: list[str], model: str = MODEL, batch_size: int = BATCH) -> pd.DataFrame:
@@ -87,7 +92,11 @@ def score(texts: list[str], cache_file: Path | str | None = None, model: str = M
     clean = [preprocess(t) for t in texts]
     if cache_file is None:
         return to_output(probabilities(clean, model, batch_size))
-    rev = f"{model}@{revision(model)}"   # no model load when everything is cached
+    rev = revision(model)                # no model load when the snapshot is already on disk
+    if rev is None:                      # first use on this machine: download, then read the real snapshot
+        load_model(model)
+        rev = revision(model)
+    rev = f"{model}@{rev}"
     f = Path(cache_file)
     cache = pd.read_csv(f) if f.exists() else pd.DataFrame(columns=["key", "model", *COLS])
     cache = cache[cache["model"] == rev].drop_duplicates("key").set_index("key")[list(COLS)].astype(float)

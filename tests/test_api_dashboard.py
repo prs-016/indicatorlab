@@ -46,6 +46,11 @@ def test_attention_returns_records_and_never_holdout_weeks(client):
                             "sentiment_pos", "sentiment_neg", "sentiment_neu", "n_scored"}
 
 
+def test_a_missing_spike_flag_is_no_spike_not_an_error(client):
+    r = client.get("/attention/AAPL", params={"source": "reddit", "to": "2025-09-01"})   # spike is null there
+    assert r.status_code == 200 and r.json()[0]["spike"] is False
+
+
 def test_unknown_ticker_and_bad_source(client):
     r = client.get("/attention/ZZZZ")
     assert r.status_code == 404 and "ZZZZ" in r.json()["detail"]
@@ -83,6 +88,7 @@ def test_hot_keeps_ratios_above_one_sorted_with_todays_move(client):
     rows = client.get("/hot").json()
     assert [r["ticker"] for r in rows] == ["AAPL", "RELIANCE.NS"]
     assert rows[1]["price_change_today_pct"] == 1.2 and rows[0]["price_change_today_pct"] is None
+    assert rows[1]["spike"] is False                                             # null flag in the table
     assert [r["ticker"] for r in client.get("/hot", params={"market": "india"}).json()] == ["RELIANCE.NS"]
 
 

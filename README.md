@@ -54,9 +54,7 @@ See [India methodology](docs/india_backtesting_methodology.md) and
 [code review](code_review.md). No commit, push, PR, merge or publication follows
 from the submission-preparation checks.
 
-> **Indicator Lab.** Attention data (Reddit, Wikipedia, search trends) for US, Indian and Hong Kong
-> stocks, tested as trading signals. Markets, stocks and sources live in `config.yaml`.
-> Agent/teammate guide: [`docs/AGENTS.md`](docs/AGENTS.md).
+Agent/teammate guide: [`docs/AGENTS.md`](docs/AGENTS.md).
 
 ## Wikipedia attention (James)
 
@@ -69,6 +67,7 @@ python -m src.wiki_pipeline       # pull views, edits and prices (cached), write
 python -m src.wiki_titles         # check every configured title against Wikipedia and Wikidata
 python -m src.wiki_strategy       # Wikipedia-only strategy vs SPY, equal weight and 200 random portfolios
 python -m src.wiki_sentiment      # FinBERT sentiment of the text added to each article, returns tests
+python -m src.wiki_complex        # Week 3 strategies S1-S3: IC, Sharpe vs SPY, random entry timing, drop-one, deflated Sharpe
 python -m src.wiki_export         # attention records for the API: data/processed/wiki_*.parquet
 jupyter lab notebooks/wikipedia.ipynb   # Week 2 results (Restart and Run All)
 uvicorn src.api.main:app --reload # /health, /attention/{ticker}, /sentiment, /spikes, /hot, /live, /runs

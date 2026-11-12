@@ -9,10 +9,12 @@ from __future__ import annotations
 
 import io
 import json
+import logging
 import os
 import time
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from decimal import Decimal
 from pathlib import Path
 
 import pandas as pd
@@ -20,6 +22,8 @@ import pandas as pd
 from src import config
 
 LOCAL_ROOT = Path(__file__).resolve().parents[2] / "data"
+
+log = logging.getLogger("api.storage")
 
 
 @dataclass
@@ -83,18 +87,31 @@ class Storage:
         return df
 
     def live(self, market: str) -> list[dict]:
-        """Latest quote per symbol: the DynamoDB table on AWS, live/<market>.json locally."""
+        """Latest quote per symbol: the DynamoDB table on AWS, live/<market>.json locally.
+
+        A market with no live table yet (or one that cannot be read) has no quotes, so the routes that
+        use live prices keep working before the live feeds exist.
+        """
         if self.is_s3:
             import boto3
-            name = config.load()["api"]["live_tables"][market]
+            from botocore.exceptions import BotoCoreError, ClientError
+            name = config.load()["api"]["live_tables"].get(market)
+            if not name:
+                return []
             t = boto3.resource("dynamodb", region_name=os.getenv("AWS_REGION", "us-west-2")).Table(name)
             items, kw = [], {}
-            while True:
-                page = t.scan(**kw)
-                items += page["Items"]
-                if "LastEvaluatedKey" not in page:
-                    return [{k: float(v) if hasattr(v, "is_finite") else v for k, v in i.items()} for i in items]
-                kw["ExclusiveStartKey"] = page["LastEvaluatedKey"]
+            try:
+                while True:
+                    page = t.scan(**kw)
+                    items += page["Items"]
+                    if "LastEvaluatedKey" not in page:
+                        break
+                    kw["ExclusiveStartKey"] = page["LastEvaluatedKey"]
+            except (ClientError, BotoCoreError) as e:   # table missing, no access, no network
+                log.warning("live table %s unreadable: %s", name, e)
+                return []
+            # DynamoDB returns numbers as Decimal, which JSON cannot encode
+            return [{k: float(v) if isinstance(v, Decimal) else v for k, v in i.items()} for i in items]
         f = Path(self.root) / "live" / f"{market}.json"
         return json.loads(f.read_text()) if f.exists() else []
 
