@@ -57,3 +57,31 @@ def test_labelled_sample_is_never_redrawn(tmp_path, monkeypatch):
     with pytest.raises(SystemExit, match="already has labels"):
         ls._guard(sample, "sentiment", force=False)
     ls._guard(sample, "sentiment", force=True)                  # explicit override
+
+
+def test_metric_row_has_per_class_recall_and_wilson_ci():
+    import numpy as np
+
+    from src.reddit import label_eval as le
+    y = np.array(["positive"] * 4 + ["negative"] * 4 + ["neutral"] * 2)
+    p = np.array(["positive", "positive", "positive", "neutral", "negative", "negative", "neutral", "neutral",
+                  "neutral", "positive"])
+    row = le._metric_row(y, p, np.random.default_rng(0))
+    assert row["recall_positive"] == 0.75 and row["recall_negative"] == 0.5 and row["recall_neutral"] == 0.5
+    assert row["n_positive"] == 4 and row["n_neutral"] == 2
+    assert row["accuracy"] == 0.6
+    assert (row["accuracy_wilson_low"], row["accuracy_wilson_high"]) == le.wilson(6, 10)
+    for lab in le.LABELS:
+        assert row[f"recall_{lab}_ci_low"] <= row[f"recall_{lab}"] <= row[f"recall_{lab}_ci_high"]
+
+
+def test_recall_of_an_absent_class_is_nan_and_ci_skips_undefined_resamples():
+    import math
+
+    import numpy as np
+
+    from src.reddit import label_eval as le
+    y, p = np.array(["positive", "positive"]), np.array(["positive", "negative"])
+    assert math.isnan(le._recall("neutral")(y, p))
+    lo, hi = le._boot_ci(y, p, le._recall("neutral"), np.random.default_rng(0))
+    assert math.isnan(lo) and math.isnan(hi)

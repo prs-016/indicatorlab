@@ -131,7 +131,8 @@ def section_strategy() -> str:
     return f"Run `{last['run_id'].iloc[0]}` (every run is kept in the append-only log):\n\n" + _md(last[cols])
 
 
-API_NOTE = ("`GET /sentiment` and `GET /spikes` in `src/api/reddit.py`, tested in `tests/test_api_reddit.py`. "
+API_NOTE = ("(Replaced in Week 3 by the `/reddit/*` router in `src/api/reddit_routes.py`.) "
+            "`GET /sentiment` and `GET /spikes` in `src/api/reddit.py`, tested in `tests/test_api_reddit.py`. "
             "Run `.venv/bin/uvicorn src.api.main:app` and open `/docs`.")
 
 SECTIONS = [

@@ -1,0 +1,202 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: >-
+  Indicator Lab shared resources (us-west-2): the S3 data bucket, the live quote tables for India and
+  Hong Kong, a monthly budget alert, and the IAM group teammates' own logins join. Every name can be
+  overridden, so the same template deploys into the DS3 account later.
+
+Parameters:
+  BucketName:
+    Type: String
+    Default: indicatorlab-data
+    Description: S3 bucket names are global; pass another name if this one is taken.
+  BudgetEmail:
+    Type: String
+    Description: Address that gets the 80% and 100% budget alerts.
+  BudgetLimitUsd:
+    Type: Number
+    Default: 20
+  LiveIndiaTableName:
+    Type: String
+    Default: indicatorlab-live-india
+  LiveHkTableName:
+    Type: String
+    Default: indicatorlab-live-hk
+  TeamGroupName:
+    Type: String
+    Default: indicatorlab-team
+
+Resources:
+  DataBucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      BucketName: !Ref BucketName
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      LifecycleConfiguration:
+        Rules:
+          - Id: expire-old-versions        # versioning protects against mistakes without keeping every hourly rewrite
+            Status: Enabled
+            NoncurrentVersionExpiration:
+              NoncurrentDays: 30
+
+  LiveIndiaTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Ref LiveIndiaTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: symbol
+          AttributeType: S
+      KeySchema:
+        - AttributeName: symbol
+          KeyType: HASH
+
+  LiveHkTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: !Ref LiveHkTableName
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: symbol
+          AttributeType: S
+      KeySchema:
+        - AttributeName: symbol
+          KeyType: HASH
+
+  MonthlyBudget:
+    Type: AWS::Budgets::Budget
+    Properties:
+      Budget:
+        BudgetName: indicatorlab-monthly
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit:
+          Amount: !Ref BudgetLimitUsd
+          Unit: USD
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref BudgetEmail
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 100
+            ThresholdType: PERCENTAGE
+          Subscribers:
+            - SubscriptionType: EMAIL
+              Address: !Ref BudgetEmail
+
+  TeamGroup:
+    Type: AWS::IAM::Group
+    Properties:
+      GroupName: !Ref TeamGroupName
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/PowerUserAccess      # everything except IAM, Organizations and account settings
+      Policies:
+        - PolicyName: indicatorlab-service-roles
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Sid: RolesForOwnServices        # lets `sam deploy` create the roles a teammate's service needs
+                Effect: Allow
+                Action:
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:GetRole
+                  - iam:PassRole
+                  - iam:TagRole
+                  - iam:UntagRole
+                  - iam:UpdateRole
+                  - iam:UpdateAssumeRolePolicy
+                  - iam:AttachRolePolicy
+                  - iam:DetachRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:ListRolePolicies
+                  - iam:ListAttachedRolePolicies
+                Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/indicatorlab-*
+              - Sid: ServiceLinkedRoles
+                Effect: Allow
+                Action: iam:CreateServiceLinkedRole
+                Resource: "*"
+                Condition:
+                  StringEquals:
+                    iam:AWSServiceName:
+                      - ecs.amazonaws.com
+                      - apprunner.amazonaws.com
+                      - scheduler.amazonaws.com
+                      - amplify.amazonaws.com
+              - Sid: ManageOwnLogin
+                Effect: Allow
+                Action:
+                  - iam:GetUser
+                  - iam:ChangePassword
+                  - iam:CreateAccessKey
+                  - iam:DeleteAccessKey
+                  - iam:ListAccessKeys
+                  - iam:UpdateAccessKey
+                  - iam:CreateVirtualMFADevice
+                  - iam:EnableMFADevice
+                  - iam:ListMFADevices
+                  - iam:ResyncMFADevice
+                Resource:
+                  - !Sub arn:aws:iam::${AWS::AccountId}:user/${!aws:username}
+                  - !Sub arn:aws:iam::${AWS::AccountId}:mfa/${!aws:username}
+              - Sid: ReadPasswordPolicy
+                Effect: Allow
+                Action: iam:GetAccountPasswordPolicy
+                Resource: "*"
+              - Sid: KeepSharedDataAndBudget
+                Effect: Deny
+                Action:
+                  - s3:DeleteBucket
+                  - s3:PutBucketPolicy
+                  - s3:PutBucketPublicAccessBlock
+                  - dynamodb:DeleteTable
+                Resource:
+                  - !GetAtt DataBucket.Arn
+                  - !GetAtt LiveIndiaTable.Arn
+                  - !GetAtt LiveHkTable.Arn
+              - Sid: NoBillingOrAccountChanges
+                Effect: Deny
+                Action:
+                  - budgets:ModifyBudget
+                  - account:*
+                  - organizations:*
+                Resource: "*"
+
+Outputs:
+  BucketName:
+    Value: !Ref DataBucket
+  BucketArn:
+    Value: !GetAtt DataBucket.Arn
+  LiveIndiaTableArn:
+    Value: !GetAtt LiveIndiaTable.Arn
+  LiveHkTableArn:
+    Value: !GetAtt LiveHkTable.Arn
+  TeamGroupName:
+    Value: !Ref TeamGroup

@@ -4,7 +4,8 @@ Each scorer maps texts to a label (positive / negative / neutral) and a score in
 
   vader     VADER compound score; +-0.05 cutoffs (the VADER authors' standard)
   lm        Loughran-McDonald finance word lists: tone = (pos - neg) / (pos + neg + 1); sign -> label
-  finbert   ProsusAI/finbert (Hugging Face); label = argmax, score = p(positive) - p(negative)
+  finbert   ProsusAI/finbert at the revision pinned in config.yaml `sentiment`, via the shared
+            src/sentiment/finbert_scorer.py; label = argmax, score = p(positive) - p(negative)
   llm       Claude (pinned model) with a fixed, versioned prompt and JSON output; score = +1 / 0 / -1
 
 All cutoffs are fixed here before any scorer sees the hand labels. Text is title + body after
@@ -35,9 +36,6 @@ log = get_logger("sentiment_scorers", "pipeline.log")
 LABELS = ["positive", "negative", "neutral"]
 VADER_CUTOFF = 0.05
 LM_DIR = settings.RAW / "lexicons"
-FINBERT_MODEL = "ProsusAI/finbert"
-FINBERT_MAX_TOKENS = 512           # BERT input limit
-FINBERT_BATCH = 32
 LLM_MODEL = "claude-haiku-5-5"
 LLM_PROMPT_PATH = Path(__file__).with_name("prompts") / "sentiment_v1.txt"
 LLM_MAX_TEXT_CHARS = 4000          # longer posts are cut here, and the cut is noted in the prompt
@@ -88,25 +86,16 @@ def score_lm(texts: list[str], words: tuple[set[str], set[str]] | None = None) -
 
 
 # ----------------------------------------------------------------------------- FinBERT
-def score_finbert(texts: list[str], batch_size: int = FINBERT_BATCH) -> pd.DataFrame:
-    """FinBERT class probabilities per text (first 512 tokens), on Apple MPS when available."""
-    import torch
-    from transformers import AutoModelForSequenceClassification, AutoTokenizer
-    device = "mps" if torch.backends.mps.is_available() else "cpu"
-    tok = AutoTokenizer.from_pretrained(FINBERT_MODEL)
-    model = AutoModelForSequenceClassification.from_pretrained(FINBERT_MODEL).to(device).eval()
-    id2label = {i: lab.lower() for i, lab in model.config.id2label.items()}
-    probs = []
-    with torch.no_grad():
-        for i in range(0, len(texts), batch_size):
-            enc = tok(texts[i:i + batch_size], padding=True, truncation=True, max_length=FINBERT_MAX_TOKENS,
-                      return_tensors="pt").to(device)
-            probs.append(torch.softmax(model(**enc).logits, dim=-1).cpu().numpy())
-    p = np.vstack(probs) if probs else np.zeros((0, len(id2label)))
-    cols = [id2label[i] for i in range(p.shape[1])]
-    pdf = pd.DataFrame(p, columns=cols)
-    return pd.DataFrame({"label": pdf[LABELS].idxmax(axis=1).to_numpy(),
-                         "score": (pdf["positive"] - pdf["negative"]).to_numpy()})
+def score_finbert(texts: list[str]) -> pd.DataFrame:
+    """FinBERT via the shared scorer (src/sentiment/finbert_scorer.py): label = argmax, score = p(pos) - p(neg).
+
+    The three class probabilities are returned too, as sentiment_pos / sentiment_neg / sentiment_neu.
+    """
+    from src.sentiment.finbert_scorer import FinbertScorer
+    p = FinbertScorer.from_config().score(list(texts))
+    return pd.DataFrame({"label": p["sentiment_label"], "score": p["sentiment_pos"] - p["sentiment_neg"],
+                         "sentiment_pos": p["sentiment_pos"], "sentiment_neg": p["sentiment_neg"],
+                         "sentiment_neu": p["sentiment_neu"]})
 
 
 # ----------------------------------------------------------------------------- LLM

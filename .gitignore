@@ -41,3 +41,5 @@ logs/
 *.log
 *.xlsx
 *.ndjson
+# generated static sites (src/reddit/dashboard_export.py)
+build/
