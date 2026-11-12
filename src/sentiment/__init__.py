@@ -1,1 +1,1 @@
-"""Sentiment scorers shared by the Reddit and Wikipedia pipelines."""
+"""Sentiment scoring shared by the Reddit and Wikipedia pipelines."""
