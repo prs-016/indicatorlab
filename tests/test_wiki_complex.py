@@ -132,3 +132,37 @@ def test_random_baseline_does_not_depend_on_trade_row_order():
     shuffled = sim["trades"].sample(frac=1, random_state=3)
     assert wc.random_entry_sharpes(shuffled, m, period, 0.001, n=10, seed=1) == \
         wc.random_entry_sharpes(sim["trades"], m, period, 0.001, n=10, seed=1)
+
+
+def test_sentiment_change_uses_only_earlier_scored_weeks():
+    weeks = pd.date_range("2020-01-06", periods=12, freq="7D")
+    net = [0.0] * 9 + [np.nan, 0.5, -0.2]
+    weekly = pd.DataFrame({"ticker": "AAA", "week": weeks, "sentiment_net": net,
+                           "n_scored": [3] * 9 + [0, 3, 3]})
+    chg, n = wc.sentiment_change(weekly, weeks)
+    assert chg["AAA"].iloc[:8].isna().all()          # fewer than 8 earlier scored weeks
+    assert np.isnan(chg["AAA"].iloc[9])              # unscored week: no value
+    assert chg["AAA"].iloc[10] == pytest.approx(0.5)  # prior mean 0 over 9 scored weeks
+    assert chg["AAA"].iloc[11] == pytest.approx(-0.2 - 0.5 / 10)
+    assert n["AAA"].iloc[9] == 0
+
+
+def test_s4_enters_on_rising_sentiment_and_exits_after_two_weaker_weeks():
+    m = make_market(spy_trend=0.003)
+    for k in ("sent_change", "n_scored"):
+        m.weekly[k] = pd.DataFrame(np.nan, index=m.weekly["abn_views"].index, columns=["AAA"])
+    weeks = m.weeks.index
+    m.weekly["views_ratio"].loc[:, "AAA"] = 1.5
+    m.weekly["n_scored"].loc[:, "AAA"] = 3
+    m.weekly["sent_change"].loc[weeks[50], "AAA"] = 0.2
+    m.weekly["sent_change"].loc[[weeks[51], weeks[53]], "AAA"] = -0.1   # week 52 unscored: counts neither way
+    s = wc.SentimentConfirmedAttention()
+    s.stop = 0.0                                                      # isolate the sentiment exit
+    m.close.loc[:, "AAA"] = np.linspace(50, 150, len(m.days))         # always above its 50-day average
+    m.__post_init__()
+    w = wc.simulate(s, m, cost=0)["weights"]["AAA"]
+    held = w[w > 0].index
+    assert held.min() == m.weeks.at[weeks[50], "signal"]
+    assert held.max() < m.weeks.at[weeks[53], "signal"]               # sold on the 2nd weak scored week
+    assert w.loc[m.weeks.at[weeks[52], "signal"]] > 0
+    assert "BBB" not in m.weekly["n_scored"].columns                  # only stocks with sentiment trade

@@ -3,6 +3,7 @@
   S1  attention-gated momentum   regime + market attention gate + 12-1 momentum among 50-day uptrends
   S2  attention reversal         buy last week's losers among the most-viewed stocks (revert and volume filters)
   S3  news-tagged breakout       views spike + edit burst with earnings/product tags + 20-day high on volume
+  S4  sentiment-confirmed attention  views above baseline + edit sentiment rising + 50-day uptrend
 
 Every strategy goes through the guide's full evaluation: IC, train / test Sharpe after costs vs the index,
 200 random-entry-timing runs, drop-one ablation, and the deflated Sharpe.
@@ -28,6 +29,7 @@ TREND_DAYS, REGIME_DAYS, VOL_DAYS = 50, 200, 63
 BREAKOUT_DAYS, VOLUME_BASE_DAYS = 20, 50
 MAX_WEIGHT, HALF = 0.10, 0.5
 GATE_Z, GATE_WEEKS, BREADTH_PCT, MIN_HISTORY_WEEKS = 1.5, 52, 0.90, 52
+SENT_WEEKS, SENT_MIN_SCORED_WEEKS = 26, 8   # S4: sentiment change vs the mean of scored weeks in the prior 26
 TRIALS_BEFORE = 21                         # James's earlier trials: 20 Vibe factor strategies + Wiki Attention Breakout
 EULER_GAMMA = 0.5772156649015329
 
@@ -47,8 +49,23 @@ def load_ohlcv(tickers: list[str], bench: str, start: str, end: pd.Timestamp, ca
     return {"close": df["Close"], "volume": df["Volume"]}
 
 
-def weekly_features(att: pd.DataFrame, edits: pd.DataFrame, burst_ratio: float) -> dict[str, pd.DataFrame]:
-    """week x ticker tables from the shared attention table and the weekly edit table."""
+def sentiment_change(weekly: pd.DataFrame, weeks: pd.DatetimeIndex) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """(change, n_scored) as week x ticker tables from weekly edit sentiment (src/wiki_sentiment.py).
+
+    change = this week's sentiment_net minus the mean over scored weeks among the previous SENT_WEEKS
+    (at least SENT_MIN_SCORED_WEEKS of them); NaN in weeks with no scored sentence.
+    """
+    w = weekly.assign(week=pd.to_datetime(weekly["week"]))
+    w = w[w["n_scored"] > 0]
+    net = w.pivot(index="week", columns="ticker", values="sentiment_net").reindex(weeks)
+    n = w.pivot(index="week", columns="ticker", values="n_scored").reindex(weeks).fillna(0)
+    prior = net.shift(1).rolling(SENT_WEEKS, min_periods=SENT_MIN_SCORED_WEEKS).mean()
+    return net - prior, n
+
+
+def weekly_features(att: pd.DataFrame, edits: pd.DataFrame, burst_ratio: float,
+                    sentiment: pd.DataFrame | None = None) -> dict[str, pd.DataFrame]:
+    """week x ticker tables from the shared attention table, the weekly edit table and edit sentiment."""
     a = att.assign(week=pd.to_datetime(att["week"]))
     v = a[a["source"] == "wikipedia_views"].pivot(index="week", columns="ticker", values=["abnormal", "ratio", "spike"])
     ed = a[a["source"] == "wikipedia_edits"].pivot(index="week", columns="ticker", values="ratio")
@@ -56,11 +73,14 @@ def weekly_features(att: pd.DataFrame, edits: pd.DataFrame, burst_ratio: float) 
     piv = {c: w.pivot(index="week", columns="ticker", values=c) for c in
            ["edits", "reverts", "tag_earnings", "tag_product_launch", "tag_legal", "tag_layoff"]}
     revert_share = (piv["reverts"] / piv["edits"].where(piv["edits"] > 0)).fillna(0.0)
-    return {"abn_views": v["abnormal"].astype(float), "views_ratio": v["ratio"].astype(float),
+    out = {"abn_views": v["abnormal"].astype(float), "views_ratio": v["ratio"].astype(float),
             "spike": v["spike"].astype("boolean").fillna(False).astype(bool),
             "burst": (ed >= burst_ratio), "revert_share": revert_share,
             "news": (piv["tag_earnings"] + piv["tag_product_launch"]) > 0,
             "bad_news": (piv["tag_legal"] + piv["tag_layoff"]) > 0}
+    if sentiment is not None:
+        out["sent_change"], out["n_scored"] = sentiment_change(sentiment, out["abn_views"].index)
+    return out
 
 
 def market_gate(abn_views: pd.DataFrame, burst: pd.DataFrame) -> pd.Series:
@@ -251,7 +271,37 @@ class NewsTaggedBreakout(Strategy):
         return m.wk("abn_views", week)
 
 
-STRATEGIES = (AttentionGatedMomentum, AttentionReversal, NewsTaggedBreakout)
+class SentimentConfirmedAttention(Strategy):
+    name = "S4 Sentiment-confirmed attention"
+    indicators = ("regime", "views", "sentiment", "trend")
+    stop = 0.08
+    MAX_WEEKS, WEAK_WEEKS = 6, 2
+    VIEWS_MIN, MIN_SCORED = (1.2, 1.2, 1.0), (3, 1, 1)     # by loosening step
+
+    def rebalance(self, m, week, fri, held, first_of_month):
+        chg, n = m.wk("sent_change", week), m.wk("n_scored", week).fillna(0)
+        keep = set()
+        for t, p in held.items():
+            p.weeks_held += 1
+            if "sentiment" not in self.off and pd.notna(chg.get(t)):   # unscored weeks count neither way
+                p.weak_weeks = p.weak_weeks + 1 if chg[t] < 0 else 0
+            if p.weeks_held < self.MAX_WEEKS and p.weak_weeks < self.WEAK_WEEKS:
+                keep.add(t)
+        ok = pd.Series(m.tickers, index=m.tickers).isin(m.weekly["n_scored"].columns)   # stocks with sentiment
+        if "views" not in self.off:
+            ok &= m.wk("views_ratio", week) >= self.VIEWS_MIN[self.loosen]
+        if "sentiment" not in self.off:
+            ok &= (chg > 0) & (n >= self.MIN_SCORED[self.loosen])
+        if "trend" not in self.off:
+            ok &= m.close.loc[fri, m.tickers] > m.ma50.loc[fri]
+        return keep | set(ok[ok].index)
+
+    def signal(self, m, week, fri):
+        return m.wk("sent_change", week)
+
+
+STRATEGIES = (AttentionGatedMomentum, AttentionReversal, NewsTaggedBreakout, SentimentConfirmedAttention)
+MAX_LOOSEN = {AttentionReversal: 2, NewsTaggedBreakout: 3, SentimentConfirmedAttention: 2}
 
 
 # ----------------------------------------------------------------------------- simulation
@@ -415,8 +465,11 @@ def build_market(market: str = "US") -> Market:
     holdout = pd.Timestamp(config.holdout_start())
     tickers, bench = list(universe(market)), config.benchmark(market)
     px = load_ohlcv(tickers, bench, "2014-01-01", holdout, RAW / "prices" / f"ohlcv_{market}.parquet")
+    # edit sentiment for every stock (`python -m src.wiki_sentiment strategy`), else the tracked stocks only
+    sent = next((f for f in (PROCESSED / "edit_sentiment_weekly_research_strategy.csv",
+                             PROCESSED / "edit_sentiment_weekly_research.csv") if f.exists()), None)
     wk = weekly_features(pd.read_csv(shared_path("research")), pd.read_csv(PROCESSED / "weekly_edits_research.csv"),
-                         config.load()["wikipedia"]["edit_burst_ratio"])
+                         config.load()["wikipedia"]["edit_burst_ratio"], pd.read_csv(sent) if sent else None)
     return Market(px["close"], px["volume"], bench, [t for t in tickers if t in px["close"]], wk)
 
 
@@ -433,8 +486,7 @@ def run(market: str = "US") -> list[dict]:
         while True:   # the guide: too few train entries -> loosen on train data only, logged as a new trial
             res = evaluate(cls, m, split, cost, s["n_random_portfolios"], s["random_seed"], loosen)
             results.append(res)
-            max_loosen = {AttentionReversal: 2, NewsTaggedBreakout: 3}.get(cls, 0)
-            if res["periods"]["train"]["n_trades"] >= 30 or loosen >= max_loosen:
+            if res["periods"]["train"]["n_trades"] >= 30 or loosen >= MAX_LOOSEN.get(cls, 0):
                 break
             loosen += 1
     n_trials = TRIALS_BEFORE + len(results)
@@ -445,7 +497,9 @@ def run(market: str = "US") -> list[dict]:
         r["decision"], r["why"] = decide(r)
         r["deflated_sharpe"] = deflated_sharpe(cut(r["sim"]["net"], split["test"]), trial_sr, n_trials)
         tr, te = r["periods"]["train"], r["periods"]["test"]
+        n_stocks = len(m.weekly["n_scored"].columns) if r["name"].startswith("S4") else len(m.tickers)
         rows.append({"strategy": r["name"], "loosen_step": r["loosen"], "market": market.lower(), "who": "James",
+                     "n_stocks": n_stocks,
                      "train_period": "..".join(map(str, split["train"])), "test_period": "..".join(map(str, split["test"])),
                      "sharpe_train_test": f"{tr['sharpe']:.2f} / {te['sharpe']:.2f}",
                      **{f"{k}_{p}": v for p, d in r["periods"].items() for k, v in d.items()},

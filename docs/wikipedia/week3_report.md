@@ -23,17 +23,19 @@ for the Strategy Log (at least 4 indicators, 3 layers). It stays as the Wikipedi
 
 ## 2. FinBERT on the shared scorer
 
-`src/sentiment/finbert_scorer.py` is one scorer for Reddit and Wikipedia (the guide's step 1.5). It:
-- loads `ProsusAI/finbert` once, on Apple MPS or CUDA when available;
-- returns `label`, `sentiment_pos`, `sentiment_neg`, `sentiment_neu`, and `sentiment_net` = pos minus neg,
-  which are the attention record's names;
-- caches scores by text hash and model snapshot, so reruns only score new text, and a new model
-  version rescores everything.
+`src/wiki_sentiment.py` now scores with Joshua's shared scorer, `FinbertScorer` in
+`src/sentiment/finbert_scorer.py`, from his `sentiment-scorer` branch (merged into `wikipedia`). That is
+the guide's step 1.5: Reddit and Wikipedia use identical code. The scorer:
+- uses `ProsusAI/finbert` at the revision pinned in `config.yaml` `sentiment`;
+- returns `sentiment_label`, `sentiment_pos`, `sentiment_neg` and `sentiment_neu`; Wikipedia adds
+  `sentiment_net` = pos minus neg, the attention record's name;
+- keeps scores in its `ScoreCache` (`data/processed/wikipedia/finbert_cache/`), keyed by each sentence's
+  hash and the model version, so reruns only score new text.
 
-It is built from Joshua's `score_finbert` (`src/reddit/sentiment_scorers.py`), which keeps only the label
-and pos minus neg. Joshua, if you agree, `score_finbert` can call it.
+An earlier version of this branch had its own scorer at the same path. It was replaced by Joshua's, and
+rescoring all 32,672 sentences with his gave identical labels, with probabilities differing by at most 1e-7.
 
-`src/wiki_sentiment.py` now uses it. The filters are unchanged: at least 5 words, at most 60 sentences
+The filters are unchanged: at least 5 words, at most 60 sentences
 per stock-week. The weekly table now holds the mean of each probability, `sentiment_net`, and
 `n_scored`. On the same 32,672 sentences the labels did not change (69% neutral, 16% negative,
 14% positive; 28% are about old history). The net tone is now a mean of probabilities rather than a

@@ -71,9 +71,10 @@ def test_week_sentences_caches_and_resumes(tmp_path, monkeypatch):
 
 
 def test_score_uses_the_shared_scorer_columns(monkeypatch):
-    from src.sentiment import finbert_scorer
-    monkeypatch.setattr(finbert_scorer, "probabilities", lambda texts, model, batch_size: pd.DataFrame(
-        {"positive": 0.1, "negative": 0.8, "neutral": 0.1}, index=range(len(texts))))
+    from src.sentiment.finbert_scorer import FinbertScorer
+    monkeypatch.setattr(FinbertScorer, "score", lambda self, texts: pd.DataFrame(
+        {"sentiment_label": "negative", "sentiment_pos": 0.1, "sentiment_neg": 0.8, "sentiment_neu": 0.1},
+        index=range(len(texts))))
     out = score(["a", "b"])
     assert out["label"].tolist() == ["negative", "negative"] and np.isclose(out["sentiment_neg"], 0.8).all()
     assert np.isclose(out["sentiment_net"], -0.7).all()
@@ -120,3 +121,22 @@ def test_stale_marks_sentences_about_old_years_only():
                            "sentence": ["In 1998 the firm was founded in a garage.", "In 2023 it cut 12,000 jobs.",
                                         "It bought X in 2004 and sold it in 2024.", "Shares fell after the report."]})
     assert stale(scored).tolist() == [True, False, False, False]
+
+
+def test_score_keeps_order_and_reuses_the_shared_cache(monkeypatch, tmp_path):
+    from src.sentiment.finbert_scorer import FinbertScorer
+    calls = []
+
+    def fake(self, texts):
+        calls.append(list(texts))
+        neg = [0.8 if "fell" in t else 0.1 for t in texts]
+        return pd.DataFrame({"sentiment_label": ["negative" if n > 0.5 else "neutral" for n in neg],
+                             "sentiment_pos": 0.1, "sentiment_neg": neg, "sentiment_neu": 0.1})
+    monkeypatch.setattr(FinbertScorer, "score", fake)
+    sents = ["Shares fell.", "It  opened a  store.", "Shares fell."]
+    out = score(sents, tmp_path / "cache")
+    assert out["label"].tolist() == ["negative", "neutral", "negative"]
+    assert calls == [["Shares fell.", "It opened a store."]]            # each distinct sentence scored once
+    again = score(list(reversed(sents)), tmp_path / "cache")
+    assert calls == [["Shares fell.", "It opened a store."]]            # second run: all from the cache
+    assert again["label"].tolist() == ["negative", "neutral", "negative"]

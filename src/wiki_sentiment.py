@@ -3,12 +3,13 @@
 Edit summaries are mostly bookkeeping ("ce", "add link"; 73% neutral under VADER), so this scores the
 article text itself. For each week it takes the net change from the revision live at the start of the
 week (Monday 00:00 UTC) to the one live at its end, so vandalism reverted within the week drops out.
-Only new or changed sentences are scored, by the FinBERT scorer shared with Reddit
-(src/sentiment/finbert_scorer.py: ProsusAI/finbert, trained on financial news), so both sources report
-the same columns: sentiment_pos, sentiment_neg, sentiment_neu and sentiment_net = pos - neg.
+Only new or changed sentences are scored, by Joshua's FinBERT scorer shared with Reddit
+(src/sentiment/finbert_scorer.py: ProsusAI/finbert pinned in config.yaml `sentiment`), so both sources
+report the same columns: sentiment_pos, sentiment_neg, sentiment_neu and sentiment_net = pos - neg.
 
     python -m src.wiki_sentiment            # tracked stocks, research period: fetch, score, then `analyse`
     python -m src.wiki_sentiment analyse    # only the returns tests, from the saved scores
+    python -m src.wiki_sentiment strategy   # all strategy-universe stocks (Week 3 S4), *_research_strategy.csv
 """
 import html
 import re
@@ -18,7 +19,13 @@ import numpy as np
 import pandas as pd
 
 from src import config
-from src.sentiment import finbert_scorer
+from src.sentiment.finbert_scorer import (
+    FinbertScorer,
+    ScoreCache,
+    prepare_text,
+    score_items,
+    text_sha1,
+)
 from src.wiki_attention import ACTION_API_URL, REQUEST_TIMEOUT_S, SESSION, user_agent
 
 INS, END = "\x01", "\x02"   # mark inserted text so it survives the wikitext clean-up
@@ -133,10 +140,23 @@ def week_sentences(ticker: str, revs: pd.DataFrame, weeks: pd.DatetimeIndex, cac
     return out[out["week"].isin(pairs["week"])].reset_index(drop=True)
 
 
-def score(sentences: list[str], cache_file: Path | None = None) -> pd.DataFrame:
-    """The shared FinBERT scorer's columns per sentence (label, sentiment_pos/neg/neu/net)."""
-    p = params()
-    return finbert_scorer.score(list(sentences), cache_file, p["model"], p["batch_size"])
+CACHE_TICKER = "wikipedia"   # ScoreCache keys on (post_id, ticker); a sentence's score doesn't depend on the stock
+
+
+def score(sentences: list[str], cache_dir: Path | None = None) -> pd.DataFrame:
+    """One row per sentence, in order: label, sentiment_pos/neg/neu and sentiment_net (pos - neg).
+
+    Scored by the shared `FinbertScorer`; with `cache_dir`, scores are kept in its `ScoreCache` keyed by the
+    sentence's hash, so reruns and repeated sentences are scored once.
+    """
+    texts = [prepare_text(None, s) for s in sentences]
+    items = pd.DataFrame({"text": texts}).drop_duplicates()
+    items = items.assign(post_id=items["text"].map(text_sha1), ticker=CACHE_TICKER)
+    cache = ScoreCache(str(cache_dir)) if cache_dir is not None else None
+    scored = score_items(items, FinbertScorer.from_config(), cache).set_index("text")
+    out = scored.reindex(texts).reset_index(drop=True)
+    out = out.rename(columns={"sentiment_label": "label"})[["label", "sentiment_pos", "sentiment_neg", "sentiment_neu"]]
+    return out.assign(sentiment_net=out["sentiment_pos"] - out["sentiment_neg"])
 
 
 def weekly_sentiment(scored: pd.DataFrame) -> pd.DataFrame:
@@ -190,8 +210,12 @@ def sentiment_returns(weekly: pd.DataFrame, prices: pd.DataFrame, view_spikes: p
     return pd.DataFrame(rows)
 
 
-def build(period: str = "research", tickers: list[str] | None = None) -> pd.DataFrame:
-    """Fetch, score and save weekly edit sentiment for the tracked stocks (or `tickers`) in one period."""
+def build(period: str = "research", tickers: list[str] | None = None, strategy: bool = False) -> pd.DataFrame:
+    """Fetch, score and save weekly edit sentiment for the tracked stocks (or `tickers`) in one period.
+
+    With `strategy`, it covers the whole strategy universe and writes `*_{period}_strategy.csv`, leaving the
+    tracked-stock files (the Week 2 results) as they are.
+    """
     from src.wiki_pipeline import (
         PROCESSED,
         RAW,
@@ -207,7 +231,7 @@ def build(period: str = "research", tickers: list[str] | None = None) -> pd.Data
     first_monday = start + pd.Timedelta(days=(7 - start.dayofweek) % 7)
     weeks = pd.date_range(first_monday, end - pd.Timedelta(days=6), freq="7D")   # full weeks only
     frames = []
-    for tk, titles in universe("US", strategy=False).items():
+    for tk, titles in universe("US", strategy=strategy).items():
         if tickers and tk not in tickers:
             continue
         revs = title_revisions(tk, titles, win)
@@ -219,12 +243,13 @@ def build(period: str = "research", tickers: list[str] | None = None) -> pd.Data
             print(tk, title, len(frames[-1]), "rows", flush=True)
     sents = pd.concat(frames, ignore_index=True)
     has = sents["sentence"].ne("")
-    scores = score(sents.loc[has, "sentence"].tolist(), PROCESSED / "finbert_cache.csv")
+    scores = score(sents.loc[has, "sentence"].tolist(), PROCESSED / "finbert_cache")
     scored = sents.join(scores.set_index(sents.index[has]))
     PROCESSED.mkdir(parents=True, exist_ok=True)
-    scored.to_csv(PROCESSED / f"edit_sentiment_sentences_{period}.csv", index=False)
+    tag = f"{period}_strategy" if strategy else period
+    scored.to_csv(PROCESSED / f"edit_sentiment_sentences_{tag}.csv", index=False)
     weekly = weekly_sentiment(scored)
-    weekly.to_csv(PROCESSED / f"edit_sentiment_weekly_{period}.csv", index=False)
+    weekly.to_csv(PROCESSED / f"edit_sentiment_weekly_{tag}.csv", index=False)
     return weekly
 
 
@@ -259,6 +284,9 @@ def analyse(period: str = "research") -> dict:
 
 if __name__ == "__main__":
     import sys
+    if sys.argv[1:] == ["strategy"]:      # all strategy-universe stocks, for the Week 3 S4 strategy
+        build("research", strategy=True)
+        sys.exit()
     if sys.argv[1:] != ["analyse"]:
         build("research")
     r = analyse("research")

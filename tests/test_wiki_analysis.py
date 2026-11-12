@@ -84,10 +84,11 @@ def test_spike_returns_reports_every_horizon_with_block_size():
 
 
 def test_summary_tone_compare_counts_shares_and_agreement(monkeypatch):
-    from src.sentiment import finbert_scorer
+    from src.sentiment.finbert_scorer import FinbertScorer
     from src.wiki_analysis import summary_tone_compare
-    monkeypatch.setattr(finbert_scorer, "probabilities", lambda texts, model, batch_size: pd.DataFrame(
-        {"positive": 0.1, "negative": [0.8 if "vandal" in t else 0.1 for t in texts], "neutral": 0.5}))
+    monkeypatch.setattr(FinbertScorer, "score", lambda self, texts: pd.DataFrame(
+        {"sentiment_label": ["negative" if "vandal" in t else "neutral" for t in texts], "sentiment_pos": 0.1,
+         "sentiment_neg": [0.8 if "vandal" in t else 0.1 for t in texts], "sentiment_neu": 0.5}))
     out = summary_tone_compare(pd.Series(["great work", "revert vandalism", "ce", "", None]))
     assert out.loc["vader", "n_summaries"] == 3
     assert np.isclose(out.loc["finbert", "share_negative"], 1 / 3)

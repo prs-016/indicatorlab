@@ -184,10 +184,9 @@ wikipedia:
     stock_shares: ['stocks?', 'shares?', 'market cap\w*', 'dividends?', 'buybacks?', 'share price', 'IPO', 'NASDAQ', 'NYSE', 'S&P']
   # Sentiment of the article text added each week (src/wiki_sentiment.py), scored per sentence.
   sentiment:
-    model: ProsusAI/finbert    # Hugging Face model trained on financial news; any 3-label sentiment model works
+    # model, revision and batch size: the shared top-level `sentiment` block (Joshua's scorer)
     min_words: 5               # shorter fragments ("Wing Aviation") carry no tone
     max_sentences_week: 60     # cap per stock-week, so a page rewrite doesn't dominate
-    batch_size: 32
   edit_burst_ratio: 2.0       # an edit burst: edits >= 2x their 8-week median (Product Buzz Lead, step 3)
   bootstrap: {n_resamples: 1000, ci: 0.95, seed: 42}
   # Team split (Week 3 guide), shared with Reddit, India and HK. Wikipedia starts Jul 2015 and spike flags

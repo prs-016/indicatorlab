@@ -124,7 +124,7 @@ def summary_tone_compare(comments: pd.Series, cache_file=None) -> pd.DataFrame:
     """
     from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-    from src.sentiment.finbert_scorer import score
+    from src.wiki_sentiment import score
     c = comments[comments.fillna("").str.strip() != ""].tolist()
     sia = SentimentIntensityAnalyzer()
     v = np.array([sia.polarity_scores(t)["compound"] for t in c])
