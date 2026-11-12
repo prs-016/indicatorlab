@@ -1,0 +1,14 @@
+{
+  "choice": "b",
+  "status": "unsuitable_under_current_eight_stock_top_two_factor_ranking_specification",
+  "scores_computable": true,
+  "finite_scores": 7920,
+  "weekly_candidates": 209,
+  "weekly_unique_membership": 16,
+  "weekly_tie_dependent_membership": 193,
+  "weekly_all_eight_tied": 120,
+  "no_portfolio_backtest_authorized_or_executed": true,
+  "no_new_convention_adopted": true,
+  "no_final_economic_keep_drop": true,
+  "rationale": "Sparse factor discrimination and extreme tie-policy dependence, with company-specific price-vintage sensitivity; no trading returns used."
+}

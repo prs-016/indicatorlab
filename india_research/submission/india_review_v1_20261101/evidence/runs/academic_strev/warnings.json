@@ -1,0 +1,12 @@
+[
+  "PROVISIONAL diagnostic; no final Keep/Drop decision.",
+  "Calendar amendments not exhaustively inventoried; no identified material discrepancy.",
+  "Frozen Yahoo adjustment vintage is not historically point-in-time; later corporate actions affect historical scaling.",
+  "Nifty 50 is a price index; adjusted equity histories include dividend adjustments.",
+  "Fixed eight-stock assignment is not a historical investable broad-market universe.",
+  "Positive volume/close is an execution proxy, especially on short special sessions; no spread/impact model.",
+  "10 bps per absolute traded NAV; fractional targets, drift, zero cash interest; no forced terminal liquidation.",
+  "Unresolved anomaly flags retained; no price repairs or anomaly-based exclusions.",
+  "IC is cross-sectional rank correlation over execution intervals, not portfolio Sharpe.",
+  "The final uncompleted execution interval is excluded from IC; initial cash days are included in daily Sharpe."
+]

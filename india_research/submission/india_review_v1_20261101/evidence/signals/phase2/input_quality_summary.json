@@ -1,0 +1,32 @@
+{
+  "open": {
+    "missing": 0,
+    "infinite": 0,
+    "minimum": 221.15648679447995,
+    "maximum": 4228.900265360277
+  },
+  "high": {
+    "missing": 0,
+    "infinite": 0,
+    "minimum": 223.1958396440192,
+    "maximum": 4243.918072035625
+  },
+  "low": {
+    "missing": 0,
+    "infinite": 0,
+    "minimum": 217.66692194205854,
+    "maximum": 4169.754807103491
+  },
+  "close": {
+    "missing": 0,
+    "infinite": 0,
+    "minimum": 221.38308715820312,
+    "maximum": 4208.33837890625
+  },
+  "volume": {
+    "missing": 0,
+    "infinite": 0,
+    "minimum": 65057.0,
+    "maximum": 445342100.0
+  }
+}

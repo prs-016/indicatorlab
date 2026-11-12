@@ -35,3 +35,9 @@ models/*
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Logs and spreadsheet exports (never commit)
+logs/
+*.log
+*.xlsx
+*.ndjson

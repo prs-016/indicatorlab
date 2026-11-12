@@ -1,0 +1,16 @@
+{
+  "status": "passed",
+  "no_factor_or_portfolio_rerun": true,
+  "protected_input_hashes_verified": 324,
+  "checks": [
+    "all dataset/evidence/prior-result/source/artifact hashes",
+    "12 corrected volumes, 25 prior sessions, 990 evaluation sessions",
+    "original scores equal saved v4 readiness scores with four unfilled NaNs",
+    "207 strictly subsequent executions and top-two equal-weight targets",
+    "206 IC intervals and all price labels/executions bounded by 2024-12-31",
+    "one ten-session interval across skipped March 25 signal",
+    "689 trade legs reconcile turnover and transaction costs",
+    "net returns, Sharpe, cumulative return and IC identities",
+    "benchmark returns identical to archived STREV; certification flags unchanged"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "checks": [
+    "all original/evidence/source/artifact hashes",
+    "1011 input/990 evaluation sessions and cutoff",
+    "207 IC execution-interval labels",
+    "208 strictly later executions and original top-two rankings",
+    "581 trade legs and cost reconciliation",
+    "net returns/costs/Sharpe/cumulative return reconciliation",
+    "unchanged strict certification flags"
+  ],
+  "no_strategy_rerun": true
+}

@@ -1,0 +1,9 @@
+{
+  "currency": "INR",
+  "interpretation": "dividend_adjusted_INR_close_times_vendor_volume",
+  "panel_sha256": "06b398445a7d8bde0a260a0e70a222add8bff00e29774e8b1d2ec991c8b5438f",
+  "evidence_reference": "archive:india_phase2_integration_20261029T045327Z/turnover_basis_review.json",
+  "evidence_sha256": "ec86d435e80810798df23c1158f2d522424a4e7b1ea5bfd0e7f16f113276b4c7",
+  "supported": true,
+  "data_scope": "frozen_research_vintage_sample_verified_not_point_in_time"
+}

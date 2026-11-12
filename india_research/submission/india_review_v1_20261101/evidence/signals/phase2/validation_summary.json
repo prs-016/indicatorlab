@@ -1,0 +1,17 @@
+{
+  "protected_files_checked": 643,
+  "changed_files": [],
+  "official_proxy_checks": 256,
+  "official_proxy_failures": 0,
+  "maximum_proxy_relative_error": 2.656182248594874e-07,
+  "new_factors_scored": [
+    "alpha101_033",
+    "alpha101_101",
+    "alpha101_054",
+    "alpha101_014",
+    "academic_illiq"
+  ],
+  "portfolio_backtests": 0,
+  "forward_return_labels": 0,
+  "all_causality_window_checks_passed": true
+}

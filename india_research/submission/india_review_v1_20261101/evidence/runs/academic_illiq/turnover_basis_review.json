@@ -1,0 +1,20 @@
+{
+  "dataset_manifest": "india_research/submission/india_review_v1_20261101/evidence/datasets/research_v4_manifest.json",
+  "dataset_manifest_sha256": "9a913ab88927ee35fd43a96b76d548e949a40d14815119e2b315a5ccb7dfd3b1",
+  "quantity_price_basis": "C_adjusted * V_vendor = D(t) * C_NSE_nominal * Q_NSE_nominal within sampled precision",
+  "currency": "INR",
+  "interpretation": "dividend-adjusted closing-price-times-volume proxy, not exchange actual turnover and not USD",
+  "checked_records": 256,
+  "sample_dates": 32,
+  "failed_records": 0,
+  "max_absolute_relative_error": 2.656182248594874e-07,
+  "supported_within_frozen_vendor_proxy_scope": true,
+  "scope_limitations": [
+    "Sampled checks do not certify every daily quantity.",
+    "Dividend factor D(t) remains in the proxy; cannot be silently removed.",
+    "Not point-in-time: later corporate-action adjustments remain in frozen inputs.",
+    "Unknown Reliance standalone adjustments cancel in inspected price-volume products; daily return effects still unresolved."
+  ],
+  "factor_scoring_invocations": 0,
+  "portfolio_backtests": 0
+}

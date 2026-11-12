@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reddit Labelling</title>
+<style>
+  :root {
+    --bg: #f7f6f3; --panel: #ffffff; --ink: #1f2328; --muted: #656d76; --line: #d8dee4;
+    --accent: #0969da; --pos: #1a7f37; --neg: #cf222e; --neu: #6e7781; --warn: #9a6700;
+    --chip: #eef1f4; --mark: #fff3b0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0d1117; --panel: #161b22; --ink: #e6edf3; --muted: #8d96a0; --line: #30363d;
+      --accent: #4493f8; --pos: #3fb950; --neg: #f85149; --neu: #8d96a0; --warn: #d29922;
+      --chip: #21262d; --mark: #5a4a00;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  header { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between;
+           padding: 12px 16px; border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; }
+  h1 { font-size: 16px; margin: 0; }
+  .tabs button, .nav button, .choices button { font: inherit; cursor: pointer; border-radius: 6px; }
+  .tabs button { border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 4px 12px; }
+  .tabs button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .progress { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; width: 180px; }
+  .bar > div { height: 100%; background: var(--accent); width: 0; }
+  main { max-width: 860px; margin: 0 auto; padding: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .chip { background: var(--chip); border-radius: 999px; padding: 2px 10px; font-size: 13px; color: var(--muted); }
+  .chip.ticker { color: var(--ink); font-weight: 700; }
+  .chip.double { color: var(--warn); }
+  h2 { font-size: 18px; margin: 4px 0 10px; overflow-wrap: anywhere; }
+  .body { white-space: pre-wrap; overflow-wrap: anywhere; max-height: 46vh; overflow: auto; color: var(--ink);
+          border-top: 1px solid var(--line); padding-top: 10px; }
+  .context { margin: 8px 0; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--chip);
+             overflow-wrap: anywhere; }
+  mark { background: var(--mark); color: inherit; padding: 0 2px; border-radius: 2px; }
+  a { color: var(--accent); }
+  .choices { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 14px; }
+  .choices button { padding: 10px; border: 2px solid var(--line); background: var(--panel); color: var(--ink); font-weight: 600; }
+  .choices button kbd { font-weight: 400; color: var(--muted); margin-left: 6px; }
+  .choices button.sel { color: #fff; }
+  .choices button[data-l="positive"].sel, .choices button[data-l="correct"].sel { background: var(--pos); border-color: var(--pos); }
+  .choices button[data-l="negative"].sel, .choices button[data-l="incorrect"].sel { background: var(--neg); border-color: var(--neg); }
+  .choices button[data-l="neutral"].sel, .choices button[data-l="unsure"].sel,
+  .choices button[data-l="skip"].sel { background: var(--neu); border-color: var(--neu); }
+  .row { display: flex; gap: 8px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
+  input[type=text] { flex: 1; min-width: 200px; font: inherit; padding: 6px 8px; border: 1px solid var(--line);
+                     border-radius: 6px; background: var(--panel); color: var(--ink); }
+  .nav button { border: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: 6px 12px; }
+  details { margin-top: 14px; color: var(--muted); }
+  details li { margin: 4px 0; }
+  .status { color: var(--muted); font-size: 13px; min-height: 1.5em; }
+  .empty { color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Reddit hand labels · <span id="rater"></span></h1>
+  <div class="tabs" role="group" aria-label="Task">
+    <button data-task="sentiment" aria-pressed="true">Sentiment</button>
+    <button data-task="match" aria-pressed="false">Match check</button>
+  </div>
+  <div class="row" style="margin:0">
+    <span class="progress" id="progress">–</span>
+    <div class="bar" aria-hidden="true"><div id="barfill"></div></div>
+  </div>
+</header>
+<main>
+  <div class="card" id="card"><p class="empty">Loading…</p></div>
+  <div class="row nav">
+    <button id="prev" title="Previous (←)">← Prev</button>
+    <button id="next" title="Next (→)">Next →</button>
+    <button id="nextOpen" title="Next unlabelled (N)">Next unlabelled</button>
+    <span class="status" id="status"></span>
+  </div>
+  <details id="guide">
+    <summary>Labelling guide</summary>
+    <div id="guideText"></div>
+  </details>
+</main>
+<script>
+const GUIDES = {
+  sentiment: `<ul>
+    <li>Judge the post's tone <b>about the shown company or its stock</b>, not the market in general.</li>
+    <li><b>Positive</b>: praise, good experience, excitement about a product or launch, bullish view, good news.</li>
+    <li><b>Negative</b>: complaint, outage, bug, bad review, price or service anger, bearish view, bad news.</li>
+    <li><b>Neutral</b>: question, help request, plain news or facts with no clear tone, mixed with no lean.</li>
+    <li><b>Skip</b>: not about the company at all, unreadable, or not English. Skipped posts are left out.</li>
+    <li>Keys: 1 positive · 2 negative · 3 neutral · S skip · ← → move · N next unlabelled.</li></ul>`,
+  match: `<ul>
+    <li>Is this post really about the shown company or stock?</li>
+    <li><b>Correct</b>: the highlighted text refers to the company, its products or its stock.</li>
+    <li><b>Incorrect</b>: a false match, e.g. "meta" the word, AMD in an unrelated sense, a ticker only in a signature.</li>
+    <li><b>Unsure</b>: you cannot tell from the text. Unsure posts are reported separately.</li>
+    <li>Keys: 1 correct · 2 incorrect · 3 unsure · ← → move · N next unlabelled.</li></ul>`,
+};
+const KEYS = { sentiment: { "1": "positive", "2": "negative", "3": "neutral", "s": "skip" },
+               match: { "1": "correct", "2": "incorrect", "3": "unsure" } };
+let state = { task: "sentiment", items: [], labels: {}, choices: [], i: 0, rater: "" };
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+function highlight(text, needle) {
+  const t = esc(text);
+  if (!needle) return t;
+  const n = esc(needle).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return t.replace(new RegExp(n, "g"), (m) => `<mark>${m}</mark>`);
+}
+
+async function load(task) {
+  state.task = task;
+  document.querySelectorAll(".tabs button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.task === task)));
+  $("guideText").innerHTML = GUIDES[task];
+  const r = await fetch(`/api/items?task=${task}`, { cache: "no-store" }).then((x) => x.json());
+  Object.assign(state, { items: r.items, labels: r.labels, choices: r.choices, rater: r.rater });
+  $("rater").textContent = r.rater + (r.double_only ? " (overlap set)" : "");
+  const firstOpen = state.items.findIndex((it) => !state.labels[it.item_id]);
+  state.i = firstOpen >= 0 ? firstOpen : 0;
+  render();
+}
+
+function render() {
+  const n = state.items.length;
+  const done = state.items.filter((it) => state.labels[it.item_id]).length;
+  const core = state.items.filter((it) => it.core !== "False");
+  const coreDone = core.filter((it) => state.labels[it.item_id]).length;
+  $("progress").textContent = n ? `${done}/${n} labelled · core ${coreDone}/${core.length}` : "no items";
+  $("barfill").style.width = n ? `${(100 * done) / n}%` : "0";
+  if (!n) {
+    $("card").innerHTML = `<p class="empty">No items yet. Draw the sample first (see docs/reddit/README.md).</p>`;
+    return;
+  }
+  const it = state.items[state.i];
+  const cur = state.labels[it.item_id];
+  const needle = state.task === "match" ? it.matched_text : "";
+  const chips = [
+    `<span class="chip ticker">${esc(it.ticker)}</span>`,
+    `<span class="chip">r/${esc(it.subreddit)}</span>`,
+    it.source ? `<span class="chip">${esc(it.source)}</span>` : "",
+    `<span class="chip">${esc((it.created_utc_iso || "").slice(0, 10))}</span>`,
+    it.match_method ? `<span class="chip">${esc(it.match_method)}</span>` : "",
+    it.double === "True" ? `<span class="chip double">double-labelled</span>` : "",
+    it.core === "False" ? `<span class="chip">reserve</span>` : "",
+    `<span class="chip">#${state.i + 1}</span>`,
+  ].join("");
+  const keys = Object.fromEntries(Object.entries(KEYS[state.task]).map(([k, v]) => [v, k.toUpperCase()]));
+  $("card").innerHTML = `
+    <div class="meta">${chips}</div>
+    <h2>${highlight(it.title, needle)}</h2>
+    ${it.context ? `<div class="context">${highlight(it.context, needle)}</div>` : ""}
+    <div class="body">${highlight(it.body, needle) || "<i>(no body text)</i>"}</div>
+    <div class="row"><a href="${esc(it.url)}" target="_blank" rel="noopener">Open on Reddit ↗</a></div>
+    <div class="choices">${state.choices.map((c) =>
+      `<button data-l="${c}" class="${cur && cur.label === c ? "sel" : ""}">${c}<kbd>${keys[c] || ""}</kbd></button>`).join("")}</div>
+    <div class="row"><input type="text" id="note" placeholder="Optional note (saved with the label)" value="${esc(cur ? cur.note : "")}"></div>`;
+  document.querySelectorAll(".choices button").forEach((b) => b.addEventListener("click", () => save(b.dataset.l)));
+}
+
+async function save(label) {
+  const it = state.items[state.i];
+  const note = ($("note") || {}).value || "";
+  const res = await fetch("/api/label", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ task: state.task, item_id: it.item_id, post_id: it.post_id, ticker: it.ticker, label, note }) });
+  const out = await res.json();
+  if (!res.ok) { $("status").textContent = "Not saved: " + out.error; return; }
+  state.labels[it.item_id] = out;
+  $("status").textContent = `Saved ${label} for #${state.i + 1}`;
+  move(1);
+}
+
+function move(d) { state.i = Math.min(Math.max(state.i + d, 0), Math.max(state.items.length - 1, 0)); render(); }
+function nextOpen() {
+  const n = state.items.length;
+  for (let k = 1; k <= n; k++) {
+    const j = (state.i + k) % n;
+    if (!state.labels[state.items[j].item_id]) { state.i = j; return render(); }
+  }
+  $("status").textContent = "Everything is labelled.";
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.target.tagName === "INPUT") { if (e.key === "Escape") e.target.blur(); return; }
+  const l = KEYS[state.task][e.key.toLowerCase()];
+  if (l) return save(l);
+  if (e.key === "ArrowRight") move(1);
+  else if (e.key === "ArrowLeft") move(-1);
+  else if (e.key.toLowerCase() === "n") nextOpen();
+});
+document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => load(b.dataset.task)));
+$("prev").addEventListener("click", () => move(-1));
+$("next").addEventListener("click", () => move(1));
+$("nextOpen").addEventListener("click", nextOpen);
+load("sentiment");
+</script>
+</body>
+</html>

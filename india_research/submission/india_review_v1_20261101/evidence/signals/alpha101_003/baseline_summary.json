@@ -1,0 +1,31 @@
+{
+  "sessions": 990,
+  "finite_cells": 1073,
+  "total_cells": 7920,
+  "missing_cells": 6847,
+  "all_eight_finite_sessions": 0,
+  "all_missing_sessions": 544,
+  "weekly_signal_dates": 209,
+  "weekly_all_eight_finite": 0,
+  "sessions_with_exact_ties": 4,
+  "sessions_all_eight_tied": 0,
+  "weekly_top_two_boundary_exact_ties": 0,
+  "weekly_top_two_boundary_near_ties": 0,
+  "missing_by_symbol": {
+    "RELIANCE.NS": 894,
+    "TCS.NS": 990,
+    "INFY.NS": 914,
+    "HDFCBANK.NS": 751,
+    "ICICIBANK.NS": 743,
+    "SBIN.NS": 910,
+    "KOTAKBANK.NS": 969,
+    "AXISBANK.NS": 676
+  },
+  "mutually_exclusive_causes": {
+    "open_rank_constant_only": 5588,
+    "both_ranks_constant": 1224,
+    "volume_rank_constant_only": 35
+  },
+  "missing_with_varying_raw_opens_despite_constant_open_rank": 6812,
+  "finite_despite_constant_rank": 0
+}

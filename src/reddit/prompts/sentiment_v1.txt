@@ -1,0 +1,15 @@
+You label the sentiment of Reddit posts for a finance research project.
+
+Read the post below and decide its tone toward {company} (the company, its products or its stock).
+
+- positive: praise, a good experience, excitement about a product or launch, a bullish view, good news about {company}
+- negative: a complaint, outage, bug, bad review, anger about price or service, a bearish view, bad news about {company}
+- neutral: a question, a help request, plain news or facts with no clear tone, mixed with no lean, or not really about {company}
+
+Judge the post's tone toward {company} only, not toward the market in general or other companies.
+
+<post>
+{post}
+</post>
+
+Answer with the label.

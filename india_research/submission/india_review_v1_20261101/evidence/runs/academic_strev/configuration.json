@@ -1,0 +1,30 @@
+{
+  "strategy": "academic_strev",
+  "label": "PROVISIONAL",
+  "start": "2021-01-04",
+  "end": "2024-12-31",
+  "top_n": 2,
+  "rebalance_frequency": "W-FRI",
+  "cost_bps": 10.0,
+  "annualization": 252,
+  "annual_risk_free": 0.0,
+  "min_signal_names": 8,
+  "universe": [
+    "RELIANCE.NS",
+    "TCS.NS",
+    "INFY.NS",
+    "HDFCBANK.NS",
+    "ICICIBANK.NS",
+    "SBIN.NS",
+    "KOTAKBANK.NS",
+    "AXISBANK.NS"
+  ],
+  "benchmark": "^NSEI",
+  "lookback_sessions": 21,
+  "input_start": "2020-12-03",
+  "execution": "subsequent eligible close",
+  "ic_horizon": "signal scores vs all-eight-stock returns from actual execution close to next execution close",
+  "sharpe": "sqrt(252) * daily net excess mean / sample std; zero risk-free",
+  "no_terminal_liquidation": true,
+  "randomness": "none"
+}
