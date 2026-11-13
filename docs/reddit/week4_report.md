@@ -1,6 +1,6 @@
 # Week 4 report (Joshua) — in progress
 
-Last updated 2026-11-13. Cutoff: research data before `holdout_start: 2026-11-01`; team split train
+Last updated 2026-11-13 (afternoon). Cutoff: research data before `holdout_start: 2026-11-01`; team split train
 2016-06-01..2021-12-31, test 2022-01-01..2026-10-31 (`config.yaml`).
 
 ## Still open from Weeks 1-3 (first, per the guide)
@@ -9,10 +9,10 @@ Last updated 2026-11-13. Cutoff: research data before `holdout_start: 2026-11-01
 |---|---|
 | Human label check (120 items, both kappas, scorers graded both ways) | Sample drawn (`human120_sample.csv`: 11 years x investor/product, 30 overlap, 100 reused from the Week 3 sample). Labelling Mon-Tue; Opus labels (~$3.91) after `ANTHROPIC_API_KEY` is set |
 | 100 match-precision checks (Week 2) | Sample ready; labelling page task `match` |
-| FinBERT rescore of the corpus | Running again (resumed 2026-11-13); 15 of 33 subreddits done |
-| Weekly tables + `week3_report.md` | After the rescore and the label check |
+| FinBERT rescore of the corpus | **Done** 2026-11-13: 33 of 33 subreddits, 1,780,756 posts scored |
+| Weekly tables + `week3_report.md` | Weekly tables **rebuilt** 2026-11-13 (1,816,698 scored posts; research weeks through 2026-10-19; investor 2022 backfill included) and uploaded to S3; `week3_report.md` after the label check |
 | Shared AWS stack | **Done** (us-east-2): bucket `indicatorlab-data`, live tables, $20 budget |
-| Reddit pipeline on AWS | Image build/push and `sam deploy` in progress |
+| Reddit pipeline on AWS | **Live** (us-east-2): hourly Lambda writes `reddit_current.parquet`; both schedules ENABLED; hourly alarms OK; weekly alarm clears after Monday's first run. SNS email confirmation pending (Joshua) |
 | Design issue A0 | Text ready (`docs/upstream/sentiment_attention_issue.md`); TODOs: James's A3 part, Reddit terms; FinBERT weights are CC BY-NC-SA 4.0 |
 | A1 FinBERT PR | Branch ready (`feat/sentiment-finbert-scorer`); PR text `docs/upstream/A1_finbert_pr.md`; comparison table after the labels |
 | Strategies | Rules drafted (`docs/reddit/week4_strategies.md`), awaiting review; runs need the backfill |
