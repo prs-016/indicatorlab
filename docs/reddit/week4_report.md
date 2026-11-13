@@ -23,7 +23,7 @@ Last updated 2026-11-13. Cutoff: research data before `holdout_start: 2026-11-01
 | Task | Status |
 |---|---|
 | Cutoff to 2026-11-01, team split, hardcoded dates removed | Done; tests 435 passed, 66 skipped |
-| Reddit backfill 2016-06..2022-12 (33 subreddits) | Running: investor subreddits first, then product |
+| Reddit backfill 2016-06..2022-12 (33 subreddits) | Running: 7 investor subreddits first (about 65 s per day of data, so about 43 h, done around Sun Nov 15), then the 26 product subreddits. Arctic Shift is answering many requests with "Timeout. Maybe slow down", so the pace is 2 s between requests |
 | A2 Reddit attention loader | Branch `feat/reddit-attention-loader` (stacked on A1), 7 new tests; PR text `docs/upstream/A2_reddit_loader_pr.md` |
 | B4 parallel runner | Schema `docs/upstream/B4_output_schema.md`; draft branch `feat/alpha-bench-parallel-universes` (worktree `vibe-trading-b4`), 36 related tests pass |
 | India/HK subreddits in the hourly pull | Waiting for Jamal's and Jack's subreddit and ticker lists |
