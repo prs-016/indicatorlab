@@ -6,6 +6,7 @@
 Tasks (switch on the page):
   sentiment  data/reddit/validation/sentiment_sample.csv       positive / negative / neutral / skip
   match      data/reddit/validation/match_precision_sample.csv correct / incorrect / unsure
+  human120   data/reddit/validation/human120_sample.csv       Week 4 human check: your items + the overlap
 
 Every click is appended to data/reddit/validation/labels/<task>_<rater>.csv with a UTC timestamp;
 the latest label per item wins, so relabelling is safe and nothing is ever overwritten. The page
@@ -35,6 +36,8 @@ TASKS = {
                   "labels": ["positive", "negative", "neutral", "skip"]},
     "match": {"items": settings.VALIDATION / "match_precision_sample.csv",
               "labels": ["correct", "incorrect", "unsure"]},
+    "human120": {"items": settings.VALIDATION / "human120_sample.csv",
+                 "labels": ["positive", "negative", "neutral", "skip"]},
 }
 LABEL_FIELDS = ["item_id", "post_id", "ticker", "label", "note", "rater", "labeled_at_utc"]
 RATER_RE = re.compile(r"^[a-z0-9_-]{1,32}$")
@@ -75,12 +78,20 @@ def append_label(task: str, rater: str, row: dict) -> dict:
     return out
 
 
-def load_items(task: str, double_only: bool) -> list[dict]:
-    """Items of a task in labelling order (core items first, then reserves)."""
+def load_items(task: str, double_only: bool, rater: str = "") -> list[dict]:
+    """Items of a task in labelling order (core items first, then reserves).
+
+    For human120 a rater sees their own items plus the overlap items, and nothing that shows which is which.
+    """
     p = TASKS[task]["items"]
     if not p.exists():
         return []
     df = pd.read_csv(p, dtype=str, keep_default_na=False)
+    if task == "human120":
+        if rater not in set(df["owner"]):
+            raise ValueError(f"human120 raters are {sorted(set(df['owner']))}, not {rater!r}")
+        df = df[(df["owner"] == rater) | (df["overlap"] == "True")]
+        return df[[c for c in ITEM_FIELDS if c in df.columns and c != "double"]].to_dict(orient="records")
     if double_only and "double" in df:
         df = df[df["double"] == "True"]
     return df[[c for c in ITEM_FIELDS if c in df.columns]].to_dict(orient="records")
@@ -112,8 +123,12 @@ def make_handler(rater: str, double_only: bool):
                 task = parse_qs(u.query).get("task", ["sentiment"])[0]
                 if task not in TASKS:
                     return self._json({"error": f"unknown task {task}"}, 400)
+                try:
+                    items = load_items(task, double_only, rater)
+                except ValueError as e:
+                    return self._json({"error": str(e)}, 400)
                 return self._json({"task": task, "rater": rater, "double_only": double_only,
-                                   "choices": TASKS[task]["labels"], "items": load_items(task, double_only),
+                                   "choices": TASKS[task]["labels"], "items": items,
                                    "labels": latest_labels(task, rater)})
             self._json({"error": "not found"}, 404)
 

@@ -18,17 +18,28 @@ Excluded from both: removed posts, posts from incompletely collected days, and p
 text-match 5+ stocks (multi_ticker_list). Sentiment posts also need some text
 (MIN_TEXT_CHARS of title + body). The page in src/reddit/label_server.py shows these files.
 
+  human120   (Week 4) the human label check: 120 (post, ticker) items stratified by year (2016 .. the
+             last research year) and investor vs product subreddits. Items come from the sentiment
+             sample first; a cell it cannot fill (2022, and every month from 2025-10 to the cutoff) is
+             topped up from the corpus and the label pool with the same exclusions. Half the items
+             belong to joshua and half to james; HUMAN_OVERLAP_N of them (half from each side) are
+             labelled by both, blind, for Cohen's kappa. James gets a blind CSV without owners,
+             overlap flags or any model output.
+
     python -m src.reddit.label_samples sentiment
     python -m src.reddit.label_samples match
+    python -m src.reddit.label_samples human120
 """
 from __future__ import annotations
 
 import argparse
 import json
+from datetime import timedelta
 
 import numpy as np
 import pandas as pd
 
+from src import config
 from src.reddit import settings
 from src.reddit.build_posts import attach_text
 from src.reddit.label_pool import POOL_MATCHES
@@ -47,15 +58,33 @@ MIN_TEXT_CHARS = 20
 BODY_CHARS = 3000          # body text shown on the labelling page
 CANDIDATES_PER_CELL = 40   # posts whose text is loaded per cell before the length filter
 MATCH_PER_TICKER = 10
-# Two-year buckets over the team period (2016-06 .. 2025-09); the label pool supplies 2016-2022.
-YEAR_BUCKETS = {"2016": "2016-17", "2017": "2016-17", "2018": "2018-19", "2019": "2018-19",
-                "2020": "2020-21", "2021": "2020-21", "2022": "2022-23", "2023": "2022-23",
-                "2024": "2024-25", "2025": "2024-25"}
+
+
+def year_buckets(first_year: int, last_year: int) -> dict[str, str]:
+    """Year -> two-year bucket label, e.g. {"2016": "2016-17", "2017": "2016-17", ..., "2026": "2026"}."""
+    out = {}
+    for start in range(first_year, last_year + 1, 2):
+        end = min(start + 1, last_year)
+        label = f"{start}-{end % 100:02d}" if end > start else str(start)
+        out.update({str(y): label for y in range(start, end + 1)})
+    return out
+
+
+# Two-year buckets over the team period: from the label pool's first year (config.yaml
+# `reddit.label_pool.start`) to the last research year (the day before `holdout_start`).
+YEAR_BUCKETS = year_buckets(config.load()["reddit"]["label_pool"]["start"].year,
+                            (settings.HOLDOUT_START - timedelta(days=1)).year)
 TEXT_COLS = ("title", "selftext", "permalink")
 
 SENTIMENT_OUT = settings.VALIDATION / "sentiment_sample.csv"
 SECOND_RATER_OUT = settings.VALIDATION / "sentiment_second_rater.csv"
 MATCH_OUT = settings.VALIDATION / "match_precision_sample.csv"
+HUMAN120_OUT = settings.VALIDATION / "human120_sample.csv"
+JAMES_BLIND_OUT = settings.VALIDATION / "human120_james_blind.csv"
+HUMAN_N = 120
+HUMAN_OVERLAP_N = 30
+HUMAN_RATERS = ("joshua", "james")
+INVESTOR_TYPES = ("general", "sector", "stock")   # everything else (product) is the company/product group
 
 
 def _guard(path, task: str, force: bool) -> None:
@@ -66,14 +95,15 @@ def _guard(path, task: str, force: bool) -> None:
                          "pass --force only if you mean to start the labelling over")
 
 
-def _population(include_pool: bool = False) -> pd.DataFrame:
+def _population(include_pool: bool = False, include_recent: bool = False) -> pd.DataFrame:
     """Research-period matches eligible for labelling (plus the 2016-2022 label pool if asked).
 
     Corpus rows need a completely collected day; pool rows may come from a day cut at
     `label_pool.max_pages` pages, which still gives a random set of that day's posts.
     """
     mt = pd.read_parquet(settings.PROCESSED / "post_ticker_matches.parquet",
-                         filters=[("period", "==", "research")])
+                         filters=None if include_recent else [("period", "==", "research")])
+    mt = mt[mt["date"] < settings.HOLDOUT_START.isoformat()]   # `period` was set with an older cutoff
     mt = mt[mt["day_status"] == "complete"]
     if include_pool and POOL_MATCHES.exists():
         pool = pd.read_parquet(POOL_MATCHES)
@@ -141,6 +171,73 @@ def draw_sentiment(seed: int = SEED, force: bool = False) -> pd.DataFrame:
     return out
 
 
+def _allocate(cells: list[str], n: int, rng: np.random.Generator) -> dict[str, int]:
+    """Equal items per cell; the remainder goes to randomly chosen cells (seeded)."""
+    base, extra = divmod(n, len(cells))
+    lucky = set(rng.choice(cells, size=extra, replace=False)) if extra else set()
+    return {c: base + (c in lucky) for c in cells}
+
+
+def draw_human120(seed: int = SEED, force: bool = False) -> pd.DataFrame:
+    """The Week 4 human label set; writes HUMAN120_OUT and James's blind file."""
+    _guard(HUMAN120_OUT, "human120", force)
+    rng = np.random.default_rng(seed)
+    first = config.load()["reddit"]["label_pool"]["start"].year
+    last = (settings.HOLDOUT_START - timedelta(days=1)).year
+    cells = [f"{y}|{g}" for y in range(first, last + 1) for g in ("investor", "product")]
+    quota = _allocate(cells, HUMAN_N, rng)
+
+    def group(types: pd.Series) -> pd.Series:
+        return np.where(types.isin(INVESTOR_TYPES), "investor", "product")
+
+    old = pd.read_csv(SENTIMENT_OUT, dtype=str, keep_default_na=False)
+    old["cell"] = old["year"] + "|" + group(old["subreddit_type"])
+    old["from_item"] = old["item_id"]
+    pop = _population(include_pool=True, include_recent=True)
+    pop["cell"] = pop["year"] + "|" + group(pop["subreddit_type"])
+    picked = []
+    for cell in cells:
+        want = quota[cell]
+        have = old[old["cell"] == cell]
+        take = have.sample(min(len(have), want), random_state=rng.integers(2**31))
+        if len(take) < want:
+            cand = pop[(pop["cell"] == cell) & ~pop.set_index(["post_id", "ticker"]).index.isin(
+                list(zip(old["post_id"], old["ticker"])))]
+            cand = _with_text(cand.sample(min(len(cand), CANDIDATES_PER_CELL), random_state=rng.integers(2**31)))
+            cand = cand[(cand["title"].str.len() + cand["body"].str.len()) >= MIN_TEXT_CHARS]
+            cand = cand.drop_duplicates(["post_id", "ticker"]).head(want - len(take)).assign(from_item="")
+            take = pd.concat([take, cand], ignore_index=True)
+        if len(take) < want:
+            log.warning("human120 cell %s has only %d of %d items", cell, len(take), want)
+        picked.append(take.assign(cell=cell))
+    s = pd.concat(picked, ignore_index=True).sample(frac=1, random_state=seed).reset_index(drop=True)
+    s["group"] = s["cell"].str.split("|").str[1]
+    s["year"] = s["cell"].str.split("|").str[0]
+    half = len(s) // 2
+    s["owner"] = [HUMAN_RATERS[0]] * half + [HUMAN_RATERS[1]] * (len(s) - half)
+    s["overlap"] = False
+    for r in HUMAN_RATERS:      # half of the overlap from each rater's own items
+        idx = s.index[s["owner"] == r][: HUMAN_OVERLAP_N // 2]
+        s.loc[idx, "overlap"] = True
+    s = s.sample(frac=1, random_state=seed + 1).reset_index(drop=True)   # owners and overlap are not in id order
+    s = s.drop(columns=["item_id"], errors="ignore")   # reused rows carry their old s### id in from_item
+    s.insert(0, "item_id", [f"h{i + 1:03d}" for i in range(len(s))])
+    s["core"], s["double"] = True, s["overlap"]
+    cols = ["item_id", "post_id", "ticker", "market", "subreddit", "subreddit_type", "group", "year",
+            "created_utc_iso", "title", "body", "url", "owner", "overlap", "core", "double", "from_item", "cell"]
+    out = s[cols]
+    out.to_csv(HUMAN120_OUT, index=False)
+    blind = out[(out["owner"] == "james") | out["overlap"]]
+    blind[["item_id", "post_id", "ticker", "subreddit", "title", "body", "url"]].assign(label="").to_csv(
+        JAMES_BLIND_OUT, index=False)
+    _meta(HUMAN120_OUT, seed, pop, out.groupby("cell").size().reset_index().values.tolist(),
+          note=f"Week 4 human label check: {HUMAN_N} items, {HUMAN_OVERLAP_N} labelled by both raters; "
+               f"{int((out['from_item'] != '').sum())} reused from sentiment_sample.csv, the rest topped up")
+    log.info("human120: %d items (%d overlap, %d reused) -> %s; James's blind file has %d", len(out),
+             int(out["overlap"].sum()), int((out["from_item"] != "").sum()), HUMAN120_OUT, len(blind))
+    return out
+
+
 def draw_match(seed: int = SEED, force: bool = False) -> pd.DataFrame:
     """MATCH_PER_TICKER text-matched posts per ticker; population sizes saved for weighting."""
     _guard(MATCH_OUT, "match", force)
@@ -169,8 +266,8 @@ def _meta(path, seed: int, pop: pd.DataFrame, strata: list, note: str = "") -> N
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("sample", choices=["sentiment", "match"])
+    ap.add_argument("sample", choices=["sentiment", "match", "human120"])
     ap.add_argument("--seed", type=int, default=SEED)
     ap.add_argument("--force", action="store_true", help="redraw even if labels exist (they will no longer match)")
     a = ap.parse_args()
-    (draw_sentiment if a.sample == "sentiment" else draw_match)(a.seed, a.force)
+    {"sentiment": draw_sentiment, "match": draw_match, "human120": draw_human120}[a.sample](a.seed, a.force)

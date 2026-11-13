@@ -190,8 +190,12 @@ def hourly(root: str | None = None, now: datetime | None = None, client: ArcticS
             seen = pd.concat([seen, rows], ignore_index=True)
         # Raw last: the next run skips ids found here, so they must already be scored and stored above.
         storage.write_parquet(posts[RAW_COLS], f"{root}/raw/reddit/date={day}/{stamp}.parquet")
-    weekly_recent_uri = f"{root}/processed/{ATTENTION_OUT['combined']}_recent.parquet"
-    weekly_recent = storage.read_parquet(weekly_recent_uri) if storage.exists(weekly_recent_uri) else None
+    # Baseline history: the last research weeks plus any later (display-only) weeks, so the 8-week median
+    # exists right after the cutoff too.
+    hist = [storage.read_parquet(u) for u in (f"{root}/processed/{ATTENTION_OUT['combined']}.parquet",
+                                              f"{root}/processed/{ATTENTION_OUT['combined']}_recent.parquet")
+            if storage.exists(u)]
+    weekly_recent = pd.concat(hist, ignore_index=True) if hist else None
     current = build_current(seen, weekly_recent, now)
     storage.write_parquet(current, f"{root}/processed/reddit_current.parquet")
     storage.write_json(state, state_uri)

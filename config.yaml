@@ -2,7 +2,9 @@
 # Add a market, stock, subreddit or Wikipedia title here, never inside a function.
 # Load it with `from src import config` (see src/config.py).
 
-holdout_start: 2025-10-01   # research, spike studies and strategy tests use data strictly before this
+# The first date never used for research: research, spike studies and strategy tests use data strictly
+# before it (so through 2026-10-31). There is no separate holdout run; later data is display-only.
+holdout_start: 2026-11-01
 week_label: monday          # every weekly table labels a week by its Monday (00:00 UTC)
 
 # One spike rule for every attention source (Wikipedia views/edits, Reddit chatter).
@@ -23,9 +25,8 @@ strategy:
   cost_bps: 10
   n_random_portfolios: 200
   random_seed: 42
-  # Standard split. Reddit data starts in 2023, so Reddit strategies use `reddit_split` instead.
-  split: {train: [2011-01-01, 2019-12-31], test: [2020-01-01, 2025-09-30]}
-  reddit_split: {train: [2023-01-02, 2024-06-30], test: [2024-07-01, 2025-09-30]}
+  # Team split (Week 4). The test window is the final out-of-sample judge: rules change on train results only.
+  split: {train: [2016-06-01, 2021-12-31], test: [2022-01-01, 2026-10-31]}
 
 # One sentiment scorer for Reddit and Wikipedia (src/sentiment/finbert_scorer.py).
 # Bump `revision` deliberately: it is part of every cached score's key (model_version).
@@ -43,7 +44,7 @@ reddit:
     min_interval_s: 1.0         # pause between requests
     retry_wait_s: [10, 30]      # wait drawn uniformly from this range after a Timeout / server error
     max_retries: 3              # then the day is logged as failed (never as zero posts)
-  collect_start: 2023-01-01
+  collect_start: 2023-01-01     # moves to 2016-06-01 once the 2016-2022 backfill is complete (Week 4)
   min_posts_per_week: 20        # subreddits below this (2024 average) are dropped
   multi_ticker_list_min: 5      # a post text-matching this many tracked stocks is flagged as a list
   # Sentiment-label pool before the corpus starts (src/reddit/label_pool.py): seeded random days per

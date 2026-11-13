@@ -73,12 +73,16 @@ def get_reddit_data() -> RedditData:
     uri = data_uri()
     with _lock:
         hit = _cache.get(uri)
-        if hit is None or time.monotonic() - hit.loaded_at > CACHE_TTL_S:
-            try:
-                _cache[uri] = hit = RedditData.load(uri)
-            except (FileNotFoundError, OSError) as e:
-                if hit is None:
-                    raise HTTPException(503, f"Reddit tables are not published yet at {uri}") from e
-                log.warning("reload of %s failed, serving the previous copy: %s", uri, e)
-                hit.loaded_at = time.monotonic()
-    return hit
+    if hit is not None and time.monotonic() - hit.loaded_at <= CACHE_TTL_S:
+        return hit
+    try:
+        loaded = RedditData.load(uri)     # the slow read runs outside the lock; a rare double load is harmless
+    except (FileNotFoundError, OSError) as e:
+        if hit is None:
+            raise HTTPException(503, f"Reddit tables are not published yet at {uri}") from e
+        log.warning("reload of %s failed, serving the previous copy: %s", uri, e)
+        hit.loaded_at = time.monotonic()
+        return hit
+    with _lock:
+        _cache[uri] = loaded
+    return loaded

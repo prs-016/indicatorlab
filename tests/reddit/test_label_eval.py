@@ -119,3 +119,53 @@ def test_compare_scorers_before_any_labels_stops_with_a_clear_message(tables, mo
     _sentiment_sample(tables, monkeypatch)
     with pytest.raises(SystemExit, match="no sentiment labels"):
         le.compare_scorers("joshua", ["vader"])
+
+
+def _human120_sample(path, monkeypatch):
+    """Eight items: four owned by each rater, items h0 and h4 labelled by both; title = true label."""
+    truth = ["positive", "negative", "neutral", "neutral", "positive", "negative", "neutral", "positive"]
+    pd.DataFrame({"item_id": [f"h{i}" for i in range(8)], "post_id": [f"p{i}" for i in range(8)],
+                  "ticker": "AAPL", "group": ["product", "investor"] * 4, "year": "2020",
+                  "owner": ["joshua"] * 4 + ["james"] * 4, "overlap": [True, False, False, False] * 2,
+                  "title": truth, "body": ""}).to_csv(path / "human120.csv", index=False)
+    monkeypatch.setattr(le, "HUMAN120_OUT", path / "human120.csv")
+    return truth
+
+
+def test_human_check_gives_both_kappas_and_grades_scorers_against_humans_and_opus(tables, monkeypatch):
+    truth = _human120_sample(tables, monkeypatch)
+    _label("human120", "joshua", {f"h{i}": truth[i] for i in range(4)} | {"h4": truth[4]})
+    _label("human120", "james", {f"h{i}": truth[i] for i in range(4, 8)} | {"h0": truth[0]})
+    _label("human120", "claude-opus", {f"h{i}": truth[i] for i in range(7)} | {"h7": "negative"})
+
+    def stub(name, texts, companies):
+        if name == "llm":
+            raise RuntimeError("set ANTHROPIC_API_KEY")
+        return pd.DataFrame({"label": [t.strip() for t in texts]})          # a perfect scorer
+
+    monkeypatch.setattr(le, "run_scorer", stub)
+    res = le.human_check(["vader", "llm"])
+    meta, t = res["meta"], res["table"]
+    assert meta["human_vs_human"]["n_overlap"] == 2 and meta["human_vs_human"]["raw_agreement"] == 1.0
+    assert meta["human_vs_opus"]["n_overlap"] == 8 and meta["human_vs_opus"]["raw_agreement"] == 7 / 8
+    assert meta["scorers_skipped"] == ["llm"]
+    vs_human = t[(t["graded_against"] == "human") & (t["group"] == "all")].iloc[0]
+    vs_opus = t[(t["graded_against"] == "claude-opus") & (t["group"] == "all")].iloc[0]
+    assert vs_human["accuracy"] == 1.0 and vs_opus["accuracy"] == 7 / 8
+    assert set(t["group"]) == {"all", "investor", "product"}
+    assert (tables / "human120_kappa.json").exists()
+
+
+def test_human120_page_shows_a_rater_their_own_items_and_the_overlap_only(tmp_path, monkeypatch):
+    _human120_sample(tmp_path, monkeypatch)
+    monkeypatch.setitem(srv.TASKS["human120"], "items", tmp_path / "human120.csv")
+    mine = {it["item_id"] for it in srv.load_items("human120", False, "joshua")}
+    assert mine == {"h0", "h1", "h2", "h3", "h4"}
+    assert all("owner" not in it and "overlap" not in it for it in srv.load_items("human120", False, "james"))
+
+
+def test_human120_page_refuses_a_rater_who_owns_no_items(tmp_path, monkeypatch):
+    _human120_sample(tmp_path, monkeypatch)
+    monkeypatch.setitem(srv.TASKS["human120"], "items", tmp_path / "human120.csv")
+    with pytest.raises(ValueError, match="human120 raters"):
+        srv.load_items("human120", False, "josh")

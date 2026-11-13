@@ -9,7 +9,7 @@
   GET /reddit/top-posts/{ticker}?week=YYYY-MM-DD&market=us&limit=10        that week's top posts by score
 
 Responses use the shared attention-record fields, so the dashboard treats Reddit and Wikipedia the same.
-All three are research endpoints: weeks from the holdout date (2025-10-01) on are never returned.
+All three are research endpoints: weeks from the cutoff date (`holdout_start` in config.yaml) on are never returned.
 Data comes from src/api/reddit_data.py (local folder or S3 via INDICATORLAB_DATA_URI).
 """
 from __future__ import annotations

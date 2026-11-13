@@ -5,7 +5,7 @@
 set -euo pipefail
 EMAIL="${1:?usage: deploy.sh <alert-email> [bucket-name]}"
 BUCKET="${2:-indicatorlab-data}"
-REGION="${AWS_REGION:-us-west-2}"
+REGION="${AWS_REGION:-$(aws configure get region)}"   # your AWS CLI Region (us-east-2 on the free-plan project)
 REPO_NAME="indicatorlab-reddit"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 

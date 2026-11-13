@@ -1,4 +1,6 @@
 """Weekly attention table: completeness, source split, sentiment columns and the holdout split."""
+from datetime import date
+
 import numpy as np
 import pandas as pd
 
@@ -50,7 +52,8 @@ def test_sentiment_columns(monkeypatch):
     assert np.isclose(w1["pct_positive"], 2 / 3) and np.isclose(w1["pct_negative"], 1 / 3)
 
 
-def test_holdout_split_keeps_whole_weeks_before_oct_1_2025():
+def test_holdout_split_keeps_whole_weeks_before_the_cutoff(monkeypatch):
+    monkeypatch.setattr(rw.settings, "HOLDOUT_START", date(2025, 10, 1))
     weeks = pd.date_range("2025-09-15", periods=4, freq="7D", tz="UTC")   # Sep 15, 22, 29, Oct 6
     research, recent = rw.split_holdout(pd.DataFrame({"week": weeks}))
     assert research["week"].dt.strftime("%m-%d").tolist() == ["09-15", "09-22"]

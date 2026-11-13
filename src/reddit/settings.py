@@ -7,7 +7,7 @@ All paths are under the repository root so every module runs as
 from __future__ import annotations
 
 import os
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 from src import config
@@ -49,7 +49,7 @@ HOLDOUT_START = config.holdout_start()
 
 def default_end_date() -> date:
     """Last *complete* UTC calendar day (yesterday in UTC)."""
-    return datetime.now(timezone.utc).date() - timedelta(days=1)
+    return datetime.now(UTC).date() - timedelta(days=1)
 
 
 # Ticker -> company display name. Matching patterns live in config.yaml (markets.<m>.stocks.<t>.match).

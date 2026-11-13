@@ -15,8 +15,15 @@ highest macro-F1 wins; ties go to the cheaper scorer (vader, lm, finbert, llm in
 Skipped posts and "unsure" match checks are left out and counted. A scorer that cannot run (no word
 list, no API key) is left out too, and sentiment_choice.json names it, so a partial comparison shows.
 
+  human120   (Week 4) the human label check: Cohen's kappa joshua vs james on the overlap items and
+             humans vs Claude Opus on all items, then every scorer graded twice, against the human
+             labels and against the Opus labels, overall and for investor vs product subreddits.
+             An item's human label is its owner's; overlap items use the owner's label too. If the
+             human-Opus kappa is below HEADLINE_KAPPA, the headline numbers are the human-graded ones.
+
     python -m src.reddit.label_eval match --rater joshua
     python -m src.reddit.label_eval sentiment --rater claude-opus --second james
+    python -m src.reddit.label_eval human120
 """
 from __future__ import annotations
 
@@ -35,7 +42,12 @@ from sklearn.metrics import (
 
 from src import config
 from src.reddit import settings
-from src.reddit.label_samples import MATCH_OUT, SENTIMENT_OUT
+from src.reddit.label_samples import (
+    HUMAN120_OUT,
+    HUMAN_RATERS,
+    MATCH_OUT,
+    SENTIMENT_OUT,
+)
 from src.reddit.label_server import latest_labels
 from src.reddit.sentiment_scorers import LABELS, run_scorer
 from src.reddit.utils import get_logger
@@ -47,6 +59,8 @@ N_BOOT = 1000
 SEED = 42
 Z95 = 1.96
 SOURCES = ["reddit_product", "reddit_stock"]
+GROUPS = ["investor", "product"]
+HEADLINE_KAPPA = 0.6          # human-vs-Opus kappa below this: headline numbers use the human labels
 
 
 def wilson(k: int, n: int, z: float = Z95) -> tuple[float, float]:
@@ -98,10 +112,13 @@ def match_precision(rater: str) -> pd.DataFrame:
 
 
 # ----------------------------------------------------------------------------- Step 5
-def agreement(rater: str, second: str) -> dict:
-    """Cohen's kappa on posts both raters labelled (skips by either rater excluded)."""
-    a = _labels_frame("sentiment", rater)[["item_id", "label"]]
-    b = _labels_frame("sentiment", second)[["item_id", "label"]]
+def agreement(rater: str, second: str, task: str = "sentiment", a: pd.DataFrame | None = None) -> dict:
+    """Cohen's kappa on posts both raters labelled (skips by either rater excluded).
+
+    `a` replaces the first rater's labels (used for the combined human labels of human120).
+    """
+    a = (_labels_frame(task, rater) if a is None else a)[["item_id", "label"]]
+    b = _labels_frame(task, second)[["item_id", "label"]]
     both = a.merge(b, on="item_id", suffixes=("_a", "_b"))
     both = both[(both["label_a"] != "skip") & (both["label_b"] != "skip")]
     kappa = cohen_kappa_score(both["label_a"], both["label_b"], labels=LABELS) if len(both) else math.nan
@@ -213,13 +230,87 @@ def compare_scorers(rater: str, scorers: list[str]) -> tuple[pd.DataFrame, dict]
     return table, meta
 
 
+def human_labels() -> pd.DataFrame:
+    """One human label per human120 item: the owner's latest label (skips kept, so they can be counted)."""
+    items = pd.read_csv(HUMAN120_OUT, dtype=str, keep_default_na=False)
+    parts = []
+    for r in HUMAN_RATERS:
+        lab = _labels_frame("human120", r)[["item_id", "label"]]
+        parts.append(items[items["owner"] == r][["item_id"]].merge(lab, on="item_id"))
+    return pd.concat(parts, ignore_index=True)
+
+
+def _grade(gold: pd.DataFrame, preds: dict[str, np.ndarray], against: str, rng) -> list[dict]:
+    """Metric rows for each scorer vs one set of gold labels, overall and per subreddit group."""
+    rows = []
+    for name, pred in preds.items():
+        for grp in ["all", *GROUPS]:
+            m = np.ones(len(gold), bool) if grp == "all" else (gold["group"] == grp).to_numpy()
+            y, p = gold.loc[m, "label"].to_numpy(), pred[m]
+            if len(y):
+                rows.append({"graded_against": against, "scorer": name, "group": grp, **_metric_row(y, p, rng)})
+    return rows
+
+
+def human_check(scorers: list[str]) -> dict:
+    """The Week 4 human label check: both kappas and the scorer comparison graded both ways."""
+    items = pd.read_csv(HUMAN120_OUT, dtype=str, keep_default_na=False)
+    human = human_labels()
+    if human.empty:
+        raise SystemExit("no human120 labels yet: label with src.reddit.label_server --rater joshua")
+    opus = _labels_frame("human120", "claude-opus")[["item_id", "label"]]
+    hh = agreement(HUMAN_RATERS[0], HUMAN_RATERS[1], task="human120")
+    ho = agreement("humans", "claude-opus", task="human120", a=human)
+    # A NaN kappa (too few overlap labels) also falls back to the human labels, hence `not (>=)`.
+    headline = "human" if not (ho["cohen_kappa"] >= HEADLINE_KAPPA) else "human_and_opus"
+    texts_all = (items["title"] + "\n\n" + items["body"]).str.strip()
+    names = {t: c["name"] for t, c in config.stocks(settings.MARKET).items()}
+    preds_all, skipped = {}, []
+    for name in scorers:
+        try:
+            preds_all[name] = run_scorer(name, texts_all.tolist(), items["ticker"].map(names).tolist())["label"]
+        except (FileNotFoundError, RuntimeError) as e:
+            log.warning("scorer %s skipped: %s", name, e)
+            skipped.append(name)
+    rng = np.random.default_rng(SEED)
+    rows, pred_out = [], items[["item_id", "post_id", "ticker", "group", "year"]].copy()
+    for name, p in preds_all.items():
+        pred_out[f"pred_{name}"] = p.to_numpy()
+    for against, lab in (("human", human), ("claude-opus", opus)):
+        gold = items.merge(lab, on="item_id")
+        gold = gold[gold["label"] != "skip"].reset_index(drop=True)
+        if gold.empty:
+            continue
+        idx = items.reset_index().merge(gold[["item_id"]], on="item_id")["index"].to_numpy()
+        preds = {n: p.to_numpy()[idx] for n, p in preds_all.items()}
+        rows += _grade(gold, preds, against, rng)
+        pred_out = pred_out.merge(lab.rename(columns={"label": f"label_{against}"}), on="item_id", how="left")
+    table = pd.DataFrame(rows)
+    table.to_csv(settings.TABLES / "human120_scorer_comparison.csv", index=False)
+    pred_out.to_csv(settings.TABLES / "human120_predictions.csv", index=False)
+    meta = {"human_vs_human": hh, "human_vs_opus": ho, "headline_labels": headline,
+            "headline_rule": f"human-vs-Opus kappa below {HEADLINE_KAPPA}: headline numbers use the human labels",
+            "n_items": len(items), "n_human_labelled": int((human["label"] != "skip").sum()),
+            "n_human_skipped": int((human["label"] == "skip").sum()), "n_opus_labelled": len(opus),
+            "scorers_compared": list(preds_all), "scorers_skipped": skipped}
+    (settings.TABLES / "human120_kappa.json").write_text(json.dumps(meta, indent=2, default=float))
+    log.info("human120: kappa joshua-james %.3f (n=%d), humans-opus %.3f (n=%d); headline=%s",
+             hh["cohen_kappa"], hh["n_overlap"], ho["cohen_kappa"], ho["n_overlap"], headline)
+    return {"meta": meta, "table": table}
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("task", choices=["match", "sentiment"])
+    ap.add_argument("task", choices=["match", "sentiment", "human120"])
     ap.add_argument("--rater", default="claude-opus")
     ap.add_argument("--second", help="second rater for Cohen's kappa")
     ap.add_argument("--scorers", nargs="*", default=SCORER_ORDER, choices=SCORER_ORDER)
     a = ap.parse_args()
+    if a.task == "human120":
+        res = human_check(a.scorers)
+        print(res["table"].to_string(index=False))
+        print(json.dumps(res["meta"], indent=2, default=float))
+        return
     if a.task == "match":
         print(match_precision(a.rater).to_string(index=False))
         return

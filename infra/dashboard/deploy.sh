@@ -2,7 +2,7 @@
 # Export the dashboard as a static site, deploy its hosting stack, upload, and refresh the CDN.
 #   infra/dashboard/deploy.sh          (re-run any time to publish fresh data)
 set -euo pipefail
-REGION="${AWS_REGION:-us-west-2}"
+REGION="${AWS_REGION:-$(aws configure get region)}"   # your AWS CLI Region (us-east-2 on the free-plan project)
 STACK="indicatorlab-dashboard"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 

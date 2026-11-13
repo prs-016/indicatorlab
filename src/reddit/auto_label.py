@@ -28,7 +28,7 @@ import pandas as pd
 
 from src import config
 from src.reddit import settings
-from src.reddit.label_samples import SENTIMENT_OUT
+from src.reddit.label_samples import HUMAN120_OUT, SENTIMENT_OUT
 from src.reddit.label_server import append_label, latest_labels
 from src.reddit.sentiment_scorers import make_client
 from src.reddit.utils import get_logger
@@ -100,8 +100,11 @@ def parse_answer(message) -> dict:
     if message.stop_reason != "end_turn":
         return {"label": "skip", "rationale": f"no answer (stop_reason={message.stop_reason})", "served_by": served}
     text = next((b.text for b in message.content if b.type == "text"), "")
-    ans = json.loads(text)
-    return {"label": ans["label"], "rationale": ans["rationale"].strip(), "served_by": served}
+    try:
+        ans = json.loads(text)
+        return {"label": ans["label"], "rationale": ans["rationale"].strip(), "served_by": served}
+    except (json.JSONDecodeError, KeyError, AttributeError, TypeError):
+        return {"label": "skip", "rationale": "no answer (empty or unparseable reply)", "served_by": served}
 
 
 def estimate_cost(prompts: list[str]) -> dict:
@@ -112,20 +115,24 @@ def estimate_cost(prompts: list[str]) -> dict:
     return {"items": len(prompts), "input_tokens": int(in_tok), "output_tokens_est": out_tok, "usd": round(usd, 2)}
 
 
-def _items() -> list[dict]:
+SAMPLES = ("sentiment", "human120")
+
+
+def _items(task: str = "sentiment") -> list[dict]:
     """Sampled items with the company name, in item order."""
-    items = pd.read_csv(SENTIMENT_OUT, dtype=str, keep_default_na=False).to_dict("records")
+    path = {"sentiment": SENTIMENT_OUT, "human120": HUMAN120_OUT}[task]   # looked up per call (tests patch them)
+    items = pd.read_csv(path, dtype=str, keep_default_na=False).to_dict("records")
     names = {t: c["name"] for t, c in config.stocks(settings.MARKET).items()}
     for it in items:
         it["company"] = names[it["ticker"]]
     return items
 
 
-def run(confirm_cost: bool, workers: int = WORKERS, client=None) -> pd.DataFrame:
-    """Label every sampled item without a claude-opus label; returns this run's new label rows."""
+def run(confirm_cost: bool, workers: int = WORKERS, client=None, task: str = "sentiment") -> pd.DataFrame:
+    """Label every sampled item of `task` without a claude-opus label; returns this run's new label rows."""
     p = params()
-    done = latest_labels("sentiment", RATER)
-    todo = [it for it in _items() if it["item_id"] not in done]
+    done = latest_labels(task, RATER)
+    todo = [it for it in _items(task) if it["item_id"] not in done]
     prompts = {it["item_id"]: label_prompt(it, it["company"]) for it in todo}
     cache = load_cache()
     uncached = [pr for pr in prompts.values() if cache_key(pr, p["model"]) not in cache]
@@ -153,7 +160,7 @@ def run(confirm_cost: bool, workers: int = WORKERS, client=None) -> pd.DataFrame
     for it in todo:
         ans = cache[cache_key(prompts[it["item_id"]], p["model"])]
         note = ans["rationale"] if ans["served_by"] in ("", p["model"]) else f"[{ans['served_by']}] {ans['rationale']}"
-        rows.append(append_label("sentiment", RATER, {"item_id": it["item_id"], "post_id": it["post_id"],
+        rows.append(append_label(task, RATER, {"item_id": it["item_id"], "post_id": it["post_id"],
                                                       "ticker": it["ticker"], "label": ans["label"], "note": note}))
     out = pd.DataFrame(rows)
     if len(out):
@@ -165,5 +172,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--confirm-cost", action="store_true", help="actually send the requests")
     ap.add_argument("--workers", type=int, default=WORKERS)
+    ap.add_argument("--sample", choices=SAMPLES, default="sentiment",
+                    help="human120 = the Week 4 human check (labels/human120_claude-opus.csv)")
     a = ap.parse_args()
-    run(a.confirm_cost, a.workers)
+    run(a.confirm_cost, a.workers, task=a.sample)

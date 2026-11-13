@@ -79,3 +79,47 @@ def test_a_cell_with_no_usable_posts_is_skipped_not_fatal(tmp_path, monkeypatch)
     _setup_draw(tmp_path, monkeypatch, "short")                  # every 2024 corpus post is too short
     out = ls.draw_sentiment(seed=1)
     assert set(out["cell"]) == {"AAPL|reddit_product|2016-17"} and out["core"].dtype == bool
+
+
+def test_year_buckets_pair_years_and_leave_an_odd_last_year_alone():
+    from src.reddit.label_samples import year_buckets
+    b = year_buckets(2016, 2026)
+    assert b["2016"] == b["2017"] == "2016-17" and b["2024"] == b["2025"] == "2024-25" and b["2026"] == "2026"
+
+
+def test_human120_allocation_is_equal_with_a_seeded_remainder():
+    import numpy as np
+
+    from src.reddit.label_samples import _allocate
+    cells = [f"{y}|{g}" for y in range(2016, 2027) for g in ("investor", "product")]
+    a = _allocate(cells, 120, np.random.default_rng(42))
+    assert sum(a.values()) == 120 and set(a.values()) == {5, 6}
+    assert a == _allocate(cells, 120, np.random.default_rng(42))
+
+
+def test_draw_human120_splits_owners_overlap_and_writes_a_truly_blind_file(tmp_path, monkeypatch):
+    import pandas as pd
+
+    from src.reddit import label_samples as ls
+    years = [str(y) for y in range(2016, 2027)]
+    old = pd.DataFrame([{"item_id": f"s{i}", "post_id": f"p{i}", "ticker": "AAPL", "market": "US",
+                         "subreddit": "iphone" if i % 2 else "stocks",
+                         "subreddit_type": "product" if i % 2 else "general", "year": years[i % 11],
+                         "created_utc_iso": f"{years[i % 11]}-03-01T00:00:00Z", "title": f"post {i} title",
+                         "body": "some body text", "url": "u"} for i in range(400)])
+    old.to_csv(tmp_path / "sentiment.csv", index=False)
+    monkeypatch.setattr(ls, "SENTIMENT_OUT", tmp_path / "sentiment.csv")
+    monkeypatch.setattr(ls, "HUMAN120_OUT", tmp_path / "human120.csv")
+    monkeypatch.setattr(ls, "JAMES_BLIND_OUT", tmp_path / "blind.csv")
+    monkeypatch.setattr(ls.settings, "VALIDATION", tmp_path)
+    monkeypatch.setattr(ls, "_population", lambda **kw: pd.DataFrame(
+        columns=["post_id", "ticker", "year", "subreddit_type", "date"]))
+    out = ls.draw_human120(seed=1)
+    assert len(out) == 120 and out["item_id"].is_unique
+    assert (out["owner"] == "joshua").sum() == 60 and (out["owner"] == "james").sum() == 60
+    assert out["overlap"].sum() == 30
+    assert out[out["overlap"]].groupby("owner").size().to_dict() == {"james": 15, "joshua": 15}
+    assert set(out.groupby("cell").size()) <= {5, 6}
+    blind = pd.read_csv(tmp_path / "blind.csv")
+    assert len(blind) == 75 and not {"owner", "overlap", "double", "from_item"} & set(blind.columns)
+    assert set(blind["item_id"]) == set(out.loc[(out["owner"] == "james") | out["overlap"], "item_id"])

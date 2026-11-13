@@ -1,8 +1,13 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Description: >-
-  Indicator Lab shared resources (us-west-2): the S3 data bucket, the live quote tables for India and
-  Hong Kong, a monthly budget alert, and the IAM group teammates' own logins join. Every name can be
+  Indicator Lab shared resources: the S3 data bucket, the live quote tables for India and Hong Kong,
+  a monthly budget alert, and (optional, off by default) an IAM group for teammates' IAM users. On the
+  free-plan project teammates join through AWS Settings invitations instead. Every name can be
   overridden, so the same template deploys into the DS3 account later.
+
+Metadata:
+  AWSToolsMetrics:
+    AWSAgentToolkit: aws-cloudformation@3
 
 Parameters:
   BucketName:
@@ -24,6 +29,16 @@ Parameters:
   TeamGroupName:
     Type: String
     Default: indicatorlab-team
+  CreateTeamGroup:
+    Type: String
+    Default: "false"
+    AllowedValues: ["true", "false"]
+    Description: >-
+      "true" only in an account where teammates log in as IAM users (e.g. the DS3 account). The
+      free-plan project invites team members through AWS Settings, so no IAM group is needed there.
+
+Conditions:
+  WantTeamGroup: !Equals [!Ref CreateTeamGroup, "true"]
 
 Resources:
   DataBucket:
@@ -52,6 +67,27 @@ Resources:
             Status: Enabled
             NoncurrentVersionExpiration:
               NoncurrentDays: 30
+
+  DataBucketTlsOnly:
+    Type: AWS::S3::BucketPolicy
+    Metadata:
+      com.aws.cloudformation.Context:
+        why: Refuse plain-HTTP requests to the shared data bucket.
+    Properties:
+      Bucket: !Ref DataBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: "*"
+            Action: "s3:*"
+            Resource:
+              - !GetAtt DataBucket.Arn
+              - !Sub "${DataBucket.Arn}/*"
+            Condition:
+              Bool:
+                aws:SecureTransport: "false"
 
   LiveIndiaTable:
     Type: AWS::DynamoDB::Table
@@ -111,6 +147,7 @@ Resources:
 
   TeamGroup:
     Type: AWS::IAM::Group
+    Condition: WantTeamGroup
     Properties:
       GroupName: !Ref TeamGroupName
       ManagedPolicyArns:
@@ -199,4 +236,5 @@ Outputs:
   LiveHkTableArn:
     Value: !GetAtt LiveHkTable.Arn
   TeamGroupName:
+    Condition: WantTeamGroup
     Value: !Ref TeamGroup

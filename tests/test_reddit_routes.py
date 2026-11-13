@@ -1,4 +1,5 @@
 """/reddit/* routes with FastAPI's TestClient against the parquet fixtures in tests/fixtures/ (no AWS)."""
+from datetime import date
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,15 @@ from src.api.reddit_data import RedditData, get_reddit_data
 from src.api.reddit_routes import AttentionRecord
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
+FIXTURE_CUTOFF = date(2025, 10, 1)   # the fixture tables straddle this date; the live cutoff is in config.yaml
+
+
+@pytest.fixture(scope="module", autouse=True)
+def _fixture_cutoff():
+    """Run every test in this file as if `holdout_start` were FIXTURE_CUTOFF."""
+    with pytest.MonkeyPatch.context() as mp:
+        mp.setattr(reddit_data.config, "holdout_start", lambda: FIXTURE_CUTOFF)
+        yield
 
 
 @pytest.fixture(scope="module")
@@ -75,7 +85,7 @@ def test_top_posts_any_day_of_the_week_and_limit(client):
 
 
 def test_top_posts_refuses_holdout_weeks(client):
-    r = client.get("/reddit/top-posts/AAPL", params={"week": "2025-10-01"})
+    r = client.get("/reddit/top-posts/AAPL", params={"week": FIXTURE_CUTOFF.isoformat()})
     assert r.status_code == 404 and "holdout" in r.json()["detail"]
 
 
@@ -94,3 +104,17 @@ def test_missing_tables_give_503_not_a_crash(monkeypatch, tmp_path):
     monkeypatch.setattr(reddit_data, "_cache", {})
     r = TestClient(app).get("/reddit/attention/AAPL")
     assert r.status_code == 503 and "not published" in r.json()["detail"]
+
+
+def test_a_failed_reload_keeps_serving_the_previous_copy(monkeypatch):
+    monkeypatch.setenv(reddit_data.DATA_URI_ENV, str(FIXTURES))
+    monkeypatch.setattr(reddit_data, "_cache", {})
+    first = get_reddit_data()
+    monkeypatch.setattr(reddit_data, "CACHE_TTL_S", -1)
+
+    def broken(uri):
+        raise OSError("S3 unreachable")
+
+    monkeypatch.setattr(reddit_data.RedditData, "load", classmethod(lambda cls, uri: broken(uri)))
+    stamp = first.loaded_at
+    assert get_reddit_data() is first and first.loaded_at > stamp

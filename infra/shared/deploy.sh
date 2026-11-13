@@ -4,7 +4,7 @@
 set -euo pipefail
 EMAIL="${1:?usage: deploy.sh <budget-alert-email> [bucket-name]}"
 BUCKET="${2:-indicatorlab-data}"
-REGION="${AWS_REGION:-us-west-2}"
+REGION="${AWS_REGION:-$(aws configure get region)}"   # your AWS CLI Region (us-east-2 on the free-plan project)
 HERE="$(cd "$(dirname "$0")" && pwd)"
 
 aws cloudformation deploy --region "$REGION" --stack-name indicatorlab-shared \
