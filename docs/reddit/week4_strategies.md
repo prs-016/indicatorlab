@@ -1,6 +1,6 @@
 # Week 4 strategies (Joshua): rules written before any run
 
-Status: **draft for Joshua's review. Nothing has been run.** Once approved, these rules go into the
+Status: **approved by Joshua 2026-11-13; not run yet (waits for the 2016-2022 backfill).** Clarified before any run: a name that exits S2 or S3 sits out at least one week, so no hold exceeds its limit. Once approved, these rules go into the
 Strategy Log as written; any later change is a new logged trial made from train results only.
 
 Shared setup for all three:
@@ -48,7 +48,7 @@ for a few weeks; crowded weeks are where it breaks.
 | Regime | SPY above its 200-day average at the close of W: long-only book at 100%; below: 50% |
 | Score | rank average of `sent_dev` and `mom_12_1` across the universe |
 | Entry | long the top 3 by score, only if `att` > 0 (people are actually talking about it) and `n_scored` >= 20 posts in W |
-| Exit / risk | hold up to 4 weeks; exit early when `sent_dev` turns negative or the name leaves the top 5; halve every position the week after `mkt_att_z` > 1.5 |
+| Exit / risk | hold up to 4 weeks (a name that exits sits out at least one week); exit early when `sent_dev` turns negative or the name leaves the top 5; halve every position the week after `mkt_att_z` > 1.5 |
 | Sizing | inverse 12-week volatility, capped at 40% per name |
 
 Indicators: `sent_dev`, `mom_12_1`, `att`, `n_scored`, `mkt_att_z` (Reddit + price).
@@ -63,7 +63,7 @@ subreddits); buy when the product buzz is up and positive but investors have not
 | Regime | SPY above its 200-day average: 100%; below: 50% |
 | Signal | `att_prod` >= log(1.5) (product spike) **and** product-subreddit net sentiment > 0 |
 | Confirmation | investor `att` < log(1.5) (no investor spike yet) **and** 20-day return below SPY's (not priced in) |
-| Exit / risk | hold 4 weeks; exit early if investor `att` spikes and `ret_1w` > 10% (lead realised); max 4 names, 25% each |
+| Exit / risk | hold 4 weeks (then sits out at least one week); exit early if investor `att` spikes and `ret_1w` > 10% (lead realised); max 4 names, 25% each |
 | Sizing | equal weight |
 
 Indicators: `att_prod`, product sentiment, `att`, 20-day relative return, `ret_1w` (Reddit + price).

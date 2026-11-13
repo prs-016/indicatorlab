@@ -30,7 +30,7 @@ SG="$(aws ec2 describe-security-groups --region "$REGION" --filters Name=vpc-id,
 
 sam deploy --region "$REGION" --stack-name indicatorlab-reddit \
   --template-file "$ROOT/infra/reddit/template.yaml" --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
-  --no-fail-on-empty-changeset --resolve-s3 \
+  --no-fail-on-empty-changeset --resolve-s3 --image-repository "$REGISTRY/$REPO_NAME" \
   --parameter-overrides "ImageUri=$IMAGE" "BucketName=$BUCKET" "AlertEmail=$EMAIL" \
   "SubnetIds=$SUBNETS" "SecurityGroupId=$SG"
 echo "deployed $IMAGE"

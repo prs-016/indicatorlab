@@ -44,7 +44,7 @@ reddit:
     min_interval_s: 1.0         # pause between requests
     retry_wait_s: [10, 30]      # wait drawn uniformly from this range after a Timeout / server error
     max_retries: 3              # then the day is logged as failed (never as zero posts)
-  collect_start: 2023-01-01     # moves to 2016-06-01 once the 2016-2022 backfill is complete (Week 4)
+  collect_start: 2016-06-01     # Week 4: corpus backfilled from the team train start (logs/reddit/backfill_2016_2022.log)
   min_posts_per_week: 20        # subreddits below this (2024 average) are dropped
   multi_ticker_list_min: 5      # a post text-matching this many tracked stocks is flagged as a list
   # Sentiment-label pool before the corpus starts (src/reddit/label_pool.py): seeded random days per
