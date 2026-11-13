@@ -134,8 +134,8 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--cycles", type=int)
     mode.add_argument("--latest", action="store_true")
     args = parser.parse_args(argv)
-    if not math.isfinite(args.interval_seconds) or args.interval_seconds < 15:
-        parser.error("--interval-seconds must be at least 15")
+    if not math.isfinite(args.interval_seconds) or args.interval_seconds < 5:
+        parser.error("--interval-seconds must be at least 5")
     if not math.isfinite(args.max_age_seconds) or args.max_age_seconds <= 0:
         parser.error("--max-age-seconds must be positive")
     if args.retain_days < 0 or (args.cycles is not None and args.cycles < 1):

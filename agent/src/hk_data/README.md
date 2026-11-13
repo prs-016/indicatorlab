@@ -40,9 +40,13 @@ python -m src.hk_data --cycles 3 --db ./data/hk_quotes.sqlite3
 - `yahoo`: raw regular-market quote metadata from the chart endpoint.
   [Yahoo lists a 15-minute delay for HKEX equities](https://help.yahoo.com/kb/finance/article-exchanges-data-delays-sln2310.html).
   A one-minute polling interval does not remove this delay.
-- `tencent`: public batch quote endpoint. Delay is labelled unknown. Our
-  November 2026 test observed approximately 15-minute-old quotes here too.
-  Volume is left unavailable because its snapshot units have not been verified.
+- `tencent`: uses the faster `r_hk` public batch endpoint. The older `hk`
+  endpoint was about 15 minutes delayed. A 10-minute test on November 12, 2026
+  returned all 95 HSI stocks on all 120 polls: median last-trade age 10.6 seconds,
+  p95 86.6 seconds, 90.9% under one minute. This is observed timestamp age,
+  not a provider latency guarantee. Quiet stocks can have older last trades.
+  Cumulative volume is retained with its unit unverified.
+  To use it, explicitly select `--source tencent --interval-seconds 5`.
 - `futu`: explicit quote-only access to an already running FutuOpenD at
   `127.0.0.1:11111`. Install `futu-api` separately and obtain the appropriate
   Hong Kong quote entitlement. This module never opens a trade context or

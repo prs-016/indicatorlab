@@ -163,7 +163,7 @@ def _yahoo(symbol: str, now: datetime) -> dict:
 
 def _tencent(symbols: list[str], now: datetime) -> tuple[list[dict], list[dict]]:
     response = throttled_get(
-        TENCENT_QUOTE_URL + ",".join("hk" + symbol[:-3] for symbol in symbols),
+        TENCENT_QUOTE_URL + ",".join("r_hk" + symbol[:-3] for symbol in symbols),
         host_key="tencent",
         min_interval=resolve_min_interval("VIBE_TRADING_TENCENT_MIN_INTERVAL", 0.6),
         timeout=8.0,
@@ -171,7 +171,7 @@ def _tencent(symbols: list[str], now: datetime) -> tuple[list[dict], list[dict]]
     response.raise_for_status()
     now = datetime.now(UTC)
     response.encoding = "gbk"
-    matches = dict(re.findall(r'v_hk([0-9]{5})="([^"\r\n]*)"', response.text))
+    matches = dict(re.findall(r'v_(?:r_)?hk([0-9]{5})="([^"\r\n]*)"', response.text))
     quotes, errors = [], []
     for symbol in symbols:
         try:
@@ -191,18 +191,23 @@ def _tencent(symbols: list[str], now: datetime) -> tuple[list[dict], list[dict]]
             if provider_time is None:
                 raise ValueError("Missing Tencent quote time")
             # Currency follows the repository's shared HKEX counter allocation.
-            # Volume is intentionally undeclared until quote endpoint units are
-            # verified; historical Tencent bar units do not establish these.
-            quotes.append(
-                _quote(
+            # Keep the observed cumulative quantity; its unit has not yet been
+            # reconciled to an exchange record at an identical timestamp.
+            quote = _quote(
                     symbol,
                     "tencent",
                     parts[3],
                     provider_time,
                     now,
                     currency=hk_counter_currency(symbol),
+                    volume=parts[6] or None,
                 )
-            )
+            quote["change_pct"] = float(parts[32]) if len(parts) > 32 and parts[32] else None
+            if quote["change_pct"] is not None and not math.isfinite(quote["change_pct"]):
+                raise ValueError("Invalid percentage change")
+            quote["endpoint"] = "r_hk"
+            quote["volume_unit"] = None
+            quotes.append(quote)
         except (KeyError, IndexError, ValueError, TypeError) as exc:
             errors.append(_failure("tencent", symbol, exc))
     return quotes, errors
