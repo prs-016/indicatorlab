@@ -1,0 +1,221 @@
+{
+  "version": "week3-five-v2",
+  "price_start": "2015-01-01",
+  "attention_start": "2015-07-01",
+  "end": "2025-09-30",
+  "train": [
+    "2016-06-01",
+    "2021-12-31"
+  ],
+  "test": [
+    "2022-01-01",
+    "2025-09-30"
+  ],
+  "markets": {
+    "HK": {
+      "symbols": [
+        "0700.HK",
+        "0005.HK",
+        "9988.HK",
+        "3690.HK",
+        "1810.HK"
+      ],
+      "benchmark": "^HSI",
+      "initial_cash": 7800000
+    },
+    "US": {
+      "symbols": [
+        "AAPL",
+        "MSFT",
+        "NVDA",
+        "TSLA",
+        "AMZN",
+        "META",
+        "GOOGL",
+        "AMD",
+        "NFLX",
+        "JPM"
+      ],
+      "benchmark": "SPY",
+      "initial_cash": 1000000
+    }
+  },
+  "sentiment_model": "ProsusAI/finbert",
+  "sentiment_definition": "FinBERT net positive-minus-negative probabilities on English net text added between successive completed Monday-to-Sunday UTC snapshots, first 512 tokens; a four-week mean over observed additions only; no additions stay missing",
+  "attention_definition": "Daily user pageviews of the article title effective on that day, aggregated to Monday-labelled UTC weeks. Baseline is the past config.spike.baseline_weeks median with +1 offset. Edits count dated revision IDs. Price features use the completed week's last close; attention through Sunday 23:59 UTC enters only the following week's first tradable open.",
+  "holding_rule": "First exit: close-based loss threshold or next weekly rebalance or five market sessions. A close trigger executes at the next tradable open. No intrabar stop-fill assumption. No new position if its planned exit is outside the split.",
+  "sizing": "Inverse trailing 63-session volatility among selected stocks, capped at 10 percent per name at entry; unused capital stays cash. No leverage, no shorts. At most ten names. All positions close by the next weekly rebalance, so attention gates scale the entire new week's book.",
+  "costs": "US Vibe GlobalEquityEngine: 10 bps execution slippage per side and zero extra commission. HK: Vibe HK slippage/commission/levy/settlement, date-dependent 0.1/0.13 percent duty plus whole-HKD ceiling. Current official lot snapshot is a disclosed historical-lot assumption. Cash return and risk-free rate are zero.",
+  "train_only_selection": "Try these variants in listed order and stop at the first with at least 30 completed train entries. Select using entry count only, never Sharpe or test data. If none qualifies, retain the last variant and DROP for insufficient train entries. Log every attempted variant. Freeze the selected variant before opening test results.",
+  "random_runs": 200,
+  "seed": 20261111,
+  "strategies": [
+    {
+      "id": "liquidity_repair",
+      "description": "Buy contrarian weekly sell-offs when trading activity and independently observed Wikipedia information support a temporary liquidity-shock interpretation.",
+      "indicators": [
+        "index_volatility_regime",
+        "negative_volatility_scaled_return",
+        "turnover_ratio",
+        "wiki_views_ratio",
+        "wiki_added_text_sentiment"
+      ],
+      "stop": 0.05,
+      "variants": [
+        {
+          "shock": 2.0,
+          "volume": 1.5,
+          "views": 1.2,
+          "sentiment": 0.1
+        },
+        {
+          "shock": 1.0,
+          "volume": 1.0,
+          "views": 1.0,
+          "sentiment": 0.0
+        },
+        {
+          "shock": 0.5,
+          "volume": 0.8,
+          "views": 0.8,
+          "sentiment": -0.1
+        },
+        {
+          "shock": 0.0,
+          "volume": 0.5,
+          "views": 0.5,
+          "sentiment": -0.1
+        }
+      ]
+    },
+    {
+      "id": "defensive_attention_gate",
+      "description": "Hold liquid low-volatility stocks with nonnegative observed information sentiment, and halve the entire book after unusually high market-wide Wikipedia attention.",
+      "indicators": [
+        "index_volatility_target",
+        "stock_volatility_rank",
+        "turnover_rank",
+        "wiki_added_text_sentiment",
+        "market_attention_risk_gate"
+      ],
+      "stop": 0.08,
+      "variants": [
+        {
+          "liquidity_quantile": 0.5,
+          "sentiment": 0.0
+        },
+        {
+          "liquidity_quantile": 0.25,
+          "sentiment": -0.05
+        },
+        {
+          "liquidity_quantile": 0.0,
+          "sentiment": -0.1
+        }
+      ]
+    },
+    {
+      "id": "residual_repair",
+      "description": "Buy stock-specific negative residual-return dislocations when volume, edit activity and text sentiment support a reversal rather than negative information.",
+      "indicators": [
+        "index_downside_regime",
+        "residual_return_dislocation",
+        "volume_ratio",
+        "wiki_edit_ratio",
+        "wiki_added_text_sentiment"
+      ],
+      "stop": 0.06,
+      "variants": [
+        {
+          "shock": 2.0,
+          "volume": 1.5,
+          "edits": 1.5,
+          "sentiment": 0.1
+        },
+        {
+          "shock": 1.0,
+          "volume": 1.0,
+          "edits": 1.0,
+          "sentiment": 0.0
+        },
+        {
+          "shock": 0.5,
+          "volume": 0.8,
+          "edits": 0.8,
+          "sentiment": -0.1
+        },
+        {
+          "shock": 0.0,
+          "volume": 0.5,
+          "edits": 0.5,
+          "sentiment": -0.1
+        }
+      ]
+    },
+    {
+      "id": "information_compression",
+      "description": "Buy stocks with low recent volatility relative to their longer history when Wikipedia attention and text sentiment suggest information interest without a price breakout requirement.",
+      "indicators": [
+        "index_downside_regime",
+        "volatility_compression",
+        "volume_ceiling",
+        "wiki_views_ratio",
+        "wiki_added_text_sentiment"
+      ],
+      "stop": 0.05,
+      "variants": [
+        {
+          "compression": 0.8,
+          "volume_max": 1.2,
+          "views": 1.2,
+          "sentiment": 0.0
+        },
+        {
+          "compression": 0.95,
+          "volume_max": 1.5,
+          "views": 1.0,
+          "sentiment": 0.0
+        },
+        {
+          "compression": 1.0,
+          "volume_max": 2.0,
+          "views": 0.8,
+          "sentiment": -0.1
+        }
+      ]
+    },
+    {
+      "id": "panic_attention_exhaustion",
+      "description": "Buy negative-return stocks after a Wikipedia attention spike begins fading, provided liquidity and observed text sentiment do not signal continuing information deterioration.",
+      "indicators": [
+        "index_volatility_regime",
+        "prior_attention_spike",
+        "attention_decay",
+        "negative_stock_return",
+        "volume_floor",
+        "wiki_added_text_sentiment"
+      ],
+      "stop": 0.05,
+      "variants": [
+        {
+          "peak": 2.0,
+          "decay": 0.8,
+          "volume": 0.8,
+          "sentiment": 0.0
+        },
+        {
+          "peak": 1.5,
+          "decay": 0.95,
+          "volume": 0.8,
+          "sentiment": -0.05
+        },
+        {
+          "peak": 1.0,
+          "decay": 1.0,
+          "volume": 0.5,
+          "sentiment": -0.1
+        }
+      ]
+    }
+  ]
+}

@@ -1,33 +1,79 @@
-# Local environments, caches and secrets
-.venv/
-venv/
+# Python
 __pycache__/
 *.py[cod]
-.pytest_cache/
-.ruff_cache/
-.coverage
-coverage.xml
-.DS_Store
+*.pyo
+*.pyd
+*.egg-info/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Environment and secrets
 .env
+.env.local
 .env.*
 !.env.example
-.vscode/
-.idea/
-node_modules/
 
-# Local research inputs and generated workbook/runtime artifacts
-/data/
-/outputs/
-/results/
-research/*/data/
-research/hk_market_history/prices/
-research/hk_market_history/benchmark/
-*.xlsx
-*.ndjson
+# Data and generated artifacts
+data/*
+!data/README.md
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+results/*
+!results/.gitkeep
+!results/hk/
+results/hk/*
+!results/hk/week1/
+!results/hk/week2/
+!results/hk/week3/
+results/hk/*/*
+!results/hk/*/*.md
+!results/hk/*/*summary.json
+!results/hk/*/*strategy_results.csv
+!results/hk/*/max_history_splits_summary.csv
+!results/hk/*/hsi_review_count_checks.csv
+!results/hk/week3/live_delay_by_symbol.csv
+!results/hk/week3/reddit_survey_2024.csv
+!results/hk/week3/reference_manifest.json
+!results/hk/week3/five_strategy_preregistration.json
+!results/hk/week3/five_strategy_selected_variants.json
+!results/hk/week3/five_strategy_results.csv
+!results/hk/week3/five_strategy_results_reviewed.csv
+!results/hk/week3/five_strategy_ic_reviewed.csv
+!results/hk/week3/ic_orientation_review_protocol.json
+!results/hk/week3/five_strategy_ablations.csv
+!results/hk/week3/five_strategy_ablations_reviewed.csv
+!results/hk/week3/five_strategy_random_timing.csv
+!results/hk/week3/strategy_log_sheet_ready.csv
+!results/hk/week3/hsi_alpha101_top20.csv
 *.sqlite3
 *.sqlite3-wal
 *.sqlite3-shm
-*.log
+*.parquet
+models/*
+!models/.gitkeep
 
-# App archives belong outside this research repository
+# OS/editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Test and coverage outputs
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Logs and spreadsheet exports (never commit)
+logs/
+*.log
+*.xlsx
+*.ndjson
+
+# Preserved older HK inputs and local-only archives
+/outputs/
+research/*/data/
+research/hk_market_history/prices/
+research/hk_market_history/benchmark/
 /Vibe Trading Original/

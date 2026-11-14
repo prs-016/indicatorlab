@@ -1,0 +1,42 @@
+# Candidate subreddits surveyed by `python -m src.reddit.subreddit_map` (Week 2, Step 2).
+# The PDF's starting list plus a few large related communities where a company looked thin
+# (Tesla owners, Instagram, AMD's GPU community, a JPM stock subreddit). The survey records
+# subscribers, first post, 2024 posts/week and type; the kept ones (>= reddit.min_posts_per_week)
+# go into config.yaml.
+#
+# product: posts are about the company by definition (r/iphone is Apple)
+# stock:   investor subreddit for one ticker (text-matched, like r/stocks)
+# sector:  covers several tracked companies (r/hardware), text-matched
+US:
+  sector: [hardware]
+  stocks:
+    AAPL:
+      product: [apple, iphone, mac, applewatch, VisionPro]
+      stock: [AAPL]
+    MSFT:
+      product: [microsoft, windows, xbox]
+      stock: [MSFT]
+    NVDA:
+      product: [nvidia]
+      stock: [NVDA_Stock]
+    TSLA:
+      product: [teslamotors, TeslaModelY, TeslaModel3, TeslaLounge]
+      stock: [teslainvestorsclub]
+    AMZN:
+      product: [amazon, aws, AmazonPrime]
+      stock: [AMZN]
+    META:
+      product: [facebook, OculusQuest, instagram]
+      stock: [META_Stock]
+    GOOGL:
+      product: [google, Android, GooglePixel]
+      stock: [GOOGL]
+    AMD:
+      product: [Amd, radeon]
+      stock: [AMD_Stock]
+    NFLX:
+      product: [netflix]
+      stock: [NFLX]
+    JPM:
+      product: [Chase]
+      stock: [JPM]

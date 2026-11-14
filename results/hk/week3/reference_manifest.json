@@ -1,0 +1,31 @@
+{
+  "gaps": [
+    {
+      "symbol": "6181.HK",
+      "reason": "missing_english_article",
+      "candidate": "Laopu Gold"
+    }
+  ],
+  "redirects_are_not_proven_historical_titles": true,
+  "historical_mapping_ready": "usable with documented gaps and suppressed/deleted-alias limitations",
+  "source": "https://en.wikipedia.org/wiki/Hang_Seng_Index",
+  "pulled_at": "2026-11-12T04:57:41.983841+00:00",
+  "roster_symbols": 95,
+  "mapped_symbols": 95,
+  "lot_missing": [],
+  "english_symbols": 94,
+  "chinese_symbols": 95,
+  "manual_article_sources": {
+    "1876.HK": "https://zh.wikipedia.org/wiki/百威亞太",
+    "2600.HK": "https://zh.wikipedia.org/wiki/中國鋁業",
+    "6181.HK": "https://zh.wikipedia.org/wiki/老鋪黃金"
+  },
+  "shared_article_scope": {
+    "2600.HK": "Chinese article covers parent and listed subsidiary; isolate scope before research."
+  },
+  "current_canonical_title_map": "config/hk_wiki_titles.csv",
+  "initial_observed_aliases_preserved_at": "config/hk_wiki_aliases_observed_2026-11-12.csv",
+  "initial_valid_from_semantics": "first observed on retrieval date; historical move dates unverified",
+  "valid_from_semantics": "actual creation/move-event time where evidenced; one pre-merge earliest date unavailable and left blank",
+  "historical_mapping_evidence": "results/hk/week3/wiki_history_summary.json"
+}

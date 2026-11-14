@@ -1,0 +1,8 @@
+{
+  "frozen_at_utc": "2026-11-13T08:06:16.500243+00:00",
+  "reason": "Review found selected negative-priority stocks ranked below rejected zero-score stocks in two base strategies; zero-priority ablations also lost their eligibility signal.",
+  "method": "Observed ineligible score=0; eligible score=1+within-eligible percentile rank of the unchanged original priority. Missing lookback stays missing. Original five-session open-to-open plus dividend labels, splits, selected variants and IC averaging unchanged.",
+  "portfolio_runs": 0,
+  "source_sha256": "35aefdd504bbd7d6a524f275931c7922f95fcda237dd52c294cb1a7840077a3c",
+  "no_tuning": "Deterministic reporting correction for all 124 saved evaluations. No candidate, parameter, portfolio, Sharpe, timing-null, DSR or KEEP gate changes."
+}

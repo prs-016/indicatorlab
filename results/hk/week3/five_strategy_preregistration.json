@@ -1,0 +1,264 @@
+{
+  "frozen_at_utc": "2026-11-12T08:56:26.740443+00:00",
+  "authorization": "User requested five strategies created under the guide's seven requirements, then tested; local preregistration and sheet-ready export",
+  "specification": {
+    "version": "week3-five-v2",
+    "price_start": "2015-01-01",
+    "attention_start": "2015-07-01",
+    "end": "2025-09-30",
+    "train": [
+      "2016-06-01",
+      "2021-12-31"
+    ],
+    "test": [
+      "2022-01-01",
+      "2025-09-30"
+    ],
+    "markets": {
+      "HK": {
+        "symbols": [
+          "0700.HK",
+          "0005.HK",
+          "9988.HK",
+          "3690.HK",
+          "1810.HK"
+        ],
+        "benchmark": "^HSI",
+        "initial_cash": 7800000
+      },
+      "US": {
+        "symbols": [
+          "AAPL",
+          "MSFT",
+          "NVDA",
+          "TSLA",
+          "AMZN",
+          "META",
+          "GOOGL",
+          "AMD",
+          "NFLX",
+          "JPM"
+        ],
+        "benchmark": "SPY",
+        "initial_cash": 1000000
+      }
+    },
+    "sentiment_model": "ProsusAI/finbert",
+    "sentiment_definition": "FinBERT net positive-minus-negative probabilities on English net text added between successive completed Monday-to-Sunday UTC snapshots, first 512 tokens; a four-week mean over observed additions only; no additions stay missing",
+    "attention_definition": "Daily user pageviews of the article title effective on that day, aggregated to Monday-labelled UTC weeks. Baseline is the past config.spike.baseline_weeks median with +1 offset. Edits count dated revision IDs. Price features use the completed week's last close; attention through Sunday 23:59 UTC enters only the following week's first tradable open.",
+    "holding_rule": "First exit: close-based loss threshold or next weekly rebalance or five market sessions. A close trigger executes at the next tradable open. No intrabar stop-fill assumption. No new position if its planned exit is outside the split.",
+    "sizing": "Inverse trailing 63-session volatility among selected stocks, capped at 10 percent per name at entry; unused capital stays cash. No leverage, no shorts. At most ten names. All positions close by the next weekly rebalance, so attention gates scale the entire new week's book.",
+    "costs": "US Vibe GlobalEquityEngine: 10 bps execution slippage per side and zero extra commission. HK: Vibe HK slippage/commission/levy/settlement, date-dependent 0.1/0.13 percent duty plus whole-HKD ceiling. Current official lot snapshot is a disclosed historical-lot assumption. Cash return and risk-free rate are zero.",
+    "train_only_selection": "Try these variants in listed order and stop at the first with at least 30 completed train entries. Select using entry count only, never Sharpe or test data. If none qualifies, retain the last variant and DROP for insufficient train entries. Log every attempted variant. Freeze the selected variant before opening test results.",
+    "random_runs": 200,
+    "seed": 20261111,
+    "strategies": [
+      {
+        "id": "liquidity_repair",
+        "description": "Buy contrarian weekly sell-offs when trading activity and independently observed Wikipedia information support a temporary liquidity-shock interpretation.",
+        "indicators": [
+          "index_volatility_regime",
+          "negative_volatility_scaled_return",
+          "turnover_ratio",
+          "wiki_views_ratio",
+          "wiki_added_text_sentiment"
+        ],
+        "stop": 0.05,
+        "variants": [
+          {
+            "shock": 2.0,
+            "volume": 1.5,
+            "views": 1.2,
+            "sentiment": 0.1
+          },
+          {
+            "shock": 1.0,
+            "volume": 1.0,
+            "views": 1.0,
+            "sentiment": 0.0
+          },
+          {
+            "shock": 0.5,
+            "volume": 0.8,
+            "views": 0.8,
+            "sentiment": -0.1
+          },
+          {
+            "shock": 0.0,
+            "volume": 0.5,
+            "views": 0.5,
+            "sentiment": -0.1
+          }
+        ]
+      },
+      {
+        "id": "defensive_attention_gate",
+        "description": "Hold liquid low-volatility stocks with nonnegative observed information sentiment, and halve the entire book after unusually high market-wide Wikipedia attention.",
+        "indicators": [
+          "index_volatility_target",
+          "stock_volatility_rank",
+          "turnover_rank",
+          "wiki_added_text_sentiment",
+          "market_attention_risk_gate"
+        ],
+        "stop": 0.08,
+        "variants": [
+          {
+            "liquidity_quantile": 0.5,
+            "sentiment": 0.0
+          },
+          {
+            "liquidity_quantile": 0.25,
+            "sentiment": -0.05
+          },
+          {
+            "liquidity_quantile": 0.0,
+            "sentiment": -0.1
+          }
+        ]
+      },
+      {
+        "id": "residual_repair",
+        "description": "Buy stock-specific negative residual-return dislocations when volume, edit activity and text sentiment support a reversal rather than negative information.",
+        "indicators": [
+          "index_downside_regime",
+          "residual_return_dislocation",
+          "volume_ratio",
+          "wiki_edit_ratio",
+          "wiki_added_text_sentiment"
+        ],
+        "stop": 0.06,
+        "variants": [
+          {
+            "shock": 2.0,
+            "volume": 1.5,
+            "edits": 1.5,
+            "sentiment": 0.1
+          },
+          {
+            "shock": 1.0,
+            "volume": 1.0,
+            "edits": 1.0,
+            "sentiment": 0.0
+          },
+          {
+            "shock": 0.5,
+            "volume": 0.8,
+            "edits": 0.8,
+            "sentiment": -0.1
+          },
+          {
+            "shock": 0.0,
+            "volume": 0.5,
+            "edits": 0.5,
+            "sentiment": -0.1
+          }
+        ]
+      },
+      {
+        "id": "information_compression",
+        "description": "Buy stocks with low recent volatility relative to their longer history when Wikipedia attention and text sentiment suggest information interest without a price breakout requirement.",
+        "indicators": [
+          "index_downside_regime",
+          "volatility_compression",
+          "volume_ceiling",
+          "wiki_views_ratio",
+          "wiki_added_text_sentiment"
+        ],
+        "stop": 0.05,
+        "variants": [
+          {
+            "compression": 0.8,
+            "volume_max": 1.2,
+            "views": 1.2,
+            "sentiment": 0.0
+          },
+          {
+            "compression": 0.95,
+            "volume_max": 1.5,
+            "views": 1.0,
+            "sentiment": 0.0
+          },
+          {
+            "compression": 1.0,
+            "volume_max": 2.0,
+            "views": 0.8,
+            "sentiment": -0.1
+          }
+        ]
+      },
+      {
+        "id": "panic_attention_exhaustion",
+        "description": "Buy negative-return stocks after a Wikipedia attention spike begins fading, provided liquidity and observed text sentiment do not signal continuing information deterioration.",
+        "indicators": [
+          "index_volatility_regime",
+          "prior_attention_spike",
+          "attention_decay",
+          "negative_stock_return",
+          "volume_floor",
+          "wiki_added_text_sentiment"
+        ],
+        "stop": 0.05,
+        "variants": [
+          {
+            "peak": 2.0,
+            "decay": 0.8,
+            "volume": 0.8,
+            "sentiment": 0.0
+          },
+          {
+            "peak": 1.5,
+            "decay": 0.95,
+            "volume": 0.8,
+            "sentiment": -0.05
+          },
+          {
+            "peak": 1.0,
+            "decay": 1.0,
+            "volume": 0.5,
+            "sentiment": -0.1
+          }
+        ]
+      }
+    ]
+  },
+  "source_hashes": {
+    "src/hk/calendar.py": "f49763d930e0a8b12cda0900001404ccae1ab97295a1df63491bab0ff2f384b1",
+    "src/hk/evaluation.py": "1edcb054d3c15c2b3a6bfa0bfd1841082283151815ff5c00eb64f1c97e0e003f",
+    "config/hk_week3_research.json": "f13ddb14f463bbd3f13bf49ace973ba1dcdd591e80a3ac4c90ad1584ccdbfeb9",
+    "config.yaml": "d1f0f24389ebd1f5167e9075330dc186a18f21a146387df057dbee8f652bfa95",
+    "src/hk/week3/__init__.py": "76c00aeaee40ae29fe26c4883aca632c01ad3b57d472d51a2b3ffc777c758dd0",
+    "src/hk/week3/engine_adapter.py": "3c7e870bce16ed393eaf8de2ff343815b989d22dbd1657ee5b00ce8f522a6e3e",
+    "src/hk/week3/features.py": "ef21dce92d62ca29b90c02092c09be7677309c76506562d1be6c0d22c61e5183",
+    "src/hk/week3/public_data.py": "64976c81fa9c36ca9e596163354beb372beab58f76309e52b9eab6f76feadb7b",
+    "src/hk/week3/run.py": "79dda5ebd38af55a103ce684ce16ae25c9b695a88a2a31594cad851c14524c56",
+    "src/hk/week3/score_text.py": "60eec2399c07efb0b6ea8a09ebf65b3640b99977de838c38e11bd18584d0dfed",
+    "src/hk/week3/vibe_worker.py": "5b5dde2d5d091ee11e64928323b6c323524a43eb8221ef00504a83016d71eea2",
+    "src/hk/week3/wiki_history.py": "27c41e54d543560b38b90ba7d9814bc39f8f68b67c56ca6a93cf4922fe973bc2"
+  },
+  "policy": "Count-only train selection, no test outcomes before selection, no post-test tuning",
+  "input_hashes": {
+    "data/hk_week3/prices/0005.HK.parquet": "6c6cdbf4c14fa986c8884fd1d26780ea14fbb2bb6495d4a3ed17611675fa1a69",
+    "data/hk_week3/prices/0700.HK.parquet": "adb70108e908650c881461a33435797f168205121af11deb489e6bb857cc9727",
+    "data/hk_week3/prices/1810.HK.parquet": "42259febd9d4a49cd4a57729a7fef27391aa19fbccf4ee2c743373c6e4b12f34",
+    "data/hk_week3/prices/3690.HK.parquet": "efc877389b35ec92b20c162bba742c117368856e5d43a078d52aae986bef19e7",
+    "data/hk_week3/prices/9988.HK.parquet": "68df78a3b73f1e2a8f111c3f1b08e1452eb3e7e7546569689b2f29b0b937f65e",
+    "data/hk_week3/prices/AAPL.parquet": "ba5bf8c4b41bc4f0bf6bd9d8b4c12f7b43ed381b23f0d7166fac6274fddd3fa8",
+    "data/hk_week3/prices/AMD.parquet": "5f8bf68c5ee8f9d6f591c9bece726a637d274a04fe9dbac9c3ead58c45df1855",
+    "data/hk_week3/prices/AMZN.parquet": "f6eb95d357338f746e246b4a92674b66c9c5bcb054cbdbaf0462bb87111c1e11",
+    "data/hk_week3/prices/GOOGL.parquet": "a0d8bd744323b83952f7931f6aba63ace6b5c4e55264dbcd159f9ebf214e8453",
+    "data/hk_week3/prices/HKD=X.parquet": "0c8cce1b5c0185ddc47d2d4f75c761313ef7f231415edb7680d358c526edb4fc",
+    "data/hk_week3/prices/INDEX_HSI.parquet": "889fda383013d4bd91067379d7851f9fcfe671dcaf5ac8a9a786f3d9418b98a2",
+    "data/hk_week3/prices/JPM.parquet": "2e959d54c4cab7fd124270606fd41ab3f616af661b46b684dfa9d05667369c7f",
+    "data/hk_week3/prices/META.parquet": "a75fc8a431164c63f7249a951a6f772e4fcad623aca843ae1aed25ae6ca1bc9c",
+    "data/hk_week3/prices/MSFT.parquet": "7d6530282d8469532fe14c70d005d8c8118cf1df8a3c1265339f73ee9d81bfe3",
+    "data/hk_week3/prices/NFLX.parquet": "194afa8d02cb79295e4614f23516f3d32340a868cf22291707f2da5b277281a5",
+    "data/hk_week3/prices/NVDA.parquet": "5c71520f925d0ff43303f64a213a9e23a9f57c590ad4cd1b57c13525539c9cbc",
+    "data/hk_week3/prices/SPY.parquet": "be2a3b23a470c8ff560eb7f5de394bffaf59a4e72bd62ca00afa3412d3d3c66b",
+    "data/hk_week3/prices/TSLA.parquet": "2fb81e0ca27462680dfe4300bccbb1dca84cfb7ae400591c9dc780e9be57a79d",
+    "data/hk_week3/wiki_sentiment.parquet": "cfe6f7fd4e9eb762522ea95acacc819eb3080cd39841801a0c1ee85cef7e6607",
+    "config/hk_wiki_title_intervals.csv": "ee59bcb0184b363543818c1d7736dd52580a7eb5d18213b3d8b3a18702ffcc95",
+    "config/us_wiki_title_intervals.csv": "a2d780af8a861631658da5f3ee7a464852f5847e9ece9292ac4b94be8dd3f336",
+    "config/hk_board_lots_2026-11-12.csv": "b85bc89b3a2eec1337d1f392dfc9aa6860b069e9766b3a1ba0dee525b670868d"
+  }
+}

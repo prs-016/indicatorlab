@@ -1,0 +1,254 @@
+[
+  {
+    "source": "hk_market_history/probe_intraday.py",
+    "target": "src/hk/history/probe_intraday.py",
+    "source_sha256": "04336af65e85d2bb5d20f380b403a4c58234f6866a5de423479fc205d3102c53",
+    "mechanical_path_relocation": true,
+    "target_sha256": "04336af65e85d2bb5d20f380b403a4c58234f6866a5de423479fc205d3102c53",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_market_history/validate_hsi_history.py",
+    "target": "src/hk/history/validate_hsi_history.py",
+    "source_sha256": "31df94a8a273498d746b9c1dad96767a869f5c49175287de3ccb8a4cf6627b2d",
+    "mechanical_path_relocation": true,
+    "target_sha256": "31df94a8a273498d746b9c1dad96767a869f5c49175287de3ccb8a4cf6627b2d",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_market_history/download_hsi_history.py",
+    "target": "src/hk/history/download_hsi_history.py",
+    "source_sha256": "2a6bfe579a7b504763ae39355eedac478dab4aa5c9cb2627047ca6c12886efaf",
+    "mechanical_path_relocation": true,
+    "target_sha256": "2a6bfe579a7b504763ae39355eedac478dab4aa5c9cb2627047ca6c12886efaf",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week1/backtest_strategies.py",
+    "target": "src/hk/week1/backtest_strategies.py",
+    "source_sha256": "be25cb64e73c27c770b0f1ec9afc79a1b80e7f9cf0dd39ff6d3abdcad3bcc926",
+    "mechanical_path_relocation": true,
+    "target_sha256": "10771a2ed6d0e8db7b8d0d985fa5ed3415630679ce6a5a97ed0be8509bc9bef9",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week1/check_data.py",
+    "target": "src/hk/week1/check_data.py",
+    "source_sha256": "8c87f7c4a42f43685236d15dd9e23c8c0c5439da2d8bc3b7d3092a688b95966d",
+    "mechanical_path_relocation": true,
+    "target_sha256": "139d6ba3d98d7fab8de499ece1fb62684302815cf385c8490d181fee4b71dea0",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week2/backtest_advanced_hsi_strategies.py",
+    "target": "src/hk/week2/backtest_advanced_hsi_strategies.py",
+    "source_sha256": "a52f92a531c880ec7a240aa7f75fd61332d142678bc6955005421ec4da860849",
+    "mechanical_path_relocation": true,
+    "target_sha256": "64793c9e595ca254bca123077530f88fefe3a46ed16226ea994973976d4230de",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week2/backtest_non_momentum_hsi_strategies.py",
+    "target": "src/hk/week2/backtest_non_momentum_hsi_strategies.py",
+    "source_sha256": "a5874d671d6ef30c8ab0f5fede2efded78327fa8fea834a9c398e613e1f62bfd",
+    "mechanical_path_relocation": true,
+    "target_sha256": "a993dbb5d74bf5a1d5ee6b6a5ef8200148c7d9be47b2300ff3c9f2885cc7aa14",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week2/build_week2_evidence.py",
+    "target": "src/hk/week2/build_week2_evidence.py",
+    "source_sha256": "5bf3ccf90931720d14d6d0fb1d026cb5479969d95e7c5808f7eb69cc2b5e7fc9",
+    "mechanical_path_relocation": true,
+    "target_sha256": "e5c0b04b3ab1376e09b7455dc74082cc1a5edd51d2019b47f9cd5a1f349f991c",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week2/compare_live_sources.py",
+    "target": "src/hk/week2/compare_live_sources.py",
+    "source_sha256": "05739ae801f3376a6dadf27b1b746cb98677956c3eb5d25161deead93d122060",
+    "mechanical_path_relocation": true,
+    "target_sha256": "4958aed704999657281c1a8323c43c46592cd579273a45a0df23243808f30d99",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week2/backtest_hsi_strategies.py",
+    "target": "src/hk/week2/backtest_hsi_strategies.py",
+    "source_sha256": "dea9db05316f47ff4ce70f86da4b533c222d888f1ebeb77ca71bc35c604a096d",
+    "mechanical_path_relocation": true,
+    "target_sha256": "d605ac20a15b288013def348ee2949acd171d6ac6c2a3b739b27d66e840e3efc",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week2/live_poller.py",
+    "target": "src/hk/week2/live_poller.py",
+    "source_sha256": "eb69a2027be3d217bde8c46813d0c70db47b64182cd879ee8b60a04e3e54c671",
+    "mechanical_path_relocation": true,
+    "target_sha256": "cfdaded4f54abe01f62f23e6dd27ad184148391580a7100a4b3d38bf87cbdaab",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week2/analyze_latest_intraday_session.py",
+    "target": "src/hk/week2/analyze_latest_intraday_session.py",
+    "source_sha256": "38eb8960115f702b2b8b15c1c0475047ecec62fd0244d94f0400b34322606c1d",
+    "mechanical_path_relocation": true,
+    "target_sha256": "ed86b7f9b05519769e4b7d70188fabf82133c4c8d602579f07bee6419ec19361",
+    "transformations": [
+      "repository-relative paths relocated",
+      "package imports updated where needed",
+      "check_data execution guarded by main where applicable",
+      "legacy model logic/splits retained; not certified for Week 3"
+    ]
+  },
+  {
+    "source": "hk_week1/strategy_log.md",
+    "target": "results/hk/week1/strategy_log.md",
+    "source_sha256": "32d955a8524669d77849060f075ef4f47f141c0fb1a009bf096e3e45dcdb0400",
+    "target_sha256": "32d955a8524669d77849060f075ef4f47f141c0fb1a009bf096e3e45dcdb0400"
+  },
+  {
+    "source": "hk_week1/strategy_results.csv",
+    "target": "results/hk/week1/strategy_results.csv",
+    "source_sha256": "8373439012307c9a4200ca3e3ea5d6183df2cb874b5f636e5d875cac2dfc823d",
+    "target_sha256": "8373439012307c9a4200ca3e3ea5d6183df2cb874b5f636e5d875cac2dfc823d"
+  },
+  {
+    "source": "hk_week1/data_note.md",
+    "target": "results/hk/week1/data_note.md",
+    "source_sha256": "715f0ab236530c84b8f576dd5d94516713e89f52e2a39b4979369d850bc5f8bf",
+    "target_sha256": "715f0ab236530c84b8f576dd5d94516713e89f52e2a39b4979369d850bc5f8bf"
+  },
+  {
+    "source": "hk_week2/WEEK2_REPORT.md",
+    "target": "results/hk/week2/WEEK2_REPORT.md",
+    "source_sha256": "8bf8ec3e24ca626b6873b5234bc0e0353870e366101cba3d8d068bc4a9259633",
+    "target_sha256": "8bf8ec3e24ca626b6873b5234bc0e0353870e366101cba3d8d068bc4a9259633"
+  },
+  {
+    "source": "hk_week2/MANUAL_CODE_REVIEW.md",
+    "target": "results/hk/week2/MANUAL_CODE_REVIEW.md",
+    "source_sha256": "f2543942d59cf4fa278c994e0b8b1eaa7e9ba2d27604bed49b3d705138e5b64f",
+    "target_sha256": "f2543942d59cf4fa278c994e0b8b1eaa7e9ba2d27604bed49b3d705138e5b64f"
+  },
+  {
+    "source": "hk_week2/outputs/strategy_log.md",
+    "target": "results/hk/week2/strategy_log.md",
+    "source_sha256": "a30e60f1335a6ae4a5c8b744584e5beaf1d7cb6b87777fe12c36e0b733c9d831",
+    "target_sha256": "a30e60f1335a6ae4a5c8b744584e5beaf1d7cb6b87777fe12c36e0b733c9d831"
+  },
+  {
+    "source": "hk_week2/outputs/strategy_results.csv",
+    "target": "results/hk/week2/strategy_results.csv",
+    "source_sha256": "a4f4aa6c6d818bc54dd27fa4bddf77457ea2ca3c61e6275bd507c97c28e3f5c5",
+    "target_sha256": "a4f4aa6c6d818bc54dd27fa4bddf77457ea2ca3c61e6275bd507c97c28e3f5c5"
+  },
+  {
+    "source": "hk_week2/outputs/strategy_summary.json",
+    "target": "results/hk/week2/strategy_summary.json",
+    "source_sha256": "145921e8bfa2488ce7f970c557e79057aa3e4af8cfebf803eebd0d68e4226992",
+    "target_sha256": "145921e8bfa2488ce7f970c557e79057aa3e4af8cfebf803eebd0d68e4226992"
+  },
+  {
+    "source": "hk_week2/outputs/advanced_strategy_log.md",
+    "target": "results/hk/week2/advanced_strategy_log.md",
+    "source_sha256": "330a4384e569d2b8c8d653fbcff3139ec52dd154f456f58942ca8500ea097d09",
+    "target_sha256": "330a4384e569d2b8c8d653fbcff3139ec52dd154f456f58942ca8500ea097d09"
+  },
+  {
+    "source": "hk_week2/outputs/advanced_strategy_results.csv",
+    "target": "results/hk/week2/advanced_strategy_results.csv",
+    "source_sha256": "c75f1297944e852ecc12364f445e61e367ce01f39718e719de570f7c55e438a9",
+    "target_sha256": "c75f1297944e852ecc12364f445e61e367ce01f39718e719de570f7c55e438a9"
+  },
+  {
+    "source": "hk_week2/outputs/advanced_strategy_summary.json",
+    "target": "results/hk/week2/advanced_strategy_summary.json",
+    "source_sha256": "f82847180b573c7a4be5b26dd22e6308d08c3dc686008fca53f32664910bcf0d",
+    "target_sha256": "f82847180b573c7a4be5b26dd22e6308d08c3dc686008fca53f32664910bcf0d"
+  },
+  {
+    "source": "hk_week2/outputs/non_momentum_strategy_log.md",
+    "target": "results/hk/week2/non_momentum_strategy_log.md",
+    "source_sha256": "8c82144028b53f984b946b529a77538d4442e9b6549348b4b84c2d180fdcd8bf",
+    "target_sha256": "8c82144028b53f984b946b529a77538d4442e9b6549348b4b84c2d180fdcd8bf"
+  },
+  {
+    "source": "hk_week2/outputs/non_momentum_strategy_results.csv",
+    "target": "results/hk/week2/non_momentum_strategy_results.csv",
+    "source_sha256": "016e87901c997aa57ef84dae22a42384ef0dd2e6b589f53943cb82032e24a891",
+    "target_sha256": "016e87901c997aa57ef84dae22a42384ef0dd2e6b589f53943cb82032e24a891"
+  },
+  {
+    "source": "hk_week2/outputs/non_momentum_strategy_summary.json",
+    "target": "results/hk/week2/non_momentum_strategy_summary.json",
+    "source_sha256": "87591475fbca7e45f0d58ee8c16f4413948bc9d2c4b25b44a60940ea946ed571",
+    "target_sha256": "87591475fbca7e45f0d58ee8c16f4413948bc9d2c4b25b44a60940ea946ed571"
+  },
+  {
+    "source": "hk_week2/outputs/hsi_review_count_checks.csv",
+    "target": "results/hk/week2/hsi_review_count_checks.csv",
+    "source_sha256": "6e078caf4f445ce65a17ec6a82469ceaa8ca69d5c5e31590ca38076463426d6c",
+    "target_sha256": "6e078caf4f445ce65a17ec6a82469ceaa8ca69d5c5e31590ca38076463426d6c"
+  },
+  {
+    "source": "hk_week2/outputs/max_history_splits_summary.csv",
+    "target": "results/hk/week2/max_history_splits_summary.csv",
+    "source_sha256": "35eb99f1065e7a68227fa869dc9bb258e17aaab58216f73bbbd4a0e2152383ef",
+    "target_sha256": "35eb99f1065e7a68227fa869dc9bb258e17aaab58216f73bbbd4a0e2152383ef"
+  }
+]

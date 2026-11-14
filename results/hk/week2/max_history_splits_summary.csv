@@ -1,0 +1,7 @@
+ticker,company_name,first_date,last_date,rows,gaps_vs_hsi,zero_volume_rows,impossible_price_rows,pre_2021_zero_volume_rows,pre_2021_impossible_price_rows,price_source,board_lot_shares,split_event_count
+0005.HK,HSBC,2000-01-03,2026-11-04,6690,0,88,7,80,7,Yahoo Finance chart API,400.0,0
+0388.HK,HKEX,2000-06-27,2026-11-04,6564,0,142,3,132,3,Yahoo Finance chart API,100.0,0
+0700.HK,Tencent,2004-06-16,2026-11-04,5528,0,24,3,16,3,Yahoo Finance chart API,100.0,1
+0941.HK,China Mobile,2000-01-04,2026-11-04,6689,0,107,2,97,2,Yahoo Finance chart API,500.0,0
+1299.HK,AIA,2010-10-29,2026-11-04,3945,0,19,2,9,2,Yahoo Finance chart API,200.0,0
+^HSI,,1986-12-31,2026-11-04,9833,0,3600,0,3599,0,Yahoo Finance chart API,,0

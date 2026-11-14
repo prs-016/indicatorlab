@@ -1,0 +1,21 @@
+{
+  "polls": 120,
+  "requested_symbols": 95,
+  "observations": 11400,
+  "median_delay_seconds": 10.633913499999998,
+  "p95_delay_seconds": 86.5807303,
+  "median_poll_latency_ms": 359.67420804081485,
+  "wall_seconds": 600.0107550829416,
+  "aws_enabled": false,
+  "source": "Tencent r_hk",
+  "date_hkt": "2026-11-12",
+  "audit_started_utc": "2026-11-12T02:55:15.211216+00:00",
+  "audit_ended_utc": "2026-11-12T03:05:09.578924+00:00",
+  "all_symbols_every_poll": true,
+  "fraction_quote_age_under_60_seconds": 0.9094736842105263,
+  "max_quote_age_seconds": 545.578924,
+  "timestamp_semantics": "Provider last-trade age at receipt, not a guaranteed publication delay.",
+  "poll_errors": 0,
+  "observations_sha256": "99a2ce0d82160d6efa46e7a418496c92fad7cf29d5a579557eaf710d49caaf89",
+  "volume_unit": "provider quantity; independent same-timestamp unit reconciliation pending"
+}

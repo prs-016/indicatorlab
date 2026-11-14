@@ -1,0 +1,102 @@
+ticker,company_name,member_from,member_to,source,source_note
+0001.HK,Cheung Kong,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0002.HK,CLP,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0003.HK,Hong Kong and China Gas,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0004.HK,Wharf Holdings,2014-10-31,2018-03-02,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0005.HK,HSBC,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0006.HK,Power Assets,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0011.HK,Hang Seng Bank,2014-10-31,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20241122T174500.pdf,official roster correction; free original-listing price history unavailable
+0012.HK,Henderson Land,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0016.HK,Sun Hung Kai Properties,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0017.HK,New World Development,2014-10-31,2024-12-06,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0019.HK,Swire Pacific A,2014-10-31,2020-12-04,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0023.HK,Bank of East Asia,2014-10-31,2018-09-07,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0027.HK,Galaxy Entertainment,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0066.HK,MTR,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0083.HK,Sino Land,2014-10-31,2020-09-04,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0101.HK,Hang Lung Properties,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0135.HK,Kunlun Energy,2014-10-31,2017-12-01,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0144.HK,China Merchants Port,2014-10-31,2018-09-07,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0151.HK,Want Want China,2014-10-31,2020-09-04,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0175.HK,Geely Automobile,2017-03-06,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0241.HK,Alibaba Health,2021-03-15,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0267.HK,CITIC Pacific,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0285.HK,BYD Electronic,2024-06-11,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0288.HK,WH Group,2017-09-04,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0291.HK,China Resources Beer,2021-12-06,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20211119T000000.pdf,official HSI re-admission date; stale secondary interval corrected
+0293.HK,Cathay Pacific,2014-10-31,2017-12-01,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0300.HK,Midea Group,2025-06-09,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20250516T174501.pdf,official June 2025 HSI addition
+0316.HK,OOIL,2022-06-13,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0322.HK,Tingyi,2022-12-05,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20221118T000000.pdf,official HSI re-admission date; stale secondary interval corrected
+0386.HK,Sinopec,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0388.HK,HKEX,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0669.HK,Techtronic Industries,2019-03-11,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0688.HK,China Overseas Land,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0700.HK,Tencent,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0728.HK,China Telecom,2025-09-08,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20250822T174500.pdf,official September 2025 HSI addition
+0762.HK,China Unicom,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0823.HK,Link REIT,2014-10-31,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20241122T174500.pdf,official roster correction
+0836.HK,China Resources Power,2023-06-05,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20230512T175000.pdf,official HSI re-admission date; stale secondary interval corrected
+0857.HK,PetroChina,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0868.HK,Xinyi Glass,2021-09-06,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0881.HK,Zhongsheng,2022-06-13,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0883.HK,CNOOC,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0939.HK,CCB,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0941.HK,China Mobile,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0960.HK,Longfor,2021-03-15,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0968.HK,Xinyi Solar,2021-06-07,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0981.HK,SMIC,2022-06-13,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+0992.HK,Lenovo Group,2022-03-07,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20220218T000000.pdf,official HSI re-admission date; stale secondary interval corrected
+1024.HK,Kuaishou,2024-12-09,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1038.HK,CK Infrastructure Holdings,2016-03-14,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1044.HK,Hengan,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1088.HK,China Shenhua Energy,2022-09-05,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20220819T000000.pdf,official HSI re-admission date; stale secondary interval corrected
+1093.HK,CSPC Pharmaceutical,2018-06-04,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1099.HK,Sinopharm,2023-09-04,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1109.HK,China Resources Land,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1113.HK,CK Asset Holdings,2015-06-03,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1177.HK,Sino Biopharmaceutical,2018-09-10,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1209.HK,CR Mixc Lifestyle,2022-12-05,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1211.HK,BYD,2021-06-07,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1299.HK,AIA,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1378.HK,China Hongqiao,2022-06-13,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1398.HK,ICBC,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1810.HK,Xiaomi,2020-09-07,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1876.HK,Budweiser APAC,2020-12-07,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1928.HK,Sands China,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1929.HK,Chow Tai Fook,2022-09-05,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+1997.HK,Wharf REIC,2017-11-23,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2007.HK,Country Garden,2017-12-04,2023-08-31,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2015.HK,Li Auto,2023-12-04,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2018.HK,AAC Technologies,2016-09-05,2022-06-10,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2020.HK,ANTA Sports,2020-12-07,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2057.HK,ZTO Express,2025-06-09,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20250516T174501.pdf,official June 2025 HSI addition
+2269.HK,WuXi Biologics,2020-09-07,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2313.HK,Shenzhou International,2018-09-10,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2318.HK,Ping An,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2319.HK,Mengniu Dairy,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2331.HK,Li Ning,2021-09-06,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2359.HK,WuXi AppTec,2023-12-04,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2382.HK,Sunny Optical,2017-12-04,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2388.HK,BOC Hong Kong,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2618.HK,JD Logistics,2025-09-08,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20250822T174500.pdf,official September 2025 HSI addition
+2628.HK,China Life,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2688.HK,ENN Energy,2021-12-06,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+2899.HK,Zijin Mining,2023-06-05,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+3328.HK,Bank of Communications,2014-10-31,2021-09-03,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+3690.HK,Meituan,2020-12-07,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+3692.HK,Hansoh Pharma,2022-09-05,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+3968.HK,China Merchants Bank,2021-09-06,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+3988.HK,Bank of China,2014-10-31,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+6098.HK,Country Garden Services,2021-06-07,2024-06-07,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+6618.HK,JD Health,2023-06-05,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+6690.HK,Haier Smart Home,2022-12-05,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+6862.HK,Haidilao,2021-03-15,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+9618.HK,JD.com,2021-12-06,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+9633.HK,Nongfu Spring,2022-03-07,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+9888.HK,Baidu,2022-09-05,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+9901.HK,New Oriental,2024-12-09,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+9961.HK,Trip.com,2023-06-05,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+9988.HK,Alibaba,2020-09-07,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices
+9992.HK,Pop Mart,2025-09-08,2025-09-30,https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20250822T174500.pdf,official September 2025 HSI addition
+9999.HK,NetEase,2021-12-06,2025-09-30,https://github.com/AndyLongest/HistoricalIndexPrices/tree/bdb5c01084b314a94edfad155547d9373d0d8191,pinned reconstruction from official HSI review notices

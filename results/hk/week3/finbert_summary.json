@@ -1,0 +1,10 @@
+{
+  "model": "ProsusAI/finbert",
+  "device": "mps",
+  "records": 5056,
+  "tickers": 15,
+  "retrieved_at": "2026-11-12T08:18:54.906745+00:00",
+  "max_tokens": 512,
+  "missing_text_policy": "No addition is missing sentiment, never neutral zero",
+  "data_sha256": "cfe6f7fd4e9eb762522ea95acacc819eb3080cd39841801a0c1ee85cef7e6607"
+}

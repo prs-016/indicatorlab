@@ -1,0 +1,204 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Optional HK quote collector and session-aware watchdog. Prepared locally; not deployed.
+Parameters:
+  Prefix:
+    Type: String
+    Default: indicatorlab-hk-live
+    MaxLength: 40
+  ImageUri:
+    Type: String
+    Description: ARM64 ECR image built from infra/hk_live/Dockerfile
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  PublicSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Existing public subnets with an Internet Gateway route; no NAT is created
+  DataBucket:
+    Type: String
+    Default: indicatorlab-data
+    Description: Existing team bucket in us-west-2
+  AlertTopicArn:
+    Type: String
+    Default: ''
+    Description: Optional existing SNS topic; this template creates no email subscriptions
+Conditions:
+  HasAlertTopic: !Not [!Equals [!Ref AlertTopicArn, '']]
+Resources:
+  QuoteTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Retain
+    UpdateReplacePolicy: Retain
+    Properties:
+      TableName: indicatorlab-live-hk
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions: [{AttributeName: symbol, AttributeType: S}]
+      KeySchema: [{AttributeName: symbol, KeyType: HASH}]
+      SSESpecification: {SSEEnabled: true}
+  Cluster:
+    Type: AWS::ECS::Cluster
+  Logs:
+    Type: AWS::Logs::LogGroup
+    Properties: {RetentionInDays: 7}
+  WatchdogLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${Prefix}-watchdog
+      RetentionInDays: 7
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Outbound-only quote requests; no inbound service
+      VpcId: !Ref VpcId
+      SecurityGroupEgress: [{IpProtocol: tcp, FromPort: 443, ToPort: 443, CidrIp: 0.0.0.0/0}]
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: [{Effect: Allow, Principal: {Service: ecs-tasks.amazonaws.com}, Action: sts:AssumeRole}]
+      ManagedPolicyArns: [!Sub 'arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy']
+  CollectorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: [{Effect: Allow, Principal: {Service: ecs-tasks.amazonaws.com}, Action: sts:AssumeRole}]
+      Policies:
+        - PolicyName: WriteOnlyHKQuotes
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - {Effect: Allow, Action: 'dynamodb:BatchWriteItem', Resource: !GetAtt QuoteTable.Arn}
+              - {Effect: Allow, Action: 's3:PutObject', Resource: !Sub 'arn:${AWS::Partition}:s3:::${DataBucket}/raw/live/hk/*'}
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: '*'
+                Condition: {StringEquals: {'cloudwatch:namespace': IndicatorLab}}
+  Task:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Cpu: '256'
+      Memory: '1024'
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      RuntimePlatform: {CpuArchitecture: ARM64, OperatingSystemFamily: LINUX}
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      TaskRoleArn: !GetAtt CollectorRole.Arn
+      ContainerDefinitions:
+        - Name: hk-quotes
+          Essential: true
+          Image: !Ref ImageUri
+          EntryPoint: [python, '-m', src.hk.live]
+          Command: ['--symbols-file', config/hsi_constituents_2026-11-04.csv, '--output', /tmp/hk-live, '--duration-seconds', '0', '--interval-seconds', '5', '--aws']
+          Environment:
+            - {Name: AWS_DEFAULT_REGION, Value: us-west-2}
+            - {Name: HK_DATA_BUCKET, Value: !Ref DataBucket}
+            - {Name: HK_QUOTE_TABLE, Value: !Ref QuoteTable}
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref Logs
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: hk
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      TaskDefinition: !Ref Task
+      DesiredCount: 0
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: !Ref PublicSubnets
+          SecurityGroups: [!Ref SecurityGroup]
+  SchedulerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: [{Effect: Allow, Principal: {Service: scheduler.amazonaws.com}, Action: sts:AssumeRole}]
+      Policies:
+        - PolicyName: StartStopOnlyThisService
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement: [{Effect: Allow, Action: 'ecs:UpdateService', Resource: !Ref Service}]
+  Start:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      ScheduleExpression: cron(20 9 ? * MON-FRI *)
+      ScheduleExpressionTimezone: Asia/Hong_Kong
+      FlexibleTimeWindow: {Mode: 'OFF'}
+      Target:
+        Arn: arn:aws:scheduler:::aws-sdk:ecs:updateService
+        RoleArn: !GetAtt SchedulerRole.Arn
+        Input: !Sub '{"Cluster":"${Cluster}","Service":"${Service}","DesiredCount":1}'
+  Stop:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      ScheduleExpression: cron(10 16 ? * MON-FRI *)
+      ScheduleExpressionTimezone: Asia/Hong_Kong
+      FlexibleTimeWindow: {Mode: 'OFF'}
+      Target:
+        Arn: arn:aws:scheduler:::aws-sdk:ecs:updateService
+        RoleArn: !GetAtt SchedulerRole.Arn
+        Input: !Sub '{"Cluster":"${Cluster}","Service":"${Service}","DesiredCount":0}'
+  WatchdogRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement: [{Effect: Allow, Principal: {Service: lambda.amazonaws.com}, Action: sts:AssumeRole}]
+      Policies:
+        - PolicyName: ReadHKReceiptTimes
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - {Effect: Allow, Action: 'dynamodb:Scan', Resource: !GetAtt QuoteTable.Arn}
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: '*'
+                Condition: {StringEquals: {'cloudwatch:namespace': IndicatorLab}}
+              - {Effect: Allow, Action: ['logs:CreateLogStream', 'logs:PutLogEvents'], Resource: !GetAtt WatchdogLogs.Arn}
+  Watchdog:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${Prefix}-watchdog
+      PackageType: Image
+      Architectures: [arm64]
+      Code: {ImageUri: !Ref ImageUri}
+      ImageConfig: {Command: [src.hk.cloud.watchdog.handler]}
+      MemorySize: 1024
+      Timeout: 30
+      Role: !GetAtt WatchdogRole.Arn
+  WatchdogTimer:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: rate(1 minute)
+      State: ENABLED
+      Targets: [{Arn: !GetAtt Watchdog.Arn, Id: hk-watchdog}]
+  WatchdogPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Watchdog
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt WatchdogTimer.Arn
+  StaleIngestionAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: No quote received within 60 seconds during HKEX sessions, or independent watchdog is missing
+      Namespace: IndicatorLab
+      MetricName: HKIngestionHealthy
+      Statistic: Minimum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: breaching
+      AlarmActions: !If [HasAlertTopic, [!Ref AlertTopicArn], !Ref AWS::NoValue]
+Outputs:
+  QuoteTableName: {Value: !Ref QuoteTable}
+  ClusterArn: {Value: !GetAtt Cluster.Arn}
+  ServiceArn: {Value: !Ref Service}
+  SnapshotPrefix: {Value: !Sub 's3://${DataBucket}/raw/live/hk/'}
