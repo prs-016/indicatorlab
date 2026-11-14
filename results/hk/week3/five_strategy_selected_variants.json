@@ -1,0 +1,102 @@
+{
+  "HK": {
+    "liquidity_repair": {
+      "variant": 2,
+      "parameters": {
+        "shock": 0.5,
+        "volume": 0.8,
+        "views": 0.8,
+        "sentiment": -0.1
+      },
+      "train_entries": 108
+    },
+    "defensive_attention_gate": {
+      "variant": 0,
+      "parameters": {
+        "liquidity_quantile": 0.5,
+        "sentiment": 0.0
+      },
+      "train_entries": 202
+    },
+    "residual_repair": {
+      "variant": 2,
+      "parameters": {
+        "shock": 0.5,
+        "volume": 0.8,
+        "edits": 0.8,
+        "sentiment": -0.1
+      },
+      "train_entries": 60
+    },
+    "information_compression": {
+      "variant": 1,
+      "parameters": {
+        "compression": 0.95,
+        "volume_max": 1.5,
+        "views": 1.0,
+        "sentiment": 0.0
+      },
+      "train_entries": 107
+    },
+    "panic_attention_exhaustion": {
+      "variant": 2,
+      "parameters": {
+        "peak": 1.0,
+        "decay": 1.0,
+        "volume": 0.5,
+        "sentiment": -0.1
+      },
+      "train_entries": 91
+    }
+  },
+  "US": {
+    "liquidity_repair": {
+      "variant": 1,
+      "parameters": {
+        "shock": 1.0,
+        "volume": 1.0,
+        "views": 1.0,
+        "sentiment": 0.0
+      },
+      "train_entries": 43
+    },
+    "defensive_attention_gate": {
+      "variant": 0,
+      "parameters": {
+        "liquidity_quantile": 0.5,
+        "sentiment": 0.0
+      },
+      "train_entries": 263
+    },
+    "residual_repair": {
+      "variant": 1,
+      "parameters": {
+        "shock": 1.0,
+        "volume": 1.0,
+        "edits": 1.0,
+        "sentiment": 0.0
+      },
+      "train_entries": 51
+    },
+    "information_compression": {
+      "variant": 1,
+      "parameters": {
+        "compression": 0.95,
+        "volume_max": 1.5,
+        "views": 1.0,
+        "sentiment": 0.0
+      },
+      "train_entries": 245
+    },
+    "panic_attention_exhaustion": {
+      "variant": 2,
+      "parameters": {
+        "peak": 1.0,
+        "decay": 1.0,
+        "volume": 0.5,
+        "sentiment": -0.1
+      },
+      "train_entries": 224
+    }
+  }
+}

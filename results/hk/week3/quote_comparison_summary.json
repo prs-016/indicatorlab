@@ -1,0 +1,38 @@
+{
+  "retrieved_at_utc": "2026-11-12T09:00:38.340171+00:00",
+  "symbol": "0700.HK",
+  "google_source": "https://www.google.com/finance/quote/0700:HKG?hl=en",
+  "google_displayed_text": "HK$398.80 arrow_downward -2.64% ( -10.80 ) Today Nov 12, 4:08:04 PM GMT+8  ·   HKD",
+  "google_asof_utc": "2026-11-12T08:08:04+00:00",
+  "google_price": 398.8,
+  "google_change_pct": -2.64,
+  "google_volume_rounded": "25.84M",
+  "google_volume_rounding_interval": [
+    25835000,
+    25845000
+  ],
+  "tencent": {
+    "symbol": "0700.HK",
+    "price": 398.8,
+    "change_pct": -2.64,
+    "volume": 25844607.0,
+    "ts_exchange": "2026-11-12T08:08:06+00:00",
+    "ts_received": "2026-11-12T09:00:38.336264+00:00",
+    "source": "tencent"
+  },
+  "provider_timestamp_difference_seconds": 2,
+  "price_difference": 0.0,
+  "change_pct_difference": 0.0,
+  "volume_within_google_display_rounding": true,
+  "disposition": "Closing sample agrees within two seconds of displayed provider times; cumulative quantity is consistent with shares in this sample.",
+  "limitations": "Not exact timestamp equality or certification of all 95 stocks. Both observations are post-auction closing values, retrieved after close. Earlier intraday Google snapshots disagreed at apparently similar displayed timestamps; provider-clock/update semantics remain unresolved. Do not use this sample to certify intraday publication delay.",
+  "earlier_intraday_check": {
+    "google_asof_utc": "2026-11-12T06:39:31+00:00",
+    "google_price": 402.8,
+    "google_volume": "12.69M",
+    "nearest_tencent_asof_utc": "2026-11-12T06:39:29+00:00",
+    "tencent_price": 403.4,
+    "tencent_volume": 12359598
+  },
+  "raw_capture_sha256": "ffa56f9b4e43295b629b82423a636b7e00eb5d1061bf5635134bb527f6421703"
+}

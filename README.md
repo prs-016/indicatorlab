@@ -1,5 +1,9 @@
 # IndicatorLab
 
+Hong Kong local work: start with [HK_START_HERE.md](HK_START_HERE.md) for the
+five-second HSI collector, five completed US/HK strategies, the separate Vibe
+Trading code package, file locations and the task checklist.
+
 IndicatorLab is a DS3 financial-market research project. Attention data
 (Reddit, Wikipedia, search trends) and India equities research are both part
 of the project; markets, stocks and sources live in `config.yaml`. Reddit

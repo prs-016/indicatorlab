@@ -1,0 +1,5 @@
+requests>=2.31,<3
+pandas>=2.2,<4
+pyarrow>=15,<27
+boto3>=1.40,<2
+exchange-calendars>=4.13,<5

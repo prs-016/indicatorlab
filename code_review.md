@@ -1,3 +1,90 @@
+# Code Review — IndicatorLab Hong Kong Week 3
+Reviewed: 2026-11-13 (America/Los_Angeles)
+Files reviewed: 122 changed/new paths (101 IndicatorLab HK/setup/reference/result/documentation paths, 21 Vibe contribution paths); unchanged India work excluded.
+
+## Summary
+The local HK implementation follows src/tests/results conventions and now includes five actually evaluated multi-source strategies in both markets, fast constituent quotes and a verified code-only upstream handoff. All ten strategy cases correctly DROP; an IC score-orientation reporting bug found during review was corrected in a separately frozen diagnostic, with original portfolio runs and exports preserved. Sixty-one HK tests pass, source/input hashes match, and both contribution patch routes reproduce all 21 target files. The remaining findings concern future research-run reuse and portability; local results are exploratory, and this review does not certify cloud deployment, GitHub publication or the guide's external team deliverables.
+
+## Repo Structure
+
+| Expected location | Status |
+|---|---|
+| README.md / AGENTS.md | Present; HK start guide, local commands, completion boundaries and frozen-result caution added. India guidance preserved. |
+| .env.example / .gitignore / requirements.txt | Present; input/model/runtime artifacts ignored, selected compact HK evidence allowed. No credential-pattern match in changed text files. |
+| src/ / tests/ | Present; HK live/calendar/reference/evaluation/research code and six HK test modules. Legacy code is separate from the new Week 3 runner. |
+| results/ | Compact HK metrics, preregistration, diagnostic review and interpretation under results/hk/week3. Full native trade traces remain ignored. |
+| config/ | Dated roster/lots and historical article-title references. These are curated metadata, not raw price archives. |
+| notebooks/ / models/ / data/ | Existing project layout preserved; downloaded model, historical prices, text and operational observations stay ignored. No reusable new logic exists only in a notebook. |
+| infra/ | Optional HK container/CloudFormation handoff; cfn-lint passed. No Docker image build or real account deployment claimed. |
+| frontend/ | Existing project material preserved. No new front end was requested in the final scope. |
+| Separate Vibe checkout/export | HSI_Vibe_Trading_Week3_Ready contains only code/docs/tests, patches, manifest and benchmark note. No Vibe source tree pasted into IndicatorLab. |
+
+## Test Coverage
+
+- Final scoped IndicatorLab HK suite: **61 passed**. Covers aliases/parser fields/batch failures, sessions and dated weather exceptions, local publication/current-age/PID identity, official lot parsing and reference preservation, actual native Vibe transaction parity, timing count/duration/non-overlap, duty dates/rounding, attention whole-book scaling, ablation rank removal, title logpage identity, net added text and corrected IC orientation.
+- AWS sink tests use mocked boto3 endpoints but real Parquet serialization: Decimal upserts, all 95 records, correct S3 key and one snapshot per minute. Watchdog tests cover receipt age, closed sessions and reopening grace. No live AWS write was exercised.
+- Focused Vibe HSI/quote suite: **91 passed**, one existing Python 3.14/LangChain Pydantic-v1 warning. Earlier selected integration/purity/look-ahead suite: **1,085 passed, 23 skipped**, one same compatibility warning. Not the entire upstream suite or remote CI.
+- Real local study: ten base market cases, 104 drop-one evaluations and 4,000 timing-null simulations completed using the native engine transaction methods, with zero missing-lot fallbacks or rejected scheduled trades. These are scientific runs, not extra unit-test counts.
+- Independent read-only audits verified all **49** frozen source/input hashes; all non-IC fields in reviewed base results match the original exports. All ten decisions were independently recomputed and remain DROP. The correction protocol/source hash and 124 unique IC diagnostic rows were verified.
+- Both 01→02 and APPLY_ALL patches were independently applied to clean base files and all 21 destination hashes matched. All 13 new-file inspection copies and ZIP CRC/membership checks matched. No raw data, databases, models or private agent files in the package.
+- Scoped Ruff/Black, AST parsing and Git whitespace checks passed. Main start-guide/report links resolve. `pytest_cov` is unavailable, so no numerical coverage percentage is claimed. Public-provider acquisition/retry behavior and full historical corporate-action/lot/fee fidelity lack exhaustive automated integration coverage; manual acquisition evidence does not certify every historical observation.
+
+## Findings
+
+### `src/hk/week3/features.py` (lines 395–397)
+**Issue:** Original IC scoring remains unsuitable for future reuse without the review correction
+**Severity:** Should fix (before a new research run; current reporting corrected)
+
+```python
+mask, rank, scale = strategy_week(bundle, strategy, variant, week, drop)
+score = rank.where(mask, 0.0).where(bundle.weekly["rv63"].loc[week].notna())
+scores[entry] = score.to_dict()
+```
+
+Negative priorities in Defensive Attention Gate/Information Compression put rejected zero-score names above stocks actually selected; zero-priority ablations can also erase their eligibility signal. The completed frozen source stays unchanged for audit. `src/hk/ic_diagnostic.py` now ranks eligible names above rejected ones with identical within-selection priority and original labels, and the main report/sheet use `_reviewed.csv`; original files remain preserved. Incorporate that tested correction into a newly versioned runner before any future study, rather than silently reusing this score. No current trade, Sharpe, DSR, timing control or decision changed.
+
+### `src/hk/week3/run.py` (lines 39–50, 68–76)
+**Issue:** Resume gate does not validate every frozen input/engine digest
+**Severity:** Should fix (before a new/resumed incomplete study)
+
+```python
+for relative, expected in saved["source_hashes"].items():
+    if hashlib.sha256((ROOT / relative).read_bytes()).hexdigest() != expected:
+        raise ValueError(
+            "Preregistered source changed; record a new run rather than silently retesting"
+        )
+return
+```
+
+This verifies code on resume, but the initial recorded input hashes are not checked there; attention and engine digests are captured separately rather than all enforced before execution. The completed study's 49 source/input hashes plus engine hashes were checked after execution and again independently, so no mutation is evidenced in this result. Future runners should include every consumed input and engine digest in the preregistration and enforce them before resuming work. Do not rerun the completed test to address this future-use concern.
+
+### `src/hk/week3/run.py` (line 20)
+**Issue:** Research runner assumes a sibling checkout name
+**Severity:** Should fix (portability)
+
+```python
+VIBE = ROOT.parent / "Vibe-Trading-upstream"
+```
+
+This works on Jack's documented Mac layout but requires a teammate to recreate that exact sibling name. A future version should accept an explicit checkout/interpreter path and validate its expected engine version. The upstream contribution itself does not depend on this local research runner or its folder layout.
+
+## Checklist for the student
+
+- [x] Complete the actual five-strategy US/HK evaluation and retain all failing results.
+- [x] Correct IC reporting separately and preserve the frozen original study/exports.
+- [x] Verify completed-study source/input integrity and immutable non-IC results.
+- [x] Protect canonical title histories and frozen lot inputs from reference-refresh overwrites.
+- [x] Export and independently verify the separate code-only Vibe patches/ZIP.
+- [ ] Before any new study, incorporate the reviewed IC score into a newly versioned runner.
+- [ ] Before resuming a future incomplete study, enforce all input/engine digests at the execution gate.
+- [ ] Make future research-run checkout/interpreter paths configurable for teammate portability.
+
+No unresolved Must fix blocks the current local handoff. Current lot/membership/vendor-adjustment assumptions, sparse English text, current classifier vintage, low exposure, benchmark conventions, Google intraday discrepancy and public-feed freshness limits are disclosed in the report/checklist; they limit scientific claims. The literal shared-sheet preregistration did not occur, and cannot be retroactively claimed. Actual upstream publication/CI, team issue/chat/coauthors, AWS deployment and James endpoint acceptance remain external actions under the user's local-only scope.
+
+---
+
+The pre-existing India review is preserved below verbatim as historical context; it was not re-reviewed or modified by the HK task.
+
 # Code Review — IndicatorLab India
 Reviewed: 2026-11-01 (America/Los_Angeles)
 Files reviewed: 50 first-party implementation/test/documentation files; 154 selected evidence-package files checked by inventory/verifier (not treated as source code).

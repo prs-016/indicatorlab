@@ -1,0 +1,23 @@
+{
+  "retrieved_at": "2026-11-12T08:40:31.720773+00:00",
+  "article_identities": 199,
+  "title_intervals": 295,
+  "hk_symbols": 95,
+  "errors": [],
+  "discontinuities": [],
+  "method": "Creation revision + currently observed redirects' move events filtered by stable logpage; suppressed/deleted aliases may be unavailable",
+  "missing_english_article": [
+    "6181.HK"
+  ],
+  "shared_article_scope": {
+    "2600.HK": "Chinese article includes parent and listed subsidiary; not separable company attention"
+  },
+  "unknown_earliest_title_dates": [
+    {
+      "symbol": "0006.HK",
+      "lang": "zh",
+      "title": "香港電燈",
+      "reason": "2011 history merge; earliest date unavailable, left blank rather than invented"
+    }
+  ]
+}

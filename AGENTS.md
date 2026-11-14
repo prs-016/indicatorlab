@@ -94,6 +94,56 @@ Verify that the virtual environment is active before executing project scripts o
 
 ## Running things
 
+### Hong Kong local work (Week 3)
+
+- Local branch `jack-clean` is based on origin/main. HK code is in `src/hk/`,
+  selected legacy metrics in `results/hk/`, dated rosters/lots/title references
+  in `config/`. See `HK_START_HERE.md` and `docs/HK_WEEK3_STATUS.md`.
+- The older `../indicatorlab-Jack` retains research/data and Git history.
+  Its pasted legacy app was moved to `../Vibe Trading Original/`, outside both
+  research repositories. The active `../Vibe-Trading-upstream` contribution
+  checkout and frozen study dependencies retain their existing locations.
+- From the repo root: `.venv/bin/python -B -m src.hk.local_service start`
+  (or `status` / `stop`). It collects Tencent `r_hk` every five seconds during
+  XHKG continuous sessions and writes ignored `data/live_hk/current/` files.
+  It needs a running, awake Mac and does not install a login daemon.
+- Audit command: `.venv/bin/python -B -m src.hk.live --symbols-file
+  config/hsi_constituents_2026-11-04.csv --output data/live_hk/NEW_AUDIT
+  --duration-seconds 600 --interval-seconds 5` (one shell command).
+- Reference refresh: `.venv/bin/python -B -m src.hk.refresh_reference`.
+  Downloads public HKEX/Wikipedia/Arctic Shift sources; reports missing articles
+  and errors in a new ignored `data/hk_reference_refresh/TIMESTAMP/` snapshot,
+  preserving canonical references and frozen lots. It creates observed aliases. The canonical historical
+  title intervals are built separately by `src.hk.week3.wiki_history`; do not
+  replace them with observed aliases before a backtest.
+- HK tests: `.venv/bin/python -B -m pytest tests/test_hk_live.py
+  tests/test_hk_evaluation.py tests/test_hk_reference.py tests/test_hk_week3.py
+  tests/test_hk_cloud.py tests/test_hk_ic_diagnostic.py -q -p no:cacheprovider`
+  (one shell command).
+- New dependencies: exchange-calendars for XHKG, beautifulsoup4/lxml/openpyxl
+  for public reference parsing; boto3 only for the disabled optional AWS sink.
+- Week 3 research uses train 2016-06-01–2021-12-31 and test
+  2022-01-01–2025-09-30. Operational live data is separate. Legacy week1/week2
+  code/results retain their older methodology and are not Week 3 validations.
+- Five strategies are completed in both markets under `src/hk/week3/`.
+  Read `results/hk/week3/FIVE_STRATEGY_REPORT.md`: all ten cases are DROP.
+  The frozen run is `data/hk_week3/runs/five_v2c_preflight_20261112`.
+  Do not rerun or tune its completed test. A changed design requires a new
+  preregistration and an honestly tracked trial; the test is already observed.
+- Current IC exports end in `_reviewed.csv`: `src.hk.ic_diagnostic` corrected
+  negative/zero-priority score orientation separately, with no portfolio rerun.
+  The original run/exports remain frozen. Do not use the original runner's IC
+  scores for a new study without incorporating and testing this correction.
+- Acquisition modules: `src.hk.week3.public_data` (bounded Yahoo/MediaWiki),
+  `wiki_history` (creation/move evidence), `score_text` (fixed FinBERT),
+  `features`, `vibe_worker` and `engine_adapter` (isolated Vibe execution).
+  Inspect each module's `--help` before a new authorized acquisition. Inputs,
+  model files and full trade traces stay ignored; compact results are allowed.
+- The optional `infra/hk_live/` template passes cfn-lint locally; no AWS
+  deployment, Docker build or James endpoint check was performed.
+- A separate sibling Vibe-Trading-upstream checkout holds only upstream code
+  changes; never paste that tree into IndicatorLab. Jack handles publishing.
+
 Activate the project's Python environment before running scripts:
 
 ```bash

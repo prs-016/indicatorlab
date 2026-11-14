@@ -1,0 +1,87 @@
+{
+  "verified_at_utc": "2026-11-12T15:47:30.204501+00:00",
+  "run_directory": "/Users/jackgui/Desktop/hk/indicatorlab-clean/data/hk_week3/runs/five_v2c_preflight_20261112",
+  "frozen_sources_and_inputs_unchanged": true,
+  "hashes": {
+    "src/hk/calendar.py": "f49763d930e0a8b12cda0900001404ccae1ab97295a1df63491bab0ff2f384b1",
+    "src/hk/evaluation.py": "1edcb054d3c15c2b3a6bfa0bfd1841082283151815ff5c00eb64f1c97e0e003f",
+    "config/hk_week3_research.json": "f13ddb14f463bbd3f13bf49ace973ba1dcdd591e80a3ac4c90ad1584ccdbfeb9",
+    "config.yaml": "d1f0f24389ebd1f5167e9075330dc186a18f21a146387df057dbee8f652bfa95",
+    "src/hk/week3/__init__.py": "76c00aeaee40ae29fe26c4883aca632c01ad3b57d472d51a2b3ffc777c758dd0",
+    "src/hk/week3/engine_adapter.py": "3c7e870bce16ed393eaf8de2ff343815b989d22dbd1657ee5b00ce8f522a6e3e",
+    "src/hk/week3/features.py": "ef21dce92d62ca29b90c02092c09be7677309c76506562d1be6c0d22c61e5183",
+    "src/hk/week3/public_data.py": "64976c81fa9c36ca9e596163354beb372beab58f76309e52b9eab6f76feadb7b",
+    "src/hk/week3/run.py": "79dda5ebd38af55a103ce684ce16ae25c9b695a88a2a31594cad851c14524c56",
+    "src/hk/week3/score_text.py": "60eec2399c07efb0b6ea8a09ebf65b3640b99977de838c38e11bd18584d0dfed",
+    "src/hk/week3/vibe_worker.py": "5b5dde2d5d091ee11e64928323b6c323524a43eb8221ef00504a83016d71eea2",
+    "src/hk/week3/wiki_history.py": "27c41e54d543560b38b90ba7d9814bc39f8f68b67c56ca6a93cf4922fe973bc2",
+    "data/hk_week3/prices/0005.HK.parquet": "6c6cdbf4c14fa986c8884fd1d26780ea14fbb2bb6495d4a3ed17611675fa1a69",
+    "data/hk_week3/prices/0700.HK.parquet": "adb70108e908650c881461a33435797f168205121af11deb489e6bb857cc9727",
+    "data/hk_week3/prices/1810.HK.parquet": "42259febd9d4a49cd4a57729a7fef27391aa19fbccf4ee2c743373c6e4b12f34",
+    "data/hk_week3/prices/3690.HK.parquet": "efc877389b35ec92b20c162bba742c117368856e5d43a078d52aae986bef19e7",
+    "data/hk_week3/prices/9988.HK.parquet": "68df78a3b73f1e2a8f111c3f1b08e1452eb3e7e7546569689b2f29b0b937f65e",
+    "data/hk_week3/prices/AAPL.parquet": "ba5bf8c4b41bc4f0bf6bd9d8b4c12f7b43ed381b23f0d7166fac6274fddd3fa8",
+    "data/hk_week3/prices/AMD.parquet": "5f8bf68c5ee8f9d6f591c9bece726a637d274a04fe9dbac9c3ead58c45df1855",
+    "data/hk_week3/prices/AMZN.parquet": "f6eb95d357338f746e246b4a92674b66c9c5bcb054cbdbaf0462bb87111c1e11",
+    "data/hk_week3/prices/GOOGL.parquet": "a0d8bd744323b83952f7931f6aba63ace6b5c4e55264dbcd159f9ebf214e8453",
+    "data/hk_week3/prices/HKD=X.parquet": "0c8cce1b5c0185ddc47d2d4f75c761313ef7f231415edb7680d358c526edb4fc",
+    "data/hk_week3/prices/INDEX_HSI.parquet": "889fda383013d4bd91067379d7851f9fcfe671dcaf5ac8a9a786f3d9418b98a2",
+    "data/hk_week3/prices/JPM.parquet": "2e959d54c4cab7fd124270606fd41ab3f616af661b46b684dfa9d05667369c7f",
+    "data/hk_week3/prices/META.parquet": "a75fc8a431164c63f7249a951a6f772e4fcad623aca843ae1aed25ae6ca1bc9c",
+    "data/hk_week3/prices/MSFT.parquet": "7d6530282d8469532fe14c70d005d8c8118cf1df8a3c1265339f73ee9d81bfe3",
+    "data/hk_week3/prices/NFLX.parquet": "194afa8d02cb79295e4614f23516f3d32340a868cf22291707f2da5b277281a5",
+    "data/hk_week3/prices/NVDA.parquet": "5c71520f925d0ff43303f64a213a9e23a9f57c590ad4cd1b57c13525539c9cbc",
+    "data/hk_week3/prices/SPY.parquet": "be2a3b23a470c8ff560eb7f5de394bffaf59a4e72bd62ca00afa3412d3d3c66b",
+    "data/hk_week3/prices/TSLA.parquet": "2fb81e0ca27462680dfe4300bccbb1dca84cfb7ae400591c9dc780e9be57a79d",
+    "data/hk_week3/wiki_sentiment.parquet": "cfe6f7fd4e9eb762522ea95acacc819eb3080cd39841801a0c1ee85cef7e6607",
+    "config/hk_wiki_title_intervals.csv": "ee59bcb0184b363543818c1d7736dd52580a7eb5d18213b3d8b3a18702ffcc95",
+    "config/us_wiki_title_intervals.csv": "a2d780af8a861631658da5f3ee7a464852f5847e9ece9292ac4b94be8dd3f336",
+    "config/hk_board_lots_2026-11-12.csv": "b85bc89b3a2eec1337d1f392dfc9aa6860b069e9766b3a1ba0dee525b670868d",
+    "data/hk_week3/attention/0005.HK.parquet": "33b1b5faae8fb1e3860fa6eae26830334f0e759ca67584b8da493f95559bf76b",
+    "data/hk_week3/attention/0700.HK.parquet": "351a2f12aa5ce9318f93317e507697f787b9651cec53a44dafbd125379fa3429",
+    "data/hk_week3/attention/1810.HK.parquet": "4af123f7a13307a7b1fbda6386ce6df322ad515d027e7c0f6fe97ff4754a9d62",
+    "data/hk_week3/attention/3690.HK.parquet": "906ca2d9abc714ef0a51e413f667e9d314bf002ed2e60efd23c8724f251ada39",
+    "data/hk_week3/attention/9988.HK.parquet": "297fa7d068a4dd06a49a6dd380c55eac61345ec6c1f0503c2c89280fcdbd2309",
+    "data/hk_week3/attention/AAPL.parquet": "9d243d33d3e3e9f0c51898edafc0cd0974692a38b7d04022e9cc7548c159328d",
+    "data/hk_week3/attention/AMD.parquet": "a0791ccadaf36ef0db73c5de09592390bd03c970f766a47094b9328ee29f8f71",
+    "data/hk_week3/attention/AMZN.parquet": "795007769cc1ff3afd586347b8954efb4b3c11bf93183ecabddd2bdc4069e2b8",
+    "data/hk_week3/attention/GOOGL.parquet": "56d61af2f99c62f24959087def0c0a59d49d1843e53f69a45ed373f3acf88282",
+    "data/hk_week3/attention/JPM.parquet": "a0c372ee016471bdff2932a19ad4f4993fb97f23d21c3d2352a3601c0daac007",
+    "data/hk_week3/attention/META.parquet": "1550fde35ade31e4bc2c2c983e8f6a81cf8cf668304c0c42cfddbb2024669651",
+    "data/hk_week3/attention/MSFT.parquet": "46abfccd5bdc401b22b8f4002c5b15cb08f0b395cdee2e0e7c533d9cf34c096f",
+    "data/hk_week3/attention/NFLX.parquet": "b44a18abc928b70d238aa1d049f1bf762f0b6f2c50a4c88bdcb913836582ed98",
+    "data/hk_week3/attention/NVDA.parquet": "b13923d69b413c05c10727a73d34c05d0b9113ccafce60040778afe0179ce948",
+    "data/hk_week3/attention/TSLA.parquet": "0987fd1fc08b36703bccd53158cbfaff31a49a54f568844f61cbde8ab18a6dea"
+  },
+  "engine_hashes": {
+    "HK": {
+      "agent/backtest/engines/base.py": "9818b3f8a287c7c1e7d9c4281540139237f0fb017339b673cc576be6cfc23149",
+      "agent/backtest/engines/global_equity.py": "991adf784a4d6977d5f8e32be9d70aac20ec23ce60d6f71ea9ff4702adf9d25d"
+    },
+    "US": {
+      "agent/backtest/engines/base.py": "9818b3f8a287c7c1e7d9c4281540139237f0fb017339b673cc576be6cfc23149",
+      "agent/backtest/engines/global_equity.py": "991adf784a4d6977d5f8e32be9d70aac20ec23ce60d6f71ea9ff4702adf9d25d"
+    }
+  },
+  "market_cases": 10,
+  "random_runs": 4000,
+  "ablations": 104,
+  "recorded_search_trials": 268,
+  "decisions": {
+    "KEEP": 0,
+    "DROP": 10
+  },
+  "preflight_failures": [
+    {
+      "directory": "five_v2_20261112",
+      "reason": "benchmark/calendar reconciliation",
+      "engine_runs": 0
+    },
+    {
+      "directory": "five_v2b_calendar_20261112",
+      "reason": "missing import before preregistration",
+      "engine_runs": 0
+    }
+  ],
+  "ic_reporting_review": "ic_orientation_review_summary.json; original 49 hashes still match; no strategy/portfolio rerun"
+}

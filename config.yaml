@@ -23,6 +23,9 @@ strategy:
   cost_bps: 10
   n_random_portfolios: 200
   random_seed: 42
+  # Week 3 uses this split in both US and HK; legacy reports retain their own splits.
+  week3_split: {train: [2016-06-01, 2021-12-31], test: [2022-01-01, 2025-09-30]}
+  n_random_timing_runs: 200
   # Standard split. Reddit data starts in 2023, so Reddit strategies use `reddit_split` instead.
   split: {train: [2011-01-01, 2019-12-31], test: [2020-01-01, 2025-09-30]}
   reddit_split: {train: [2023-01-02, 2024-06-30], test: [2024-07-01, 2025-09-30]}
@@ -141,10 +144,47 @@ markets:
       sector: []
     stocks: {}
 
-  HK:   # Jack: fill in the 5 stocks (names, subreddits, English + Chinese Wikipedia titles)
+  HK:
     currency: HKD
     benchmark: ^HSI
     reddit:
       general: []
       sector: []
-    stocks: {}
+    # No surveyed market-specific subreddit reached 20 archived posts/week in 2024.
+    # See results/hk/week3/reddit_survey_2024.csv. Failed sources are not zeros.
+    stocks:
+      0700.HK:
+        name: Tencent
+        wikipedia: {en: Tencent, zh: 腾讯}
+        reddit: {product: [], stock: []}
+        match:
+          symbols: [0700.HK, 00700.HK, 'HK.00700']
+          names: [{pattern: Tencent, ignore_case: true}, {pattern: '腾讯|騰訊'}]
+      0005.HK:
+        name: HSBC
+        wikipedia: {en: HSBC, zh: 滙豐}
+        reddit: {product: [], stock: []}
+        match:
+          symbols: [0005.HK, 00005.HK, 'HK.00005']
+          names: [{pattern: '\bHSBC\b', ignore_case: true}, {pattern: '滙豐|汇丰'}]
+      9988.HK:
+        name: Alibaba Group
+        wikipedia: {en: Alibaba_Group, zh: 阿里巴巴集团}
+        reddit: {product: [], stock: []}
+        match:
+          symbols: [9988.HK, 09988.HK, BABA]
+          names: [{pattern: Alibaba, ignore_case: true}, {pattern: 阿里巴巴}]
+      3690.HK:
+        name: Meituan
+        wikipedia: {en: Meituan, zh: 美团}
+        reddit: {product: [], stock: []}
+        match:
+          symbols: [3690.HK, 03690.HK]
+          names: [{pattern: Meituan, ignore_case: true}, {pattern: '美团|美團'}]
+      1810.HK:
+        name: Xiaomi
+        wikipedia: {en: Xiaomi, zh: 小米集團}
+        reddit: {product: [], stock: []}
+        match:
+          symbols: [1810.HK, 01810.HK]
+          names: [{pattern: Xiaomi, ignore_case: true}, {pattern: '小米集团|小米集團'}]

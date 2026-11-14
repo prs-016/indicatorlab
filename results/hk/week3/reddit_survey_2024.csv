@@ -1,0 +1,11 @@
+subreddit,year,posts,posts_per_week,meets_20_per_week,market_specific,status,url,error
+HongKongStocks,2024,0.0,0.0,False,True,observed,https://arctic-shift.photon-reddit.com/api/posts/search/aggregate?aggregate=created_utc&frequency=year&subreddit=HongKongStocks&after=2024-01-01&before=2025-01-01,
+HKStocks,2024,38.0,0.726775956284153,False,True,observed,https://arctic-shift.photon-reddit.com/api/posts/search/aggregate?aggregate=created_utc&frequency=year&subreddit=HKStocks&after=2024-01-01&before=2025-01-01,
+InvestingHK,2024,0.0,0.0,False,True,observed,https://arctic-shift.photon-reddit.com/api/posts/search/aggregate?aggregate=created_utc&frequency=year&subreddit=InvestingHK&after=2024-01-01&before=2025-01-01,
+ChinaStocks,2024,477.0,9.12295081967213,False,True,observed,https://arctic-shift.photon-reddit.com/api/posts/search/aggregate?aggregate=created_utc&frequency=year&subreddit=ChinaStocks&after=2024-01-01&before=2025-01-01,
+China_Stocks,2024,0.0,0.0,False,True,observed,https://arctic-shift.photon-reddit.com/api/posts/search/aggregate?aggregate=created_utc&frequency=year&subreddit=China_Stocks&after=2024-01-01&before=2025-01-01,
+AlibabaStock,2024,278.0,5.316939890710382,False,True,observed,https://arctic-shift.photon-reddit.com/api/posts/search/aggregate?aggregate=created_utc&frequency=year&subreddit=AlibabaStock&after=2024-01-01&before=2025-01-01,
+BABAStock,2024,2.0,0.03825136612021858,False,True,observed,https://arctic-shift.photon-reddit.com/api/posts/search/aggregate?aggregate=created_utc&frequency=year&subreddit=BABAStock&after=2024-01-01&before=2025-01-01,
+Tencent,2024,37.0,0.7076502732240437,False,True,observed,https://arctic-shift.photon-reddit.com/api/posts/search/aggregate?aggregate=created_utc&frequency=year&subreddit=Tencent&after=2024-01-01&before=2025-01-01,
+HongKong,2024,15421.0,294.93715846994536,True,False,observed,https://arctic-shift.photon-reddit.com/api/posts/search/aggregate?aggregate=created_utc&frequency=year&subreddit=HongKong&after=2024-01-01&before=2025-01-01,
+Xiaomi,2024,,,False,False,unavailable,,HTTPError
