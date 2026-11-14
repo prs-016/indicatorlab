@@ -1,0 +1,2484 @@
+diff --git a/agent/backtest/loaders/_symbol_utils.py b/agent/backtest/loaders/_symbol_utils.py
+index 2099dad..e1bdd60 100644
+--- a/agent/backtest/loaders/_symbol_utils.py
++++ b/agent/backtest/loaders/_symbol_utils.py
+@@ -9,6 +9,14 @@ from __future__ import annotations
+ _ETF_PREFIXES = frozenset({"15", "16", "50", "51", "52", "56", "58"})
+ 
+ 
++def normalize_hk_symbol(code: str) -> str:
++    """Canonicalize numeric HK aliases (700/0700/0700.HK) to one instrument."""
++    digits = str(code).strip().upper().removeprefix("HK.").removesuffix(".HK")
++    if not digits.isascii() or not digits.isdigit() or not 0 < int(digits) < 100000:
++        raise ValueError(f"Invalid Hong Kong equity symbol: {code!r}")
++    return f"{int(digits):04d}.HK"
++
++
+ def _is_etf_listed(code: str) -> bool:
+     """Detect exchange-listed ETF / LOF symbols (e.g. 510050.SH, 159915.SZ)."""
+     upper = code.upper()
+diff --git a/agent/mcp_server.py b/agent/mcp_server.py
+index ba0e4a3..d9448a2 100644
+--- a/agent/mcp_server.py
++++ b/agent/mcp_server.py
+@@ -2082,6 +2082,28 @@ def _cap_rows(records: list, max_rows: int) -> list | dict[str, object]:
+     return cap_rows(records, max_rows)
+ 
+ 
++@mcp.tool
++def get_hk_quotes(
++    symbols: _lenient_str_list,
++    source: str = "tencent",
++    max_age_seconds: float = 60,
++) -> str:
++    """Fetch HK quote snapshots with provider time, currency, age and delay.
++
++    Tencent r_hk is the faster default; inspect age rather than assuming a
++    guaranteed delay. Yahoo HK quotes are 15 minutes delayed. Futu requires local
++    OpenD quote rights and is explicit-only. Use get_market_data for bar history.
++    """
++    return _get_registry().execute(
++        "get_hk_quotes",
++        {
++            "symbols": symbols,
++            "source": source,
++            "max_age_seconds": max_age_seconds,
++        },
++    )
++
++
+ @mcp.tool
+ def get_market_data(
+     codes: _lenient_str_list,
+diff --git a/agent/src/api/alpha_routes.py b/agent/src/api/alpha_routes.py
+index 6c6c55a..75457c4 100644
+--- a/agent/src/api/alpha_routes.py
++++ b/agent/src/api/alpha_routes.py
+@@ -118,7 +118,7 @@ _VALID_UNIVERSES = {
+ # Ranking metrics for /alpha/compare — keep in sync with
+ # ``src.factors.compare_runner.SORT_KEYS`` (kept local to avoid a heavy import).
+ _VALID_SORTS = {"ir", "ic_mean", "ic_positive_ratio", "ic_count"}
+-_BENCH_UNIVERSES = {"csi300", "sp500", "btc-usdt"}
++_BENCH_UNIVERSES = {"csi300", "sp500", "hsi", "btc-usdt"}
+ 
+ 
+ def _now_iso() -> str:
+@@ -413,6 +413,7 @@ def register_alpha_routes(
+         return {"universes": {
+             "csi300": {"ready": configured and installed, "reason": "tushare_ready" if configured and installed else "tushare_token_missing" if not configured else "tushare_dependency_missing"},
+             "sp500": {"ready": True, "reason": "public_data"},
++            "hsi": {"ready": True, "reason": "public_data"},
+             "btc-usdt": {"ready": False, "reason": "single_asset"},
+         }, "zoo_counts": {zoo: len(registry.list(zoo=zoo)) for zoo in sorted(_VALID_ZOOS)}}
+ 
+@@ -443,7 +444,12 @@ def register_alpha_routes(
+                 detail=f"unknown theme {theme!r}; expected one of {sorted(_VALID_THEMES)}",
+             )
+         if universe is not None:
+-            _ALIAS = {"csi300": "equity_cn", "sp500": "equity_us", "btc-usdt": "crypto"}
++            _ALIAS = {
++                "csi300": "equity_cn",
++                "sp500": "equity_us",
++                "hsi": "equity_hk",
++                "btc-usdt": "crypto",
++            }
+             universe = _ALIAS.get(universe, universe)
+         if universe is not None and universe not in _VALID_UNIVERSES:
+             raise HTTPException(
+diff --git a/agent/src/factors/cli_handlers.py b/agent/src/factors/cli_handlers.py
+index caf7116..22bf68e 100644
+--- a/agent/src/factors/cli_handlers.py
++++ b/agent/src/factors/cli_handlers.py
+@@ -94,7 +94,7 @@ def _load_cli_env() -> None:
+ # ``src.tools.alpha_bench_tool._UNIVERSE_TAG``. There is no KRX (or NSE/BSE)
+ # panel yet, so Korea/India are deliberately absent — ``alpha bench`` would
+ # fail at universe load, not produce a Korean benchmark.
+-_UNIVERSE_CHOICES = ["csi300", "sp500", "btc-usdt"]
++_UNIVERSE_CHOICES = ["csi300", "sp500", "hsi", "btc-usdt"]
+ 
+ # Per-row fields that only ``bench_runner_strict`` produces. They are the
+ # statistics ``categorise_strict`` actually gates on, so a strict run that
+@@ -122,6 +122,7 @@ _LIST_UNIVERSE_CHOICES = [
+ _LIST_UNIVERSE_ALIASES = {
+     "csi300": "equity_cn",
+     "sp500": "equity_us",
++    "hsi": "equity_hk",
+     "btc-usdt": "crypto",
+ }
+ 
+diff --git a/agent/src/tools/alpha_bench_tool.py b/agent/src/tools/alpha_bench_tool.py
+index 1483aa6..15fed37 100644
+--- a/agent/src/tools/alpha_bench_tool.py
++++ b/agent/src/tools/alpha_bench_tool.py
+@@ -80,6 +80,7 @@ _PERIOD_DATE = re.compile(r"^(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})$")
+ _UNIVERSE_TAG = {
+     "csi300": "equity_cn",
+     "sp500": "equity_us",
++    "hsi": "equity_hk",
+     "btc-usdt": "crypto",
+ }
+ 
+@@ -115,7 +116,7 @@ def _load_universe_panel(
+     with one column per instrument.
+ 
+     Args:
+-        universe: ``csi300`` | ``sp500`` | ``btc-usdt``.
++        universe: ``csi300`` | ``sp500`` | ``hsi`` | ``btc-usdt``.
+         period: ``YYYY-YYYY`` or ``YYYY-MM-DD/YYYY-MM-DD``.
+         use_cache: When True (default) reuse a pickle in
+             ``~/.vibe-trading/cache/`` if the same universe+period was fetched
+@@ -143,6 +144,8 @@ def _load_universe_panel(
+         panel = _load_csi300_panel(start, end)
+     elif universe == "sp500":
+         panel = _load_sp500_panel(start, end)
++    elif universe == "hsi":
++        panel = _load_hsi_panel(start, end)
+     elif universe == "btc-usdt":
+         panel = _load_btc_panel(start, end)
+     else:  # pragma: no cover — guarded above
+@@ -622,6 +625,84 @@ def _fetch_sp500_constituents() -> tuple[list[str], dict[str, str]]:
+     return [], {}
+ 
+ 
++def _load_hsi_panel(start: str, end: str) -> dict[str, pd.DataFrame]:
++    """Load current HSI stocks through the shared HK fallback with provenance."""
++    from backtest.loaders._symbol_utils import normalize_hk_symbol
++    from backtest.loaders.registry import FALLBACK_CHAINS, resolve_loader
++    from src.market_data import fetch_market_data
++    from src.tools.hsi_universe import fetch_constituents
++
++    codes, sectors, metadata = fetch_constituents()
++    codes = list(dict.fromkeys(normalize_hk_symbol(code) for code in codes))
++    sectors = {normalize_hk_symbol(code): label for code, label in sectors.items()}
++    loader = resolve_loader("hk_equity")
++    response = (
++        _retry(
++            lambda: fetch_market_data(
++                codes=codes,
++                start_date=start,
++                end_date=end,
++                source=loader.name,
++                max_fallback_attempts=len(FALLBACK_CHAINS["hk_equity"]),
++                include_provenance=True,
++                as_frames=True,
++            )
++        )
++        or {}
++    )
++    fetched = {}
++    for code, frame in response.items():
++        if str(code).startswith("_") or frame is None or frame.empty:
++            continue
++        canonical = normalize_hk_symbol(code)
++        if canonical in codes:
++            fetched.setdefault(canonical, frame.loc[start:end])
++    fetched = {code: frame for code, frame in fetched.items() if not frame.empty}
++    panel = _wide_from_fetched(fetched, include_amount=False)
++    if all(key in panel for key in ("open", "high", "low", "close")):
++        panel["vwap"] = (
++            sum(panel[key] for key in ("open", "high", "low", "close")) / 4.0
++        )
++    coverage = 0.0
++    if "close" in panel and len(panel["close"].columns):
++        close = panel["close"]
++        labels = [sectors.get(code, "") for code in close.columns]
++        coverage = sum(bool(label) for label in labels) / len(labels)
++        if coverage >= _SP500_MIN_SECTOR_COVERAGE:
++            panel["sector"] = pd.DataFrame(
++                np.repeat(
++                    np.array([label or "UNKNOWN" for label in labels], dtype=object)[
++                        None, :
++                    ],
++                    len(close.index),
++                    axis=0,
++                ),
++                index=close.index,
++                columns=close.columns,
++            )
++    panel["_meta"] = metadata | {
++        "universe": "hsi",
++        "currency": "HKD",
++        "survivorship_bias": True,
++        "requested_instruments": len(codes),
++        "fetched_instruments": len(fetched),
++        "missing_instruments": sorted(set(codes) - set(fetched)),
++        "constituent_count": len(codes),
++        "data_diagnostics": response.get("_diagnostics", {}),
++        "price_provenance": response.get("_provenance", {}),
++        "price_sources": sorted(
++            {value["source"] for value in response.get("_provenance", {}).values()}
++        ),
++        "vwap_method": "OHLC arithmetic mean proxy; not traded VWAP",
++        "sector_source": (
++            "Wikipedia sector/industry/sub-index" if "sector" in panel else None
++        ),
++        "sector_coverage": round(coverage, 4),
++        "sector_note": "Current labels; omitted below the SP500 coverage threshold.",
++    }
++    return panel
++
++
+ def _load_btc_panel(start: str, end: str) -> dict[str, pd.DataFrame]:
+     """Single-instrument BTC-USDT panel via OKX. Adds vwap = typical price."""
+     from backtest.loaders.registry import resolve_loader
+@@ -1486,7 +1567,7 @@ class AlphaBenchTool(BaseTool):
+             },
+             "universe": {
+                 "type": "string",
+-                "description": "csi300 | sp500 | btc-usdt (resolved via existing data tools).",
++                "description": "csi300 | sp500 | hsi | btc-usdt (resolved via existing data tools).",
+             },
+             "period": {
+                 "type": "string",
+diff --git a/agent/tests/test_mcp_json_string_args.py b/agent/tests/test_mcp_json_string_args.py
+index 98fc9f8..bcc6a11 100644
+--- a/agent/tests/test_mcp_json_string_args.py
++++ b/agent/tests/test_mcp_json_string_args.py
+@@ -38,6 +38,7 @@ LIST_DICT_PARAMS = {
+     "analyze_options_payoff": ("legs", "scenario_iv_values"),
+     "run_swarm": ("variables",),
+     "get_market_data": ("codes",),
++    "get_hk_quotes": ("symbols",),
+     "get_fund_flow": ("codes",),
+     "get_stock_profile": ("sections",),
+     "run_shadow_backtest": ("markets",),
+@@ -115,6 +116,20 @@ def test_coerce_json_string_passes_through_everything_else(mcp_server) -> None:
+     assert coerce("not json") == "not json"
+ 
+ 
++def test_hk_quote_symbols_are_coerced_and_fast_defaults_forwarded(mcp_server, monkeypatch):
++    from types import SimpleNamespace
++
++    called = []
++
++    def execute(name, arguments):
++        called.append((name, arguments))
++        return '{"ok": true}'
++
++    monkeypatch.setattr(mcp_server, "_get_registry", lambda: SimpleNamespace(execute=execute))
++    asyncio.run(mcp_server.mcp.call_tool("get_hk_quotes", {"symbols": '["700"]'}))
++    assert called == [("get_hk_quotes", {"symbols": ["700"], "source": "tencent", "max_age_seconds": 60})]
++
++
+ # ---------------------------------------------------------------------------
+ # End-to-end through fastmcp.call_tool (the real validation path)
+ # ---------------------------------------------------------------------------
+diff --git a/agent/tests/test_mcp_server_smoke.py b/agent/tests/test_mcp_server_smoke.py
+index 998a6f6..f4aee6d 100644
+--- a/agent/tests/test_mcp_server_smoke.py
++++ b/agent/tests/test_mcp_server_smoke.py
+@@ -47,6 +47,7 @@ EXPECTED_MIN_TOOL_COUNT = 30
+ REQUIRED_TOOL_NAMES = {
+     "analyze_options",
+     "get_market_data",
++    "get_hk_quotes",
+     "list_skills",
+     "start_research_goal",
+     "get_research_goal",
+diff --git a/agent/src/hk_data/README.md b/agent/src/hk_data/README.md
+new file mode 100644
+index 0000000..9a0c4ba
+--- /dev/null
++++ b/agent/src/hk_data/README.md
+@@ -0,0 +1,182 @@
++# Hong Kong quote data
++
++This package supplies current quote snapshots to Vibe Trading and optionally
++records them in SQLite. Each installation makes its own provider requests.
++The contribution consists of the fetcher, collector, tool integration and tests;
++it does not depend on a contributor's CSV archive or computer staying online.
++
++## Start from a checkout
++
++Install the project as described in the repository README, then run:
++
++```bash
++python -m src.hk_data --once
++python -m src.hk_data --symbols 0700.HK 0005.HK 1299.HK 0941.HK 0388.HK
++python -m src.hk_data --latest
++```
++
++The first command records one poll and exits. The second polls every 60 seconds
++until interrupted; restarting resumes the same database. The third reads the
++most recent stored quotes and poll health without requesting the providers.
++From an uninstalled checkout, run these commands inside `agent/` instead.
++
++`--symbols-file` accepts a newline-separated list or a CSV with `ticker`,
++`yahoo_ticker` or `symbol` column. That supports any selected Hong Kong stocks,
++including a current HSI roster, without hardcoding index constituents into the
++provider. A maximum of 100 symbols is accepted per collector process.
++Aliases such as `700`, `0700.HK`, `00700.HK` and `HK.00700` normalize to
++`00700.HK`. Genuine five-digit currency counters remain distinct.
++
++```bash
++python -m src.hk_data --symbols-file hk_symbols.csv --interval-seconds 60
++python -m src.hk_data --source tencent --once
++python -m src.hk_data --cycles 3 --db ./data/hk_quotes.sqlite3
++```
++
++## Providers and delay
++
++- `auto`: Yahoo, then Tencent for unavailable or stale symbols. The newer
++  valid provider timestamp wins for those fallback symbols.
++- `yahoo`: raw regular-market quote metadata from the chart endpoint.
++  [Yahoo lists a 15-minute delay for HKEX equities](https://help.yahoo.com/kb/finance/article-exchanges-data-delays-sln2310.html).
++  A one-minute polling interval does not remove this delay.
++- `tencent`: uses the faster `r_hk` public batch endpoint. The older `hk`
++  endpoint was about 15 minutes delayed. A 10-minute test on November 12, 2026
++  returned all 95 HSI stocks on all 120 polls: median last-trade age 10.6 seconds,
++  p95 86.6 seconds, 90.9% under one minute. This is observed timestamp age,
++  not a provider latency guarantee. Quiet stocks can have older last trades.
++  Cumulative volume is retained with its unit unverified.
++  To use it, explicitly select `--source tencent --interval-seconds 5`.
++- `futu`: explicit quote-only access to an already running FutuOpenD at
++  `127.0.0.1:11111`. Install `futu-api` separately and obtain the appropriate
++  Hong Kong quote entitlement. This module never opens a trade context or
++  starts a broker login. The SDK runs in a subprocess with a 20-second timeout.
++  [Futu snapshots](https://openapi.futunn.com/futu-api-doc/en/quote/get-market-snapshot.html)
++  are requested in batches of 20. Delay stays unknown because snapshot success
++  alone does not establish the account's real-time rights.
++
++Explicit sources never switch to another provider. Public provider availability
++is best effort; HTTP errors and incomplete data produce per-symbol failures.
++Use licensed [HKEX data services](https://www.hkex.com.hk/Services/Market-Data-Services/Real-Time-Data-Services/Overview?sc_lang=en)
++or an entitled broker quote feed when verified exchange real-time data is needed.
++Review the providers' data-use terms before redistributing data publicly.
++
++## Use from Vibe Trading
++
++The research agent discovers `get_hk_quotes` automatically; the MCP server
++exposes the same tool. Example tool arguments:
++
++```json
++{"symbols": ["0700.HK", "0005.HK"], "source": "auto", "max_age_seconds": 1200}
++```
++
++Equivalent Python call:
++
++```python
++from src.hk_data.service import fetch_quotes
++
++result = fetch_quotes(["0700.HK", "0005.HK"], source="auto")
++for quote in result["quotes"]:
++    print(quote["symbol"], quote["price"], quote["currency"],
++          quote["provider_time"], quote["age_seconds"], quote["delay_status"])
++```
++
++The quote tool fetches on demand. It does not require the collector. The
++collector is for building a local history and for external consumers that read
++SQLite. Historical `get_market_data` OHLCV loading is a separate interface.
++These snapshots are not complete trade ticks, order books, adjusted historical
++bars or guaranteed execution prices.
++
++Yahoo requests share the existing per-host throttle. Fetching a broad universe
++can take more than a minute; the interval is a minimum target rather than a
++guarantee for every symbol. Three consecutive Yahoo HTTP failures skip its
++remaining symbols for that poll, allowing the fallback to run promptly.
++Tencent requests the symbols in one batch.
++
++## Timestamp and currency contract
++
++Each quote carries `provider_time` and `observed_at_utc` separately, in UTC.
++`price` is raw and belongs to `provider_time`; a fresh retrieval never changes
++that time. `age_seconds` is recomputed from the provider timestamp.
++`status=fresh` only means the age is within `max_age_seconds` (default 1200).
++It does not mean zero delay. Known delay is in `declared_delay_seconds`; unknown
++delay remains null, never zero. Invalid prices, missing timestamps and future
++timestamps are rejected rather than replaced with invented values.
++
++Yahoo supplies the quote currency. Tencent and Futu use the repository's shared
++HKEX counter-currency mapping, preserving CNY and USD counters rather than
++assuming every Hong Kong counter trades in HKD. Available volume uses shares
++and is session cumulative; do not sum repeated snapshots into trading volume.
++
++Yahoo's `session_state=regular_window` describes the provider's broad daily
++regular-market window. It does not implement a holiday calendar or exclude the
++lunch break. Other providers may report `unknown`. Quote age remains the
++freshness control after the close, during holidays and when feeds stall.
++
++## Storage and operation
++
++The default store is `~/.vibe-trading/data/hk_quotes.sqlite3`, resolved through
++the project's runtime-root helper. `VIBE_TRADING_HOME` relocates runtime state;
++`--db` selects an explicit database. Runtime databases belong outside Git.
++
++The collector persists quote revisions and poll health. Identical snapshots
++are deduplicated across process restarts, while price/volume corrections at the
++same provider timestamp are retained. A latest read reports cached data age
++and the latest poll result separately, so a failed poll cannot make an older
++quote appear newly live. SQLite WAL allows readers while the collector writes.
++
++The store retains 30 days by default. `--retain-days 0` keeps all history and
++allows growth over time. A finite retention removes older records and reuses
++pages; polling does not produce one giant CSV. For historical experiments,
++back up the database or choose an explicit archival policy before pruning.
++
++`Ctrl-C` stops collection. Provider outages are logged and retried with bounded
++backoff. The process must remain running to collect data. A service supervisor
++can restart it after crashes or machine restarts. For example, adapt this Linux
++systemd unit to the installation paths and an existing unprivileged user:
++
++```ini
++[Unit]
++Description=Vibe Trading Hong Kong quote collector
++After=network-online.target
++Wants=network-online.target
++
++[Service]
++Type=simple
++User=vibetrading
++Environment=VIBE_TRADING_HOME=/var/lib/vibe-trading
++ExecStart=/opt/vibe-trading/.venv/bin/python -m src.hk_data --source auto --symbols-file /etc/vibe-trading/hk-symbols.txt
++Restart=on-failure
++RestartSec=30
++
++[Install]
++WantedBy=multi-user.target
++```
++
++Create the runtime directory with permissions for that user before enabling a
++service. This repository does not enable a system service during installation.
++
++## Contribution checks
++
++```bash
++python -m pytest agent/tests/test_hk_quotes.py agent/tests/test_hk_collector.py -q
++git diff --check
++```
++
++Tests use synthetic responses and temporary stores. Live provider checks are
++separate, opt-in commands such as `python -m src.hk_data --once`; CI does not
++depend on provider uptime or real broker credentials.
++
++
++## Faster HSI collection
++
++The agent/MCP tool and CLI default to `tencent`; freshness defaults to 60
++seconds, and the CLI polls every five seconds. Use `--hsi-snapshot` for the
++dated 95-stock 2026-11-04 roster without a personal CSV. Update the roster after
++index reviews, or pass `--symbols-file` with your own list. The direct Python
++`fetch_quotes()` API and explicit `auto` retain the legacy Yahoo-first policy.
++For a fast Python call, select `source="tencent", max_age_seconds=60`.
++
++The SQLite archive collector does not schedule market sessions itself. The
++local IndicatorLab operational collector has XHKG session gating and minute
++Parquet; that separate research service is not bundled into this package.
+diff --git a/agent/src/hk_data/__init__.py b/agent/src/hk_data/__init__.py
+new file mode 100644
+index 0000000..a8fe584
+--- /dev/null
++++ b/agent/src/hk_data/__init__.py
+@@ -0,0 +1 @@
++"""Hong Kong quote snapshots and an optional persistent collector."""
+diff --git a/agent/src/hk_data/__main__.py b/agent/src/hk_data/__main__.py
+new file mode 100644
+index 0000000..669dea9
+--- /dev/null
++++ b/agent/src/hk_data/__main__.py
+@@ -0,0 +1,5 @@
++"""Run with python -m src.hk_data."""
++
++from src.hk_data.collector import main
++
++raise SystemExit(main())
+diff --git a/agent/src/hk_data/collector.py b/agent/src/hk_data/collector.py
+new file mode 100644
+index 0000000..a729e68
+--- /dev/null
++++ b/agent/src/hk_data/collector.py
+@@ -0,0 +1,190 @@
++"""Command-line continuous collection of Hong Kong quote snapshots."""
++
++from __future__ import annotations
++
++import argparse
++import csv
++import json
++import math
++import sqlite3
++import sys
++import time
++from datetime import datetime, timezone
++from pathlib import Path
++from typing import Callable
++
++from src.hk_data.service import (
++    DEFAULT_SYMBOLS,
++    SOURCES,
++    fetch_quotes,
++    iso_time,
++    normalize_symbols,
++)
++from src.hk_data.storage import QuoteStore
++
++
++def load_symbols(path: Path) -> list[str]:
++    """Read a selected HK universe without requiring bundled market files."""
++    with path.open(encoding="utf-8-sig", newline="") as handle:
++        if path.suffix.lower() == ".csv":
++            reader = csv.DictReader(handle)
++            column = next(
++                (
++                    name
++                    for name in ("ticker", "yahoo_ticker", "symbol")
++                    if name in (reader.fieldnames or [])
++                ),
++                None,
++            )
++            if column is None:
++                raise ValueError("CSV needs a ticker, yahoo_ticker or symbol column")
++            symbols = [
++                (row.get(column) or "").strip()
++                for row in reader
++                if (row.get(column) or "").strip()
++            ]
++        else:
++            symbols = [
++                line.strip()
++                for line in handle
++                if line.strip() and not line.lstrip().startswith("#")
++            ]
++    return normalize_symbols(symbols)
++
++
++def collect(
++    store: QuoteStore,
++    symbols: list[str],
++    *,
++    source: str = "auto",
++    interval_seconds: float = 60,
++    cycles: int | None = None,
++    retain_days: int = 30,
++    max_age_seconds: float = 1200,
++    fetcher: Callable = fetch_quotes,
++    sleeper: Callable = time.sleep,
++    emit: Callable = print,
++) -> dict:
++    """Poll until interrupted, saving health even during provider outages."""
++    failures, count = 0, 0
++    while True:
++        started = time.monotonic()
++        try:
++            result = fetcher(symbols, source=source, max_age_seconds=max_age_seconds)
++        except Exception as exc:
++            result = {
++                "ok": False,
++                "status": "error",
++                "observed_at_utc": iso_time(datetime.now(timezone.utc)),
++                "quotes": [],
++                "missing": symbols,
++                "errors": [
++                    {
++                        "error": type(exc).__name__,
++                        "message": "Provider poll failed; collector will retry.",
++                    }
++                ],
++            }
++        inserted = store.record_poll(result)
++        store.prune(retain_days)
++        count += 1
++        failures = 0 if result.get("ok") else min(failures + 1, 6)
++        emit(
++            json.dumps(
++                {
++                    "poll": count,
++                    "observed_at_utc": result["observed_at_utc"],
++                    "status": result["status"],
++                    "quote_count": len(result["quotes"]),
++                    "missing_count": len(result.get("missing", [])),
++                    "new_revisions": inserted,
++                    "stale_count": sum(
++                        row["status"] == "stale" for row in result["quotes"]
++                    ),
++                    "db": str(store.path),
++                },
++                allow_nan=False,
++            ),
++            flush=True,
++        )
++        if cycles is not None and count >= cycles:
++            return result
++        # The interval includes request duration. Entire failed polls back off
++        # up to five minutes; successful recovery resets the delay.
++        delay = (
++            min(max(interval_seconds, 300.0), interval_seconds * 2**failures)
++            if failures
++            else interval_seconds
++        )
++        sleeper(max(0.0, delay - (time.monotonic() - started)))
++
++
++def main(argv: list[str] | None = None) -> int:
++    parser = argparse.ArgumentParser(description=__doc__)
++    universe = parser.add_mutually_exclusive_group()
++    universe.add_argument("--symbols", nargs="+")
++    universe.add_argument("--symbols-file", type=Path)
++    universe.add_argument(
++        "--hsi-snapshot",
++        action="store_true",
++        help="Use the dated 2026-11-04 HSI 95-stock snapshot; refresh after index reviews",
++    )
++    parser.add_argument("--source", choices=SOURCES, default="tencent")
++    parser.add_argument("--db", type=Path)
++    parser.add_argument("--interval-seconds", type=float, default=5)
++    parser.add_argument("--max-age-seconds", type=float, default=60)
++    parser.add_argument("--retain-days", type=int, default=30)
++    mode = parser.add_mutually_exclusive_group()
++    mode.add_argument("--once", action="store_true")
++    mode.add_argument("--cycles", type=int)
++    mode.add_argument("--latest", action="store_true")
++    args = parser.parse_args(argv)
++    if not math.isfinite(args.interval_seconds) or args.interval_seconds < 5:
++        parser.error("--interval-seconds must be at least 5")
++    if not math.isfinite(args.max_age_seconds) or args.max_age_seconds <= 0:
++        parser.error("--max-age-seconds must be positive")
++    if args.retain_days < 0 or (args.cycles is not None and args.cycles < 1):
++        parser.error("--retain-days must be nonnegative and --cycles must be positive")
++    try:
++        symbols = (
++            load_symbols(args.symbols_file)
++            if args.symbols_file
++            else normalize_symbols(args.symbols) if args.symbols else None
++        )
++        if args.hsi_snapshot:
++            from src.tools.hsi_universe import FALLBACK_CODES, FALLBACK_DATE
++
++            symbols = normalize_symbols(FALLBACK_CODES)
++            print(
++                f"Using dated HSI roster {FALLBACK_DATE}: {len(symbols)} stocks; refresh after index reviews.",
++                file=sys.stderr,
++            )
++        with QuoteStore(args.db, readonly=args.latest) as store:
++            if args.latest:
++                print(
++                    json.dumps(
++                        store.latest(symbols, max_age_seconds=args.max_age_seconds),
++                        indent=2,
++                        allow_nan=False,
++                    )
++                )
++                return 0
++            result = collect(
++                store,
++                symbols or DEFAULT_SYMBOLS,
++                source=args.source,
++                interval_seconds=args.interval_seconds,
++                cycles=1 if args.once else args.cycles,
++                retain_days=args.retain_days,
++                max_age_seconds=args.max_age_seconds,
++            )
++            return 0 if result.get("ok") else 1
++    except KeyboardInterrupt:
++        return 0
++    except (OSError, ValueError, sqlite3.Error) as exc:
++        print(json.dumps({"ok": False, "error": str(exc)}), file=sys.stderr)
++        return 1
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/agent/src/hk_data/futu_worker.py b/agent/src/hk_data/futu_worker.py
+new file mode 100644
+index 0000000..4f98ddd
+--- /dev/null
++++ b/agent/src/hk_data/futu_worker.py
+@@ -0,0 +1,63 @@
++"""Bounded quote-only Futu worker; invoked by the provider service."""
++
++from __future__ import annotations
++
++import contextlib
++import io
++import json
++import sys
++
++from src.hk_data.service import normalize_symbols
++
++
++def main() -> int:
++    """Fetch snapshots without opening any trade context or changing accounts."""
++    try:
++        symbols = normalize_symbols(json.load(sys.stdin))
++        rows = []
++        # Keep third-party SDK logging out of the machine-readable response.
++        with (
++            contextlib.redirect_stdout(io.StringIO()),
++            contextlib.redirect_stderr(io.StringIO()),
++        ):
++            import futu
++
++            context = futu.OpenQuoteContext(host="127.0.0.1", port=11111)
++            try:
++                for offset in range(0, len(symbols), 20):
++                    batch = symbols[offset : offset + 20]
++                    result, frame = context.get_market_snapshot(
++                        ["HK." + symbol[:-3] for symbol in batch]
++                    )
++                    if result != futu.RET_OK:
++                        continue
++                    for row in frame.to_dict("records"):
++                        rows.append(
++                            {
++                                key: str(row[key])
++                                for key in (
++                                    "code",
++                                    "last_price",
++                                    "update_time",
++                                    "volume",
++                                )
++                                if key in row
++                            }
++                        )
++            finally:
++                context.close()
++        print(json.dumps({"rows": rows}, allow_nan=False))
++        return 0
++    except Exception:
++        print(
++            json.dumps(
++                {
++                    "error": "Futu snapshot unavailable; verify SDK, OpenD and quote rights."
++                }
++            )
++        )
++        return 1
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
+diff --git a/agent/src/hk_data/service.py b/agent/src/hk_data/service.py
+new file mode 100644
+index 0000000..3c705b1
+--- /dev/null
++++ b/agent/src/hk_data/service.py
+@@ -0,0 +1,361 @@
++"""Current HK quotes with explicit source time, delay and freshness.
++
++Public endpoints are best-effort research feeds.  A recent retrieval never
++changes the provider timestamp or proves real-time exchange entitlement.
++"""
++
++from __future__ import annotations
++
++import json
++import math
++import re
++import socket
++import subprocess
++import sys
++from datetime import datetime, timezone
++from typing import Any
++from zoneinfo import ZoneInfo
++
++import requests
++
++from backtest.engines._market_hooks import hk_counter_currency
++from backtest.loaders._http import (
++    resolve_min_interval,
++    throttled_get,
++    throttled_get_json,
++)
++
++UTC = timezone.utc
++HKT = ZoneInfo("Asia/Hong_Kong")
++MAX_SYMBOLS = 100
++SOURCES = ("auto", "yahoo", "tencent", "futu")
++DEFAULT_SYMBOLS = ["00700.HK", "00005.HK", "01299.HK", "00941.HK", "00388.HK"]
++YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/"
++TENCENT_QUOTE_URL = "https://qt.gtimg.cn/q="
++
++
++def normalize_symbol(value: str) -> str:
++    """Accept 700, 0700.HK, 00700.HK or HK.00700; preserve currency counters."""
++    if not isinstance(value, str):
++        raise ValueError("Each symbol must be a string")
++    value = value.strip().upper()
++    if value.startswith("HK."):
++        value = value[3:]
++    elif value.endswith(".HK"):
++        value = value[:-3]
++    if not re.fullmatch(r"[0-9]{1,5}", value) or int(value) == 0:
++        raise ValueError("Use numeric Hong Kong symbols such as 0700.HK")
++    return f"{int(value):05d}.HK"
++
++
++def normalize_symbols(values: list[str]) -> list[str]:
++    if not isinstance(values, list) or not 1 <= len(values) <= MAX_SYMBOLS:
++        raise ValueError(f"Provide 1 to {MAX_SYMBOLS} Hong Kong symbols")
++    return list(dict.fromkeys(normalize_symbol(value) for value in values))
++
++
++def iso_time(value: datetime) -> str:
++    return value.astimezone(UTC).isoformat(timespec="milliseconds")
++
++
++def _number(value: Any, *, positive: bool = False) -> float:
++    if isinstance(value, bool):
++        raise ValueError("Boolean quote field")
++    number = float(value)
++    if not math.isfinite(number) or (number <= 0 if positive else number < 0):
++        raise ValueError("Invalid quote field")
++    return number
++
++
++def quote_age(quote: dict, now: datetime, max_age_seconds: float) -> dict:
++    """Recompute freshness without replacing the original observation time."""
++    if (
++        isinstance(max_age_seconds, bool)
++        or not isinstance(max_age_seconds, (int, float))
++        or not math.isfinite(max_age_seconds)
++        or max_age_seconds <= 0
++    ):
++        raise ValueError("max_age_seconds must be a finite positive number")
++    result = dict(quote)
++    provider_time = datetime.fromisoformat(result["provider_time"])
++    if provider_time.tzinfo is None:
++        raise ValueError("Provider timestamp must include a timezone")
++    age = (now.astimezone(UTC) - provider_time.astimezone(UTC)).total_seconds()
++    if age < -5:
++        raise ValueError("Provider timestamp is in the future")
++    result["age_seconds"] = round(max(0.0, age), 3)
++    result["status"] = "fresh" if age <= max_age_seconds else "stale"
++    return result
++
++
++def _quote(
++    symbol,
++    source,
++    price,
++    provider_time,
++    now,
++    *,
++    currency,
++    volume=None,
++    delay=None,
++    session_state="unknown",
++) -> dict:
++    if not isinstance(currency, str) or not re.fullmatch(r"[A-Z]{3}", currency):
++        raise ValueError("Provider did not declare a usable currency")
++    return {
++        "symbol": symbol,
++        "source": source,
++        "price": _number(price, positive=True),
++        "currency": currency,
++        "provider_time": iso_time(provider_time),
++        "observed_at_utc": iso_time(now),
++        "adjustment": "raw",
++        "volume": None if volume is None else _number(volume),
++        "volume_unit": None if volume is None else "shares",
++        "volume_scope": "session_cumulative" if volume is not None else None,
++        "declared_delay_seconds": delay,
++        "delay_status": "delayed" if delay else "unknown",
++        "session_state": session_state,
++    }
++
++
++def _yahoo(symbol: str, now: datetime) -> dict:
++    yahoo_symbol = f"{int(symbol[:-3]):04d}.HK"
++    payload = throttled_get_json(
++        YAHOO_CHART_URL + yahoo_symbol,
++        host_key="yahoo",
++        min_interval=resolve_min_interval("VIBE_TRADING_YAHOO_MIN_INTERVAL", 0.6),
++        params={"interval": "1m", "range": "1d"},
++        timeout=8.0,
++    )
++    now = datetime.now(UTC)
++    chart = payload["chart"]
++    if chart.get("error"):
++        raise ValueError("Yahoo rejected the symbol")
++    meta = chart["result"][0]["meta"]
++    if normalize_symbol(meta["symbol"]) != symbol:
++        raise ValueError("Yahoo returned a different symbol")
++    # Both fields belong to the same snapshot. Do not pair this price with
++    # the final chart-bar timestamp, which can have different semantics.
++    stamp = _number(meta["regularMarketTime"], positive=True)
++    provider_time = datetime.fromtimestamp(stamp, UTC)
++    session = "unknown"
++    period = meta.get("currentTradingPeriod", {}).get("regular", {})
++    start, end = period.get("start"), period.get("end")
++    if isinstance(start, (int, float)) and isinstance(end, (int, float)):
++        session = (
++            "regular_window"
++            if start <= now.timestamp() <= end
++            else "outside_regular_window"
++        )
++    return _quote(
++        symbol,
++        "yahoo",
++        meta["regularMarketPrice"],
++        provider_time,
++        now,
++        currency=meta["currency"],
++        volume=meta.get("regularMarketVolume"),
++        delay=900,
++        session_state=session,
++    )
++
++
++def _tencent(symbols: list[str], now: datetime) -> tuple[list[dict], list[dict]]:
++    response = throttled_get(
++        TENCENT_QUOTE_URL + ",".join("r_hk" + symbol[:-3] for symbol in symbols),
++        host_key="tencent",
++        min_interval=resolve_min_interval("VIBE_TRADING_TENCENT_MIN_INTERVAL", 0.6),
++        timeout=8.0,
++    )
++    response.raise_for_status()
++    now = datetime.now(UTC)
++    response.encoding = "gbk"
++    matches = dict(re.findall(r'v_(?:r_)?hk([0-9]{5})="([^"\r\n]*)"', response.text))
++    quotes, errors = [], []
++    for symbol in symbols:
++        try:
++            parts = matches[symbol[:-3]].split("~")
++            if parts[2].zfill(5) != symbol[:-3]:
++                raise ValueError("Tencent returned a different symbol")
++            # Tencent's HK quote timestamp is YYYY/MM/DD HH:MM:SS. Older
++            # responses used compact digits; both are strictly parsed in HKT.
++            raw_time = parts[30]
++            provider_time = None
++            for fmt in ("%Y/%m/%d %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%Y%m%d%H%M%S"):
++                try:
++                    provider_time = datetime.strptime(raw_time, fmt).replace(tzinfo=HKT)
++                    break
++                except ValueError:
++                    continue
++            if provider_time is None:
++                raise ValueError("Missing Tencent quote time")
++            # Currency follows the repository's shared HKEX counter allocation.
++            # Keep the observed cumulative quantity; its unit has not yet been
++            # reconciled to an exchange record at an identical timestamp.
++            quote = _quote(
++                symbol,
++                "tencent",
++                parts[3],
++                provider_time,
++                now,
++                currency=hk_counter_currency(symbol),
++                volume=parts[6] or None,
++            )
++            quote["change_pct"] = (
++                float(parts[32]) if len(parts) > 32 and parts[32] else None
++            )
++            if quote["change_pct"] is not None and not math.isfinite(
++                quote["change_pct"]
++            ):
++                raise ValueError("Invalid percentage change")
++            quote["endpoint"] = "r_hk"
++            quote["volume_unit"] = None
++            quotes.append(quote)
++        except (KeyError, IndexError, ValueError, TypeError) as exc:
++            errors.append(_failure("tencent", symbol, exc))
++    return quotes, errors
++
++
++def _futu(symbols: list[str], now: datetime) -> tuple[list[dict], list[dict]]:
++    # The SDK can wait indefinitely for OpenD. Keep it in a bounded worker so
++    # a stalled local bridge cannot wedge the agent or continuous collector.
++    with socket.create_connection(("127.0.0.1", 11111), timeout=1.0):
++        pass
++    completed = subprocess.run(
++        [sys.executable, "-m", "src.hk_data.futu_worker"],
++        input=json.dumps(symbols),
++        capture_output=True,
++        text=True,
++        timeout=20,
++        check=True,
++    )
++    payload = json.loads(completed.stdout)
++    now = datetime.now(UTC)
++    quotes, errors = [], []
++    by_code = {str(row["code"]): row for row in payload["rows"]}
++    for symbol in symbols:
++        try:
++            row = by_code["HK." + symbol[:-3]]
++            provider_time = datetime.strptime(
++                str(row["update_time"]), "%Y-%m-%d %H:%M:%S"
++            ).replace(tzinfo=HKT)
++            quotes.append(
++                _quote(
++                    symbol,
++                    "futu",
++                    row["last_price"],
++                    provider_time,
++                    now,
++                    currency=hk_counter_currency(symbol),
++                    volume=row.get("volume"),
++                )
++            )
++        except (KeyError, ValueError, TypeError) as exc:
++            errors.append(_failure("futu", symbol, exc))
++    return quotes, errors
++
++
++def _failure(source: str, symbol: str, exc: Exception) -> dict:
++    # Do not expose raw HTTP response bodies, Futu login errors or local paths.
++    return {
++        "source": source,
++        "symbol": symbol,
++        "error": type(exc).__name__,
++        "message": "Quote unavailable or invalid; check provider availability and symbol.",
++    }
++
++
++def fetch_quotes(
++    symbols: list[str], source: str = "auto", max_age_seconds: float = 1200
++) -> dict:
++    """Fetch quotes once; auto uses Yahoo, then Tencent for missing/stale names.
++
++    Explicit sources never fall back.  Unknown-delay sources remain labelled
++    unknown even when their provider timestamp is recent. No API keys required
++    for Yahoo/Tencent; Futu is opt-in and requires installed local OpenD.
++    """
++    symbols = normalize_symbols(symbols)
++    if source not in SOURCES:
++        raise ValueError(f"source must be one of {SOURCES}")
++    if (
++        isinstance(max_age_seconds, bool)
++        or not isinstance(max_age_seconds, (int, float))
++        or not math.isfinite(max_age_seconds)
++        or max_age_seconds <= 0
++    ):
++        raise ValueError("max_age_seconds must be a finite positive number")
++    quotes: dict[str, dict] = {}
++    errors = []
++    if source in ("auto", "yahoo"):
++        consecutive_http_errors = 0
++        for symbol in symbols:
++            if consecutive_http_errors >= 3:
++                errors.append(
++                    {
++                        "source": "yahoo",
++                        "symbol": symbol,
++                        "error": "ProviderUnavailable",
++                        "message": "Skipped after three consecutive HTTP failures; retry on the next poll.",
++                    }
++                )
++                continue
++            try:
++                now = datetime.now(UTC)
++                candidate = _yahoo(symbol, now)
++                quotes[symbol] = quote_age(
++                    candidate, datetime.now(UTC), max_age_seconds
++                )
++                consecutive_http_errors = 0
++            except Exception as exc:
++                errors.append(_failure("yahoo", symbol, exc))
++                consecutive_http_errors = (
++                    consecutive_http_errors + 1
++                    if isinstance(exc, requests.RequestException)
++                    else 0
++                )
++    pending = [
++        symbol
++        for symbol in symbols
++        if symbol not in quotes or quotes[symbol]["status"] == "stale"
++    ]
++    next_source = "tencent" if source == "auto" and pending else source
++    if next_source in ("tencent", "futu"):
++        wanted = pending if source == "auto" else symbols
++        try:
++            now = datetime.now(UTC)
++            candidates, failures = (_tencent if next_source == "tencent" else _futu)(
++                wanted, now
++            )
++            errors.extend(failures)
++            for candidate in candidates:
++                try:
++                    candidate = quote_age(candidate, datetime.now(UTC), max_age_seconds)
++                    previous = quotes.get(candidate["symbol"])
++                    if (
++                        previous is None
++                        or candidate["provider_time"] > previous["provider_time"]
++                    ):
++                        quotes[candidate["symbol"]] = candidate
++                except (ValueError, TypeError) as exc:
++                    errors.append(_failure(next_source, candidate["symbol"], exc))
++        except Exception as exc:
++            errors.extend(_failure(next_source, symbol, exc) for symbol in wanted)
++    now = datetime.now(UTC)
++    rows = [
++        quote_age(quotes[symbol], now, max_age_seconds)
++        for symbol in symbols
++        if symbol in quotes
++    ]
++    missing = [symbol for symbol in symbols if symbol not in quotes]
++    return {
++        "ok": bool(rows),
++        "status": "error" if not rows else "partial" if missing else "ok",
++        "market": "HK",
++        "source": source,
++        "observed_at_utc": iso_time(now),
++        "quotes": rows,
++        "missing": missing,
++        "errors": errors,
++        "note": "Freshness measures provider timestamp age; it does not verify exchange real-time rights. Yahoo HK quotes are 15 minutes delayed.",
++    }
+diff --git a/agent/src/hk_data/storage.py b/agent/src/hk_data/storage.py
+new file mode 100644
+index 0000000..38c4bc7
+--- /dev/null
++++ b/agent/src/hk_data/storage.py
+@@ -0,0 +1,207 @@
++"""Durable, deduplicated quote revisions and collector health."""
++
++from __future__ import annotations
++
++import hashlib
++import json
++import sqlite3
++from datetime import datetime, timedelta, timezone
++from pathlib import Path
++
++from src.config.paths import get_runtime_root
++from src.hk_data.service import iso_time, normalize_symbols, quote_age
++
++UTC = timezone.utc
++
++
++def default_db_path() -> Path:
++    return get_runtime_root() / "data" / "hk_quotes.sqlite3"
++
++
++class QuoteStore:
++    """Store provider revisions once, including corrections at the same time."""
++
++    def __init__(
++        self, path: str | Path | None = None, *, readonly: bool = False
++    ) -> None:
++        self.path = Path(path).expanduser() if path is not None else default_db_path()
++        self.readonly = readonly
++        if readonly:
++            if not self.path.is_file():
++                raise FileNotFoundError(
++                    "No HK quote store yet; run the collector first"
++                )
++            self.connection = sqlite3.connect(
++                self.path.resolve().as_uri() + "?mode=ro", uri=True, timeout=10
++            )
++        else:
++            self.path.parent.mkdir(parents=True, exist_ok=True)
++            self.connection = sqlite3.connect(self.path, timeout=10)
++            self.connection.execute("PRAGMA auto_vacuum=INCREMENTAL")
++            self.connection.execute("PRAGMA journal_mode=WAL")
++            self.connection.executescript("""
++                CREATE TABLE IF NOT EXISTS quotes (
++                    id INTEGER PRIMARY KEY,
++                    fingerprint TEXT NOT NULL UNIQUE,
++                    symbol TEXT NOT NULL,
++                    source TEXT NOT NULL,
++                    provider_time TEXT NOT NULL,
++                    first_observed_at TEXT NOT NULL,
++                    last_observed_at TEXT NOT NULL,
++                    payload TEXT NOT NULL
++                );
++                CREATE INDEX IF NOT EXISTS quote_latest
++                    ON quotes(symbol, provider_time DESC, last_observed_at DESC);
++                CREATE INDEX IF NOT EXISTS quote_retention ON quotes(last_observed_at);
++                CREATE TABLE IF NOT EXISTS polls (
++                    id INTEGER PRIMARY KEY,
++                    observed_at_utc TEXT NOT NULL,
++                    payload TEXT NOT NULL
++                );
++                CREATE INDEX IF NOT EXISTS poll_retention ON polls(observed_at_utc);
++            """)
++        self.connection.row_factory = sqlite3.Row
++
++    def close(self) -> None:
++        self.connection.close()
++
++    def __enter__(self) -> QuoteStore:
++        return self
++
++    def __exit__(self, *_) -> None:
++        self.close()
++
++    def record_poll(self, result: dict) -> int:
++        """Atomically persist quotes and poll health; return new revision count."""
++        if self.readonly:
++            raise ValueError("Store is read-only")
++        inserted = 0
++        with self.connection:
++            for row in result.get("quotes", []):
++                # Only changed provider values produce new revisions.
++                stable = {
++                    key: value
++                    for key, value in row.items()
++                    if key
++                    not in {"observed_at_utc", "age_seconds", "status", "session_state"}
++                }
++                payload = json.dumps(stable, sort_keys=True, allow_nan=False)
++                fingerprint = hashlib.sha256(payload.encode()).hexdigest()
++                seen = row["observed_at_utc"]
++                cursor = self.connection.execute(
++                    "INSERT OR IGNORE INTO quotes (fingerprint,symbol,source,provider_time,first_observed_at,last_observed_at,payload) VALUES (?,?,?,?,?,?,?)",
++                    (
++                        fingerprint,
++                        row["symbol"],
++                        row["source"],
++                        row["provider_time"],
++                        seen,
++                        seen,
++                        payload,
++                    ),
++                )
++                inserted += cursor.rowcount
++                # Metadata such as session window may change without creating
++                # another market observation. Keep its last observed value.
++                stored = {
++                    **stable,
++                    "session_state": row.get("session_state", "unknown"),
++                }
++                self.connection.execute(
++                    "UPDATE quotes SET first_observed_at=MIN(first_observed_at,?),last_observed_at=MAX(last_observed_at,?),payload=? WHERE fingerprint=?",
++                    (
++                        seen,
++                        seen,
++                        json.dumps(stored, sort_keys=True, allow_nan=False),
++                        fingerprint,
++                    ),
++                )
++            health = {key: value for key, value in result.items() if key != "quotes"}
++            health["quote_count"] = len(result.get("quotes", []))
++            health["new_revisions"] = inserted
++            health["stale_count"] = sum(
++                row.get("status") == "stale" for row in result.get("quotes", [])
++            )
++            self.connection.execute(
++                "INSERT INTO polls (observed_at_utc,payload) VALUES (?,?)",
++                (result["observed_at_utc"], json.dumps(health, allow_nan=False)),
++            )
++        return inserted
++
++    def latest(
++        self,
++        symbols: list[str] | None = None,
++        *,
++        max_age_seconds: float = 1200,
++        now: datetime | None = None,
++    ) -> dict:
++        """Read snapshots with current age and separate last-poll health."""
++        now = now or datetime.now(UTC)
++        requested = normalize_symbols(symbols) if symbols is not None else None
++        where, params = "", []
++        if requested is not None:
++            where = "WHERE symbol IN (" + ",".join("?" for _ in requested) + ")"
++            params = requested
++        rows = self.connection.execute(
++            "SELECT * FROM (SELECT *,ROW_NUMBER() OVER (PARTITION BY symbol ORDER BY provider_time DESC,last_observed_at DESC,id DESC) AS rank FROM quotes "
++            + where
++            + ") WHERE rank=1 ORDER BY symbol",
++            params,
++        ).fetchall()
++        quotes = []
++        for row in rows:
++            quote = json.loads(row["payload"])
++            quote["observed_at_utc"] = row["last_observed_at"]
++            quote["first_observed_at_utc"] = row["first_observed_at"]
++            quotes.append(quote_age(quote, now, max_age_seconds))
++        poll = self.connection.execute(
++            "SELECT payload FROM polls ORDER BY id DESC LIMIT 1"
++        ).fetchone()
++        health = json.loads(poll["payload"]) if poll else None
++        missing = [
++            symbol
++            for symbol in requested or []
++            if symbol not in {row["symbol"] for row in quotes}
++        ]
++        status = "empty" if not quotes else "partial" if missing else "ok"
++        if health and not health.get("ok"):
++            status = "last_poll_failed"
++        poll_age = (
++            max(
++                0.0,
++                (
++                    now - datetime.fromisoformat(health["observed_at_utc"])
++                ).total_seconds(),
++            )
++            if health
++            else None
++        )
++        return {
++            "ok": bool(quotes),
++            "status": status,
++            "read_at_utc": iso_time(now),
++            "quotes": quotes,
++            "missing": missing,
++            "latest_poll": health,
++            "latest_poll_age_seconds": poll_age,
++            "stored_revisions": self.connection.execute(
++                "SELECT COUNT(*) FROM quotes"
++            ).fetchone()[0],
++        }
++
++    def prune(self, retain_days: int, *, now: datetime | None = None) -> None:
++        """Delete expired observations; reuse pages and bound the WAL size."""
++        if retain_days < 0:
++            raise ValueError("retain_days must be nonnegative")
++        if self.readonly or retain_days == 0:
++            return
++        cutoff = iso_time((now or datetime.now(UTC)) - timedelta(days=retain_days))
++        with self.connection:
++            self.connection.execute(
++                "DELETE FROM quotes WHERE last_observed_at < ?", (cutoff,)
++            )
++            self.connection.execute(
++                "DELETE FROM polls WHERE observed_at_utc < ?", (cutoff,)
++            )
++        self.connection.execute("PRAGMA incremental_vacuum(200)")
++        self.connection.execute("PRAGMA wal_checkpoint(TRUNCATE)")
+diff --git a/agent/src/tools/hk_quotes_tool.py b/agent/src/tools/hk_quotes_tool.py
+new file mode 100644
+index 0000000..0310877
+--- /dev/null
++++ b/agent/src/tools/hk_quotes_tool.py
+@@ -0,0 +1,54 @@
++"""Read-only Hong Kong quote snapshots, separate from historical OHLCV."""
++
++from __future__ import annotations
++
++import json
++from typing import Any
++
++from src.agent.tools import BaseTool
++from src.hk_data.service import fetch_quotes
++
++
++class HKQuotesTool(BaseTool):
++    name = "get_hk_quotes"
++    description = (
++        "Fetch current Hong Kong quote snapshots with source timestamp, currency, "
++        "age and delay metadata. Defaults to Tencent's faster r_hk endpoint. "
++        "Yahoo HK is 15 minutes delayed. Unknown delay never means verified realtime. "
++        "Use get_market_data for historical OHLCV. Futu is explicit-only via local OpenD."
++    )
++    repeatable = True
++    parameters = {
++        "type": "object",
++        "properties": {
++            "symbols": {
++                "type": "array",
++                "items": {"type": "string"},
++                "minItems": 1,
++                "maxItems": 100,
++                "description": "HK tickers, e.g. 0700.HK, 0005.HK.",
++            },
++            "source": {
++                "type": "string",
++                "enum": ["auto", "yahoo", "tencent", "futu"],
++                "default": "tencent",
++            },
++            "max_age_seconds": {
++                "type": "number",
++                "exclusiveMinimum": 0,
++                "default": 60,
++            },
++        },
++        "required": ["symbols"],
++    }
++
++    def execute(self, **kwargs: Any) -> str:
++        try:
++            result = fetch_quotes(
++                kwargs.get("symbols"),
++                kwargs.get("source", "tencent"),
++                kwargs.get("max_age_seconds", 60),
++            )
++        except (ValueError, TypeError) as exc:
++            result = {"ok": False, "status": "error", "error": str(exc)}
++        return json.dumps(result, ensure_ascii=False, allow_nan=False)
+diff --git a/agent/src/tools/hsi_universe.py b/agent/src/tools/hsi_universe.py
+new file mode 100644
+index 0000000..9c67235
+--- /dev/null
++++ b/agent/src/tools/hsi_universe.py
+@@ -0,0 +1,131 @@
++"""Current HSI constituents for a deliberately survivorship-biased benchmark."""
++
++from __future__ import annotations
++
++from datetime import datetime, timezone
++import io
++import logging
++import re
++
++import pandas as pd
++import requests
++
++from backtest.loaders._symbol_utils import normalize_hk_symbol
++
++LOG = logging.getLogger(__name__)
++WIKIPEDIA_URL = "https://en.wikipedia.org/wiki/Hang_Seng_Index"
++# Full frozen operational roster as of 2026-11-04, from HSI review announcements.
++# Never represent this fallback as historical membership or a live official list.
++FALLBACK_DATE = "2026-11-04"
++FALLBACK_CODES = """
++0001.HK 0002.HK 0003.HK 0005.HK 0006.HK 0012.HK 0016.HK 0027.HK 0066.HK
++0101.HK 0175.HK 0241.HK 0267.HK 0285.HK 0288.HK 0291.HK 0300.HK 0316.HK
++0322.HK 0386.HK 0388.HK 0669.HK 0688.HK 0700.HK 0728.HK 0762.HK 0823.HK
++0836.HK 0857.HK 0868.HK 0883.HK 0939.HK 0941.HK 0960.HK 0968.HK 0981.HK
++0992.HK 1024.HK 1038.HK 1044.HK 1088.HK 1093.HK 1099.HK 1109.HK 1113.HK
++1177.HK 1209.HK 1211.HK 1299.HK 1347.HK 1378.HK 1398.HK 1519.HK 1801.HK
++1810.HK 1876.HK 1928.HK 1929.HK 1997.HK 2015.HK 2020.HK 2057.HK 2269.HK
++2313.HK 2318.HK 2319.HK 2331.HK 2338.HK 2359.HK 2382.HK 2388.HK 2600.HK
++2618.HK 2628.HK 2688.HK 2899.HK 3690.HK 3692.HK 3750.HK 3968.HK 3988.HK
++3993.HK 6160.HK 6181.HK 6618.HK 6690.HK 6862.HK 9618.HK 9633.HK 9888.HK
++9901.HK 9961.HK 9988.HK 9992.HK 9999.HK
++""".split()
++
++
++def parse_constituents(html: str) -> tuple[list[str], dict[str, str]]:
++    """Parse Wikipedia tickers and optional sector/industry/sub-index labels."""
++    for table in pd.read_html(io.StringIO(html)):
++        columns = {str(column).strip().lower(): column for column in table.columns}
++        ticker = next(
++            (
++                columns[key]
++                for key in ("ticker", "stock code", "symbol")
++                if key in columns
++            ),
++            None,
++        )
++        if ticker is None:
++            continue
++        sector = next(
++            (
++                columns[key]
++                for key in ("sector", "industry", "sub-index")
++                if key in columns
++            ),
++            None,
++        )
++        codes, sectors = [], {}
++        for _, row in table.iterrows():
++            match = re.fullmatch(
++                r"(?:SEHK\s*:\s*)?(\d{1,5})(?:\.HK)?", str(row[ticker]).strip(), re.I
++            )
++            if not match:
++                continue
++            code = normalize_hk_symbol(match.group(1))
++            if code not in codes:
++                codes.append(code)
++            if (
++                sector is not None
++                and pd.notna(row[sector])
++                and str(row[sector]).strip()
++            ):
++                sectors[code] = str(row[sector]).strip()
++        if codes:
++            return codes, sectors
++    raise ValueError("No HSI constituent table found")
++
++
++def fetch_constituents() -> tuple[list[str], dict[str, str], dict]:
++    """Fetch a revision-dated current roster, or disclose a frozen degraded fallback."""
++    fetched_at = datetime.now(timezone.utc).isoformat()
++    try:
++        response = requests.get(
++            WIKIPEDIA_URL,
++            headers={
++                "User-Agent": "Vibe-Trading/0.1 (research bench; https://github.com/HKUDS/Vibe-Trading)"
++            },
++            timeout=20,
++        )
++        response.raise_for_status()
++        codes, sectors = parse_constituents(response.text)
++        if len(codes) < 50:
++            raise ValueError("Suspiciously short current HSI table")
++        # Read the revision date from this very HTML, avoiding a race with a
++        # separate API request for a newer revision than the parsed table.
++        modified = re.search(r'"dateModified"\s*:\s*"([^"]+)"', response.text)
++        revision = re.search(r'"wgRevisionId"\s*:\s*(\d+)', response.text)
++        date = (
++            datetime.fromisoformat(modified.group(1).replace("Z", "+00:00"))
++            .date()
++            .isoformat()
++            if modified
++            else None
++        )
++        return (
++            codes,
++            sectors,
++            {
++                "constituent_source": WIKIPEDIA_URL,
++                "constituent_source_date": date,
++                "constituent_revision_id": revision.group(1) if revision else None,
++                "constituent_retrieved_at": fetched_at,
++                "degraded": date is None,
++                "constituent_note": "Current Wikipedia roster can lag official index reviews; not point-in-time membership.",
++            },
++        )
++    except (requests.RequestException, ValueError, ImportError) as exc:
++        LOG.warning(
++            "hsi Wikipedia failed (%s); using dated fallback", type(exc).__name__
++        )
++        return (
++            list(FALLBACK_CODES),
++            {},
++            {
++                "constituent_source": "frozen HSI fallback",
++                "constituent_source_date": FALLBACK_DATE,
++                "constituent_revision_id": None,
++                "constituent_retrieved_at": fetched_at,
++                "degraded": True,
++                "constituent_note": "Frozen roster; refresh required after index reviews.",
++            },
++        )
+diff --git a/agent/tests/test_alpha_bench_hsi.py b/agent/tests/test_alpha_bench_hsi.py
+new file mode 100644
+index 0000000..dca0da4
+--- /dev/null
++++ b/agent/tests/test_alpha_bench_hsi.py
+@@ -0,0 +1,165 @@
++"""HSI alias identity, public roster metadata and loader-chain integration."""
++
++from types import SimpleNamespace
++
++import pandas as pd
++import pytest
++import requests
++
++from backtest.loaders._symbol_utils import normalize_hk_symbol
++from src.tools import alpha_bench_tool as tool
++from src.tools import hsi_universe as hsi
++
++
++@pytest.mark.parametrize("value", ["700", "0700", "0700.HK", "00700.HK", "HK.00700"])
++def test_same_instrument(value):
++    assert normalize_hk_symbol(value) == "0700.HK"
++
++
++@pytest.mark.parametrize("value", ["0", "-700", "700.US", "abc", "100000"])
++def test_bad_symbol(value):
++    with pytest.raises(ValueError):
++        normalize_hk_symbol(value)
++
++
++def test_parse_table_without_counting_aliases_twice():
++    html = "<table><tr><th>Ticker</th><th>Name</th><th>Sub-index</th></tr>"
++    for code in ["SEHK: 700", "0700.HK", "SEHK: 5"]:
++        html += f"<tr><td>{code}</td><td>Fixture</td><td>Finance</td></tr>"
++    codes, sectors = hsi.parse_constituents(html + "</table>")
++    assert codes == ["0700.HK", "0005.HK"]
++    assert sectors == {code: "Finance" for code in codes}
++
++
++def test_revision_date_belongs_to_parsed_html(monkeypatch):
++    html = '<script>{"dateModified":"2026-10-01T18:43:56Z","wgRevisionId":123}</script>'
++    html += pd.DataFrame(
++        {
++            "Ticker": [f"SEHK: {code}" for code in range(1, 51)],
++            "Sector": ["Finance"] * 50,
++        }
++    ).to_html(index=False)
++    monkeypatch.setattr(
++        hsi.requests,
++        "get",
++        lambda *a, **kw: SimpleNamespace(text=html, raise_for_status=lambda: None),
++    )
++    codes, sectors, meta = hsi.fetch_constituents()
++    assert len(codes) == len(sectors) == 50
++    assert meta["constituent_source_date"] == "2026-10-01"
++    assert meta["constituent_revision_id"] == "123"
++    assert meta["degraded"] is False
++
++
++def test_network_failure_has_full_dated_fallback(monkeypatch):
++    def fail(*args, **kwargs):
++        raise requests.Timeout()
++
++    monkeypatch.setattr(hsi.requests, "get", fail)
++    codes, sectors, meta = hsi.fetch_constituents()
++    assert len(codes) == len(set(codes)) == 95
++    assert "0700.HK" in codes
++    assert sectors == {}
++    assert meta["degraded"] is True
++    assert meta["constituent_source_date"] == hsi.FALLBACK_DATE
++
++
++def patch_panel(monkeypatch, *, sectors=None):
++    codes = ["700", "0700", "0700.HK", "0005.HK", "9988.HK"]
++    metadata = {
++        "constituent_source": "fixture",
++        "constituent_source_date": "2026-10-01",
++        "degraded": False,
++    }
++    monkeypatch.setattr(
++        hsi, "fetch_constituents", lambda: (codes, sectors or {}, metadata)
++    )
++    monkeypatch.setattr(
++        "backtest.loaders.registry.resolve_loader",
++        lambda market: (
++            SimpleNamespace(name="tencent") if market == "hk_equity" else None
++        ),
++    )
++    frame = pd.DataFrame(
++        {
++            "open": [10.0, 11.0, 12.0],
++            "high": [12.0, 13.0, 14.0],
++            "low": [9.0, 10.0, 11.0],
++            "close": [11.0, 12.0, 13.0],
++            "volume": [100.0, 200.0, 300.0],
++        },
++        index=pd.date_range("2024-01-01", periods=3),
++    )
++
++    def fetch(**kwargs):
++        assert kwargs["codes"] == ["0700.HK", "0005.HK", "9988.HK"]
++        assert kwargs["source"] == "tencent"
++        assert kwargs["max_fallback_attempts"] == 9
++        assert kwargs["include_provenance"] and kwargs["as_frames"]
++        return {
++            "700.HK": frame,
++            "0005.HK": frame,
++            "_unresolved": ["9988.HK"],
++            "_provenance": {"700.HK": {"source": "tencent", "price_caliber": "raw"}},
++        }
++
++    monkeypatch.setattr("src.market_data.fetch_market_data", fetch)
++
++
++def test_panel_metadata_missing_names_and_currency(monkeypatch):
++    patch_panel(monkeypatch)
++    panel = tool._load_hsi_panel("2024-01-01", "2024-01-02")
++    assert list(panel["close"].columns) == ["0005.HK", "0700.HK"]
++    assert len(panel["close"]) == 2
++    assert panel["_meta"]["missing_instruments"] == ["9988.HK"]
++    assert panel["_meta"]["survivorship_bias"] is True
++    assert panel["_meta"]["currency"] == "HKD"
++    assert panel["_meta"]["price_sources"] == ["tencent"]
++    assert "sector" not in panel
++    pd.testing.assert_frame_equal(
++        panel["vwap"], sum(panel[k] for k in ("open", "high", "low", "close")) / 4
++    )
++
++
++@pytest.mark.parametrize(
++    "sectors,expected",
++    [({"700": "Finance", "5": "Finance"}, True), ({"700": "Finance"}, False)],
++)
++def test_same_sector_coverage_threshold_as_sp500(monkeypatch, sectors, expected):
++    patch_panel(monkeypatch, sectors=sectors)
++    panel = tool._load_hsi_panel("2024-01-01", "2024-01-02")
++    assert ("sector" in panel) is expected
++    if expected:
++        assert panel["sector"].index.equals(panel["close"].index)
++        assert panel["sector"].columns.equals(panel["close"].columns)
++
++
++def test_cache_keeps_hsi_metadata_without_refetch(monkeypatch, tmp_path):
++    patch_panel(monkeypatch)
++    monkeypatch.setattr(tool, "get_runtime_root", lambda: tmp_path)
++    first = tool._load_universe_panel("hsi", "2024-01-01/2024-01-02")
++    monkeypatch.setattr(
++        tool, "_load_hsi_panel", lambda *a: pytest.fail("cache was not used")
++    )
++    second = tool._load_universe_panel("hsi", "2024-01-01/2024-01-02")
++    assert second["_meta"] == first["_meta"]
++
++
++def test_api_cli_universe_wiring():
++    from src.api.alpha_routes import BenchRequest, CompareRequest
++    from src.factors.cli_handlers import _LIST_UNIVERSE_ALIASES, _UNIVERSE_CHOICES
++
++    assert (
++        BenchRequest(zoo="alpha101", universe="hsi", period="2024-2024").universe
++        == "hsi"
++    )
++    assert (
++        CompareRequest(
++            alpha_ids=["alpha101_001", "alpha101_002"],
++            universe="hsi",
++            period="2024-2024",
++        ).universe
++        == "hsi"
++    )
++    assert "hsi" in _UNIVERSE_CHOICES
++    assert _LIST_UNIVERSE_ALIASES["hsi"] == "equity_hk"
+diff --git a/agent/tests/test_hk_collector.py b/agent/tests/test_hk_collector.py
+new file mode 100644
+index 0000000..7a845bf
+--- /dev/null
++++ b/agent/tests/test_hk_collector.py
+@@ -0,0 +1,179 @@
++"""Persistence and recovery tests for the read-only HK quote collector."""
++
++from datetime import datetime, timedelta, timezone
++import json
++import sqlite3
++
++import pytest
++
++from src.hk_data.collector import collect, load_symbols, main
++from src.hk_data.storage import QuoteStore
++
++NOW = datetime(2026, 11, 11, 7, 0, tzinfo=timezone.utc)
++
++
++def envelope(
++    *, observed=NOW, provider=None, price=400.0, source="yahoo", failure=False
++):
++    quote = {
++        "symbol": "00700.HK",
++        "source": source,
++        "price": price,
++        "currency": "HKD",
++        "provider_time": (provider or observed - timedelta(minutes=15)).isoformat(),
++        "observed_at_utc": observed.isoformat(),
++        "status": "fresh",
++        "volume": 1000,
++        "volume_unit": "shares",
++        "declared_delay_seconds": 900,
++        "delay_status": "delayed",
++    }
++    return {
++        "ok": not failure,
++        "status": "error" if failure else "ok",
++        "observed_at_utc": observed.isoformat(),
++        "quotes": [] if failure else [quote],
++        "missing": ["00700.HK"] if failure else [],
++        "errors": [{"error": "Timeout"}] if failure else [],
++    }
++
++
++def test_resume_deduplicates_and_preserves_corrections(tmp_path):
++    path = tmp_path / "quotes.sqlite3"
++    first = envelope()
++    with QuoteStore(path) as store:
++        assert store.record_poll(first) == 1
++    with QuoteStore(path) as store:
++        assert (
++            store.record_poll(
++                envelope(
++                    observed=NOW + timedelta(seconds=60),
++                    provider=NOW - timedelta(minutes=15),
++                )
++            )
++            == 0
++        )
++        assert (
++            store.record_poll(
++                envelope(
++                    observed=NOW + timedelta(seconds=90),
++                    provider=NOW - timedelta(minutes=15),
++                    price=401,
++                )
++            )
++            == 1
++        )
++        result = store.latest(["00700.HK"], now=NOW + timedelta(seconds=90))
++        assert result["quotes"][0]["price"] == 401
++    with sqlite3.connect(path) as db:
++        assert db.execute("SELECT COUNT(*) FROM quotes").fetchone()[0] == 2
++
++
++def test_latest_does_not_relabel_failed_poll_as_fresh_quote(tmp_path):
++    with QuoteStore(tmp_path / "quotes.sqlite3") as store:
++        store.record_poll(envelope())
++        store.record_poll(envelope(observed=NOW + timedelta(hours=1), failure=True))
++        result = store.latest(["00700.HK"], now=NOW + timedelta(hours=1))
++        assert result["quotes"][0]["status"] == "stale"
++        assert result["quotes"][0]["age_seconds"] == 4500
++        assert result["latest_poll"]["status"] == "error"
++        assert result["status"] == "last_poll_failed"
++
++
++def test_readonly_missing_archive_does_not_create_it(tmp_path):
++    path = tmp_path / "missing" / "quotes.sqlite3"
++    with pytest.raises((OSError, sqlite3.Error)):
++        QuoteStore(path, readonly=True)
++    assert not path.exists()
++
++
++def test_retention_and_keep_all_mode(tmp_path):
++    with QuoteStore(tmp_path / "retention.db") as store:
++        store.record_poll(envelope(observed=NOW - timedelta(days=40)))
++        store.record_poll(envelope())
++        store.prune(0, now=NOW)
++        assert store.latest(now=NOW)["stored_revisions"] == 2
++        store.prune(30, now=NOW)
++        assert store.latest(now=NOW)["stored_revisions"] == 1
++        assert store.connection.execute("SELECT COUNT(*) FROM polls").fetchone()[0] == 1
++
++
++def test_csv_missing_fields_and_text_universe(tmp_path):
++    path = tmp_path / "symbols.csv"
++    path.write_text(
++        "name,yahoo_ticker\nTencent,0700.HK\nMissing\nHSBC,0005.HK\n", encoding="utf-8"
++    )
++    assert load_symbols(path) == ["00700.HK", "00005.HK"]
++    path = tmp_path / "symbols.txt"
++    path.write_text("# HK stocks\n700\n0700.HK\n5\n", encoding="utf-8")
++    assert load_symbols(path) == ["00700.HK", "00005.HK"]
++
++
++def test_failed_poll_backoff_recovers_and_persists_health(tmp_path):
++    calls, sleeps, output = [], [], []
++
++    def fetcher(*args, **kwargs):
++        calls.append(1)
++        if len(calls) == 1:
++            raise TimeoutError("Must not expose raw provider text")
++        return envelope()
++
++    with QuoteStore(tmp_path / "recovery.db") as store:
++        collect(
++            store,
++            ["00700.HK"],
++            cycles=3,
++            retain_days=0,
++            fetcher=fetcher,
++            sleeper=sleeps.append,
++            emit=lambda text, **kwargs: output.append(json.loads(text)),
++        )
++        assert store.connection.execute("SELECT COUNT(*) FROM polls").fetchone()[0] == 3
++        assert store.latest(now=NOW)["latest_poll"]["ok"] is True
++    assert len(sleeps) == 2
++    assert 119 < sleeps[0] <= 120
++    assert 59 < sleeps[1] <= 60
++    assert [row["status"] for row in output] == ["error", "ok", "ok"]
++
++
++def test_failure_never_shortens_a_long_poll_interval(tmp_path):
++    sleeps = []
++    with QuoteStore(tmp_path / "long.db") as store:
++        collect(
++            store,
++            ["00700.HK"],
++            cycles=2,
++            interval_seconds=3600,
++            retain_days=0,
++            fetcher=lambda *args, **kwargs: envelope(failure=True),
++            sleeper=sleeps.append,
++            emit=lambda *args, **kwargs: None,
++        )
++    assert 3599 < sleeps[0] <= 3600
++
++
++def test_latest_partial_filter_and_cli_readonly(tmp_path, capsys):
++    path = tmp_path / "cli.db"
++    with QuoteStore(path) as store:
++        store.record_poll(envelope())
++        result = store.latest(["700", "5"], now=NOW)
++        assert result["status"] == "partial"
++        assert result["missing"] == ["00005.HK"]
++    assert main(["--db", str(path), "--latest", "--symbols", "700"]) == 0
++    assert len(json.loads(capsys.readouterr().out)["quotes"]) == 1
++
++
++def test_hsi_snapshot_cli_uses_full_roster_and_fast_defaults(tmp_path, monkeypatch):
++    captured = {}
++
++    def collector(store, symbols, **kwargs):
++        captured.update(kwargs)
++        captured["symbols"] = symbols
++        return {"ok": True}
++
++    monkeypatch.setattr("src.hk_data.collector.collect", collector)
++    assert main(["--hsi-snapshot", "--once", "--db", str(tmp_path / "hsi.db")]) == 0
++    assert len(set(captured["symbols"])) == 95
++    assert captured["source"] == "tencent"
++    assert captured["interval_seconds"] == 5
++    assert captured["max_age_seconds"] == 60
+diff --git a/agent/tests/test_hk_quotes.py b/agent/tests/test_hk_quotes.py
+new file mode 100644
+index 0000000..905825c
+--- /dev/null
++++ b/agent/tests/test_hk_quotes.py
+@@ -0,0 +1,523 @@
++"""Offline contracts for current HK quote identity, timing and fallback."""
++
++from __future__ import annotations
++
++import json
++import contextlib
++import io
++import subprocess
++import sys
++from datetime import datetime, timedelta, timezone
++from types import SimpleNamespace
++
++import pytest
++import requests
++
++from src.hk_data import service
++from src.tools import hk_quotes_tool
++
++UTC = timezone.utc
++NOW = datetime(2026, 11, 11, 7, 0, tzinfo=UTC)
++
++
++@pytest.fixture(autouse=True)
++def no_network(monkeypatch):
++    def blocked(*args, **kwargs):
++        raise AssertionError("Unit tests must not reach a provider")
++
++    monkeypatch.setattr(service, "throttled_get", blocked)
++    monkeypatch.setattr(service, "throttled_get_json", blocked)
++
++
++@pytest.fixture
++def fixed_clock(monkeypatch):
++    class Clock(datetime):
++        @classmethod
++        def now(cls, tz=None):
++            return NOW.astimezone(tz) if tz else NOW.replace(tzinfo=None)
++
++    monkeypatch.setattr(service, "datetime", Clock)
++
++
++def quote(symbol="00700.HK", source="yahoo", age=60, price=400):
++    return service._quote(
++        symbol,
++        source,
++        price,
++        NOW - timedelta(seconds=age),
++        NOW,
++        currency="HKD",
++    )
++
++
++def yahoo_payload(**meta_overrides):
++    meta = {
++        "symbol": "0700.HK",
++        "regularMarketPrice": 400.5,
++        "regularMarketTime": int((NOW - timedelta(seconds=900)).timestamp()),
++        "currency": "HKD",
++        "regularMarketVolume": 12345,
++    }
++    meta.update(meta_overrides)
++    return {
++        "chart": {
++            "error": None,
++            "result": [
++                {
++                    "meta": meta,
++                    "timestamp": [int((NOW - timedelta(seconds=30)).timestamp())],
++                    "indicators": {"quote": [{"close": [999.0]}]},
++                }
++            ],
++        }
++    }
++
++
++def tencent_row(code="00700", timestamp="2026/11/11 15:00:00", price="400.5"):
++    parts = [""] * 50
++    parts[2], parts[3], parts[30] = code, price, timestamp
++    return f'v_hk{code}="{"~".join(parts)}";'
++
++
++def response(text):
++    return SimpleNamespace(text=text, encoding=None, raise_for_status=lambda: None)
++
++
++@pytest.mark.parametrize(
++    "value", ["700", "0700.HK", "00700.HK", "HK.00700", " hk.700 "]
++)
++def test_symbol_aliases_normalize_to_same_security(value):
++    assert service.normalize_symbol(value) == "00700.HK"
++
++
++@pytest.mark.parametrize(
++    "value",
++    [
++        "0",
++        "00000.HK",
++        "AAPL.US",
++        "600519.SH",
++        "^HSI",
++        "0700.HK?q=5",
++        "../700",
++        "700,5",
++        "HK.700.HK",
++        "100000.HK",
++        "",
++        None,
++        700,
++    ],
++)
++def test_invalid_foreign_or_injected_symbol_is_rejected(value):
++    with pytest.raises(ValueError):
++        service.normalize_symbol(value)
++
++
++def test_aliases_deduplicate_without_collapsing_currency_counters():
++    assert service.normalize_symbols(
++        ["700", "0700.HK", "80700.HK", "03081.HK", "09081.HK"]
++    ) == [
++        "00700.HK",
++        "80700.HK",
++        "03081.HK",
++        "09081.HK",
++    ]
++
++
++@pytest.mark.parametrize("values", [[], "700", None, ["700"] * 101])
++def test_invalid_batch_rejected(values):
++    with pytest.raises(ValueError):
++        service.normalize_symbols(values)
++
++
++def test_yahoo_uses_paired_metadata_price_and_time_not_latest_bar(
++    monkeypatch, fixed_clock
++):
++    seen = []
++
++    def fetch(url, **kwargs):
++        seen.append((url, kwargs))
++        return yahoo_payload()
++
++    monkeypatch.setattr(service, "throttled_get_json", fetch)
++    result = service._yahoo("00700.HK", NOW)
++    assert result["price"] == 400.5
++    assert result["provider_time"] == "2026-11-11T06:45:00.000+00:00"
++    assert result["observed_at_utc"] == "2026-11-11T07:00:00.000+00:00"
++    assert result["currency"] == "HKD"
++    assert result["volume"] == 12345
++    assert result["volume_scope"] == "session_cumulative"
++    assert result["declared_delay_seconds"] == 900
++    assert result["delay_status"] == "delayed"
++    assert seen[0][0].endswith("/0700.HK")
++    assert seen[0][1]["host_key"] == "yahoo"
++
++
++@pytest.mark.parametrize(
++    "missing", ["regularMarketTime", "regularMarketPrice", "currency"]
++)
++def test_yahoo_missing_required_fields_do_not_fabricate_quote(
++    monkeypatch, fixed_clock, missing
++):
++    payload = yahoo_payload()
++    del payload["chart"]["result"][0]["meta"][missing]
++    monkeypatch.setattr(service, "throttled_get_json", lambda *args, **kwargs: payload)
++    result = service.fetch_quotes(["700"], source="yahoo")
++    assert result["ok"] is False
++    assert result["quotes"] == []
++    assert result["missing"] == ["00700.HK"]
++
++
++@pytest.mark.parametrize("bad_price", [float("nan"), float("inf"), -1, 0, True])
++def test_yahoo_invalid_prices_are_unavailable(monkeypatch, fixed_clock, bad_price):
++    monkeypatch.setattr(
++        service,
++        "throttled_get_json",
++        lambda *args, **kwargs: yahoo_payload(regularMarketPrice=bad_price),
++    )
++    result = service.fetch_quotes(["700"], source="yahoo")
++    assert result["quotes"] == []
++    json.dumps(result, allow_nan=False)
++
++
++def test_yahoo_foreign_returned_identity_cannot_be_used(monkeypatch, fixed_clock):
++    monkeypatch.setattr(
++        service,
++        "throttled_get_json",
++        lambda *args, **kwargs: yahoo_payload(symbol="AAPL"),
++    )
++    result = service.fetch_quotes(["700"], source="yahoo")
++    assert result["quotes"] == []
++
++
++def test_yahoo_currency_is_provider_declared(monkeypatch):
++    monkeypatch.setattr(
++        service,
++        "throttled_get_json",
++        lambda *args, **kwargs: yahoo_payload(symbol="80700.HK", currency="CNY"),
++    )
++    assert service._yahoo("80700.HK", NOW)["currency"] == "CNY"
++
++
++@pytest.mark.parametrize(
++    "timestamp", ["2026/11/11 15:00:00", "2026-11-11 15:00:00", "20261111150000"]
++)
++def test_tencent_supported_timestamp_formats_are_hong_kong_time(monkeypatch, timestamp):
++    monkeypatch.setattr(
++        service,
++        "throttled_get",
++        lambda *args, **kwargs: response(tencent_row(timestamp=timestamp)),
++    )
++    quotes, errors = service._tencent(["00700.HK"], NOW)
++    assert errors == []
++    assert len(quotes) == 1
++    assert quotes[0]["provider_time"] == "2026-11-11T07:00:00.000+00:00"
++    assert quotes[0]["price"] == 400.5
++    assert quotes[0]["volume"] is None
++    assert quotes[0]["volume_unit"] is None
++    assert quotes[0]["delay_status"] == "unknown"
++
++
++def test_tencent_counter_currency_and_partial_failures(monkeypatch):
++    text = "\n".join(tencent_row(code=code) for code in ["00700", "80700", "09081"])
++    monkeypatch.setattr(
++        service, "throttled_get", lambda *args, **kwargs: response(text)
++    )
++    quotes, errors = service._tencent(
++        ["00700.HK", "80700.HK", "09081.HK", "00005.HK"], NOW
++    )
++    assert {row["symbol"]: row["currency"] for row in quotes} == {
++        "00700.HK": "HKD",
++        "80700.HK": "CNY",
++        "09081.HK": "USD",
++    }
++    assert [item["symbol"] for item in errors] == ["00005.HK"]
++
++
++@pytest.mark.parametrize("timestamp", ["", "2026/13/11 15:00:00", "junk"])
++def test_tencent_invalid_time_never_becomes_observation_time(monkeypatch, timestamp):
++    monkeypatch.setattr(
++        service,
++        "throttled_get",
++        lambda *args, **kwargs: response(tencent_row(timestamp=timestamp)),
++    )
++    quotes, errors = service._tencent(["00700.HK"], NOW)
++    assert quotes == []
++    assert errors[0]["symbol"] == "00700.HK"
++
++
++def test_future_provider_time_is_rejected(monkeypatch, fixed_clock):
++    monkeypatch.setattr(service, "_yahoo", lambda *args: quote(age=-30))
++    result = service.fetch_quotes(["700"], source="yahoo")
++    assert result["quotes"] == []
++    assert result["errors"][0]["error"] == "ValueError"
++
++
++def test_stale_yahoo_triggers_fallback_but_newest_quote_wins(monkeypatch, fixed_clock):
++    called = []
++    monkeypatch.setattr(service, "_yahoo", lambda symbol, now: quote(symbol, age=1500))
++
++    def tencent(symbols, now):
++        called.extend(symbols)
++        return [
++            quote("00700.HK", "tencent", age=30),
++            quote("00005.HK", "tencent", age=2000),
++        ], []
++
++    monkeypatch.setattr(service, "_tencent", tencent)
++    result = service.fetch_quotes(["700", "5"], max_age_seconds=1200)
++    rows = {row["symbol"]: row for row in result["quotes"]}
++    assert called == ["00700.HK", "00005.HK"]
++    assert rows["00700.HK"]["source"] == "tencent"
++    assert rows["00700.HK"]["status"] == "fresh"
++    assert rows["00005.HK"]["source"] == "yahoo"
++    assert rows["00005.HK"]["status"] == "stale"
++
++
++def test_fresh_yahoo_does_not_trigger_fallback(monkeypatch, fixed_clock):
++    monkeypatch.setattr(service, "_yahoo", lambda symbol, now: quote(symbol))
++    monkeypatch.setattr(
++        service, "_tencent", lambda *args: pytest.fail("Unexpected fallback")
++    )
++    result = service.fetch_quotes(["700"])
++    assert result["quotes"][0]["source"] == "yahoo"
++
++
++@pytest.mark.parametrize("source", ["yahoo", "tencent", "futu"])
++def test_explicit_source_never_uses_other_providers(monkeypatch, fixed_clock, source):
++    def wrong(*args):
++        pytest.fail("Explicit provider selection was not respected")
++
++    for provider in ["yahoo", "tencent", "futu"]:
++        monkeypatch.setattr(service, "_" + provider, wrong)
++    if source == "yahoo":
++        monkeypatch.setattr(
++            service, "_yahoo", lambda symbol, now: quote(symbol, source, age=3000)
++        )
++    else:
++        monkeypatch.setattr(
++            service,
++            "_" + source,
++            lambda symbols, now: ([quote(symbols[0], source, age=3000)], []),
++        )
++    result = service.fetch_quotes(["700"], source=source)
++    assert result["quotes"][0]["source"] == source
++    assert result["quotes"][0]["status"] == "stale"
++
++
++def test_provider_failure_preserves_other_symbols_and_sanitizes_error(
++    monkeypatch, fixed_clock
++):
++    def yahoo(symbol, now):
++        if symbol == "00005.HK":
++            raise RuntimeError("private-token-account-path")
++        return quote(symbol)
++
++    monkeypatch.setattr(service, "_yahoo", yahoo)
++    result = service.fetch_quotes(["700", "5"], source="yahoo")
++    assert result["ok"] is True
++    assert result["status"] == "partial"
++    assert [row["symbol"] for row in result["quotes"]] == ["00700.HK"]
++    assert result["missing"] == ["00005.HK"]
++    assert "private-token" not in json.dumps(result)
++
++
++def test_cached_quote_age_recomputed_without_mutating_original_time():
++    original = quote(age=60)
++    fresh = service.quote_age(original, NOW, 120)
++    stale = service.quote_age(fresh, NOW + timedelta(minutes=5), 120)
++    assert fresh["status"] == "fresh"
++    assert stale["status"] == "stale"
++    assert stale["age_seconds"] == 360
++    assert stale["provider_time"] == original["provider_time"]
++    assert stale["observed_at_utc"] == original["observed_at_utc"]
++    assert "status" not in original
++
++
++@pytest.mark.parametrize("age", [0, -1, float("nan"), float("inf"), True, "1200"])
++def test_invalid_max_age_is_rejected(age):
++    with pytest.raises(ValueError):
++        service.fetch_quotes(["700"], max_age_seconds=age)
++
++
++def test_yahoo_circuit_breaker_bounds_network_outage_and_fallback_recovers(
++    monkeypatch, fixed_clock
++):
++    called = []
++
++    def failed(symbol, now):
++        called.append(symbol)
++        raise requests.Timeout("private-network-diagnostic")
++
++    monkeypatch.setattr(service, "_yahoo", failed)
++    monkeypatch.setattr(
++        service,
++        "_tencent",
++        lambda symbols, now: ([quote(symbol, "tencent") for symbol in symbols], []),
++    )
++    result = service.fetch_quotes(["700", "5", "388", "941", "1299"])
++    assert len(called) == 3
++    assert len(result["quotes"]) == 5
++    assert {item["source"] for item in result["quotes"]} == {"tencent"}
++    assert [error["error"] for error in result["errors"]] == [
++        "Timeout",
++        "Timeout",
++        "Timeout",
++        "ProviderUnavailable",
++        "ProviderUnavailable",
++    ]
++    assert "private-network" not in json.dumps(result)
++
++
++def test_yahoo_parse_failures_do_not_short_circuit_valid_later_symbols(
++    monkeypatch, fixed_clock
++):
++    called = []
++
++    def parsed(symbol, now):
++        called.append(symbol)
++        if symbol != "01299.HK":
++            raise ValueError("Missing metadata")
++        return quote(symbol)
++
++    monkeypatch.setattr(service, "_yahoo", parsed)
++    result = service.fetch_quotes(["700", "5", "388", "941", "1299"], source="yahoo")
++    assert len(called) == 5
++    assert [row["symbol"] for row in result["quotes"]] == ["01299.HK"]
++
++
++def test_futu_worker_is_quote_only_closes_context_and_batches_bmp_limit(
++    monkeypatch, capsys
++):
++    from src.hk_data import futu_worker
++
++    calls = []
++    closed = []
++
++    class Frame:
++        def __init__(self, codes):
++            self.codes = codes
++
++        def to_dict(self, orientation):
++            assert orientation == "records"
++            return [
++                {
++                    "code": code,
++                    "update_time": "2026-11-11 15:00:00",
++                    "last_price": 10,
++                    "volume": 100,
++                }
++                for code in self.codes
++            ]
++
++    class Context:
++        def get_market_snapshot(self, codes):
++            calls.append(codes)
++            return 0, Frame(codes)
++
++        def close(self):
++            closed.append(True)
++
++    monkeypatch.setitem(
++        sys.modules,
++        "futu",
++        SimpleNamespace(RET_OK=0, OpenQuoteContext=lambda **kwargs: Context()),
++    )
++    symbols = [f"{number:05d}.HK" for number in range(1, 24)]
++    monkeypatch.setattr(sys, "stdin", io.StringIO(json.dumps(symbols)))
++    assert futu_worker.main() == 0
++    rows = json.loads(capsys.readouterr().out)["rows"]
++    assert len(rows) == 23
++    assert [len(batch) for batch in calls] == [20, 3]
++    assert closed == [True]
++    assert rows[0]["update_time"] == "2026-11-11 15:00:00"
++
++
++def test_futu_worker_timeout_becomes_sanitized_unavailable_quotes(
++    monkeypatch, fixed_clock
++):
++    monkeypatch.setattr(
++        service.socket,
++        "create_connection",
++        lambda *args, **kwargs: contextlib.nullcontext(),
++    )
++    calls = []
++
++    def timed_out(command, **kwargs):
++        calls.append((command, kwargs))
++        raise subprocess.TimeoutExpired(
++            command, timeout=20, stderr="private-futu-login"
++        )
++
++    monkeypatch.setattr(service.subprocess, "run", timed_out)
++    result = service.fetch_quotes(["700", "5"], source="futu")
++    assert result["ok"] is False
++    assert result["quotes"] == []
++    assert result["missing"] == ["00700.HK", "00005.HK"]
++    assert len(result["errors"]) == 2
++    assert {error["error"] for error in result["errors"]} == {"TimeoutExpired"}
++    assert calls[0][1]["timeout"] == 20
++    assert calls[0][0][1:] == ["-m", "src.hk_data.futu_worker"]
++    assert "private-futu" not in json.dumps(result)
++
++
++def test_futu_worker_result_parses_hk_time_and_quote_currency(monkeypatch, fixed_clock):
++    monkeypatch.setattr(
++        service.socket,
++        "create_connection",
++        lambda *args, **kwargs: contextlib.nullcontext(),
++    )
++    rows = [
++        {
++            "code": "HK.80700",
++            "last_price": "350",
++            "update_time": "2026-11-11 15:00:00",
++            "volume": "100",
++        }
++    ]
++    monkeypatch.setattr(
++        service.subprocess,
++        "run",
++        lambda *args, **kwargs: SimpleNamespace(stdout=json.dumps({"rows": rows})),
++    )
++    result = service.fetch_quotes(["80700"], source="futu")
++    assert result["quotes"][0]["provider_time"] == "2026-11-11T07:00:00.000+00:00"
++    assert result["quotes"][0]["currency"] == "CNY"
++    assert result["quotes"][0]["volume"] == 100
++
++
++def test_tool_errors_are_strict_json_and_repeatable():
++    tool = hk_quotes_tool.HKQuotesTool()
++    assert tool.repeatable is True
++    assert tool.is_readonly is True
++    result = json.loads(tool.execute(symbols=["AAPL.US"]))
++    assert result["ok"] is False
++    assert result["status"] == "error"
++    assert "Hong Kong" in result["error"]
++
++
++def test_tool_forwards_source_and_freshness(monkeypatch):
++    called = []
++
++    def fetch(symbols, source, age):
++        called.append((symbols, source, age))
++        return {"ok": True, "quotes": [quote()]}
++
++    monkeypatch.setattr(hk_quotes_tool, "fetch_quotes", fetch)
++    value = hk_quotes_tool.HKQuotesTool().execute(
++        symbols=["700"], source="tencent", max_age_seconds=300
++    )
++    assert json.loads(value)["ok"] is True
++    assert called == [(["700"], "tencent", 300)]
++
++
++def test_tool_defaults_to_fast_endpoint_and_one_minute_freshness(monkeypatch):
++    called = []
++
++    def fetch(symbols, source, age):
++        called.append((symbols, source, age))
++        return {"ok": True, "quotes": []}
++
++    monkeypatch.setattr(hk_quotes_tool, "fetch_quotes", fetch)
++    hk_quotes_tool.HKQuotesTool().execute(symbols=["700"])
++    assert called == [(["700"], "tencent", 60)]
+diff --git a/agent/tests/test_hk_tencent_realtime.py b/agent/tests/test_hk_tencent_realtime.py
+new file mode 100644
+index 0000000..0f6431b
+--- /dev/null
++++ b/agent/tests/test_hk_tencent_realtime.py
+@@ -0,0 +1,31 @@
++"""Regression for the faster public Tencent HK endpoint."""
++
++from datetime import datetime, timezone
++from types import SimpleNamespace
++
++from src.hk_data import service
++
++
++def test_realtime_request_and_prefix(monkeypatch):
++    values = [""] * 36
++    for index, value in {
++        2: "00700",
++        3: "400.5",
++        6: "1000",
++        30: "2026/11/11 15:00:00",
++        32: "-1.5",
++    }.items():
++        values[index] = value
++    text = 'v_r_hk00700="' + "~".join(values) + '";'
++
++    def get(url, **kwargs):
++        assert url.endswith("q=r_hk00700")
++        return SimpleNamespace(text=text, raise_for_status=lambda: None)
++
++    monkeypatch.setattr(service, "throttled_get", get)
++    quotes, errors = service._tencent(["00700.HK"], datetime.now(timezone.utc))
++    assert not errors
++    assert quotes[0]["endpoint"] == "r_hk"
++    assert quotes[0]["volume"] == 1000
++    assert quotes[0]["change_pct"] == -1.5
++    assert quotes[0]["volume_unit"] is None
+diff --git a/README.md b/README.md
+--- a/README.md
++++ b/README.md
+@@ -671,3 +671,33 @@
+ ## License
+ 
+ MIT License — see [LICENSE](LICENSE)
++
++
++### Hong Kong HSI research data
++
++Alpha Zoo accepts `hsi` in the benchmark/compare API and CLI universe options.
++It loads current Wikipedia members through the shared HK provider chain,
++records the parsed revision date and missing symbols, and discloses
++`survivorship_bias: true`. A dated full-roster fallback is explicitly degraded.
++Sector labels use the SP500 coverage threshold; synthetic VWAP is an OHLC-mean
++proxy. Current members/labels can lag official reviews and are not historical
++point-in-time membership. Inspect `meta.price_provenance` for adjustment/volume
++basis; a raw-price factor benchmark is not a validated total-return strategy.
++
++The read-only `get_hk_quotes` agent/MCP tool defaults to the faster public Tencent
++`r_hk` endpoint. Example arguments: `{"symbols":["0700.HK","0005.HK"],"source":"tencent","max_age_seconds":60}`.
++Provider timestamp, receipt time, currency and freshness are explicit; a newly
++received stale quote is still stale. No broker orders or account login occur.
++
++To keep a local quote archive, run from `agent/`:
++
++```bash
++python -m src.hk_data --hsi-snapshot --source tencent --interval-seconds 5 --db ./data/hk_quotes.sqlite3
++python -m src.hk_data --latest --db ./data/hk_quotes.sqlite3
++```
++
++The snapshot is the dated 95-stock 2026-11-04 list; refresh after index reviews
++or pass your own `--symbols-file` CSV. This archive command runs until stopped
++and can retain quotes outside sessions; it does not install a scheduler or
++cloud service. See [HK quote package](agent/src/hk_data/README.md). Observed
++last-trade age is not a latency guarantee or a verified real-time entitlement.

@@ -1,7 +1,0 @@
-{
-  "label": "PROVISIONAL",
-  "status": "completed",
-  "signal_scores_match_readiness": true,
-  "labels_and_executions_within_cutoff": true,
-  "strict_dataset_flags_unchanged": true
-}

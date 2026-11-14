@@ -1,43 +1,13 @@
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-*.pyd
-*.egg-info/
-.venv/
-venv/
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Environment and secrets
-.env
-.env.local
-.env.*
-!.env.example
-
-# Data and generated artifacts
-data/*
-!data/README.md
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-results/*
-!results/.gitkeep
-models/*
-!models/.gitkeep
-
-# OS/editor files
 .DS_Store
-.vscode/
-.idea/
-
-# Test and coverage outputs
+__pycache__/
 .pytest_cache/
-.coverage
-htmlcov/
-
-# Logs and spreadsheet exports (never commit)
-logs/
-*.log
-*.xlsx
-*.ndjson
+.venv/
+node_modules/
+.env
+.env.*
+data/
+*.sqlite3
+*.sqlite3-wal
+*.sqlite3-shm
+*.parquet
+*.zip
