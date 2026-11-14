@@ -6,8 +6,10 @@ five-second HSI collector, completed US/HK strategy evaluations and all-week fil
 This `Jack` branch combines the preserved Week 1/2 archive in `research/` with
 the organized HK code in `src/hk/`, metrics in `results/hk/week1`, `week2` and
 `week3`, references in `config/`, and the live-service handoff in `infra/hk_live/`.
-Start with [HK_START_HERE.md](HK_START_HERE.md). The Vibe Trading app and ZIP
-exports are separate local folders outside this repository.
+Start with [HK_START_HERE.md](HK_START_HERE.md).
+The reviewed [Vibe Trading contribution](contributions/vibe-trading/README.md)
+is included on this same `Jack` branch as code patches and benchmark evidence.
+The full app and local runtime datasets remain separate.
 
 IndicatorLab is a DS3 financial-market research project. Attention data
 (Reddit, Wikipedia, search trends) and India equities research are both part

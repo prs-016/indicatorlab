@@ -148,6 +148,12 @@ Verify that the virtual environment is active before executing project scripts o
   deployment, Docker build or James endpoint check was performed.
 - A separate sibling Vibe-Trading-upstream checkout holds only upstream code
   changes; never paste that tree into IndicatorLab. Jack handles publishing.
+- `contributions/vibe-trading/` holds the seven-file code-patch/benchmark
+  package for review on the same `Jack` branch. It contains all 21 target-file
+  changes but no full app, ZIP, raw prices, database or model. Publishing this
+  review package does not itself merge changes into HKUDS/Vibe-Trading.
+  `.gitattributes` disables whitespace warnings only for these patch containers;
+  their blank diff-context prefixes must remain unchanged.
 
 Activate the project's Python environment before running scripts:
 

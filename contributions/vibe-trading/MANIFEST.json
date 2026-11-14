@@ -1,0 +1,183 @@
+{
+  "upstream": "https://github.com/HKUDS/Vibe-Trading",
+  "base_commit": "67ce0ca5c9b2a3e3d321217eff043dad913a27fa",
+  "verified": [
+    "01 then 02 applied to clean base and byte-matched all 21 destination files",
+    "APPLY_ALL applied separately and byte-matched all 21 files"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "kind": "modified",
+      "scope": "01+02",
+      "sha256": "9c37e382a6cc33bfba2c7daffdcec46427df421e9f88d67b8ef88e086536a5f6"
+    },
+    {
+      "path": "agent/backtest/loaders/_symbol_utils.py",
+      "kind": "modified",
+      "scope": "01",
+      "sha256": "452dba9a248630f89d222c4211c50b8039727949a6778b21e8a1edc3fd4195cd"
+    },
+    {
+      "path": "agent/mcp_server.py",
+      "kind": "modified",
+      "scope": "02",
+      "sha256": "c5c06119ec873ad9a96214b5a4e7318b3c7b67e449b6d84d0720947dfb57714d"
+    },
+    {
+      "path": "agent/src/api/alpha_routes.py",
+      "kind": "modified",
+      "scope": "01",
+      "sha256": "d14ade5f1f7c253341498a9eaed894944766fa6f6fb8b2aea3a37877603b1666"
+    },
+    {
+      "path": "agent/src/factors/cli_handlers.py",
+      "kind": "modified",
+      "scope": "01",
+      "sha256": "fe83cc57e952b8793395404c5ebd99f699450932697b9c9169015da0becb7a55"
+    },
+    {
+      "path": "agent/src/hk_data/README.md",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "7ee0f6d7da2b83a0cf143980bd90c031b885664222f7a9559c333f89326281ac"
+    },
+    {
+      "path": "agent/src/hk_data/__init__.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "13e0cda45fa41fed8523c736937ec52364dfb1c8038c6f314e7ac791ce1e33ad"
+    },
+    {
+      "path": "agent/src/hk_data/__main__.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "5bcbdfa40c08288eeb158f464737bda7b858681a3405e9540184b7b24573177b"
+    },
+    {
+      "path": "agent/src/hk_data/collector.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "616708c43ce54edc4ab9b71c23129c20fb2a35211f0cfed9ee5ff22e8e7fcb34"
+    },
+    {
+      "path": "agent/src/hk_data/futu_worker.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "00ab5b89aa4522d11df9395f67fb6a63557e27d3d55c81af18174339588f58ab"
+    },
+    {
+      "path": "agent/src/hk_data/service.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "21c78255cbb2ead6f76bbcb56a4eb32da33dbdf8c7a7eae515578f6e16a526af"
+    },
+    {
+      "path": "agent/src/hk_data/storage.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "a831a44259dd332951accab2c947dbe807d1321881fd0a4810de2270ed8cf0c2"
+    },
+    {
+      "path": "agent/src/tools/alpha_bench_tool.py",
+      "kind": "modified",
+      "scope": "01",
+      "sha256": "9c87783948442565d616567d4e6787b7773c31b02b5fda02fdd6f85f5b9d5020"
+    },
+    {
+      "path": "agent/src/tools/hk_quotes_tool.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "166766642ba71c59d78d82ca57f5793d9bc2728d30f41e148cde1f84e9adab13"
+    },
+    {
+      "path": "agent/src/tools/hsi_universe.py",
+      "kind": "new",
+      "scope": "01",
+      "sha256": "540e8cf37589e3775dffbb988e7ec8f5cbeaea67636c17e0ad1332b4e292131c"
+    },
+    {
+      "path": "agent/tests/test_alpha_bench_hsi.py",
+      "kind": "new",
+      "scope": "01",
+      "sha256": "0996c4c7e08b5f31e8cc03730151db1f8e144a6c9002677547ffcf95c3446f81"
+    },
+    {
+      "path": "agent/tests/test_hk_collector.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "639511c2407c124cb50996622ea8545864a8586be4ea58d008232087cbcb8f5e"
+    },
+    {
+      "path": "agent/tests/test_hk_quotes.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "b513bfec60b8e76f6c1c3985c9c69a99498b28f3dbee04b5846ed5797f3e70f3"
+    },
+    {
+      "path": "agent/tests/test_hk_tencent_realtime.py",
+      "kind": "new",
+      "scope": "02",
+      "sha256": "93a3cb260ba2160c2816f674b1881c1555239b4af5b52c7dad77b74a247eda9b"
+    },
+    {
+      "path": "agent/tests/test_mcp_json_string_args.py",
+      "kind": "modified",
+      "scope": "02",
+      "sha256": "1134aa4fb5845fdacef8d5c731ff1d6f4ea6c6c6cb7f06e9b9e646cf010de79e"
+    },
+    {
+      "path": "agent/tests/test_mcp_server_smoke.py",
+      "kind": "modified",
+      "scope": "02",
+      "sha256": "29d4da77206866845a73da570515cc247c32a8f5a1f3cbfbc7b41aa898867451"
+    }
+  ],
+  "checks": {
+    "vibe_selected_tests_passed": 1085,
+    "skipped": 23,
+    "warning": "existing Python 3.14 / LangChain Pydantic v1 compatibility",
+    "focused_hsi_quote_tests_passed": 91,
+    "research_hk_tests_passed": 58,
+    "scoped_ruff_black": "passed",
+    "patch_whitespace": "passed"
+  },
+  "benchmark": {
+    "completed_at_utc": "2026-11-12T08:06:38+00:00",
+    "universe": "hsi",
+    "period": [
+      "2016-06-01",
+      "2025-09-30"
+    ],
+    "factors_tested": 100,
+    "factors_skipped": 1,
+    "skipped": {
+      "alpha101_097": "More than 95% NaN; observed NaN ratio 0.981"
+    },
+    "wikipedia_roster": 85,
+    "loaded": 85,
+    "missing_symbols": [],
+    "constituent_source_date": "2026-10-01",
+    "constituent_revision_id": 1377881667,
+    "sector_coverage": 1.0,
+    "survivorship_bias": true,
+    "best_reported": {
+      "factor": "alpha101_054",
+      "mean_ic_rounded": 0.0408,
+      "ic_ir_rounded": 0.2668
+    },
+    "providers_observed": [
+      "tencent",
+      "eastmoney",
+      "yahoo"
+    ],
+    "report_sha256": "c1bfd735b248af5b6a316c661b32f2b395148881bb0303cbf1fa7eab1ca09c39",
+    "local_report": "data/hk_week3/hsi_alpha101_report.html",
+    "limitations": "Exploratory factor IC smoke benchmark, not a costed portfolio KEEP evaluation. Current 85-name Wikipedia roster lags the official operational 95-name snapshot. Mixed provider price/volume adjustment basis and no point-in-time availability certification."
+  },
+  "not_performed": [
+    "GitHub fork/commit/push/PR/CI",
+    "actual AWS deployment",
+    "James endpoint integration"
+  ]
+}

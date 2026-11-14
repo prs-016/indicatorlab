@@ -60,22 +60,24 @@ retroactively fulfill posting rules to the shared team sheet before testing.
 
 ## Files to contribute to Vibe Trading
 
-Use **/Users/jackgui/Desktop/hk/HSI_Vibe_Trading_Week3_Ready/** or the sibling
-**HSI_Vibe_Trading_Week3_Ready.zip**. This supersedes the older contribution
-folders. It contains code/docs/tests only, with 21 destination paths:
+The [Vibe Trading contribution package](contributions/vibe-trading/README.md)
+is now inside this repository at **contributions/vibe-trading/**, so it can be
+reviewed on the same **Jack** branch as your other HK deliverables. It includes
+patches containing the 21 changed/new upstream code/docs/test paths. The
+older local `HSI_Vibe_Trading_Week3_Ready` folder/ZIP is an equivalent export:
 
 - `01_hsi_universe.patch`: HSI benchmark universe, normalization, API/CLI and tests.
 - `02_hk_quotes.patch`: optional HK quote tool/collector and MCP integration;
   depends on 01 for the HSI snapshot helper.
 - `APPLY_ALL.patch`: alternative to applying 01 then 02. Do not apply all three.
-- `README.md`, `MANIFEST.json`, `BENCH_SUMMARY.md`, and inspection copies of new files.
+- `README.md`, `MANIFEST.json`, `BENCH_SUMMARY.md` and the upstream license. New code is inside the patches; inspection duplicates are omitted.
 
 Both application routes were independently applied to clean base files and
 byte-matched against the worktree. No raw/live market archive is included.
 The actual upstream checkout is `../Vibe-Trading-upstream`, branch
 `feat/alpha-bench-hsi`, base `67ce0ca5c9b2a3e3d321217eff043dad913a27fa`.
 You handle your fork, commits, real co-author details, DCO and pull requests.
-Nothing was published or force-pushed.
+The IndicatorLab research merge is on `Jack`. Upstream Vibe acceptance/CI has not been verified here.
 
 The actual HSI Alpha101 benchmark finished: 100 factors tested, one skipped,
 85/85 Wikipedia names loaded. See [summary](results/hk/week3/hsi_alpha101_summary.json).
