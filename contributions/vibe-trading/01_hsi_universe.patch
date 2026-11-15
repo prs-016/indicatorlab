@@ -53,7 +53,7 @@ index 6c6c55a..75457c4 100644
          if universe is not None and universe not in _VALID_UNIVERSES:
              raise HTTPException(
 diff --git a/agent/src/factors/cli_handlers.py b/agent/src/factors/cli_handlers.py
-index caf7116..22bf68e 100644
+index c21ae9c..8f83a84 100644
 --- a/agent/src/factors/cli_handlers.py
 +++ b/agent/src/factors/cli_handlers.py
 @@ -94,7 +94,7 @@ def _load_cli_env() -> None:
@@ -73,8 +73,23 @@ index caf7116..22bf68e 100644
      "btc-usdt": "crypto",
  }
  
+diff --git a/agent/src/factors/data_availability.py b/agent/src/factors/data_availability.py
+index 75e39a6..2af56f2 100644
+--- a/agent/src/factors/data_availability.py
++++ b/agent/src/factors/data_availability.py
+@@ -76,6 +76,10 @@ _ADAPTERS: dict[str, AvailabilityAdapter] = {
+         "us_equity",
+         MarketContext("equity", "XNYS+XNAS", "USD", "America/New_York", "NYSE/NASDAQ"),
+     ),
++    "hsi": _BuiltinAdapter(
++        "hk_equity",
++        MarketContext("equity", "XHKG", "HKD", "Asia/Hong_Kong", "XHKG"),
++    ),
+     "btc-usdt": _BuiltinAdapter(
+         "crypto",
+         MarketContext("crypto", "global", "USDT", "UTC", "24/7"),
 diff --git a/agent/src/tools/alpha_bench_tool.py b/agent/src/tools/alpha_bench_tool.py
-index 1483aa6..15fed37 100644
+index 1483aa6..8b8ff62 100644
 --- a/agent/src/tools/alpha_bench_tool.py
 +++ b/agent/src/tools/alpha_bench_tool.py
 @@ -80,6 +80,7 @@ _PERIOD_DATE = re.compile(r"^(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})$")
@@ -94,7 +109,19 @@ index 1483aa6..15fed37 100644
          period: ``YYYY-YYYY`` or ``YYYY-MM-DD/YYYY-MM-DD``.
          use_cache: When True (default) reuse a pickle in
              ``~/.vibe-trading/cache/`` if the same universe+period was fetched
-@@ -143,6 +144,8 @@ def _load_universe_panel(
+@@ -132,7 +133,10 @@ def _load_universe_panel(
+     start, end = _parse_period(period)
+ 
+     cache_dir = get_runtime_root() / "cache"
+-    cache_path = cache_dir / f"{universe}_{start}_{end}.pkl"
++    # Old HSI cache entries predate canonical provenance and roster reconciliation.
++    # Keep other universes' cache names stable; this versions HSI metadata only.
++    cache_universe = "hsi_v2" if universe == "hsi" else universe
++    cache_path = cache_dir / f"{cache_universe}_{start}_{end}.pkl"
+     if use_cache and cache_path.is_file():
+         cached = _read_pickle_cache(cache_path)
+         if cached is not None:
+@@ -143,6 +147,8 @@ def _load_universe_panel(
          panel = _load_csi300_panel(start, end)
      elif universe == "sp500":
          panel = _load_sp500_panel(start, end)
@@ -103,7 +130,7 @@ index 1483aa6..15fed37 100644
      elif universe == "btc-usdt":
          panel = _load_btc_panel(start, end)
      else:  # pragma: no cover — guarded above
-@@ -622,6 +625,84 @@ def _fetch_sp500_constituents() -> tuple[list[str], dict[str, str]]:
+@@ -622,6 +628,117 @@ def _fetch_sp500_constituents() -> tuple[list[str], dict[str, str]]:
      return [], {}
  
  
@@ -112,6 +139,7 @@ index 1483aa6..15fed37 100644
 +    from backtest.loaders._symbol_utils import normalize_hk_symbol
 +    from backtest.loaders.registry import FALLBACK_CHAINS, resolve_loader
 +    from src.market_data import fetch_market_data
++    from src.tools.hsi_metadata import canonical_symbol_metadata, provenance_summary
 +    from src.tools.hsi_universe import fetch_constituents
 +
 +    codes, sectors, metadata = fetch_constituents()
@@ -132,14 +160,28 @@ index 1483aa6..15fed37 100644
 +        )
 +        or {}
 +    )
-+    fetched = {}
++    fetched, chosen_aliases = {}, {}
 +    for code, frame in response.items():
 +        if str(code).startswith("_") or frame is None or frame.empty:
 +            continue
 +        canonical = normalize_hk_symbol(code)
 +        if canonical in codes:
-+            fetched.setdefault(canonical, frame.loc[start:end])
++            bounded = frame.loc[start:end]
++            if canonical in fetched and not fetched[canonical].equals(bounded):
++                raise ValueError(
++                    f"Conflicting HSI price frames for aliases of {canonical}"
++                )
++            if canonical not in fetched:
++                fetched[canonical] = bounded
++                chosen_aliases[canonical] = str(code)
 +    fetched = {code: frame for code, frame in fetched.items() if not frame.empty}
++    raw_provenance = response.get("_provenance", {})
++    provenance, provenance_conflicts = canonical_symbol_metadata(
++        raw_provenance, codes, chosen_aliases
++    )
++    diagnostics, diagnostic_conflicts = canonical_symbol_metadata(
++        response.get("_diagnostics", {}), codes, chosen_aliases, diagnostics=True
++    )
 +    panel = _wide_from_fetched(fetched, include_amount=False)
 +    if all(key in panel for key in ("open", "high", "low", "close")):
 +        panel["vwap"] = (
@@ -164,23 +206,41 @@ index 1483aa6..15fed37 100644
 +            )
 +    panel["_meta"] = metadata | {
 +        "universe": "hsi",
++        "hsi_metadata_version": 2,
 +        "currency": "HKD",
++        "exchange_timezone": "Asia/Hong_Kong",
++        "calendar": "XHKG",
++        "calendar_policy": "provider-observed daily dates; no calendar reindex or fabricated bars",
 +        "survivorship_bias": True,
++        "pit_membership": False,
++        "degraded": bool(metadata.get("degraded") or provenance_conflicts),
 +        "requested_instruments": len(codes),
 +        "fetched_instruments": len(fetched),
 +        "missing_instruments": sorted(set(codes) - set(fetched)),
 +        "constituent_count": len(codes),
-+        "data_diagnostics": response.get("_diagnostics", {}),
-+        "price_provenance": response.get("_provenance", {}),
++        "data_diagnostics": diagnostics,
++        "raw_data_diagnostics": response.get("_diagnostics", {}),
++        "diagnostic_alias_conflicts": diagnostic_conflicts,
++        "price_provenance": provenance,
++        "raw_price_provenance": raw_provenance,
++        "provenance_alias_conflicts": provenance_conflicts,
 +        "price_sources": sorted(
-+            {value["source"] for value in response.get("_provenance", {}).values()}
++            {value["source"] for code, value in provenance.items() if code in fetched and value.get("source")}
++        ),
++        **provenance_summary(fetched, provenance),
++        "missing_data_policy": (
++            "HSI panel outer-joins observed provider dates without filling cells; "
++            "shared upstream adapters may already drop incomplete OHLC or fill missing volume with zero"
 +        ),
 +        "vwap_method": "OHLC arithmetic mean proxy; not traded VWAP",
 +        "sector_source": (
 +            "Wikipedia sector/industry/sub-index" if "sector" in panel else None
 +        ),
 +        "sector_coverage": round(coverage, 4),
-+        "sector_note": "Current labels; omitted below the SP500 coverage threshold.",
++        "sector_note": (
++            "Current source-table labels, not harmonized with GICS/NSE classifications; "
++            "omitted below the SP500 coverage threshold."
++        ),
 +    }
 +    return panel
 +
@@ -188,7 +248,7 @@ index 1483aa6..15fed37 100644
  def _load_btc_panel(start: str, end: str) -> dict[str, pd.DataFrame]:
      """Single-instrument BTC-USDT panel via OKX. Adds vwap = typical price."""
      from backtest.loaders.registry import resolve_loader
-@@ -1486,7 +1567,7 @@ class AlphaBenchTool(BaseTool):
+@@ -1486,7 +1603,7 @@ class AlphaBenchTool(BaseTool):
              },
              "universe": {
                  "type": "string",
@@ -197,12 +257,144 @@ index 1483aa6..15fed37 100644
              },
              "period": {
                  "type": "string",
+diff --git a/agent/tests/test_data_availability.py b/agent/tests/test_data_availability.py
+index 0d10e4c..600af63 100644
+--- a/agent/tests/test_data_availability.py
++++ b/agent/tests/test_data_availability.py
+@@ -128,3 +128,44 @@ def test_metadata_without_source_is_explicitly_unknown() -> None:
+     assert close["status"] == "unknown"
+     assert close["source"] is None
+     assert close["pit_safe"] is False
++
++
++def _hsi_panel() -> dict:
++    return {
++        "close": pd.DataFrame(
++            {"0700.HK": [400.0]}, index=pd.DatetimeIndex(["2024-01-02"])
++        ),
++        "_meta": {
++            "price_sources": ["tencent"],
++            "constituent_source": "wikipedia",
++            "constituent_source_date": "2026-10-01",
++            "pit_membership": False,
++            "survivorship_bias": True,
++        },
++    }
++
++
++def test_hsi_uses_hong_kong_context_in_the_existing_schema() -> None:
++    contract = build_availability_contract(
++        _hsi_panel(), universe="hsi", period="2024-01-01/2024-01-31"
++    )
++    assert contract["schema"] == "alpha-bench.data-availability/v1"
++    assert contract["adapter"] == "hk_equity"
++    assert contract["asset_class"] == "equity"
++    assert contract["venue"] == "XHKG"
++    assert contract["currency"] == "HKD"
++    assert contract["timezone"] == "Asia/Hong_Kong"
++    assert contract["calendar"] == "XHKG"
++    assert json.loads(json.dumps(contract)) == contract
++
++
++def test_hsi_identity_does_not_upgrade_unverified_availability() -> None:
++    contract = build_availability_contract(_hsi_panel(), universe="hsi")
++    fields = _fields(contract)
++    assert fields["close"]["availability_mode"] == "bar_close"
++    assert fields["close"]["status"] == "assumed"
++    assert fields["close"]["pit_safe"] is False
++    assert fields["universe:membership"]["availability_mode"] == "effective_date"
++    assert fields["universe:membership"]["status"] == "unknown"
++    assert fields["universe:membership"]["pit_safe"] is False
++    assert any("not point-in-time" in warning for warning in contract["warnings"])
+diff --git a/agent/src/tools/hsi_metadata.py b/agent/src/tools/hsi_metadata.py
+new file mode 100644
+index 0000000..d99c553
+--- /dev/null
++++ b/agent/src/tools/hsi_metadata.py
+@@ -0,0 +1,77 @@
++"""Canonical HK metadata without silently changing price or quantity values."""
++
++from __future__ import annotations
++
++import json
++from collections.abc import Mapping
++
++from backtest.loaders._symbol_utils import normalize_hk_symbol
++
++
++def canonical_symbol_metadata(values, requested, preferred, *, diagnostics=False):
++    """Return canonical records and preserved alias conflicts for requested stocks.
++
++    An exact metadata entry for the alias that supplied the selected frame wins.
++    Otherwise, only a single or identical set of alias entries is unambiguous.
++    All conflicting entries remain visible; unknown provenance is never guessed.
++    """
++    groups = {}
++    if not isinstance(values, Mapping):
++        return {}, {}
++    for alias, value in values.items():
++        try:
++            code = normalize_hk_symbol(alias)
++        except ValueError:
++            continue
++        if code in requested:
++            groups.setdefault(code, {})[str(alias)] = value
++    result, conflicts = {}, {}
++    for code, entries in groups.items():
++        fingerprints = {
++            json.dumps(value, sort_keys=True, default=str) for value in entries.values()
++        }
++        conflict = len(fingerprints) > 1
++        chosen = preferred.get(code)
++        if chosen in entries:
++            value = entries[chosen]
++        elif not conflict:
++            value = next(iter(entries.values()))
++        else:
++            value = {}
++        record = dict(value) if isinstance(value, Mapping) else {"raw_value": value}
++        if conflict:
++            conflicts[code] = entries
++            record["alias_metadata_conflict"] = True
++        if diagnostics and len(entries) > 1:
++            record["alias_diagnostics"] = entries
++        result[code] = record
++    return result, conflicts
++
++
++def provenance_summary(codes, provenance):
++    """Disclose provider-native adjustment/volume bases without transforming bars."""
++    adjustments = {
++        code: provenance.get(code, {}).get("adjustment") or "unknown" for code in codes
++    }
++    units = {code: provenance.get(code, {}).get("volume_unit") for code in codes}
++    warnings = []
++    if len(set(adjustments.values())) > 1:
++        warnings.append("Price adjustment bases differ between instruments.")
++    if any(value != "split_dividend" for value in adjustments.values()):
++        warnings.append(
++            "At least one price series is not declared split/dividend adjusted; "
++            "returns and cross-market comparisons need adjustment-basis review."
++        )
++    if any(value != "shares" for value in units.values()):
++        warnings.append(
++            "At least one volume unit is unknown or not declared in shares; "
++            "no board-lot multiplier or implicit unit conversion was applied."
++        )
++    return {
++        "price_adjustment_policy": "provider-native; not harmonized by HSI loader",
++        "price_adjustments": adjustments,
++        "mixed_price_adjustments": len(set(adjustments.values())) > 1,
++        "volume_units": units,
++        "volume_normalization": "none; preserve declared provider quantities",
++        "data_quality_warnings": warnings,
++    }
 diff --git a/agent/src/tools/hsi_universe.py b/agent/src/tools/hsi_universe.py
 new file mode 100644
-index 0000000..9c67235
+index 0000000..dff908e
 --- /dev/null
 +++ b/agent/src/tools/hsi_universe.py
-@@ -0,0 +1,131 @@
+@@ -0,0 +1,182 @@
 +"""Current HSI constituents for a deliberately survivorship-biased benchmark."""
 +
 +from __future__ import annotations
@@ -222,6 +414,13 @@ index 0000000..9c67235
 +# Full frozen operational roster as of 2026-11-04, from HSI review announcements.
 +# Never represent this fallback as historical membership or a live official list.
 +FALLBACK_DATE = "2026-11-04"
++# Official reference: the review announced on 2026-08-21, effective 2026-09-07.
++# This frozen set is an audit reference, not an indefinitely current index list.
++REFERENCE_EFFECTIVE_DATE = "2026-09-07"
++REFERENCE_SOURCE_URL = (
++    "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/"
++    "20260821T174500.pdf"
++)
 +FALLBACK_CODES = """
 +0001.HK 0002.HK 0003.HK 0005.HK 0006.HK 0012.HK 0016.HK 0027.HK 0066.HK
 +0101.HK 0175.HK 0241.HK 0267.HK 0285.HK 0288.HK 0291.HK 0300.HK 0316.HK
@@ -235,6 +434,42 @@ index 0000000..9c67235
 +3993.HK 6160.HK 6181.HK 6618.HK 6690.HK 6862.HK 9618.HK 9633.HK 9888.HK
 +9901.HK 9961.HK 9988.HK 9992.HK 9999.HK
 +""".split()
++
++
++def _with_reference_metadata(codes: list[str], metadata: dict) -> dict:
++    """Disclose set differences against the dated reference without changing codes."""
++    observed, reference = set(codes), set(FALLBACK_CODES)
++    missing = sorted(reference - observed)
++    unexpected = sorted(observed - reference)
++    matches = not missing and not unexpected
++    if not matches:
++        LOG.warning(
++            "HSI roster differs from frozen %s reference: %d missing, %d unexpected; "
++            "review both sources before treating either as current",
++            FALLBACK_DATE,
++            len(missing),
++            len(unexpected),
++        )
++    return {
++        **metadata,
++        "constituent_observed_count": len(observed),
++        "constituent_reference_source": REFERENCE_SOURCE_URL,
++        "constituent_reference_effective_date": REFERENCE_EFFECTIVE_DATE,
++        "constituent_reference_snapshot_date": FALLBACK_DATE,
++        "constituent_reference_frozen": True,
++        "constituent_reference_count": len(reference),
++        "constituent_reference_overlap_count": len(observed & reference),
++        "constituent_reference_missing_symbols": missing,
++        "constituent_reference_unexpected_symbols": unexpected,
++        "constituent_reference_matches": matches,
++        "constituent_reference_note": (
++            "Dated set comparison only; the frozen reference can become stale after "
++            "index reviews. A mismatch requires review and does not establish which "
++            "source is current. Returned source codes are unchanged; neither set "
++            "provides historical point-in-time membership."
++        ),
++        "degraded": bool(metadata.get("degraded")) or not matches,
++    }
 +
 +
 +def parse_constituents(html: str) -> tuple[list[str], dict[str, str]]:
@@ -309,14 +544,18 @@ index 0000000..9c67235
 +        return (
 +            codes,
 +            sectors,
-+            {
-+                "constituent_source": WIKIPEDIA_URL,
-+                "constituent_source_date": date,
-+                "constituent_revision_id": revision.group(1) if revision else None,
-+                "constituent_retrieved_at": fetched_at,
-+                "degraded": date is None,
-+                "constituent_note": "Current Wikipedia roster can lag official index reviews; not point-in-time membership.",
-+            },
++            _with_reference_metadata(
++                codes,
++                {
++                    "constituent_source": WIKIPEDIA_URL,
++                    "constituent_source_date": date,
++                    "constituent_source_date_kind": "wikipedia_revision_date",
++                    "constituent_revision_id": revision.group(1) if revision else None,
++                    "constituent_retrieved_at": fetched_at,
++                    "degraded": date is None or revision is None,
++                    "constituent_note": "Wikipedia page revision date is not a membership effective date; current roster can lag reviews and is not point-in-time membership.",
++                },
++            ),
 +        )
 +    except (requests.RequestException, ValueError, ImportError) as exc:
 +        LOG.warning(
@@ -325,21 +564,25 @@ index 0000000..9c67235
 +        return (
 +            list(FALLBACK_CODES),
 +            {},
-+            {
-+                "constituent_source": "frozen HSI fallback",
-+                "constituent_source_date": FALLBACK_DATE,
-+                "constituent_revision_id": None,
-+                "constituent_retrieved_at": fetched_at,
-+                "degraded": True,
-+                "constituent_note": "Frozen roster; refresh required after index reviews.",
-+            },
++            _with_reference_metadata(
++                FALLBACK_CODES,
++                {
++                    "constituent_source": "frozen HSI fallback",
++                    "constituent_source_date": FALLBACK_DATE,
++                    "constituent_source_date_kind": "frozen_snapshot_as_of",
++                    "constituent_revision_id": None,
++                    "constituent_retrieved_at": fetched_at,
++                    "degraded": True,
++                    "constituent_note": "Frozen roster; refresh required after index reviews.",
++                },
++            ),
 +        )
 diff --git a/agent/tests/test_alpha_bench_hsi.py b/agent/tests/test_alpha_bench_hsi.py
 new file mode 100644
-index 0000000..dca0da4
+index 0000000..8222c61
 --- /dev/null
 +++ b/agent/tests/test_alpha_bench_hsi.py
-@@ -0,0 +1,165 @@
+@@ -0,0 +1,296 @@
 +"""HSI alias identity, public roster metadata and loader-chain integration."""
 +
 +from types import SimpleNamespace
@@ -390,7 +633,8 @@ index 0000000..dca0da4
 +    assert len(codes) == len(sectors) == 50
 +    assert meta["constituent_source_date"] == "2026-10-01"
 +    assert meta["constituent_revision_id"] == "123"
-+    assert meta["degraded"] is False
++    assert meta["degraded"] is True
++    assert meta["constituent_reference_matches"] is False
 +
 +
 +def test_network_failure_has_full_dated_fallback(monkeypatch):
@@ -442,10 +686,17 @@ index 0000000..dca0da4
 +            "700.HK": frame,
 +            "0005.HK": frame,
 +            "_unresolved": ["9988.HK"],
-+            "_provenance": {"700.HK": {"source": "tencent", "price_caliber": "raw"}},
++            "_provenance": {
++                "700.HK": {
++                    "source": "tencent",
++                    "adjustment": "raw",
++                    "volume_unit": "shares",
++                }
++            },
 +        }
 +
 +    monkeypatch.setattr("src.market_data.fetch_market_data", fetch)
++    return frame
 +
 +
 +def test_panel_metadata_missing_names_and_currency(monkeypatch):
@@ -457,6 +708,10 @@ index 0000000..dca0da4
 +    assert panel["_meta"]["survivorship_bias"] is True
 +    assert panel["_meta"]["currency"] == "HKD"
 +    assert panel["_meta"]["price_sources"] == ["tencent"]
++    assert panel["_meta"]["price_provenance"]["0700.HK"]["adjustment"] == "raw"
++    assert panel["_meta"]["price_adjustments"]["0700.HK"] == "raw"
++    assert panel["_meta"]["volume_units"]["0700.HK"] == "shares"
++    assert "700.HK" in panel["_meta"]["raw_price_provenance"]
 +    assert "sector" not in panel
 +    pd.testing.assert_frame_equal(
 +        panel["vwap"], sum(panel[k] for k in ("open", "high", "low", "close")) / 4
@@ -505,10 +760,274 @@ index 0000000..dca0da4
 +    )
 +    assert "hsi" in _UNIVERSE_CHOICES
 +    assert _LIST_UNIVERSE_ALIASES["hsi"] == "equity_hk"
++
++
++def test_legacy_hsi_cache_cannot_hide_reconciliation_and_provenance_fix(
++    monkeypatch, tmp_path
++):
++    patch_panel(monkeypatch)
++    monkeypatch.setattr(tool, "get_runtime_root", lambda: tmp_path)
++    cache = tmp_path / "cache"
++    legacy = {
++        "close": pd.DataFrame({"0700.HK": [1.0]}, index=pd.to_datetime(["2024-01-01"])),
++        "_meta": {"legacy": True},
++    }
++    tool._write_pickle_cache(cache, cache / "hsi_2024-01-01_2024-01-02.pkl", legacy)
++    panel = tool._load_universe_panel("hsi", "2024-01-01/2024-01-02")
++    assert panel["_meta"]["hsi_metadata_version"] == 2
++    assert "legacy" not in panel["_meta"]
++    assert (cache / "hsi_v2_2024-01-01_2024-01-02.pkl").is_file()
++
++
++def test_observed_panel_gaps_are_not_filled_by_hsi_layer(monkeypatch):
++    frame = patch_panel(monkeypatch)
++    frame.loc[pd.Timestamp("2024-01-02"), "volume"] = float("nan")
++    panel = tool._load_hsi_panel("2024-01-01", "2024-01-02")
++    assert pd.isna(panel["volume"].loc["2024-01-02", "0700.HK"])
++    assert (
++        "shared upstream adapters may already" in panel["_meta"]["missing_data_policy"]
++    )
++
++
++def test_equal_alias_frames_deduplicate_but_conflicting_metadata_is_visible(
++    monkeypatch,
++):
++    from src import market_data
++
++    patch_panel(monkeypatch)
++    fetch = market_data.fetch_market_data
++
++    def aliases(**kwargs):
++        result = fetch(**kwargs)
++        result["0700.HK"] = result["700.HK"].copy()
++        result["_provenance"]["0700.HK"] = {
++            "source": "yahoo",
++            "adjustment": "split_dividend",
++            "volume_unit": "shares",
++        }
++        return result
++
++    monkeypatch.setattr(market_data, "fetch_market_data", aliases)
++    panel = tool._load_hsi_panel("2024-01-01", "2024-01-02")
++    assert list(panel["close"].columns) == ["0005.HK", "0700.HK"]
++    meta = panel["_meta"]
++    assert meta["price_provenance"]["0700.HK"]["source"] == "tencent"
++    assert set(meta["provenance_alias_conflicts"]["0700.HK"]) == {"700.HK", "0700.HK"}
++    assert meta["degraded"] is True
++
++
++def test_conflicting_alias_frames_cannot_silently_select_a_price_history(monkeypatch):
++    from src import market_data
++
++    patch_panel(monkeypatch)
++    fetch = market_data.fetch_market_data
++
++    def aliases(**kwargs):
++        result = fetch(**kwargs)
++        other = result["700.HK"].copy()
++        other.loc[pd.Timestamp("2024-01-01"), "close"] += 1
++        result["0700.HK"] = other
++        return result
++
++    monkeypatch.setattr(market_data, "fetch_market_data", aliases)
++    with pytest.raises(ValueError, match="Conflicting HSI price frames"):
++        tool._load_hsi_panel("2024-01-01", "2024-01-02")
++
++
++def test_ambiguous_provenance_is_unknown_and_all_alias_diagnostics_survive():
++    from src.tools.hsi_metadata import canonical_symbol_metadata, provenance_summary
++
++    raw = {
++        "700": {"source": "tencent", "adjustment": "raw", "volume_unit": "shares"},
++        "0700.HK": {
++            "source": "yahoo",
++            "adjustment": "split_dividend",
++            "volume_unit": "shares",
++        },
++    }
++    canonical, conflicts = canonical_symbol_metadata(
++        raw, ["0700.HK"], {"0700.HK": "00700.HK"}
++    )
++    assert canonical["0700.HK"].get("source") is None
++    assert conflicts["0700.HK"] == raw
++    assert provenance_summary(["0700.HK"], canonical)["price_adjustments"] == {
++        "0700.HK": "unknown"
++    }
++    diagnostics, _ = canonical_symbol_metadata(
++        {"700": {"attempts": ["first"]}, "0700.HK": {"attempts": ["second"]}},
++        ["0700.HK"],
++        {},
++        diagnostics=True,
++    )
++    assert set(diagnostics["0700.HK"]["alias_diagnostics"]) == {"700", "0700.HK"}
++
++
++def test_real_hsi_panel_uses_hk_identity_without_claiming_pit_data(monkeypatch):
++    from src.factors.data_availability import build_availability_contract
++
++    patch_panel(monkeypatch)
++    contract = build_availability_contract(
++        tool._load_hsi_panel("2024-01-01", "2024-01-02"), universe="hsi"
++    )
++    assert (
++        contract["venue"],
++        contract["currency"],
++        contract["timezone"],
++        contract["calendar"],
++    ) == ("XHKG", "HKD", "Asia/Hong_Kong", "XHKG")
++    membership = next(
++        item for item in contract["fields"] if item["field"] == "universe:membership"
++    )
++    assert membership["status"] == "unknown" and membership["pit_safe"] is False
+diff --git a/agent/tests/test_hsi_membership_reference.py b/agent/tests/test_hsi_membership_reference.py
+new file mode 100644
+index 0000000..8bc3a5e
+--- /dev/null
++++ b/agent/tests/test_hsi_membership_reference.py
+@@ -0,0 +1,139 @@
++"""Dated roster reconciliation stays separate from source selection and price gaps."""
++
++from types import SimpleNamespace
++
++import pytest
++import requests
++
++from src.tools import hsi_universe as hsi
++
++
++def wikipedia_response(monkeypatch, codes, *, header=None):
++    """Supply a dated page and parsed roster without any network request."""
++    if header is None:
++        header = '{"dateModified":"2026-10-01T18:43:56Z","wgRevisionId":1377881667}'
++    monkeypatch.setattr(
++        hsi.requests,
++        "get",
++        lambda *args, **kwargs: SimpleNamespace(
++            text=header, raise_for_status=lambda: None
++        ),
++    )
++    monkeypatch.setattr(hsi, "parse_constituents", lambda _: (list(codes), {}))
++
++
++def test_matching_roster_keeps_wikipedia_order_and_records_separate_dates(monkeypatch):
++    expected = list(reversed(hsi.FALLBACK_CODES))
++    wikipedia_response(monkeypatch, expected)
++    codes, sectors, meta = hsi.fetch_constituents()
++    assert codes == expected and sectors == {}
++    assert meta["constituent_source"] == hsi.WIKIPEDIA_URL
++    assert meta["constituent_source_date"] == "2026-10-01"
++    assert meta["constituent_source_date_kind"] == "wikipedia_revision_date"
++    assert meta["constituent_reference_source"] == hsi.REFERENCE_SOURCE_URL
++    assert meta["constituent_reference_effective_date"] == "2026-09-07"
++    assert meta["constituent_reference_snapshot_date"] == "2026-11-04"
++    assert meta["constituent_observed_count"] == 95
++    assert meta["constituent_reference_count"] == 95
++    assert meta["constituent_reference_overlap_count"] == 95
++    assert meta["constituent_reference_matches"] is True
++    assert meta["constituent_reference_missing_symbols"] == []
++    assert meta["constituent_reference_unexpected_symbols"] == []
++    assert meta["constituent_reference_frozen"] is True
++    assert "can become stale" in meta["constituent_reference_note"]
++    assert meta["degraded"] is False
++
++
++def test_known_85_name_mismatch_reports_eleven_missing_and_one_extra(monkeypatch):
++    missing = {
++        "0728.HK",
++        "1347.HK",
++        "1519.HK",
++        "1801.HK",
++        "2338.HK",
++        "2600.HK",
++        "3750.HK",
++        "3993.HK",
++        "6160.HK",
++        "6181.HK",
++        "9901.HK",
++    }
++    expected = [code for code in hsi.FALLBACK_CODES if code not in missing] + [
++        "0881.HK"
++    ]
++    wikipedia_response(monkeypatch, expected)
++    codes, _sectors, meta = hsi.fetch_constituents()
++    assert codes == expected and len(codes) == 85
++    assert meta["constituent_reference_missing_symbols"] == sorted(missing)
++    assert meta["constituent_reference_unexpected_symbols"] == ["0881.HK"]
++    assert meta["constituent_reference_overlap_count"] == 84
++    assert meta["constituent_reference_matches"] is False
++    assert meta["degraded"] is True
++    assert "missing_instruments" not in meta  # These are not provider price failures.
++
++
++def test_equal_counts_do_not_hide_different_members(monkeypatch):
++    expected = hsi.FALLBACK_CODES[:-1] + ["0881.HK"]
++    wikipedia_response(monkeypatch, expected)
++    codes, _sectors, meta = hsi.fetch_constituents()
++    assert codes == expected
++    assert meta["constituent_observed_count"] == meta["constituent_reference_count"]
++    assert meta["constituent_reference_missing_symbols"] == [hsi.FALLBACK_CODES[-1]]
++    assert meta["constituent_reference_unexpected_symbols"] == ["0881.HK"]
++    assert meta["constituent_reference_matches"] is False
++    assert meta["degraded"] is True
++
++
++@pytest.mark.parametrize(
++    "header",
++    [
++        "{}",
++        '{"dateModified":"2026-10-01T18:43:56Z"}',
++        '{"wgRevisionId":1377881667}',
++    ],
++)
++def test_reference_match_does_not_clear_missing_revision_degradation(
++    monkeypatch, header
++):
++    wikipedia_response(monkeypatch, hsi.FALLBACK_CODES, header=header)
++    codes, _sectors, meta = hsi.fetch_constituents()
++    assert codes == hsi.FALLBACK_CODES
++    assert meta["constituent_reference_matches"] is True
++    assert meta["degraded"] is True
++
++
++def test_source_after_reference_is_returned_without_enforcing_a_95_name_limit(
++    monkeypatch,
++):
++    expected = hsi.FALLBACK_CODES + ["9998.HK"]
++    wikipedia_response(
++        monkeypatch,
++        expected,
++        header='{"dateModified":"2027-01-01T00:00:00Z","wgRevisionId":999}',
++    )
++    codes, _sectors, meta = hsi.fetch_constituents()
++    assert codes == expected and len(codes) == 96
++    assert meta["constituent_source_date"] == "2027-01-01"
++    assert meta["constituent_reference_snapshot_date"] == hsi.FALLBACK_DATE
++    assert meta["constituent_reference_unexpected_symbols"] == ["9998.HK"]
++    assert (
++        "does not establish which source is current"
++        in meta["constituent_reference_note"]
++    )
++
++
++def test_fallback_stays_degraded_despite_matching_the_same_frozen_reference(
++    monkeypatch,
++):
++    def fail(*_args, **_kwargs):
++        raise requests.Timeout()
++
++    monkeypatch.setattr(hsi.requests, "get", fail)
++    codes, sectors, meta = hsi.fetch_constituents()
++    assert codes == hsi.FALLBACK_CODES and sectors == {}
++    assert codes is not hsi.FALLBACK_CODES
++    assert meta["constituent_reference_matches"] is True
++    assert meta["constituent_reference_overlap_count"] == 95
++    assert meta["constituent_source_date_kind"] == "frozen_snapshot_as_of"
++    assert meta["constituent_source_date"] == hsi.FALLBACK_DATE
++    assert meta["degraded"] is True
 diff --git a/README.md b/README.md
 --- a/README.md
 +++ b/README.md
-@@ -671,3 +671,15 @@
+@@ -680,3 +680,24 @@
  ## License
  
  MIT License — see [LICENSE](LICENSE)
@@ -524,3 +1043,12 @@ diff --git a/README.md b/README.md
 +proxy. Current members/labels can lag official reviews and are not historical
 +point-in-time membership. Inspect `meta.price_provenance` for adjustment/volume
 +basis; a raw-price factor benchmark is not a validated total-return strategy.
++
++The source roster is compared with a dated official reference, with missing
++and unexpected names recorded. A mismatch is degraded, not silently repaired;
++the frozen reference can also become stale after reviews. Provider-native
++price adjustments/volume units and any alias conflicts are explicit. The HSI
++layer preserves panel gaps, while shared providers may already fill missing
++volume. Its availability contract identifies XHKG/HKD/`Asia/Hong_Kong` without
++claiming historical membership or precise data-availability verification.
++HSI metadata uses a versioned cache; refresh the source snapshot after reviews.

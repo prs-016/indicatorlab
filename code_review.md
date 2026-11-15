@@ -1,41 +1,46 @@
-# Code Review — HK Vibe Trading submission
+# Code Review — HK cross-market coordination update
 Reviewed: 2026-11-14 (America/Los_Angeles)
-Files reviewed: 12 retained submission files; 21 target source hashes.
+Files reviewed: 25 Vibe target paths plus the contribution-only handoff documents.
 
 ## Summary
-This checkout has been reduced to the self-contained Vibe Trading mentor
-submission. The seven-file contribution package and five concise root
-documentation/Git metadata files remain. Inherited app templates, HTML pages,
-India/Reddit research, bridge modules and unrelated configurations are removed
-only from HK; a verified backup and existing Git history preserve their source.
+The package is rebased on upstream 19c83de9 and resolves two real MCP integration
+conflicts while preserving newer upstream behavior. HK-specific fixes add dated
+roster mismatch disclosure, canonical provenance/conflict handling, no-silent-
+alias-price selection, explicit provider-native basis/missing policies, an HSI
+availability identity and versioned metadata cache. Wikipedia remains primary;
+no prices, units, historical membership or empirical strategy rules were silently
+normalized or changed. The teammate's India research branch was inspected only.
 
 ## Repo Structure
-- contributions/vibe-trading/: two split patches, one combined alternative,
-  manifest, benchmark summary, README and MIT license.
-- Root: README.md, AGENTS.md, code_review.md, .gitignore and .gitattributes.
-- .git remains intact. No installed app/runtime, raw prices, models, starter
-  source tree, HTML front end or duplicated inspection files are required here.
+The branch retains the eight contribution files and five concise root metadata/
+documentation files. It contains no copied app, starter tree, raw data, database,
+model, private agent source tree or India research. Source changes are isolated
+to the Vibe target paths listed in MANIFEST and represented by the split patches.
 
 ## Test Coverage
-- The six source artifacts are unchanged from the verified export. All 21
-  destination hashes match the previously tested Vibe Trading checkout.
-- Both patch application routes were independently reconstructed and checked.
-  Source tests previously passed 91 focused cases and an earlier selected
-  integration/purity/look-ahead suite of 1,085 (23 skipped; existing Python
-  compatibility warning). This is not all upstream tests or remote CI.
-- This cleanup changes packaging/documentation only. It does not rerun a
-  strategy or claim a running shared data service. Final file inventory,
-  copy hashes, links and staged whitespace checks are verified separately.
+- 141 focused HSI/quotes/metadata/MCP checks passed.
+- 1,078 broader benchmark, purity and look-ahead checks passed; 23 skipped.
+- The HSI patch alone passed 51 checks with no quote package installed.
+- One existing Python 3.14/LangChain Pydantic compatibility warning remains.
+- Scoped Ruff/Black, syntax, whitespace and both patch reconstruction routes
+  pass. All 25 reconstructed destination hashes match the reviewed source tree.
+- This is not the whole upstream suite, GitHub CI or actual HSI+NIFTY integration.
+  No new portfolio/factor-performance run was used to validate metadata changes.
 
 ## Findings
-No unresolved Must fix for this contribution-only handoff. The pinned base,
-provider freshness and data-provenance limitations remain disclosed. Applying
-the code to Vibe Trading and upstream PR/CI acceptance are separate from
-publishing this mentor-review branch. Do not merge template removals into
-IndicatorLab main as a feature PR.
+No unresolved Must fix found in the scoped source review. Adjustment and volume
+bases remain provider-native, and upstream filling behavior is disclosed rather
+than reversed speculatively. `degraded` is not a complete-data/PIT certification;
+consumers must read missing names, provenance, warnings and availability status.
+The actual NIFTY fork/PR is still missing; no claim of joint compatibility is made.
+The old 85-name exploratory benchmark remains explicitly historical evidence.
 
 ## Checklist for the student
-- [x] Retain every Vibe target-file change and upstream license.
-- [x] Remove inherited starter/unrelated files from HK only.
-- [x] Preserve source artifacts, separate research and Git history.
-- [x] Document application, runtime collection and acceptance boundaries.
+- [x] Rebase minimal shared MCP additions without dropping newer upstream code.
+- [x] Flag dated roster differences, canonicalize metadata and test ambiguity.
+- [x] Register HK identity without inventing PIT verification.
+- [x] Validate both patch routes and the standalone universe scope.
+- [x] Keep the India branch and original research immutable.
+- [ ] Obtain the actual NIFTY contribution and run the proposed joint fixture.
+- [ ] Agree strict shared adjustment/volume/membership conventions before a
+  scientific cross-market portfolio comparison.

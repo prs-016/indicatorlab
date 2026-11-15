@@ -1,16 +1,15 @@
-# HK submission package
+# HK contribution-only handoff
 
-- This HK branch is a contribution-only mentor handoff, not a DS3 app template.
-- Keep contributions/vibe-trading's seven files and concise root metadata/docs.
-- Three patches provide all 21 target-file changes: apply 01 then 02, or
-  APPLY_ALL, inside the compatible Vibe Trading checkout specified in MANIFEST.
-- Do not apply these patches to this handoff repository or reintroduce the
-  inherited India/Reddit/template app, generated databases, raw prices or models.
-- Preserve the six patch/manifest/benchmark/license artifact bytes and source
-  hashes. Keep README/application instructions aligned with the package.
-- Root .gitattributes disables whitespace checks only for intentional unified
-  diff context in patch containers; it does not relax source-code validation.
-- Packaging checks use hashes, patch reconstruction and documentation links;
-  they do not require rerunning completed research strategies.
-- Keep .git, main and the separate Jack research checkout intact. This cleanup
-  is not intended to merge into IndicatorLab main. The user handles commit/push.
+- This HK branch contains the v2 mentor package in contributions/vibe-trading
+  and concise root metadata/docs. Keep unrelated templates, data and apps out.
+- There are eight package files: three patches, manifest, historical benchmark
+  summary, alignment review, README and license. Patch contents target 25 files.
+- Apply 01 then 02, or APPLY_ALL, only inside the Vibe checkout/base in MANIFEST.
+  PR 1 works standalone; PR 2 is stacked. Never apply these to this handoff repo.
+- ALIGNMENT_REVIEW separates implemented fixes, proposed shared conventions and
+  unverified NIFTY integration. The supplied India branch is read-only.
+- When code changes, update/rebuild patch hashes and preserve older empirical
+  results as historical evidence; do not silently rerun or relabel them.
+- .gitattributes disables whitespace checks only for unified-diff containers.
+  Preserve actual source validation and patch reconstruction checks.
+- Keep Git/main and separate Jack research unchanged. User handles commit/push.

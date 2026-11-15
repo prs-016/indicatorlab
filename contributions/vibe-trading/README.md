@@ -1,75 +1,62 @@
-# HK branch: Vibe Trading contribution for mentor review
+# HK contribution package v2
 
-This is the complete **code-change package** for the HK Vibe Trading
-contribution. It lives in the existing IndicatorLab repository on branch
-**HK**. This checkout now contains only the contribution package and its
-short navigation/review documents; inherited starter/team files were removed
-from this submission branch.
+This is the contribution-only mentor handoff on branch **HK**. The full Vibe
+Trading app, raw datasets, generated database/model and unrelated templates are
+kept outside this checkout.
 
-## What to review
+**Start with [ALIGNMENT_REVIEW.md](ALIGNMENT_REVIEW.md)** for the five teammate
+questions, confirmed data limitations, read-only India inspection, shared contract
+proposal and a suggested reply. No team message was sent.
 
-| File | Contents |
+| File | Purpose |
 |---|---|
-| [01_hsi_universe.patch](01_hsi_universe.patch) | HSI Alpha Zoo universe, roster and fallback, aliases, metadata, sector/VWAP handling, API/CLI wiring and tests |
-| [02_hk_quotes.patch](02_hk_quotes.patch) | HK quote service, agent/MCP tool, optional SQLite collector and tests; depends on 01 |
-| [APPLY_ALL.patch](APPLY_ALL.patch) | Both scopes combined, as an alternative to applying 01 then 02 |
-| [MANIFEST.json](MANIFEST.json) | Base upstream commit, all 21 destination paths, source hashes and validation scope |
-| [BENCH_SUMMARY.md](BENCH_SUMMARY.md) | Actual bounded HSI Alpha101 benchmark and limitations |
+| [01_hsi_universe.patch](01_hsi_universe.patch) | Standalone HSI universe, symbol/provenance reconciliation, availability identity and tests |
+| [02_hk_quotes.patch](02_hk_quotes.patch) | Live quotes, MCP and optional SQLite archive; stacked on 01 |
+| [APPLY_ALL.patch](APPLY_ALL.patch) | Both scopes as an alternative to 01 then 02 |
+| [MANIFEST.json](MANIFEST.json) | Versioned base, 25 target-file hashes, checks and compatibility boundaries |
+| [BENCH_SUMMARY.md](BENCH_SUMMARY.md) | Preserved older 85-name exploratory benchmark; no v2 performance rerun |
 | [LICENSE](LICENSE) | Upstream MIT license |
 
-Every added and modified source/test/documentation file is included inside
-the patches. No extra ZIP, full app copy, database, price archive, model file
-or inspection-only duplicate is needed for applying them.
+## Apply
 
-## Apply to a Vibe Trading checkout
-
-These patches target HKUDS/Vibe-Trading base commit
-`67ce0ca5c9b2a3e3d321217eff043dad913a27fa`. They apply to a compatible **Vibe
-Trading checkout**, not to this IndicatorLab repository.
-
-Apply either `APPLY_ALL.patch`, or `01_hsi_universe.patch` followed by
-`02_hk_quotes.patch`. Do not apply the combined patch after the split patches.
-For example, inside a clean compatible Vibe Trading checkout:
+Base: `19c83de9c4f53ff1609e266c3102badd0d034876`. Apply inside a clean compatible **Vibe Trading**
+checkout, not this IndicatorLab handoff repository:
 
 ```bash
 git apply --check /path/to/contributions/vibe-trading/APPLY_ALL.patch
 git apply /path/to/contributions/vibe-trading/APPLY_ALL.patch
 ```
 
-Both routes were independently applied to clean base files and reproduced all
-21 expected destination hashes. On a newer upstream base, review any rejected
-hunks and rerun the relevant tests; do not replace the entire MCP server with
-a file from another checkout.
+Alternatively apply 01 then 02; do not also apply the combined patch. Both routes
+were reconstructed from the pinned base and byte-matched all 25 targets. The
+HSI-only patch passed 51 checks without the quote package. Publish the universe
+PR separately; the quote PR depends on it through the roster helper.
 
-## How the HK data reaches Vibe Trading
+## Data and validation
 
-The contribution implements retrieval of HK stock prices. Once installed in
-Vibe Trading, the read-only `get_hk_quotes` agent/MCP tool fetches snapshots.
-For an ongoing local archive, run this from the Vibe Trading `agent/` folder:
+Wikipedia remains primary per assignment, compared against a dated official
+95-name reference. It currently has 85 names and is flagged degraded. This does
+not silently change membership or certify either source as indefinitely current.
+Prices/volume are provider-native with explicit adjustment/unit warnings; no new
+universal corporate-action, volume or PIT normalization is claimed.
+
+After installation, run from Vibe Trading's `agent/` directory:
 
 ```bash
 python -m src.hk_data --hsi-snapshot --source tencent --interval-seconds 5 --db ./data/hk_quotes.sqlite3
 ```
 
-That command retrieves new observations while the process runs and stores
-them at the requested database path. The HSI snapshot contains 95 stocks and
-is dated 2026-11-04; it needs maintenance after index reviews. The tool exposes
-provider/receipt timestamps and freshness. The archive CLI does not install
-a scheduler or create a shared cloud service. A measured median last-trade
-age of 10.63 seconds is not a guarantee of sub-minute freshness for every stock.
+The operator must keep collection running. This does not create a shared cloud
+service or guarantee sub-minute freshness. The 95-name operational snapshot is
+dated 2026-11-04 and needs maintenance after reviews.
 
-Generated price databases and historical datasets are not embedded in these
-patches. Contributing the retrieval code lets the receiving installation get
-future data; publishing a static price file alone does not provide that service.
+Version 2 passed 141 focused checks plus 1,078 broader bench/purity/look-ahead
+checks (23 skipped; existing Python compatibility warning). Scoped Ruff/Black and
+patch reconstruction passed. Full upstream suite, remote CI and actual NIFTY
+joint compatibility were not established. The supplied India research branch was
+read-only and unchanged; its actual standalone NIFTY code is still needed.
 
-## Validation and scope
-
-The source checkout passed 91 focused HSI/quote tests and an earlier selected
-1,085-test integration/purity/look-ahead suite (23 skipped, one existing
-Python 3.14/Pydantic compatibility warning). This is not the entire upstream
-suite or remote CI. See the manifest and benchmark note for data-vintage,
-survivorship, provider and adjustment-basis limitations.
-
-Committing/pushing this IndicatorLab HK branch submits the review package to
-the mentor. An actual HKUDS/Vibe-Trading merge still requires the separate
-upstream PR, real author/co-author and DCO information, review and passing CI.
+Committing this HK review branch does not itself merge changes into HKUDS/Vibe-
+Trading. Upstream acceptance still needs the actual fork/PR, real DCO/coauthor
+identities, review and CI. No commit, push, deployment or strategy rerun was done
+by this coordination update.

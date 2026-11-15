@@ -1,3 +1,9 @@
+> Historical evidence: the benchmark below ran on the earlier base 67ce0ca5
+> before the 2026-11-14 metadata/rebase fixes. It used 85 Wikipedia names, not
+> the official 95-name reference. All 85 loaded successfully. The revised loader
+> flags that source mismatch; this old factor run was not silently rerun or
+> relabelled. Package v2's new evidence is code/integration tests, not new ICs.
+
 # Actual HSI Alpha101 benchmark
 
 Local completion: 2026-11-12T08:06:38Z. Period 2016-06-01 through 2025-09-30.

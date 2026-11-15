@@ -1,22 +1,16 @@
 # HK submission: Vibe Trading contribution
 
-This branch contains only the Vibe Trading contribution prepared for mentor
-review. Open **[contributions/vibe-trading](contributions/vibe-trading/README.md)**.
+Open **[contributions/vibe-trading](contributions/vibe-trading/README.md)** for
+the current v2 code patches, evidence and application instructions.
 
-The package includes the HSI benchmark-universe changes, HK quote retrieval
-and optional collector, integration/tests, file manifest, benchmark evidence
-and upstream license. All 21 changed/new Vibe Trading target files are inside
-the patches. Use 01 then 02, or the combined APPLY_ALL patch, as documented.
+The [cross-market alignment review](contributions/vibe-trading/ALIGNMENT_REVIEW.md)
+answers the five teammate questions, records the read-only India branch check,
+proposes shared data conventions and includes a reply draft.
 
-The patches apply to a compatible Vibe Trading checkout. This repository is
-the mentor handoff, not the installed/running app or a price database.
-Generated data is retrieved by the collector when it runs after installation.
+The HSI universe and live quotes remain two PR scopes. New metadata/reconciliation
+fixes are tested against a newer upstream base; historical strategy/benchmark
+results are preserved. Actual HSI+NIFTY integration awaits the teammate's Vibe code.
 
-Inherited starter files, HTML dashboards and unrelated team research were
-removed from this HK submission branch. Full research remains in the separate
-Jack checkout; main and its Git history are preserved. This submission-only
-cleanup is not a change intended to merge into IndicatorLab main.
-
-See [code_review.md](code_review.md) for the packaging review and the package
-README for application instructions, validation scope and remaining upstream
-acceptance steps.
+This is a contribution-only mentor branch, not the runnable app or a price
+database. Inherited templates and unrelated research remain outside it. Its
+template removals are not intended as a feature PR into IndicatorLab main.

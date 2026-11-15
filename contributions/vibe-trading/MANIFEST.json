@@ -1,16 +1,16 @@
 {
+  "package_version": 2,
+  "reviewed_local_date": "2026-11-14 America/Los_Angeles",
+  "verified_at_utc": "2026-11-14T23:43:41.599998+00:00",
   "upstream": "https://github.com/HKUDS/Vibe-Trading",
-  "base_commit": "67ce0ca5c9b2a3e3d321217eff043dad913a27fa",
-  "verified": [
-    "01 then 02 applied to clean base and byte-matched all 21 destination files",
-    "APPLY_ALL applied separately and byte-matched all 21 files"
-  ],
+  "base_commit": "19c83de9c4f53ff1609e266c3102badd0d034876",
+  "previous_base_commit": "67ce0ca5c9b2a3e3d321217eff043dad913a27fa",
   "files": [
     {
       "path": "README.md",
       "kind": "modified",
       "scope": "01+02",
-      "sha256": "9c37e382a6cc33bfba2c7daffdcec46427df421e9f88d67b8ef88e086536a5f6"
+      "sha256": "f2b9c29b8e06b0617995669cf918d338cfd5527ebf0a790d7df65a7d0b30e661"
     },
     {
       "path": "agent/backtest/loaders/_symbol_utils.py",
@@ -22,7 +22,7 @@
       "path": "agent/mcp_server.py",
       "kind": "modified",
       "scope": "02",
-      "sha256": "c5c06119ec873ad9a96214b5a4e7318b3c7b67e449b6d84d0720947dfb57714d"
+      "sha256": "d9d9ee83985fdd7963544a3a2b98348d3a61cdaec135a1bc7f0f78f7a0d859ed"
     },
     {
       "path": "agent/src/api/alpha_routes.py",
@@ -34,7 +34,13 @@
       "path": "agent/src/factors/cli_handlers.py",
       "kind": "modified",
       "scope": "01",
-      "sha256": "fe83cc57e952b8793395404c5ebd99f699450932697b9c9169015da0becb7a55"
+      "sha256": "e5421a8bb16c4539d660ab3136473f5dc352bcef23a7a4c146e4895de839dc91"
+    },
+    {
+      "path": "agent/src/factors/data_availability.py",
+      "kind": "modified",
+      "scope": "01",
+      "sha256": "2439e37f792bc7ba677016cde3012c86e5e0f9df47876465dd1cad8799efea80"
     },
     {
       "path": "agent/src/hk_data/README.md",
@@ -82,7 +88,7 @@
       "path": "agent/src/tools/alpha_bench_tool.py",
       "kind": "modified",
       "scope": "01",
-      "sha256": "9c87783948442565d616567d4e6787b7773c31b02b5fda02fdd6f85f5b9d5020"
+      "sha256": "6fc745de427b087616a04d31e37072ff078ec3b04a9f2b96d98bae122dfa2487"
     },
     {
       "path": "agent/src/tools/hk_quotes_tool.py",
@@ -91,16 +97,28 @@
       "sha256": "166766642ba71c59d78d82ca57f5793d9bc2728d30f41e148cde1f84e9adab13"
     },
     {
+      "path": "agent/src/tools/hsi_metadata.py",
+      "kind": "new",
+      "scope": "01",
+      "sha256": "6842be97034a4f29e313750addc780191355bfc8a2f2f98c3bc016f7354f2280"
+    },
+    {
       "path": "agent/src/tools/hsi_universe.py",
       "kind": "new",
       "scope": "01",
-      "sha256": "540e8cf37589e3775dffbb988e7ec8f5cbeaea67636c17e0ad1332b4e292131c"
+      "sha256": "b4a15ebf3fe318027c64778dd402394959109e6443f712dca6149769b537f20e"
     },
     {
       "path": "agent/tests/test_alpha_bench_hsi.py",
       "kind": "new",
       "scope": "01",
-      "sha256": "0996c4c7e08b5f31e8cc03730151db1f8e144a6c9002677547ffcf95c3446f81"
+      "sha256": "00f7e652cbd0b5f8ac396bbcc6c5b6544966d3ee9f65e8bdf48139b5764f79cc"
+    },
+    {
+      "path": "agent/tests/test_data_availability.py",
+      "kind": "modified",
+      "scope": "01",
+      "sha256": "d01a29c60cca7da1694f044898964f8c515a30173f88798906b1c24dcf397038"
     },
     {
       "path": "agent/tests/test_hk_collector.py",
@@ -121,10 +139,16 @@
       "sha256": "93a3cb260ba2160c2816f674b1881c1555239b4af5b52c7dad77b74a247eda9b"
     },
     {
+      "path": "agent/tests/test_hsi_membership_reference.py",
+      "kind": "new",
+      "scope": "01",
+      "sha256": "5da5996da5ea36f87566419a08371ec3d49b8b2139a04e7f4c41437652d782df"
+    },
+    {
       "path": "agent/tests/test_mcp_json_string_args.py",
       "kind": "modified",
       "scope": "02",
-      "sha256": "1134aa4fb5845fdacef8d5c731ff1d6f4ea6c6c6cb7f06e9b9e646cf010de79e"
+      "sha256": "bd8953e4af2187032879db8433d6f9e35e66e0926908057d310f7aa48c7c78db"
     },
     {
       "path": "agent/tests/test_mcp_server_smoke.py",
@@ -133,14 +157,66 @@
       "sha256": "29d4da77206866845a73da570515cc247c32a8f5a1f3cbfbc7b41aa898867451"
     }
   ],
+  "patch_sha256": {
+    "01_hsi_universe.patch": "3e47117d643c0756142c2c6859c784bf37983e39897f6541b4f4f45f6c2b8ee1",
+    "02_hk_quotes.patch": "f6226654775a038afba4c30d783b22b4e50e84157cb963e1f50c78c1f8f24f38",
+    "APPLY_ALL.patch": "7220aa2a15e6c2c033f97cdf93dad1f3b086a1dbd5ae22c88d9fdd706d3ca931"
+  },
+  "verified": [
+    "01 then 02 applies to clean new base and reproduces all 25 destination hashes",
+    "APPLY_ALL applies independently and reproduces all 25 destination hashes",
+    "01 runs standalone without the quote package; 51 focused tests pass"
+  ],
   "checks": {
-    "vibe_selected_tests_passed": 1085,
-    "skipped": 23,
+    "focused_hsi_quote_metadata_mcp_passed": 141,
+    "broader_bench_purity_lookahead_passed": 1078,
+    "broader_skipped": 23,
+    "standalone_hsi_only_passed": 51,
     "warning": "existing Python 3.14 / LangChain Pydantic v1 compatibility",
-    "focused_hsi_quote_tests_passed": 91,
-    "research_hk_tests_passed": 58,
-    "scoped_ruff_black": "passed",
-    "patch_whitespace": "passed"
+    "scoped_ruff": "passed",
+    "scoped_black": "new HSI modules/tests passed",
+    "patch_reconstruction": "both routes byte-verified",
+    "remote_ci": "not performed"
+  },
+  "compatibility": {
+    "current_upstream_checked": "19c83de9c4f53ff1609e266c3102badd0d034876",
+    "old_hsi_patch_applied": true,
+    "old_combined_conflict_paths": [
+      "agent/mcp_server.py",
+      "agent/tests/test_mcp_json_string_args.py"
+    ],
+    "rebased_combined_and_split_routes": "passed",
+    "india_repository": "https://github.com/prs-016/indicatorlab",
+    "india_snapshot_read_only": "02625ce32dee742f75e923cd0177dbaba4fd2944",
+    "actual_nifty100_loader_found": false,
+    "hsi_plus_nifty100_merge": "not verified; actual Vibe fork/PR/commit required"
+  },
+  "roster_reconciliation": {
+    "wikipedia_revision_id": 1377881667,
+    "wikipedia_revision_date": "2026-10-01",
+    "wikipedia_observed_count": 85,
+    "official_reference_source": "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+    "official_reference_effective_date": "2026-09-07",
+    "frozen_snapshot_date": "2026-11-04",
+    "reference_count": 95,
+    "overlap_count": 84,
+    "missing_from_wikipedia": [
+      "0728.HK",
+      "1347.HK",
+      "1519.HK",
+      "1801.HK",
+      "2338.HK",
+      "2600.HK",
+      "3750.HK",
+      "3993.HK",
+      "6160.HK",
+      "6181.HK",
+      "9901.HK"
+    ],
+    "unexpected_in_wikipedia": [
+      "0881.HK"
+    ],
+    "policy": "Wikipedia remains primary per assignment. A dated-reference mismatch is degraded and explicit; returned source roster is not silently changed. The reference can become stale."
   },
   "benchmark": {
     "completed_at_utc": "2026-11-12T08:06:38+00:00",
@@ -173,11 +249,24 @@
     ],
     "report_sha256": "c1bfd735b248af5b6a316c661b32f2b395148881bb0303cbf1fa7eab1ca09c39",
     "local_report": "data/hk_week3/hsi_alpha101_report.html",
-    "limitations": "Exploratory factor IC smoke benchmark, not a costed portfolio KEEP evaluation. Current 85-name Wikipedia roster lags the official operational 95-name snapshot. Mixed provider price/volume adjustment basis and no point-in-time availability certification."
+    "limitations": "Exploratory factor IC smoke benchmark, not a costed portfolio KEEP evaluation. Current 85-name Wikipedia roster lags the official operational 95-name snapshot. Mixed provider price/volume adjustment basis and no point-in-time availability certification.",
+    "status": "historical exploratory 85-name run, NOT rerun for package v2",
+    "source_base_commit": "67ce0ca5c9b2a3e3d321217eff043dad913a27fa"
   },
+  "legacy_benchmark_summary_sha256": "d382ba9963ea8f7e820e53a83fb94f3b4bc1476fb612319c3482ae7a3d244592",
+  "changes": [
+    "dated roster reconciliation/degradation",
+    "canonical per-symbol provenance and conflict preservation",
+    "reject different price frames for aliases of one stock",
+    "provider-native adjustment/volume/missing policy disclosure",
+    "HSI availability identity without PIT-status upgrade",
+    "versioned HSI metadata cache",
+    "rebase quote/MCP integration while preserving newer upstream changes"
+  ],
   "not_performed": [
-    "GitHub fork/commit/push/PR/CI",
-    "actual AWS deployment",
-    "James endpoint integration"
+    "actual HSI plus NIFTY loader merge/test",
+    "new portfolio/strategy/factor-performance run",
+    "GitHub commit/push/upstream PR/CI",
+    "cloud deployment or James endpoint integration"
   ]
 }
