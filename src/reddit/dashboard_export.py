@@ -2,9 +2,9 @@
 
 The local dashboard is a Python server; hosted on S3 + CloudFront it must be plain files. This writes
 every read-only endpoint the page calls as JSON (`api/<name>.json`, `api/weekly/<TICKER>.json`,
+`api/stock/<TICKER>.json`,
 `api/strategy_run/<run>.json`), copies the charts, and rewrites the page to read those files. The two
 buttons that rerun the pipeline only work locally, so the hosted copy shows them disabled.
-Sentiment is not on this page yet; it is added when the FinBERT rescore is finished.
 
     .venv/bin/python -m src.reddit.dashboard_export          # -> build/reddit_dashboard/
     infra/dashboard/deploy.sh                                # export, upload, invalidate the CDN
@@ -38,6 +38,7 @@ STATIC_GET = """const get = (u) => {
   const [p, q] = u.split("?"), k = new URLSearchParams(q || "");
   let f = p.replace(/^\\/api\\//, "api/");
   if (p === "/api/weekly") f = `api/weekly/${k.get("ticker")}`;
+  else if (p === "/api/stock") f = `api/stock/${k.get("ticker")}`;
   else if (p === "/api/strategy_run") f = `api/strategy_run/${k.get("run_id") || "latest"}`;
   return fetch(f + ".json", { cache: "no-store" }).then(r => r.json());
 };"""
@@ -61,7 +62,7 @@ def static_page(html: str, as_of: str) -> str:
             raise ValueError(f"dashboard page changed; update REWRITES (missing: {old[:60]!r})")
         html = html.replace(old, new)
     note = ('<div style="padding:6px 16px;font-size:13px;background:var(--surface-2,#eee);'
-            f'color:var(--text-secondary,#444)">Hosted snapshot · data as of {as_of} · sentiment coming soon</div>')
+            f'color:var(--text-secondary,#444)">Hosted snapshot · data as of {as_of}</div>')
     return html.replace("<body>", "<body>\n" + note, 1)
 
 
@@ -78,8 +79,11 @@ def export(out: Path = OUT) -> list[Path]:
     _write(api / "status.json", ds.status())
     for name, path in CSV_ENDPOINTS.items():
         _write(api / f"{name}.json", ds._csv(path))
+    _write(api / "now.json", ds.now())
+    _write(api / "spike_weeks.json", ds.spike_weeks())
     for ticker in settings.TICKERS:
         _write(api / "weekly" / f"{ticker}.json", ds.weekly(ticker))
+        _write(api / "stock" / f"{ticker}.json", ds.stock(ticker))
     latest = ds.strategy_run("")
     _write(api / "strategy_run" / f"{LATEST_RUN}.json", latest)
     for run_id in latest.get("runs", []):

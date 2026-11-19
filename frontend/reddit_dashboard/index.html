@@ -3,278 +3,1149 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Indicator Lab Reddit</title>
+<title>Indicator Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
+/*
+  Interface: midnight black, white and orange, 60 / 30 / 10.
+  Midnight black #0B0B0C (60%): the page. The top bar and the market and date line have no
+    bar of their own; they sit straight on the page.
+  White and charcoal (30%): pure white for text and titles; charcoal for header strips, table
+    header rows and the spike card, so the page has structure without a second color. Panels
+    are the page black with a thin border.
+  Orange #FF7F50 (10%): only what is important or clickable: links, ticker names, the
+    current page and the main buttons. The big spike count is muted brass #D6B477.
+  Charts follow market convention: the price line and the investor chatter bars are green for
+  a week the close rose and red for a week it fell; blue marks Reddit spike weeks; white is
+  the product chatter line. ▲ ▼ signs, dashes, and filled vs open dots back up every color,
+  and every pair passes WCAG contrast and the colorblind check.
+*/
 :root {
-  --surface-0: #f4f3ef; --surface-1: #fcfcfb; --border: #e6e5e0;
-  --text-primary: #0b0b0b; --text-secondary: #52514e; --text-muted: #85847e;
-  --series-1: #2a78d6; --series-2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4; --incomplete: #c3c2b7;
-  --good: #008300; --warn: #c98500; --bad: #e34948;
+  color-scheme: dark;
+  /* 60: the page */
+  --bg: #0B0B0C; --bg-deep: #050506;
+  /* 30: white type and the charcoal surfaces it sits on */
+  --panel: #0B0B0C; --card: #141416; --surface: #1B1B1E; --surface-hi: #202024;
+  --ink: #FFFFFF; --head: #FFFFFF; --ink-2: #B4B4BB; --ink-3: #8E8E96;
+  --line: #25252A; --line-strong: #34343A; --tint: #232328;
+  /* 10: important and clickable */
+  --orange: #FF7F50; --orange-hover: #FF9670;
+  --brass: #D6B477;
+  /* chart colors (read by Chart.js from :root, never overridden) */
+  --chart-white: #F5F7FA; --chart-blue: #4C8DFF; --chart-neutral: #66768F; --chart-band: #1E3560;
+  --chart-base: #AFBCCB; --chart-ref: #93A2B5; --up: #26A69A; --down: #EB5C5C;
+  --flag: #7DA8FF; --flag-bg: #16233F;
+  /* controls */
+  --ctrl-bg: transparent; --ctrl-line: var(--line-strong); --ctrl-hover: var(--tint);
+  --pressed-bg: #FFFFFF; --pressed-fg: #0B0B0C;
+  --figure: #FCFBF8;
+  /* read by dashboard_export.py for the hosted-snapshot strip */
+  --surface-2: var(--surface); --text-secondary: var(--ink-2);
+
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+  --radius: 8px; --radius-sm: 6px;
+  --font: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --surface-0: #121211; --surface-1: #1a1a19; --border: #2e2e2c;
-    --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e88;
-    --series-1: #3987e5; --series-2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --incomplete: #4a4a46;
-    --good: #2fa52f; --warn: #e0a020; --bad: #e66767;
-  }
-}
-:root[data-theme="dark"] {
-  --surface-0: #121211; --surface-1: #1a1a19; --border: #2e2e2c;
-  --text-primary: #f0efec; --text-secondary: #c3c2b7; --text-muted: #8f8e88;
-  --series-1: #3987e5; --series-2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181; --incomplete: #4a4a46;
-  --good: #2fa52f; --warn: #e0a020; --bad: #e66767;
-}
+
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--surface-0); color: var(--text-primary);
-  font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif; }
-main { max-width: 1180px; margin: 0 auto; padding: 24px 16px 64px; }
-header { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; margin-bottom: 20px; }
-h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
-h2 { font-size: 15px; margin: 0 0 12px; }
-.sub { color: var(--text-secondary); font-size: 13px; }
-.muted { color: var(--text-muted); font-size: 12px; }
-section { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px; padding: 18px; margin-bottom: 16px; }
-.grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
-.card { border: 1px solid var(--border); border-radius: 8px; padding: 14px; }
-.card .big { font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 8px 0 6px; }
-.bar > div { height: 100%; background: var(--series-1); border-radius: 3px; }
-.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 2px 8px; border-radius: 99px; border: 1px solid var(--border); color: var(--text-secondary); }
-.dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
-button { font: inherit; cursor: pointer; border: 1px solid var(--border); background: var(--surface-1); color: var(--text-primary);
-  border-radius: 7px; padding: 6px 12px; }
-button:hover { border-color: var(--text-muted); }
-button.primary { background: var(--series-1); border-color: var(--series-1); color: #fff; }
-button[disabled] { opacity: .55; cursor: default; }
-.seg { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-.seg button { padding: 4px 10px; font-size: 13px; }
-.seg button.on { background: var(--text-primary); color: var(--surface-1); border-color: var(--text-primary); }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { margin: 0; font-weight: 600; }
+h1, h2 { color: var(--head); }
+h1 { font-size: 28px; line-height: 1.2; letter-spacing: -0.015em; }
+h2 { font-size: 17px; line-height: 1.3; }
+h3 { font-size: 13px; line-height: 1.3; color: var(--ink-2); }
+p { margin: 0; }
+a { color: var(--orange); text-underline-offset: 2px; }
+a:hover { color: var(--orange-hover); }
+
+/* ---------- top bar and context line: no bar of their own, they sit on the page ---------- */
+.topbar { background: transparent; }
+.topbar-inner { max-width: 1240px; margin: 0 auto; padding: 0 var(--s5); height: 56px; display: flex; align-items: center; gap: var(--s5); }
+.wordmark { font-weight: 600; font-size: 16px; letter-spacing: -0.01em; white-space: nowrap; color: var(--head); text-decoration: none; }
+.topnav { display: flex; gap: var(--s1); margin-left: auto; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.topnav::-webkit-scrollbar { display: none; }
+.topnav a { color: var(--ink); text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 12px; border-radius: var(--radius-sm); white-space: nowrap; }
+.topnav a:hover { color: var(--ink); background: var(--tint); }
+.topnav a[aria-current="page"] { color: var(--orange); box-shadow: inset 0 -2px 0 var(--orange); border-radius: 0; }
+.topnav a[aria-current="page"]:hover { background: transparent; }
+.topnav a:focus-visible, .wordmark:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.context { background: transparent; }
+body[data-view="home"] .context, body[data-view="home"] .wordmark { display: none; }
+body[data-view="home"] .topnav { margin-right: auto; }
+.context-inner { max-width: 1240px; margin: 0 auto; padding: var(--s2) var(--s5); display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s5); font-size: 12px; color: var(--ink-2); }
+.context-inner .seg { gap: var(--s1); }
+.context-inner .seg button { padding: 2px 10px; font-size: 12px; }
+.ctx-label { color: var(--ink-3); margin-right: var(--s1); }
+
+/* ---------- layout ---------- */
+main { max-width: 1240px; margin: 0 auto; padding: 0 var(--s5) var(--s7); }
+.view { display: grid; gap: var(--s4); }
+.page-head, .panel-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s3) var(--s5); }
+.page-head { align-items: end; padding: var(--s6) 0 var(--s2); }
+.lede { margin-top: var(--s2); color: var(--ink-2); max-width: 760px; }
+.action { display: flex; flex-direction: column; align-items: flex-end; gap: var(--s2); max-width: 380px; }
+.status { font-size: 12px; color: var(--ink-3); text-align: right; }
+@media (max-width: 860px) {
+  .page-head, .panel-head { grid-template-columns: minmax(0, 1fr); }
+  .action { align-items: flex-start; max-width: none; }
+  .status { text-align: left; }
+}
+.panel { --pad: var(--s5); background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--pad); min-width: 0; }
+/* every panel and chart opens with a charcoal header strip */
+.panel > .panel-head:first-child, .chart-block > .chart-head {
+  margin-left: calc(-1 * var(--pad)); margin-right: calc(-1 * var(--pad)); padding: var(--s4) var(--pad);
+  background: var(--surface); border-bottom: 1px solid var(--line); }
+.panel > .panel-head:first-child, .panel > .chart-block:first-child > .chart-head {
+  margin-top: calc(-1 * var(--pad)); border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0; }
+.panel > * + * { margin-top: var(--s4); }
+.panel > .footnote { margin-top: var(--s3); }
+.panel-head p { margin-top: var(--s1); color: var(--ink-2); font-size: 13px; }
+.two-col { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr)); gap: var(--s4); align-items: start; }
+.footnote { font-size: 12px; color: var(--ink-3); }
+.muted { color: var(--ink-3); }
+.mono { font-family: var(--mono); font-size: 12px; }
+.sub { display: block; font-size: 12px; color: var(--ink-3); font-weight: 400; }
+.up { color: var(--up); }
+.down { color: var(--down); }
+
+/* ---------- controls ---------- */
+button, .button { font: inherit; font-size: 13px; font-weight: 500; line-height: 1.3; cursor: pointer; color: var(--ink); background: var(--ctrl-bg);
+  border: 1px solid var(--ctrl-line); border-radius: var(--radius-sm); padding: var(--s2) var(--s4); text-decoration: none;
+  display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;
+  transition: background-color .12s, border-color .12s, color .12s; }
+button:hover, .button:hover { border-color: var(--ink-2); background: var(--ctrl-hover); }
+button.primary, .button.primary { background: var(--orange); border-color: var(--orange); color: var(--bg); font-weight: 600; }
+button.primary:hover, .button.primary:hover { background: var(--orange-hover); border-color: var(--orange-hover); color: var(--bg); }
+button:disabled, button:disabled:hover { cursor: not-allowed; background: transparent; border-color: var(--ctrl-line); color: var(--ink-3); }
+button:focus-visible, .button:focus-visible, select:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.seg { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.seg button { padding: 6px var(--s3); font-weight: 600; }
+.seg button[aria-pressed="true"] { background: var(--pressed-bg); border-color: var(--pressed-bg); color: var(--pressed-fg); }
+.seg.quiet button { font-weight: 500; }
+
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s3) var(--s5); }
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); }
+.field-label { font-size: 13px; color: var(--ink-2); }
+select { font: inherit; font-size: 13px; color: var(--ink); border: 1px solid var(--ctrl-line); border-radius: var(--radius-sm);
+  padding: 6px 32px 6px 10px; appearance: none; max-width: 100%;
+  background: linear-gradient(45deg, transparent 50%, var(--ink-2) 50%) calc(100% - 15px) 52% / 5px 5px no-repeat,
+              linear-gradient(135deg, var(--ink-2) 50%, transparent 50%) calc(100% - 10px) 52% / 5px 5px no-repeat,
+              var(--ctrl-bg); }
+select:hover { border-color: var(--ink-2); }
+select option { color: var(--ink); background: var(--surface); }
+
+/* ---------- legends: each swatch is a small chart-colored tile, so marks look as they do on the chart ---------- */
+.legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); font-size: 12px; color: var(--ink-2); }
+.legend > span { display: inline-flex; align-items: center; gap: 6px; }
+.keys { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s1) var(--s2); }
+.key { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); padding: var(--s1) var(--s2); border: 1px solid transparent; border-radius: var(--radius-sm); }
+button.key { background: transparent; font-weight: 500; }
+button.key:hover { background: var(--tint); border-color: transparent; }
+button.key[aria-pressed="true"] { color: var(--ink); font-weight: 600; border-color: var(--line-strong); background: var(--tint); }
+.sw { position: relative; display: inline-block; width: 20px; height: 12px; border-radius: 3px; background: var(--panel); flex: none; }
+.sw::after { content: ""; position: absolute; }
+.sw-bar::after, .sw-spike::after { left: 6px; right: 6px; top: 2px; bottom: 2px; border-radius: 1px; background: var(--chart-neutral); }
+.sw-spike::after { background: var(--chart-blue); }
+.sw-bar-up::after, .sw-bar-down::after { left: 6px; right: 6px; top: 2px; bottom: 2px; border-radius: 1px; background: var(--up); }
+.sw-bar-down::after { background: var(--down); }
+.sw-line-up::after, .sw-line-down::after { left: 3px; right: 3px; top: 5px; height: 2px; background: var(--up); }
+.sw-line-down::after { background: var(--down); }
+.sw-band::after { inset: 0; border-radius: 3px; background: var(--chart-band); }
+.sw-line::after, .sw-hl::after, .sw-rest::after { left: 3px; right: 3px; top: 5px; height: 2px; background: var(--chart-white); }
+.sw-hl::after { top: 4px; height: 3px; background: var(--chart-blue); }
+.sw-rest::after { background: var(--chart-neutral); }
+.sw-dash::after, .sw-bench::after, .sw-dash-blue::after { left: 3px; right: 3px; top: 5px; height: 0; border-top: 2px dashed var(--chart-ref); }
+.sw-bench::after { border-top-color: var(--chart-white); }
+.sw-dash-blue::after { border-top-color: var(--chart-blue); }
+.sw-fill-up::after, .sw-fill-down::after { left: 3px; right: 3px; top: 2px; bottom: 2px; border-radius: 1px; background: var(--up); opacity: .55; }
+.sw-fill-down::after { background: var(--down); }
+.sw-dot::after, .sw-ring::after { left: 5px; top: 1px; width: 10px; height: 10px; border-radius: 50%; background: var(--chart-blue); }
+.sw-ring::after { background: transparent; box-shadow: inset 0 0 0 1.75px var(--chart-blue); }
+
+/* ---------- charts and figures ---------- */
 .chartbox { position: relative; height: 320px; }
+.chartbox.short { height: 280px; }
+.chartbox.price { height: 170px; }
+.chartbox.att { height: 230px; }
+.chartbox.tone { height: 160px; }
+.chartbox.calendar { height: 340px; }
+.chart-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: var(--s2) var(--s4); }
+.chart-head h2 { font-size: 15px; }
+.chart-block > .chart-head { padding-top: var(--s3); padding-bottom: var(--s3); }
+.chart-block > * + * { margin-top: var(--s4); }
+.chart-block + .chart-block { margin-top: var(--s5); }
+.chart-block + .chart-block > .chart-head { border-top: 1px solid var(--line-strong); }
+.figure { display: block; width: 100%; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--figure); margin-top: var(--s3); }
+
+/* ---------- tables ---------- */
 .tablewrap { overflow-x: auto; }
 table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
-th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
-th { color: var(--text-secondary); font-weight: 500; font-size: 12px; }
+th, td { text-align: left; padding: var(--s2) var(--s3); border-bottom: 1px solid var(--line); white-space: nowrap; }
+thead th { background: var(--surface-hi); color: var(--ink); font-size: 12px; font-weight: 600; border-bottom: 1px solid var(--line-strong); }
+thead th:first-child { border-top-left-radius: var(--radius-sm); }
+thead th:last-child { border-top-right-radius: var(--radius-sm); }
+tbody tr:last-child td { border-bottom: 0; }
 td.num, th.num { text-align: right; }
-.yes { color: var(--series-2); font-weight: 600; }
-.note { border-left: 3px solid var(--warn); padding: 8px 12px; color: var(--text-secondary); font-size: 13px; margin: 0 0 12px; background: color-mix(in srgb, var(--warn) 8%, transparent); }
-pre { background: var(--surface-0); border: 1px solid var(--border); border-radius: 6px; padding: 10px; font-size: 11.5px; overflow-x: auto; margin: 10px 0 0; color: var(--text-secondary); }
-img.chart { width: 100%; border: 1px solid var(--border); border-radius: 6px; background: #fcfcfb; margin-top: 10px; }
-.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--text-secondary); margin-bottom: 8px; }
-.legend span { display: inline-flex; align-items: center; gap: 6px; }
-.sw { width: 12px; height: 10px; border-radius: 2px; display: inline-block; }
-details summary { cursor: pointer; color: var(--text-secondary); font-size: 13px; margin-top: 10px; }
+td.strong { font-weight: 600; }
+.flag { color: var(--flag); font-weight: 600; }
+tr.link { cursor: pointer; }
+tr.link:hover td { background: var(--tint); }
+.tk { font-weight: 600; color: var(--orange); text-decoration: none; }
+.tk:hover { text-decoration: underline; }
+.tk-name { display: block; font-size: 12px; color: var(--ink-3); }
+
+/* this-week board: ratio on a log scale around 1x */
+.board td { padding-top: var(--s3); padding-bottom: var(--s3); vertical-align: middle; }
+.ratio { display: flex; align-items: center; gap: var(--s3); min-width: 230px; }
+.ratio .rtrack { position: relative; flex: 1; height: 16px; }
+.ratio .rtrack::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line-strong); }
+.ratio i { position: absolute; display: block; }
+.ratio .tick { top: 4px; bottom: 4px; width: 1px; background: var(--line-strong); }
+.ratio .one { top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--chart-base); }
+.ratio .bar { top: 4px; height: 8px; background: var(--chart-neutral); border-radius: 2px; }
+.ratio .bar.hot { background: var(--chart-blue); }
+.ratio .val { width: 48px; text-align: right; font: 12px var(--mono); }
+.ratio .slot { width: 58px; }
+.ratio .axis::before { display: none; }
+.ratio .axis span { position: absolute; top: 0; transform: translateX(-50%); font: 500 11px var(--mono); }
+.scale-key { display: flex; justify-content: space-between; font: 11px var(--mono); color: var(--ink-3); }
+.spark { display: block; overflow: visible; }
+.sp-one { stroke: var(--line-strong); stroke-width: 1; }
+.sp-line { fill: none; stroke: var(--chart-neutral); stroke-width: 1.25; stroke-linejoin: round; stroke-linecap: round; }
+.sp-hot { fill: var(--chart-blue); }
+.sp-last { fill: var(--chart-white); }
+
+/* lead: this week's spike count, on a charcoal card */
+.panel.lead { background: var(--card); border-color: var(--line-strong); }
+.lead { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--s5); align-items: center; }
+.lead-num { font: 600 56px/1 var(--font); font-variant-numeric: tabular-nums; color: var(--brass); min-width: 48px; }
+.lead-title { font-size: 17px; font-weight: 600; color: var(--head); }
+.lead-list { list-style: none; margin: var(--s1) 0 0; padding: 0; color: var(--ink-2); }
+.lead-list li + li { margin-top: var(--s1); }
+.lead-list strong { color: var(--ink); }
+@media (max-width: 640px) { .lead { grid-template-columns: auto minmax(0, 1fr); } .lead .button { grid-column: 1 / -1; justify-self: start; } }
+
+/* ---------- stock view ---------- */
+.stock-grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: var(--s4); align-items: start; }
+@media (min-width: 1041px) { .weekpanel { position: sticky; top: var(--s4); max-height: calc(100vh - 32px); overflow-y: auto; } }
+@media (max-width: 1040px) { .stock-grid { grid-template-columns: minmax(0, 1fr); } }
+.wp-head > * + * { margin-top: var(--s2); }
+.wp-head h2 { font-size: 20px; }
+.wp-pills { display: flex; flex-wrap: wrap; gap: var(--s2); }
+.facts { margin: 0; display: grid; }
+.facts > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--s2); padding: var(--s3) 0; border-bottom: 1px solid var(--line); }
+.facts > div:first-child { padding-top: 0; }
+.facts dt { color: var(--ink-2); font-size: 13px; }
+.facts dd { margin: 0; text-align: right; }
+.facts dd strong { font: 500 14px var(--mono); }
+.moves { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+.moves > div { padding: var(--s2) var(--s3); }
+.moves > div + div { border-left: 1px solid var(--line-strong); }
+.moves .lbl { display: block; font-size: 12px; color: var(--ink-3); }
+.moves .v { font: 500 13px var(--mono); white-space: nowrap; }
+.posts { list-style: none; margin: var(--s2) 0 0; padding: 0; display: grid; gap: var(--s3); }
+.posts a { text-decoration: none; font-weight: 500; overflow-wrap: anywhere; }
+.posts a:hover { text-decoration: underline; }
+.posts .meta { display: block; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; line-height: 16px; padding: 0 6px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink-2); }
+.wp-nav { display: flex; gap: var(--s2); }
+.wp-nav button { flex: 1; }
+
+/* lead and lag: correlation with its 95% interval on -0.5..+0.5 */
+.cause { display: grid; }
+.cause-row { display: grid; grid-template-columns: minmax(200px, 1.1fr) minmax(180px, 1fr) minmax(220px, 1.1fr); gap: var(--s3) var(--s5); align-items: center; padding: var(--s3) 0; border-bottom: 1px solid var(--line); }
+.cause-row:last-child { border-bottom: 0; }
+.cause-scale { display: grid; grid-template-columns: minmax(200px, 1.1fr) minmax(180px, 1fr) minmax(220px, 1.1fr); gap: var(--s5); }
+.cause-scale .scale-key { grid-column: 2; }
+.ci { position: relative; height: 18px; }
+.ci::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line-strong); }
+.ci i { position: absolute; display: block; }
+.ci .zero { top: 0; bottom: 0; left: 50%; width: 1px; background: var(--chart-base); }
+.ci .rng { top: 7px; height: 4px; border-radius: 2px; background: var(--tint); box-shadow: inset 0 0 0 1px var(--chart-neutral); }
+.ci .rng.clear { background: var(--chart-white); box-shadow: none; }
+.ci .pt { top: 4px; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: var(--chart-white); box-shadow: 0 0 0 2px var(--panel); }
+.cause-val strong { font: 500 13px var(--mono); }
+@media (max-width: 760px) { .cause-row { grid-template-columns: minmax(0, 1fr); gap: var(--s2); } .cause-scale { display: none; } }
+
+/* ---------- status pills: the label carries the meaning, the dot shape backs it up ---------- */
+.pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 2px 10px 2px 8px;
+  border-radius: 999px; border: 1px solid var(--line-strong); color: var(--ink-2); background: transparent; white-space: nowrap; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; background: var(--ink); }
+.dot-ring { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink); }
+.dot-muted { background: var(--chart-neutral); }
+.dot-hollow { background: transparent; box-shadow: inset 0 0 0 1.5px var(--ink-3); }
+.pill-strong { border-color: var(--up); color: var(--up); font-weight: 600; }
+.pill-strong .dot { background: var(--up); }
+.pill-warn { border-color: var(--down); color: var(--down); font-weight: 600; }
+.pill-warn .dot-ring { box-shadow: inset 0 0 0 1.5px var(--down); }
+.pill-accent { background: var(--flag-bg); border-color: transparent; color: var(--flag); font-weight: 600; }
+.pill-accent .dot { background: var(--flag); }
+
+/* collection progress */
+.progress { display: flex; align-items: center; gap: var(--s3); min-width: 240px; }
+.track { flex: 1; height: 6px; background: var(--line-strong); border-radius: 999px; overflow: hidden; }
+.fill { height: 100%; background: var(--ink-2); border-radius: 999px; }
+
+/* ---------- notices, log ---------- */
+.notice { padding: var(--s3) var(--s4); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--bg-deep); color: var(--ink-2); font-size: 13px; }
+.notice strong { color: var(--ink); }
+details summary { cursor: pointer; color: var(--orange); font-size: 13px; }
+pre { font: 12px/1.5 var(--mono); background: var(--bg-deep); border: 1px solid var(--line); border-radius: var(--radius-sm); padding: var(--s3);
+  overflow-x: auto; margin: var(--s3) 0 0; color: var(--ink-2); }
+
+/* ---------- home: the first page a visitor sees ---------- */
+.view.home { display: block; }
+.hero { display: flex; flex-direction: column; align-items: center; gap: var(--s7); text-align: center; padding: var(--s7) 0; }
+.hero-copy { display: flex; flex-direction: column; align-items: center; }
+.hero-title { font-size: 80px; line-height: 1; letter-spacing: -0.03em; }
+.hero-tagline { margin-top: var(--s4); font-size: 28px; line-height: 1.25; font-weight: 500; letter-spacing: -0.01em; color: var(--ink); }
+.hero-lede { margin-top: var(--s5); font-size: 16px; line-height: 1.6; color: var(--ink-2); max-width: 600px; text-wrap: balance; }
+.hero-cta { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s3); margin-top: var(--s6); }
+.button.big { font-size: 15px; padding: 12px 26px; border-radius: 999px; }
+.button.ghost { color: var(--orange); border-color: var(--orange); }
+.button.ghost:hover { color: var(--orange-hover); border-color: var(--orange-hover); background: transparent; }
+.hero-stats { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--s4) var(--s7); margin: 0; padding-top: var(--s5); border-top: 1px solid var(--line); width: min(640px, 100%); }
+.hero-stats > div { display: flex; flex-direction: column-reverse; align-items: center; gap: 2px; }
+.hero-stats dt { font-size: 12px; color: var(--ink-3); }
+.hero-stats dd { margin: 0; font: 600 22px/1.2 var(--font); font-variant-numeric: tabular-nums; color: var(--ink); }
+
+.hero-art { position: relative; width: 560px; height: 610px; }
+.hero-curve { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--line-strong); stroke-width: 1.5; }
+.phone { position: absolute; display: flex; flex-direction: column; color: var(--ink); text-decoration: none; background: var(--card);
+  border: 1px solid var(--line-strong); border-radius: 36px; padding: 12px; box-shadow: 0 30px 60px rgba(0, 0, 0, .6); overflow: hidden; }
+.phone { text-align: left; }
+.phone:hover { color: var(--ink); border-color: var(--ink-3); }
+.phone-week { right: 0; top: 0; width: 300px; height: 600px; }
+.phone-stock { left: 10px; top: 128px; width: 272px; height: 476px; z-index: 1; }
+.notch { flex: none; width: 76px; height: 6px; border-radius: 3px; background: var(--bg); margin: 2px auto 10px; }
+.ph-screen { flex: 1; min-height: 0; background: var(--bg); border-radius: 26px; padding: 16px 14px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+.ph-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 11px; color: var(--ink-3); }
+.ph-top b { color: var(--ink); font-weight: 600; }
+.ph-label { font-size: 12px; color: var(--ink-2); }
+.ph-big { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
+.ph-big strong { font: 600 42px/1 var(--font); color: var(--brass); font-variant-numeric: tabular-nums; }
+.ph-big span { font-size: 15px; font-weight: 600; }
+.ph-price { display: flex; align-items: baseline; gap: 8px; margin-top: 2px; font: 600 26px/1.1 var(--font); font-variant-numeric: tabular-nums; }
+.ph-price span { font-size: 13px; font-weight: 600; }
+.ph-card { background: var(--card); border-radius: 14px; padding: 10px; }
+.ph-card h4 { margin: 0 0 8px; font-size: 11px; font-weight: 600; color: var(--ink-2); }
+.ph-rows { display: grid; gap: 7px; }
+.ph-row { display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px 50px; align-items: center; gap: 6px; font-size: 11px; }
+.ph-row b { font-weight: 600; }
+.ph-bar { position: relative; height: 6px; border-radius: 3px; background: var(--line); overflow: hidden; }
+.ph-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--chart-neutral); }
+.ph-bar i.hot { background: var(--chart-blue); }
+.ph-row .v { font-family: var(--mono); text-align: right; }
+.ph-row .m { text-align: right; }
+.ph-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; font-size: 11px; color: var(--ink-2); }
+.ph-list b { color: var(--ink); font-weight: 600; }
+.ph-tabs { margin-top: auto; display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-3); border-top: 1px solid var(--line); padding-top: 10px; }
+.ph-tabs .on { color: var(--orange); font-weight: 600; }
+.ph-svg { display: block; width: 100%; height: auto; }
+.ph-note { font-size: 11px; line-height: 1.45; color: var(--ink-2); }
+.ph-note b { color: var(--ink); font-weight: 600; }
+@media (max-width: 640px) {
+  .hero { gap: var(--s6); padding-top: var(--s5); }
+  .hero-title { font-size: 52px; }
+  .hero-tagline { font-size: 21px; }
+  .hero-lede { font-size: 15px; }
+  .hero-cta .button { flex: 1 1 auto; }
+  .hero-art { width: 100%; height: auto; display: flex; justify-content: center; }
+  .hero-curve, .phone-week { display: none; }
+  .phone-stock { position: relative; left: auto; top: auto; width: min(300px, 100%); height: 500px; }
+}
+
+@media (max-width: 640px) {
+  .topbar-inner, main, .context-inner { padding-left: var(--s4); padding-right: var(--s4); }
+  .topbar-inner { gap: var(--s3); }
+  .page-head { padding-top: var(--s5); }
+  h1 { font-size: 23px; }
+  .panel { --pad: var(--s4); }
+  .chartbox { height: 260px; }
+  .chartbox.short { height: 240px; }
+  .chartbox.price { height: 150px; }
+  .chartbox.att { height: 200px; }
+  .chartbox.tone { height: 150px; }
+  .lead-num { font-size: 44px; }
+}
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <div>
-      <h1>Indicator Lab — Reddit chatter &amp; stock returns</h1>
-      <div class="sub">r/stocks · r/investing · r/wallstreetbets · <span id="range"></span> · weeks start Monday 00:00 UTC</div>
-    </div>
-    <div style="text-align:right">
-      <button class="primary" id="rebuild">Rebuild analysis on collected data</button>
-      <div class="muted" id="rebuildStatus" style="margin-top:6px"></div>
-    </div>
-  </header>
-
-  <section>
-    <h2>Historical collection (Arctic Shift)</h2>
-    <div class="grid3" id="collect"></div>
-    <div class="muted" id="eta" style="margin-top:10px"></div>
-    <details><summary>Collector log (latest lines)</summary><pre id="log"></pre></details>
-  </section>
-
-  <section>
-    <h2>Weekly chatter by ticker <span class="muted">(all three subreddits combined)</span></h2>
-    <p class="note" id="partialNote" hidden></p>
-    <div class="seg" id="tickers"></div>
-    <div class="legend">
-      <span><i class="sw" style="background:var(--series-1)"></i>weekly matching posts</span>
-      <span><i class="sw" style="background:var(--series-2)"></i>spike week (≥ 2× median of previous 4 weeks)</span>
-      <span><i class="sw" style="background:var(--incomplete)"></i>incomplete collection (observed so far)</span>
-      <span><i class="sw" style="background:var(--text-secondary);height:2px"></i>4-week median</span>
-    </div>
-    <div class="chartbox"><canvas id="weekly"></canvas></div>
-    <div class="muted" id="weeklyStats" style="margin-top:8px"></div>
-  </section>
-
-  <section>
-    <h2>Apple September event study</h2>
-    <div class="tablewrap"><table id="events"></table></div>
-    <div class="muted" style="margin-top:6px">Weekly return = last adjusted close of the Mon–Sun week ÷ previous week's − 1 (yfinance, split/dividend adjusted).</div>
-    <img class="chart" id="chart1" alt="AAPL Reddit posts vs AAPL price with Apple event dates and spike weeks">
-    <img class="chart" id="chart2" alt="Zoomed windows around each Apple September event">
-  </section>
-
-  <section>
-    <h2>Top chatter spikes <span class="muted">(all subreddits, baseline ≥ 5 posts/week)</span></h2>
-    <div class="tablewrap"><table id="spikes"></table></div>
-  </section>
-
-  <div class="grid3" style="grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap:16px">
-    <section style="margin:0">
-      <h2>Matches by method</h2>
-      <div class="tablewrap"><table id="matches"></table></div>
-    </section>
-    <section style="margin:0">
-      <h2>Earliest available post per subreddit</h2>
-      <div class="tablewrap"><table id="coverage"></table></div>
-    </section>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="wordmark" href="#home">Indicator Lab</a>
+    <nav class="topnav" aria-label="Pages">
+      <a href="#home" data-view="home">Home</a>
+      <a href="#now" data-view="now">This week</a>
+      <a href="#stock" data-view="stock">Stock</a>
+      <a href="#spikes" data-view="spikes">Spikes</a>
+      <a href="#strategies" data-view="strategies">Strategies</a>
+      <a href="#data" data-view="data">Data status</a>
+    </nav>
   </div>
+</header>
+<div class="context">
+  <div class="context-inner">
+    <div class="seg" role="group" aria-label="Market">
+      <span class="ctx-label">Market</span>
+      <button type="button" aria-pressed="true">US</button>
+      <button type="button" disabled title="No India data in this build yet">India</button>
+      <button type="button" disabled title="No Hong Kong data in this build yet">Hong Kong</button>
+    </div>
+    <span id="ctxWeek"></span>
+    <span id="ctxAsOf"></span>
+  </div>
+</div>
 
-  <section style="margin-top:16px" id="strategyLog">
-    <header style="margin-bottom:10px">
-      <div>
-        <h2 style="margin:0">Strategy Log</h2>
-        <div class="muted">Append-only — every test is recorded, including failures. Nothing is deleted or overwritten.</div>
+<main>
+  <!-- ============================================================ HOME -->
+  <section class="view home" id="view-home" data-view="home">
+    <div class="hero">
+      <div class="hero-copy">
+        <h1 class="hero-title">Indicator Lab</h1>
+        <p class="hero-tagline">See when the internet gets loud about a stock</p>
+        <p class="hero-lede">Indicator Lab counts the posts about ten US stocks in investor and product subreddits every week. It flags the weeks when chatter jumps well past that stock's normal level, then tests whether those spikes come before the price moves.</p>
+        <div class="hero-cta">
+          <a class="button primary big" href="#now">See this week</a>
+          <a class="button ghost big" href="#strategies">View strategy results</a>
+        </div>
       </div>
-      <div style="text-align:right">
-        <button class="primary" id="runStrategies">Run 5 strategy tests</button>
-        <div class="muted" id="strategyStatus" style="margin-top:6px"></div>
+      <div class="hero-art">
+        <svg class="hero-curve" viewBox="0 0 560 610" preserveAspectRatio="none" aria-hidden="true"><path d="M 452 -10 C 360 150, 540 250, 330 360 S 60 500, -10 620"/></svg>
+        <a class="phone phone-week" id="phoneWeek" href="#now" aria-label="Open this week's page"></a>
+        <a class="phone phone-stock" id="phoneStock" href="#stock" aria-label="Open the stock page"></a>
+      </div>
+      <dl class="hero-stats" id="heroStats"></dl>
+    </div>
+  </section>
+
+  <!-- ============================================================ THIS WEEK -->
+  <section class="view" id="view-now" data-view="now" hidden>
+    <header class="page-head">
+      <div>
+        <h1>What is unusual this week</h1>
+        <p class="lede" id="nowLede">Loading the latest week.</p>
       </div>
     </header>
-    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px">
-      <label class="muted" for="runSelect">Reddit backtest run</label>
-      <select id="runSelect" style="font:inherit;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface-1);color:var(--text-primary)"></select>
+    <section class="panel lead" id="nowLead" aria-live="polite"></section>
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2>Every stock against its own normal week</h2><p>Sorted by chatter this week divided by the median of the previous 8 weeks.</p></div>
+        <div class="seg quiet" id="nowSource" role="group" aria-label="Chatter source">
+          <button type="button" data-src="inv">Investor subreddits</button>
+          <button type="button" data-src="prod">Product subreddits</button>
+        </div>
+      </div>
+      <div class="tablewrap"><table class="board" id="board"></table></div>
+      <p class="footnote">The bar starts at 1× (a normal week) and grows right for more chatter, left for less, on a log scale with marks at 0.5×, 2× and 4×. Tone is the mean FinBERT score of that week's posts, from −1 to +1. Price is the weekly close-to-close change.</p>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><div><h2>Spikes in the last 12 weeks</h2><p>Select a stock to see the posts behind its spike.</p></div></div>
+      <div class="tablewrap"><table id="recentSpikes"></table></div>
+    </section>
+  </section>
+
+  <!-- ============================================================ STOCK -->
+  <section class="view" id="view-stock" data-view="stock" hidden>
+    <header class="page-head">
+      <div>
+        <h1 id="stockTitle">Stock</h1>
+        <p class="lede" id="stockLede">Price, chatter against its own normal week, and the tone of the posts, on one time axis.</p>
+      </div>
+    </header>
+    <div class="toolbar">
+      <div class="seg" id="stockTickers" role="group" aria-label="Stock"></div>
+      <div class="seg quiet" id="stockRange" role="group" aria-label="Time range">
+        <button type="button" data-n="52">1 year</button>
+        <button type="button" data-n="156">3 years</button>
+        <button type="button" data-n="0">All</button>
+      </div>
     </div>
-    <div class="legend" id="equityLegend"></div>
-    <div class="chartbox" style="height:280px"><canvas id="equity"></canvas></div>
-    <div class="muted" style="margin:6px 0 14px">Growth of $1, net of 10 bps per unit turnover. Signal from Reddit week s (Mon–Sun UTC) → enter first open of week s+1 → exit first open of week s+2.</div>
-    <div class="tablewrap"><table id="strategyLogTable"></table></div>
-    <div class="muted" style="margin-top:8px">Verdict rule (fixed in advance): fewer than 52 evaluation weeks → insufficient data; net Sharpe ≥ 0.5 and t ≥ 2 → promising (needs an out-of-sample check); Sharpe &gt; 0 → weak; otherwise failed.
-      Vibe-Trading rows are separate Alpha101 benchmarks (daily rank IC vs next-day return on the S&amp;P 500, 2021–2024, survivorship-biased); they are not Reddit signals.</div>
+    <div class="stock-grid">
+      <section class="panel">
+        <div class="chart-block">
+          <div class="chart-head"><h2>Price</h2>
+            <div class="legend"><span><i class="sw sw-line-up"></i>Close, ▲ week</span><span><i class="sw sw-line-down"></i>Close, ▼ week</span><span><i class="sw sw-band"></i>Spike week</span></div></div>
+          <div class="chartbox price"><canvas id="cPrice" aria-label="Weekly closing price"></canvas></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-head"><h2>Chatter against its normal week</h2>
+            <div class="legend" id="attLegend"></div></div>
+          <div class="chartbox att"><canvas id="cAtt" aria-label="Weekly chatter as a multiple of the previous 8-week median"></canvas></div>
+        </div>
+        <div class="chart-block">
+          <div class="chart-head"><h2>Tone of the posts</h2>
+            <div class="legend"><span><i class="sw sw-line"></i>Investor posts</span><span><i class="sw sw-fill-up"></i>Positive</span><span><i class="sw sw-fill-down"></i>Negative</span><span><i class="sw sw-dash-blue"></i>Product posts</span></div></div>
+          <div class="chartbox tone"><canvas id="cTone" aria-label="Mean FinBERT tone per week"></canvas></div>
+        </div>
+        <p class="footnote">Select any week on a chart to see its numbers and top posts. Weeks start Monday 00:00 UTC. Prices begin in January 2021.</p>
+      </section>
+      <aside class="panel weekpanel" id="weekPanel" aria-live="polite"></aside>
+    </div>
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2>Does chatter come before the move, or after it?</h2>
+          <p>Correlation between one series this week and the other one or two weeks later, with its 95% interval. An interval that crosses zero means no clear link.</p></div>
+        <div class="seg quiet" id="causeLag" role="group" aria-label="Weeks later">
+          <button type="button" data-lag="1">1 week later</button>
+          <button type="button" data-lag="2">2 weeks later</button>
+        </div>
+      </div>
+      <div class="cause-scale" aria-hidden="true"><div class="scale-key"><span>−0.5</span><span>0</span><span>+0.5</span></div></div>
+      <div class="cause" id="causeRows"></div>
+    </section>
+    <section class="panel" id="events-sec" hidden>
+      <div class="panel-head">
+        <div><h2>Apple September event study</h2><p>Reddit chatter and AAPL returns around each launch event (Week 1 rule: 2× the median of the previous 4 weeks)</p></div>
+      </div>
+      <div class="tablewrap"><table id="events"></table></div>
+      <p class="footnote">Weekly return = last adjusted close of the Mon–Sun week ÷ previous week's − 1 (yfinance, split and dividend adjusted).</p>
+      <details>
+        <summary>Week 1 figures</summary>
+        <img class="figure" id="chart1" alt="AAPL Reddit posts vs AAPL price with Apple event dates and spike weeks">
+        <img class="figure" id="chart2" alt="Zoomed windows around each Apple September event">
+      </details>
+    </section>
+  </section>
+
+  <!-- ============================================================ SPIKES -->
+  <section class="view" id="view-spikes" data-view="spikes" hidden>
+    <header class="page-head">
+      <div>
+        <h1>Spike weeks</h1>
+        <p class="lede" id="spikeLede">Every week a stock's chatter passed the spike rule, newest first.</p>
+      </div>
+    </header>
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2>When spikes happened</h2><p id="spikeSummary"></p></div>
+        <div class="seg quiet" id="spikeSource" role="group" aria-label="Chatter source">
+          <button type="button" data-src="all">Both</button>
+          <button type="button" data-src="investor">Investor</button>
+          <button type="button" data-src="product">Product</button>
+        </div>
+      </div>
+      <div class="legend"><span><i class="sw sw-dot"></i>Investor subreddits</span><span><i class="sw sw-ring"></i>Product subreddits</span></div>
+      <div class="chartbox calendar"><canvas id="cCal" aria-label="Spike weeks by stock over time"></canvas></div>
+    </section>
+    <section class="panel">
+      <div class="panel-head">
+        <div><h2 id="spikeCount">Spike list</h2><p>Price columns are empty before 2021, when the price history starts.</p></div>
+        <div class="controls">
+          <label class="field-label" for="spikeTicker">Stock</label>
+          <select id="spikeTicker"></select>
+        </div>
+      </div>
+      <div class="tablewrap"><table id="spikeTable"></table></div>
+      <button type="button" id="spikeMore" hidden>Show more</button>
+    </section>
+  </section>
+
+  <!-- ============================================================ STRATEGIES -->
+  <section class="view" id="view-strategies" data-view="strategies" hidden>
+    <header class="page-head">
+      <div>
+        <h1>Strategy results</h1>
+        <p class="lede">Each strategy trades on the attention signal and is judged against holding the benchmark. Every test is logged, failures included, and nothing is deleted or overwritten.</p>
+      </div>
+      <div class="action">
+        <button class="primary" id="runStrategies">Run 5 strategy tests</button>
+        <div class="status" id="strategyStatus"></div>
+      </div>
+    </header>
+    <section class="panel" id="strategyLog">
+      <div class="panel-head">
+        <div><h2>Growth of $1</h2><p>Net of 10 bps per unit turnover. Select a strategy to highlight it.</p></div>
+        <div class="controls">
+          <label class="field-label" for="runSelect">Backtest run</label>
+          <select id="runSelect"></select>
+        </div>
+      </div>
+      <div class="keys" id="equityLegend"></div>
+      <div class="chartbox short"><canvas id="equity"></canvas></div>
+      <p class="footnote">Signal from Reddit week s (Mon–Sun UTC), enter at the first open of week s+1, exit at the first open of week s+2.</p>
+    </section>
+    <section class="panel">
+      <div class="panel-head"><div><h2>Strategy log</h2><p>Newest run first.</p></div></div>
+      <div class="tablewrap"><table id="strategyLogTable"></table></div>
+      <p class="footnote">Verdict rule (fixed in advance): fewer than 52 evaluation weeks means insufficient data; net Sharpe ≥ 0.5 and t ≥ 2 is promising (needs an out-of-sample check); Sharpe &gt; 0 is weak; anything else failed.
+        Vibe-Trading rows are separate Alpha101 benchmarks (daily rank IC vs next-day return on the S&amp;P 500, 2021–2024, survivorship-biased). They are not Reddit signals.</p>
+    </section>
+  </section>
+
+  <!-- ============================================================ DATA STATUS -->
+  <section class="view" id="view-data" data-view="data" hidden>
+    <header class="page-head">
+      <div>
+        <h1>Data status</h1>
+        <p class="lede">r/stocks, r/investing and r/wallstreetbets · <span id="range"></span> · weeks start Monday 00:00 UTC</p>
+      </div>
+      <div class="action">
+        <button class="primary" id="rebuild">Rebuild analysis on collected data</button>
+        <div class="status" id="rebuildStatus"></div>
+      </div>
+    </header>
+    <section class="panel" id="collection">
+      <div class="panel-head">
+        <div><h2>Historical collection</h2><p>Arctic Shift archive, one request per subreddit per day</p></div>
+      </div>
+      <div class="notice" id="partialNote" hidden><strong>Partial data.</strong> <span id="partialText"></span></div>
+      <div class="tablewrap"><table id="collect"></table></div>
+      <p class="footnote" id="eta"></p>
+      <details><summary>Collector log (latest lines)</summary><pre id="log"></pre></details>
+    </section>
+    <div class="two-col" id="method-sec">
+      <section class="panel">
+        <div class="panel-head"><h2>Matches by method</h2></div>
+        <div class="tablewrap"><table id="matches"></table></div>
+      </section>
+      <section class="panel">
+        <div class="panel-head"><h2>Earliest available post per subreddit</h2></div>
+        <div class="tablewrap"><table id="coverage"></table></div>
+      </section>
+    </div>
   </section>
 </main>
 
 <script>
 const $ = (id) => document.getElementById(id);
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const fmt = (n, d = 0) => n == null || Number.isNaN(n) ? "—" : Number(n).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d });
-const pct = (n) => n == null ? "—" : (n >= 0 ? "+" : "") + (n * 100).toFixed(2) + "%";
+const fmt = (n, d = 0) => n == null || Number.isNaN(n) ? "n/a" : Number(n).toLocaleString(undefined, { maximumFractionDigits: d, minimumFractionDigits: d });
+const pct = (n) => n == null ? "n/a" : (n >= 0 ? "+" : "") + (n * 100).toFixed(2) + "%";
 const get = (u) => fetch(u, { cache: "no-store" }).then(r => r.json());
-const TICKERS = ["AAPL","MSFT","NVDA","TSLA","AMZN","META","GOOGL","AMD","NFLX","JPM"];
-let ticker = "AAPL", chart;
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const MINUS = "−";
+const day = (w) => new Date(w + "T00:00:00Z");
+const fmtWeek = (w) => w ? day(w).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", timeZone: "UTC" }) : "n/a";
+const monthYear = (w) => w ? day(w).toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" }) : "";
+const move = (x) => x == null ? "n/a" : `${x >= 0 ? "▲" : "▼"} ${(Math.abs(x) * 100).toFixed(1)}%`;
+const signed = (x, d = 2) => x == null ? "n/a" : (x >= 0 ? "+" : MINUS) + Math.abs(x).toFixed(d);
+const dir = (x, txt) => x == null ? "n/a" : `<span class="${x >= 0 ? "up" : "down"}">${txt}</span>`;
+const mv = (x) => dir(x, move(x)), tn = (x) => dir(x, signed(x));
+const alpha = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, ${a})`; };
+const ratio = (r) => r == null ? "n/a" : (r >= 10 ? r.toFixed(1) : r.toFixed(2)) + "×";
+const isSpike = (r) => r.inv_spike || r.prod_spike;
+const SRC_NAME = { investor: "Investor", product: "Product", inv: "Investor", prod: "Product" };
+let names = {}, rule = { ratio: 1.5, rz_threshold: 2, baseline_weeks: 8 };
 
-function table(el, cols, rows) {
-  if (!rows.length) { el.innerHTML = '<tr><td class="muted">No data yet — run the analysis.</td></tr>'; return; }
+function applyChartTheme() {
+  Chart.defaults.font.family = css("--font");
+  Chart.defaults.font.size = 12;
+  Chart.defaults.color = css("--ink-3");
+}
+const tooltipStyle = () => ({
+  backgroundColor: css("--bg-deep"), titleColor: css("--ink"), bodyColor: css("--ink"), borderColor: css("--line-strong"), borderWidth: 1,
+  padding: 10, cornerRadius: 6, titleFont: { weight: "600" }, boxWidth: 10, boxHeight: 10, boxPadding: 4,
+});
+const axisX = (max) => ({ grid: { display: false }, border: { color: css("--line-strong") }, ticks: { color: css("--ink-3"), maxTicksLimit: max, maxRotation: 0, autoSkipPadding: 24 } });
+const axisY = (title, extra = {}) => ({ grid: { color: css("--line") }, border: { display: false },
+  ticks: { color: css("--ink-3"), ...extra }, title: { display: true, text: title, color: css("--ink-2") } });
+
+function table(el, cols, rows, empty = "No data yet. Run the analysis to fill this table.") {
+  if (!rows.length) { el.innerHTML = `<tr><td class="muted">${empty}</td></tr>`; return; }
   el.innerHTML = "<thead><tr>" + cols.map(c => `<th class="${c.num ? "num" : ""}">${c.h}</th>`).join("") + "</tr></thead><tbody>" +
-    rows.map(r => "<tr>" + cols.map(c => `<td class="${c.num ? "num" : ""}">${c.f ? c.f(r) : (r[c.k] ?? "—")}</td>`).join("") + "</tr>").join("") + "</tbody>";
+    rows.map(r => `<tr${r._href ? ` class="link" data-href="${r._href}"` : ""}>` + cols.map(c => `<td class="${c.num ? "num" : ""}">${c.f ? c.f(r) : (r[c.k] ?? "n/a")}</td>`).join("") + "</tr>").join("") + "</tbody>";
+  el.querySelectorAll("tr[data-href]").forEach(tr => tr.onclick = (e) => { if (!e.target.closest("a")) location.hash = tr.dataset.href; });
+}
+function segPress(el, attr, value) { el.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset[attr] === String(value)))); }
+
+// ---------------------------------------------------------------- router
+const VIEWS = ["home", "now", "stock", "spikes", "strategies", "data"];
+let current = null;
+function route() {
+  const [v0, t, w] = location.hash.replace(/^#/, "").split("/");
+  const v = VIEWS.includes(v0) ? v0 : "home";
+  document.body.dataset.view = v;
+  document.querySelectorAll(".view").forEach(s => s.hidden = s.dataset.view !== v);
+  document.querySelectorAll(".topnav a").forEach(a => a.dataset.view === v ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  if (current !== v) window.scrollTo(0, 0);
+  current = v;
+  if (v === "home") renderHome();
+  if (v === "now") renderNow();
+  if (v === "stock") openStock(t, w);
+  if (v === "spikes") renderSpikes();
+  if (v === "strategies") loadStrategyLog();
+  if (v === "data") loadStatus();
 }
 
+// ---------------------------------------------------------------- home
+// Two phone previews drawn from the same data as the pages they open.
+const ratioW = (r) => r == null ? 0 : Math.min(100, Math.max(4, (Math.log2(r) + 2) / 5 * 100));   // 0.25x..8x on a log scale
+async function renderHome() {
+  const d = nowData || await loadNow();
+  if (!spikeData) spikeData = await get("/api/spike_weeks");
+  const spikes = spikeData.rows || [];
+  $("heroStats").innerHTML = [
+    [Object.keys(names).length, "US stocks tracked"],
+    [fmt(spikes.length), spikes.length ? `spike weeks since ${day(spikes.at(-1).week).getUTCFullYear()}` : "spike weeks"],
+    [fmtWeek(d.week), "latest week"],
+  ].map(([v, k]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("");
+  if (!d.week) return;
+
+  const hits = d.rows.filter(r => r.inv_spike || r.prod_spike);
+  const rows = d.rows.filter(r => r.inv_ratio != null).sort((a, b) => b.inv_ratio - a.inv_ratio).slice(0, 7);
+  $("phoneWeek").innerHTML = `<div class="notch"></div><div class="ph-screen">
+    <div class="ph-top"><b>Indicator Lab</b><span>US market</span></div>
+    <div><div class="ph-label">Week of ${fmtWeek(d.week)}</div>
+      <div class="ph-big"><strong>${hits.length}</strong><span>${hits.length === 1 ? "spike" : "spikes"} this week</span></div></div>
+    <div class="ph-card"><h4>Investor chatter against its normal week</h4><div class="ph-rows">${rows.map(r =>
+      `<div class="ph-row"><b>${r.ticker}</b><span class="ph-bar"><i class="${r.inv_spike ? "hot" : ""}" style="width:${ratioW(r.inv_ratio)}%"></i></span>` +
+      `<span class="v${r.inv_spike ? " flag" : ""}">${ratio(r.inv_ratio)}</span><span class="m">${mv(r.ret)}</span></div>`).join("")}</div></div>
+    <div class="ph-card"><h4>Recent spikes</h4><ul class="ph-list">${(d.recent_spikes || []).slice(0, 3).map(r =>
+      `<li><b>${r.ticker}</b> ${fmtWeek(r.week)} · ${r.source} <b>${ratio(r.ratio)}</b></li>`).join("")}</ul></div>
+    <div class="ph-tabs"><span class="on">Week</span><span>Stock</span><span>Spikes</span><span>Strategies</span></div></div>`;
+
+  const T = (hits.slice().sort((a, b) => (b.inv_ratio ?? 0) - (a.inv_ratio ?? 0))[0] || rows[0] || {}).ticker;
+  if (!T) return;
+  if (!stockCache.has(T)) stockCache.set(T, await get(`/api/stock?ticker=${T}`));
+  const sd = stockCache.get(T), wk = sd.weeks.filter(r => r.close != null).slice(-52), last = wk.at(-1);
+  if (!last) return;
+  const up = css("--up"), down = css("--down"), blue = css("--chart-blue"), band = css("--chart-band"), bg = css("--bg");
+  const W = 220, padX = 3, step = (W - 2 * padX) / Math.max(1, wk.length - 1), X = (i) => padX + i * step;
+  const closes = wk.map(r => r.close), lo = Math.min(...closes), hi = Math.max(...closes);
+  const PH = 120, Y = (v) => 30 + (hi - v) / Math.max(1e-9, hi - lo) * (PH - 36);
+  const si = wk.map((r, i) => isSpike(r) ? i : -1).filter(i => i >= 0), ls = si.at(-1);
+  // spike weeks as faint blue bands, then the close line in green (up week) and red (down week) steps
+  let price = si.map(i => `<rect x="${(X(i) - step / 2).toFixed(1)}" y="22" width="${Math.max(2, step).toFixed(1)}" height="${PH - 22}" fill="${band}"/>`).join("");
+  price += wk.slice(1).map((r, k) => `<line x1="${X(k).toFixed(1)}" y1="${Y(wk[k].close).toFixed(1)}" x2="${X(k + 1).toFixed(1)}" y2="${Y(r.close).toFixed(1)}" stroke="${r.close >= wk[k].close ? up : down}" stroke-width="1.75" stroke-linecap="round"/>`).join("");
+  if (ls != null) {
+    const x = X(ls), y = Y(wk[ls].close), tx = Math.min(W - 40, Math.max(0, x - 20));
+    price += `<line x1="${x.toFixed(1)}" y1="18" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${blue}" stroke-width="1" stroke-dasharray="2 2"/>` +
+      `<rect x="${tx.toFixed(1)}" y="3" width="40" height="15" rx="4" fill="${blue}"/><text x="${(tx + 20).toFixed(1)}" y="13.5" text-anchor="middle" font-size="8.5" font-weight="700" fill="${bg}" font-family="${css("--font")}">SPIKE</text>` +
+      `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${blue}" stroke="${bg}" stroke-width="2"/>`;
+  }
+  // investor chatter bars from 1x on a log scale, colored like volume bars
+  const BH = 64, LY = (v) => 4 + (3 - Math.log2(Math.min(8, Math.max(0.25, v)))) / 5 * (BH - 8), bw = Math.max(1.5, step * 0.7);
+  const bars = `<line x1="0" x2="${W}" y1="${LY(1)}" y2="${LY(1)}" stroke="${css("--chart-base")}" stroke-width="1"/>` + wk.map((r, i) => {
+    if (r.inv_ratio == null) return "";
+    const y0 = LY(1), y1 = LY(r.inv_ratio), c = r.inv_spike ? blue : r.ret == null ? css("--chart-neutral") : r.ret >= 0 ? up : down;
+    return `<rect x="${(X(i) - bw / 2).toFixed(1)}" y="${Math.min(y0, y1).toFixed(1)}" width="${bw.toFixed(1)}" height="${Math.max(1, Math.abs(y1 - y0)).toFixed(1)}" rx="1" fill="${c}"/>`;
+  }).join("");
+  const sp = ls != null ? wk[ls] : null, src = sp && sp.inv_spike ? "inv" : "prod";
+  $("phoneStock").href = `#stock/${T}`;
+  $("phoneStock").innerHTML = `<div class="notch"></div><div class="ph-screen">
+    <div class="ph-top"><b>${T} · ${esc(sd.name || names[T] || "")}</b><span>52 weeks</span></div>
+    <div><div class="ph-label">Weekly close</div><div class="ph-price">$${fmt(last.close, 2)} <span>${mv(last.ret)}</span></div></div>
+    <svg class="ph-svg" viewBox="0 0 ${W} ${PH}" role="img" aria-label="${T} weekly close, last 52 weeks">${price}</svg>
+    <div class="ph-card"><h4>Investor chatter against its normal week</h4><svg class="ph-svg" viewBox="0 0 ${W} ${BH}" aria-hidden="true">${bars}</svg></div>
+    <p class="ph-note">${sp ? `Latest spike, week of <b>${fmtWeek(sp.week)}</b>: ${SRC_NAME[src].toLowerCase()} chatter <b>${ratio(sp[src + "_ratio"])}</b> its normal week.` : "No spike in the last 52 weeks."}</p></div>`;
+}
+
+// ---------------------------------------------------------------- this week
+let nowData = null, nowSrc = "inv";
+async function loadNow() {
+  nowData = await get("/api/now");
+  names = nowData.names || {}; rule = nowData.rule || rule;
+  $("ctxWeek").textContent = nowData.week ? `Latest week ${fmtWeek(nowData.week)}` : "";
+  $("ctxAsOf").textContent = `Data as of ${nowData.updated ?? "n/a"}`;
+  return nowData;
+}
+
+const logPos = (v, lo = -2, hi = 3) => (Math.min(hi, Math.max(lo, Math.log2(v))) - lo) / (hi - lo) * 100;
+function ratioBar(r, hot) {
+  const one = logPos(1);
+  const ticks = [0.5, 2, 4].map(v => `<i class="tick" style="left:${logPos(v)}%"></i>`).join("");
+  const bar = r == null ? "" : `<i class="bar${hot ? " hot" : ""}" style="left:${Math.min(one, logPos(r))}%;width:${Math.abs(logPos(r) - one)}%"></i>`;
+  return `<div class="ratio"><div class="rtrack">${ticks}<i class="one" style="left:${one}%"></i>${bar}</div>` +
+    `<span class="val${hot ? " flag" : ""}">${ratio(r)}</span><span class="slot">${hot ? '<span class="pill pill-accent">Spike</span>' : ""}</span></div>`;
+}
+function spark(vals, spikes) {
+  const W = 96, H = 24, y = (v) => H - 3 - logPos(v) / 100 * (H - 6), step = W / Math.max(1, vals.length - 1);
+  const pts = vals.map((v, i) => v == null ? null : [i * step, y(v)]);
+  const line = pts.filter(Boolean).map(([x, yy]) => `${x.toFixed(1)},${yy.toFixed(1)}`).join(" ");
+  const last = pts.filter(Boolean).at(-1);
+  const dots = pts.map((p, i) => p && spikes[i] ? `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="2.5" class="sp-hot"/>` : "").join("");
+  return `<svg class="spark" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" aria-hidden="true">` +
+    `<line x1="0" x2="${W}" y1="${y(1)}" y2="${y(1)}" class="sp-one"/><polyline points="${line}" class="sp-line"/>` +
+    (last && !spikes[vals.length - 1] ? `<circle cx="${last[0].toFixed(1)}" cy="${last[1].toFixed(1)}" r="2" class="sp-last"/>` : "") + dots + "</svg>";
+}
+
+async function renderNow() {
+  const d = nowData || await loadNow();
+  if (!d.week) { $("nowLead").innerHTML = '<p class="muted">No attention data yet. Run src.reddit.reddit_weekly to build it.</p>'; return; }
+  $("nowLede").textContent = `Week of ${fmtWeek(d.week)}. Each stock is compared with its own previous ${rule.baseline_weeks} weeks, so 1× is a normal week for that stock. ` +
+    `A spike is at least ${rule.ratio}× and also rare for that stock (robust z of ${rule.rz_threshold} or more).`;
+  const hits = d.rows.flatMap(r => ["inv", "prod"].filter(p => r[p + "_spike"]).map(p => ({ r, p })))
+    .sort((a, b) => b.r[b.p + "_ratio"] - a.r[a.p + "_ratio"]);
+  if (hits.length) {
+    const top = hits[0].r.ticker;
+    $("nowLead").innerHTML = `<div class="lead-num hot">${hits.length}</div>
+      <div><p class="lead-title">${hits.length === 1 ? "spike" : "spikes"} this week</p><ul class="lead-list">${hits.map(({ r, p }) =>
+        `<li><a href="#stock/${r.ticker}/${d.week}">${r.ticker}</a> ${SRC_NAME[p].toLowerCase()} chatter is <strong>${ratio(r[p + "_ratio"])}</strong> its normal week: ${fmt(r[p + "_posts"])} posts against a median of ${fmt(r[p + "_baseline"], 1)}.</li>`).join("")}</ul></div>
+      <a class="button primary" href="#stock/${top}/${d.week}">Open ${top}</a>`;
+  } else {
+    const top = d.rows.filter(r => r.inv_ratio != null).sort((a, b) => b.inv_ratio - a.inv_ratio)[0];
+    $("nowLead").innerHTML = `<div class="lead-num">0</div><div><p class="lead-title">spikes this week</p>
+      <ul class="lead-list"><li>${top ? `Highest is <a href="#stock/${top.ticker}/${d.week}">${top.ticker}</a> investor chatter at <strong>${ratio(top.inv_ratio)}</strong>, which is not rare enough for ${top.ticker} to count.` : "No stock has a ratio this week."}</li></ul></div>`;
+  }
+  renderBoard();
+  table($("recentSpikes"), [
+    { h: "Week of", f: r => fmtWeek(r.week) },
+    { h: "Stock", f: r => `<a class="tk" href="${r._href}">${r.ticker}</a>` },
+    { h: "Source", f: r => SRC_NAME[r.source] },
+    { h: "vs. normal", num: 1, f: r => `<span class="flag">${ratio(r.ratio)}</span>` },
+    { h: "Posts / median", num: 1, f: r => `${fmt(r.posts)} <span class="muted">/ ${fmt(r.baseline, 1)}</span>` },
+    { h: "Tone", num: 1, f: r => tn(r.sentiment_mean) },
+    { h: "Price that week", num: 1, f: r => mv(r.ret) },
+    { h: "Week after", num: 1, f: r => mv(r.ret_next1) },
+  ], d.recent_spikes.map(r => ({ ...r, _href: `#stock/${r.ticker}/${r.week}` })), "No spikes in the last 12 weeks.");
+}
+
+function renderBoard() {
+  const d = nowData, p = nowSrc;
+  segPress($("nowSource"), "src", p);
+  const rows = d.rows.slice().sort((a, b) => (b[p + "_ratio"] ?? -1) - (a[p + "_ratio"] ?? -1));
+  $("board").innerHTML = `<thead><tr><th>Stock</th><th><div class="ratio"><div class="rtrack axis">${[1, 4].map(v => `<span style="left:${logPos(v)}%">${v}×</span>`).join("")}</div><span class="val">vs. normal</span><span class="slot"></span></div></th>
+    <th class="num">Posts / median</th><th class="num">Tone</th><th class="num">Price, week</th><th>Last 12 weeks</th></tr></thead><tbody>` +
+    rows.map(r => {
+      const href = `#stock/${r.ticker}/${d.week}`;
+      return `<tr class="link" data-href="${href}"><td><a class="tk" href="${href}">${r.ticker}</a><span class="tk-name">${esc(r.name)}</span></td>
+        <td>${ratioBar(r[p + "_ratio"], r[p + "_spike"])}</td>
+        <td class="num">${fmt(r[p + "_posts"])} <span class="muted">/ ${fmt(r[p + "_baseline"], 1)}</span></td>
+        <td class="num">${tn(r[p + "_sentiment_mean"])}</td>
+        <td class="num">${mv(r.ret)}</td>
+        <td>${spark(r.spark[p], r.spark[p + "_spike"])}</td></tr>`;
+    }).join("") + "</tbody>";
+  $("board").querySelectorAll("tr[data-href]").forEach(tr => tr.onclick = (e) => { if (!e.target.closest("a")) location.hash = tr.dataset.href; });
+}
+$("nowSource").querySelectorAll("button").forEach(b => b.onclick = () => { nowSrc = b.dataset.src; renderBoard(); });
+
+// ---------------------------------------------------------------- stock
+// Three charts share one category axis (the same weeks, the same left gutter), so one week lines
+// up vertically across price, chatter and tone. Hovering one chart draws the guide on all three.
+const stockCache = new Map();
+let stockT = null, stockRange = 156, stockData = null, sel = null, hover = null, sCharts = [], causeLag = 1;
+const visible = () => stockRange ? stockData.weeks.slice(-stockRange) : stockData.weeks;
+
+async function openStock(t, w) {
+  if (!nowData) await loadNow();
+  const all = Object.keys(names);
+  const T = (t || stockT || all[0] || "AAPL").toUpperCase();
+  stockT = all.includes(T) ? T : all[0];
+  renderStockTickers();
+  $("stockTitle").textContent = stockT;
+  if (!stockCache.has(stockT)) stockCache.set(stockT, await get(`/api/stock?ticker=${stockT}`));
+  stockData = stockCache.get(stockT);
+  const weeks = stockData.weeks;
+  $("stockLede").textContent = `${stockData.name}. Price, chatter against its own normal week, and the tone of the posts, on one time axis.`;
+  const lastSpike = weeks.filter(isSpike).at(-1);
+  sel = w && weeks.some(r => r.week === w) ? w : (lastSpike ?? weeks.at(-1))?.week ?? null;
+  const i = weeks.findIndex(r => r.week === sel);
+  if (stockRange && i >= 0 && i < weeks.length - stockRange) stockRange = 0;
+  segPress($("stockRange"), "n", stockRange);
+  segPress($("causeLag"), "lag", causeLag);
+  drawStock(); renderWeek(); renderCause();
+  $("events-sec").hidden = stockT !== "AAPL";
+}
+
+function renderStockTickers() {
+  $("stockTickers").innerHTML = Object.keys(names).map(t => `<button type="button" aria-pressed="${t === stockT}" data-t="${t}">${t}</button>`).join("");
+  $("stockTickers").querySelectorAll("button").forEach(b => b.onclick = () => { location.hash = `#stock/${b.dataset.t}`; });
+}
+$("stockRange").querySelectorAll("button").forEach(b => b.onclick = () => { stockRange = Number(b.dataset.n); segPress($("stockRange"), "n", stockRange); drawStock(); });
+$("causeLag").querySelectorAll("button").forEach(b => b.onclick = () => { causeLag = Number(b.dataset.lag); segPress($("causeLag"), "lag", causeLag); renderCause(); });
+
+const guides = { id: "guides", afterDatasetsDraw(c) {
+  const { ctx, chartArea: a, scales: { x } } = c, labels = c.data.labels;
+  const line = (i, color, w) => { if (i == null || i < 0) return; const px = x.getPixelForValue(i);
+    ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(px, a.top); ctx.lineTo(px, a.bottom); ctx.stroke(); ctx.restore(); };
+  line(hover, css("--chart-neutral"), 1);
+  line(labels.indexOf(sel), css("--ink"), 1.5);
+} };
+const bandsFor = (rows) => ({ id: "bands", beforeDatasetsDraw(c) {
+  const { ctx, chartArea: a, scales: { x } } = c, step = Math.max(2, x.getPixelForValue(1) - x.getPixelForValue(0));
+  ctx.save(); ctx.fillStyle = css("--chart-band");
+  rows.forEach((r, i) => { if (isSpike(r)) ctx.fillRect(x.getPixelForValue(i) - step / 2, a.top, step, a.bottom - a.top); });
+  ctx.restore();
+} });
+const threshold = { id: "threshold", beforeDatasetsDraw(c) {
+  const { ctx, chartArea: a, scales: { y } } = c, py = y.getPixelForValue(rule.ratio);
+  ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = css("--chart-ref"); ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(a.left, py); ctx.lineTo(a.right, py); ctx.stroke(); ctx.restore();
+} };
+
+function setHover(i) { if (i !== hover) { hover = i; sCharts.forEach(c => c.draw()); } }
+function idxAt(e, c) { const n = c.data.labels.length, i = Math.round(c.scales.x.getValueForPixel(e.x)); return i >= 0 && i < n ? i : null; }
+
+function drawStock() {
+  sCharts.forEach(c => c.destroy()); sCharts = []; hover = null;
+  const rows = visible(), labels = rows.map(r => r.week);
+  const clampR = (r) => r == null ? null : Math.min(64, Math.max(0.25, r));
+  const gutter = (s) => { s.width = 56; };
+  const xAxis = (show) => ({ type: "category", offset: true, grid: { display: false }, border: { color: css("--line-strong") },
+    ticks: show ? { color: css("--ink-3"), maxRotation: 0, autoSkip: true, maxTicksLimit: 8, callback: (v) => monthYear(labels[v]) } : { display: false } });
+  const yAxis = (extra = {}) => ({ grid: { color: css("--line") }, border: { display: false }, afterFit: gutter, ...extra,
+    ticks: { color: css("--ink-3"), maxTicksLimit: 5, ...(extra.ticks || {}) } });
+  const title = (it) => `Week of ${fmtWeek(labels[it[0].dataIndex])}`;
+  const base = (cb) => ({ responsive: true, maintainAspectRatio: false, animation: false, layout: { padding: { right: 8 } },
+    interaction: { mode: "index", intersect: false },
+    onHover: (e, _, c) => setHover(e.type === "mouseout" ? null : idxAt(e, c)),
+    onClick: (e, _, c) => { const i = idxAt(e, c); if (i != null) pickWeek(labels[i]); },
+    plugins: { legend: { display: false }, tooltip: { ...tooltipStyle(), displayColors: false, callbacks: { title, ...cb } } } });
+
+  $("attLegend").innerHTML = `<span><i class="sw sw-bar-up"></i>Investor, price ▲ week</span><span><i class="sw sw-bar-down"></i>Investor, price ▼ week</span><span><i class="sw sw-spike"></i>Spike week</span>` +
+    `<span><i class="sw sw-line"></i>Product subreddits</span><span><i class="sw sw-dash"></i>${rule.ratio}× line</span>`;
+
+  // market colors: each weekly step of the price line, and each investor bar, is green when the close rose that week and red when it fell
+  const up = css("--up"), down = css("--down"), dirColor = (r) => r.ret == null ? css("--chart-neutral") : r.ret >= 0 ? up : down;
+  sCharts.push(new Chart($("cPrice"), { type: "line", plugins: [bandsFor(rows), guides],
+    data: { labels, datasets: [{ data: rows.map(r => r.close), borderColor: up, borderWidth: 1.75, pointRadius: 0, pointHoverRadius: 3,
+      segment: { borderColor: (s) => s.p1.parsed.y >= s.p0.parsed.y ? up : down },
+      pointHoverBackgroundColor: rows.map(dirColor), pointHoverBorderColor: css("--panel"), pointHoverBorderWidth: 2, spanGaps: true }] },
+    options: { ...base({ label: (it) => { const r = rows[it.dataIndex]; return `close $${fmt(r.close, 2)} · week ${move(r.ret)}`; } }),
+      scales: { x: xAxis(false), y: yAxis({ ticks: { callback: v => "$" + fmt(v) } }) } } }));
+
+  const maxR = Math.max(4, ...rows.flatMap(r => [r.inv_ratio ?? 0, r.prod_ratio ?? 0]));
+  sCharts.push(new Chart($("cAtt"), { plugins: [threshold, guides],
+    data: { labels, datasets: [
+      { type: "line", label: "Product", data: rows.map(r => clampR(r.prod_ratio)), borderColor: css("--chart-white"), borderWidth: 1.25, spanGaps: true,
+        pointRadius: rows.map(r => r.prod_spike ? 4 : 0), pointBackgroundColor: css("--panel"), pointBorderColor: css("--chart-blue"), pointBorderWidth: 2,
+        pointHoverRadius: 3, pointHoverBackgroundColor: css("--chart-white"), order: 0 },
+      { type: "bar", label: "Investor", data: rows.map(r => r.inv_ratio == null ? null : [1, clampR(r.inv_ratio)]),
+        backgroundColor: rows.map(r => r.inv_spike ? css("--chart-blue") : dirColor(r)), borderRadius: 2, borderSkipped: false,
+        categoryPercentage: 1, barPercentage: 0.82, order: 1 },
+    ] },
+    options: { ...base({ label: (it) => { const r = rows[it.dataIndex], p = it.dataset.type === "bar" ? "inv" : "prod";
+        return `${SRC_NAME[p]} ${ratio(r[p + "_ratio"])} · ${fmt(r[p + "_posts"])} posts, median ${fmt(r[p + "_baseline"], 1)}${r[p + "_spike"] ? " · spike" : ""}`; } }),
+      scales: { x: xAxis(false), y: { type: "logarithmic", min: 0.25, max: 2 ** Math.ceil(Math.log2(Math.min(64, maxR))), afterFit: gutter,
+        afterBuildTicks: (s) => { s.ticks = [0.25, 0.5, 1, 2, 4, 8, 16, 32, 64].filter(v => v >= s.min && v <= s.max).map(value => ({ value })); },
+        grid: { color: (g) => g.tick && g.tick.value === 1 ? css("--chart-base") : css("--line"), lineWidth: (g) => g.tick && g.tick.value === 1 ? 1.5 : 1 },
+        border: { display: false }, ticks: { color: css("--ink-3"), callback: v => v + "×" } } } } }));
+
+  sCharts.push(new Chart($("cTone"), { type: "line", plugins: [bandsFor(rows), guides],
+    data: { labels, datasets: [
+      { data: rows.map(r => r.inv_sentiment_mean), borderColor: css("--chart-white"), borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 3, pointHoverBackgroundColor: css("--chart-white"), spanGaps: true,
+        fill: { target: { value: 0 }, above: alpha(css("--up"), 0.28), below: alpha(css("--down"), 0.28) } },
+      { data: rows.map(r => r.prod_sentiment_mean), borderColor: css("--chart-blue"), borderWidth: 1.25, borderDash: [4, 3], pointRadius: 0, pointHoverRadius: 3, pointHoverBackgroundColor: css("--chart-blue"), spanGaps: true },
+    ] },
+    options: { ...base({ label: (it) => { const r = rows[it.dataIndex], p = it.datasetIndex === 0 ? "inv" : "prod";
+        return `${SRC_NAME[p]} tone ${signed(r[p + "_sentiment_mean"])} (${fmt(r[p + "_n_scored"])} posts)`; } }),
+      scales: { x: xAxis(true), y: yAxis({ suggestedMin: -0.3, suggestedMax: 0.3,
+        grid: { color: (g) => g.tick && g.tick.value === 0 ? css("--chart-base") : css("--line") },
+        ticks: { callback: v => (v > 0 ? "+" : v < 0 ? MINUS : "") + Math.abs(v).toFixed(1) } }) } } }));
+
+  sCharts.forEach(c => c.canvas.addEventListener("mouseleave", () => setHover(null)));
+}
+
+function pickWeek(w) {
+  sel = w;
+  if (!visible().some(r => r.week === w)) { stockRange = 0; segPress($("stockRange"), "n", 0); drawStock(); }
+  else sCharts.forEach(c => c.draw());
+  history.replaceState(null, "", `#stock/${stockT}/${w}`);
+  renderWeek();
+}
+
+const TONE = { positive: "▲ positive", negative: "▼ negative", neutral: "● neutral" };
+function renderWeek() {
+  const weeks = stockData.weeks, i = weeks.findIndex(r => r.week === sel), r = weeks[i];
+  if (!r) { $("weekPanel").innerHTML = '<p class="muted">No weeks for this stock yet.</p>'; return; }
+  const posts = stockData.posts[r.week] || [];
+  const spikes = weeks.map((x, j) => isSpike(x) ? j : -1).filter(j => j >= 0);
+  const prev = spikes.filter(j => j < i).at(-1), next = spikes.find(j => j > i);
+  const pills = [r.inv_spike && "Investor spike", r.prod_spike && "Product spike"].filter(Boolean)
+    .map(t => `<span class="pill pill-accent"><i class="dot"></i>${t}</span>`).join("");
+  const fact = (label, p) => `<div><dt>${label}</dt><dd><strong class="${r[p + "_spike"] ? "flag" : ""}">${ratio(r[p + "_ratio"])}</strong>` +
+    `<span class="sub">${fmt(r[p + "_posts"])} posts · median ${fmt(r[p + "_baseline"], 1)}</span></dd></div>`;
+  const list = (type, heading) => { const ps = posts.filter(p => p.type === type); if (!ps.length) return "";
+    return `<div><h3>${heading}</h3><ol class="posts">${ps.map(p => `<li><a href="https://www.reddit.com/r/${encodeURIComponent(p.sub)}/comments/${encodeURIComponent(p.id)}/" target="_blank" rel="noopener noreferrer">${esc(p.title)}</a>` +
+      `<span class="meta">r/${esc(p.sub)} · ${fmt(p.score)} points · ${fmt(p.comments)} comments · <span class="chip">${TONE[p.tone] ?? esc(p.tone)}</span></span></li>`).join("")}</ol></div>`; };
+  $("weekPanel").innerHTML = `
+    <div class="wp-head"><h2>Week of ${fmtWeek(r.week)}</h2>${pills ? `<div class="wp-pills">${pills}</div>` : ""}</div>
+    <dl class="facts">${fact("Investor chatter", "inv")}${fact("Product chatter", "prod")}
+      <div><dt>Tone, investor posts</dt><dd><strong>${tn(r.inv_sentiment_mean)}</strong><span class="sub">${fmt(r.inv_n_scored)} posts scored, −1 to +1</span></dd></div></dl>
+    <div class="moves" role="group" aria-label="Price change around this week">
+      <div><span class="lbl">Week before</span><span class="v">${mv(r.ret_prev)}</span></div>
+      <div><span class="lbl">This week</span><span class="v">${mv(r.ret)}</span></div>
+      <div><span class="lbl">Week after</span><span class="v">${mv(r.ret_next1)}</span></div>
+    </div>
+    ${list("investor", "Top investor posts")}${list("product", "Top product posts")}
+    ${posts.length ? "" : '<p class="muted">No posts stored for this week.</p>'}
+    <div class="wp-nav"><button type="button" id="prevSpike" ${prev == null ? "disabled" : ""}>Previous spike</button>
+      <button type="button" id="nextSpike" ${next == null ? "disabled" : ""}>Next spike</button></div>`;
+  if (prev != null) $("prevSpike").onclick = () => pickWeek(weeks[prev].week);
+  if (next != null) $("nextSpike").onclick = () => pickWeek(weeks[next].week);
+}
+
+const CAUSE = {
+  "forward|prod_chatter|abn_ret": "Product chatter, then the stock's abnormal return",
+  "reverse|abn_ret|prod_chatter": "Abnormal return, then product chatter",
+  "forward|prod_chatter|stock_chatter": "Product chatter, then investor chatter",
+  "reverse|stock_chatter|prod_chatter": "Investor chatter, then product chatter",
+};
+function renderCause() {
+  const rows = stockData.cause.filter(r => r.lag === causeLag);
+  const own = rows.filter(r => r.scope === "stock"), pooled = rows.filter(r => r.scope === "pooled");
+  const pos = (v) => (Math.max(-0.5, Math.min(0.5, v)) + 0.5) * 100;
+  const key = (r) => `${r.direction}|${r.x}|${r.y}`;
+  if (!own.length) { $("causeRows").innerHTML = '<p class="muted">No lead and lag results for this stock yet.</p>'; return; }
+  $("causeRows").innerHTML = own.map(r => {
+    const p = pooled.find(q => key(q) === key(r)), clear = r.ci_low > 0 || r.ci_high < 0;
+    const verdict = clear ? (r.pearson > 0 ? "Positive link" : "Negative link") : "No clear link";
+    return `<div class="cause-row"><div>${CAUSE[key(r)] ?? key(r)}<span class="sub">${causeLag} week${causeLag > 1 ? "s" : ""} later · ${fmt(r.n)} weeks</span></div>
+      <div class="ci" aria-hidden="true"><i class="zero"></i><i class="rng${clear ? " clear" : ""}" style="left:${pos(r.ci_low)}%;width:${pos(r.ci_high) - pos(r.ci_low)}%"></i><i class="pt" style="left:${pos(r.pearson)}%"></i></div>
+      <div class="cause-val"><strong>r = ${signed(r.pearson)}</strong> <span class="muted">(${signed(r.ci_low)} to ${signed(r.ci_high)})</span>
+        <span class="sub">${verdict}${p ? ` · all 10 stocks r = ${signed(p.pearson)}` : ""}</span></div></div>`;
+  }).join("");
+}
+
+// ---------------------------------------------------------------- spikes
+let spikeData = null, spikeSrc = "all", spikeTicker = "", spikeShown = 25, calChart;
+async function renderSpikes() {
+  if (!spikeData) spikeData = await get("/api/spike_weeks");
+  names = spikeData.names || names; rule = spikeData.rule || rule;
+  const all = spikeData.rows;
+  segPress($("spikeSource"), "src", spikeSrc);
+  const pick = $("spikeTicker");
+  if (!pick.options.length) {
+    pick.innerHTML = '<option value="">All stocks</option>' + Object.keys(names).map(t => `<option value="${t}">${t}</option>`).join("");
+    pick.onchange = () => { spikeTicker = pick.value; spikeShown = 25; renderSpikes(); };
+  }
+  const inv = all.filter(r => r.source === "investor").length;
+  $("spikeLede").textContent = `Every week a stock's chatter reached ${rule.ratio}× its ${rule.baseline_weeks}-week median and was rare for that stock (robust z of ${rule.rz_threshold} or more), newest first.`;
+  $("spikeSummary").textContent = all.length ? `${fmt(all.length)} spike weeks since ${monthYear(all.at(-1).week)}: ${fmt(inv)} in investor subreddits, ${fmt(all.length - inv)} in product subreddits. Select a dot to open that week.` : "No spikes yet.";
+  const rows = all.filter(r => spikeSrc === "all" || r.source === spikeSrc);
+  drawCalendar(rows);
+  const list = rows.filter(r => !spikeTicker || r.ticker === spikeTicker).map(r => ({ ...r, _href: `#stock/${r.ticker}/${r.week}` }));
+  $("spikeCount").textContent = `${fmt(list.length)} spike week${list.length === 1 ? "" : "s"}${spikeTicker ? " for " + spikeTicker : ""}`;
+  table($("spikeTable"), [
+    { h: "Week of", f: r => fmtWeek(r.week) },
+    { h: "Stock", f: r => `<a class="tk" href="${r._href}">${r.ticker}</a>` },
+    { h: "Source", f: r => SRC_NAME[r.source] },
+    { h: "vs. normal", num: 1, f: r => `<span class="flag">${ratio(r.ratio)}</span>` },
+    { h: "Posts / median", num: 1, f: r => `${fmt(r.posts)} <span class="muted">/ ${fmt(r.baseline, 1)}</span>` },
+    { h: "Tone", num: 1, f: r => tn(r.sentiment_mean) },
+    { h: "Price that week", num: 1, f: r => mv(r.ret) },
+    { h: "Week after", num: 1, f: r => mv(r.ret_next1) },
+  ], list.slice(0, spikeShown), "No spikes match this filter.");
+  const more = $("spikeMore");
+  more.hidden = list.length <= spikeShown;
+  more.textContent = `Show ${Math.min(25, list.length - spikeShown)} more`;
+  more.onclick = () => { spikeShown += 25; renderSpikes(); };
+}
+$("spikeSource").querySelectorAll("button").forEach(b => b.onclick = () => { spikeSrc = b.dataset.src; spikeShown = 25; renderSpikes(); });
+
+function drawCalendar(rows) {
+  if (calChart) calChart.destroy();
+  const tick = Object.keys(names);
+  const yr = (w) => { const d = day(w), y0 = Date.UTC(d.getUTCFullYear(), 0, 1); return d.getUTCFullYear() + (d - y0) / 31557600000; };
+  const xs = rows.map(r => yr(r.week));
+  const ds = (src, filled) => ({ data: rows.filter(r => r.source === src).map(r => ({ x: yr(r.week), y: tick.indexOf(r.ticker), r })),
+    pointRadius: 4.5, pointHoverRadius: 6.5, pointBorderWidth: filled ? 1 : 1.75, pointHoverBorderWidth: filled ? 1 : 1.75,
+    pointBackgroundColor: filled ? css("--chart-blue") : css("--panel"), pointBorderColor: filled ? css("--panel") : css("--chart-blue") });
+  calChart = new Chart($("cCal"), { type: "scatter", data: { datasets: [ds("product", false), ds("investor", true)] },
+    options: { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: "nearest", intersect: true },
+      onClick: (e, els) => { if (els.length) { const r = calChart.data.datasets[els[0].datasetIndex].data[els[0].index].r; location.hash = `#stock/${r.ticker}/${r.week}`; } },
+      onHover: (e, els) => { e.native.target.style.cursor = els.length ? "pointer" : "default"; },
+      plugins: { legend: { display: false }, tooltip: { ...tooltipStyle(), displayColors: false, callbacks: {
+        title: (it) => { const r = it[0].raw.r; return `${r.ticker}, week of ${fmtWeek(r.week)}`; },
+        label: (it) => { const r = it.raw.r; return `${SRC_NAME[r.source]} chatter ${ratio(r.ratio)} · ${fmt(r.posts)} posts, median ${fmt(r.baseline, 1)}`; } } } },
+      scales: {
+        x: { type: "linear", min: xs.length ? Math.floor(Math.min(...xs)) : 2016, max: xs.length ? Math.ceil(Math.max(...xs)) : 2027,
+          grid: { color: css("--line") }, border: { display: false }, ticks: { stepSize: 1, color: css("--ink-3"), callback: v => Number.isInteger(v) ? v : "" } },
+        y: { type: "linear", min: -0.6, max: tick.length - 0.4, reverse: true, border: { display: false }, grid: { color: css("--line") },
+          afterBuildTicks: (s) => { s.ticks = tick.map((_, i) => ({ value: i })); },
+          ticks: { color: css("--ink"), font: { weight: "600" }, callback: v => tick[v] ?? "" } } } } });
+}
+
+// ---------------------------------------------------------------- data status
 async function loadStatus() {
   const s = await get("/api/status");
   $("range").textContent = `${s.range[0]} → ${s.range[1]}`;
-  $("collect").innerHTML = s.subreddits.map(x => {
-    const p = x.complete / x.expected;
-    const bad = x.failed + x.partial;
-    return `<div class="card"><div class="sub">r/${x.subreddit}</div>
-      <div class="big">${fmt(x.complete)} <span class="muted">/ ${fmt(x.expected)} days</span></div>
-      <div class="bar"><div style="width:${(p * 100).toFixed(1)}%"></div></div>
-      <div class="muted">${fmt(x.posts)} posts collected · contiguous through ${x.contiguous_through ?? "—"}</div>
-      <div style="margin-top:6px">${bad ? `<span class="pill"><i class="dot" style="background:var(--bad)"></i>${x.failed} failed · ${x.partial} partial</span>`
-        : `<span class="pill"><i class="dot" style="background:var(--good)"></i>no failed days</span>`}</div></div>`;
-  }).join("");
+  $("collect").innerHTML = !s.subreddits.length ? '<tr><td class="muted">No subreddits configured.</td></tr>' :
+    '<thead><tr><th>Subreddit</th><th>Days collected</th><th class="num">Posts</th><th>Contiguous through</th><th>Status</th></tr></thead><tbody>' +
+    s.subreddits.map(x => {
+      const p = x.expected ? x.complete / x.expected : 0;
+      const bad = x.failed + x.partial;
+      return `<tr><td class="strong">r/${x.subreddit}</td>
+        <td><div class="progress"><div class="track"><div class="fill" style="width:${(p * 100).toFixed(1)}%"></div></div>
+          <span>${fmt(x.complete)} / ${fmt(x.expected)}</span></div></td>
+        <td class="num">${fmt(x.posts)}</td><td>${x.contiguous_through ?? "n/a"}</td>
+        <td>${bad ? `<span class="pill pill-warn"><i class="dot dot-ring"></i>${x.failed} failed · ${x.partial} partial</span>`
+          : `<span class="pill"><i class="dot"></i>No failed days</span>`}</td></tr>`;
+    }).join("") + "</tbody>";
   const e = s.eta;
-  $("eta").textContent = e ? (e.active ? `Collector running · ${e.per_minute} subreddit-days/min · ${fmt(e.remaining_pairs)} remaining · ETA ${e.eta_utc ?? "—"}`
+  $("eta").textContent = e ? (e.active ? `Collector running · ${e.per_minute} subreddit-days/min · ${fmt(e.remaining_pairs)} remaining · ETA ${e.eta_utc ?? "n/a"}`
     : `Collector idle · ${fmt(e.remaining_pairs)} subreddit-days remaining`) : "";
   $("log").textContent = s.log_tail.join("\n");
   const anyMissing = s.subreddits.some(x => x.complete < x.expected);
   $("partialNote").hidden = !anyMissing;
-  const through = s.subreddits.map(x => x.contiguous_through).filter(Boolean).sort()[0] ?? "—";
+  const through = s.subreddits.map(x => x.contiguous_through).filter(Boolean).sort()[0] ?? "n/a";
   const remaining = s.subreddits.reduce((a, x) => a + x.expected - x.complete, 0);
-  $("partialNote").textContent = (e && e.active)
-    ? `Collection is running, so the analysis below covers only the days collected so far (through ${through}; last rebuilt ${s.processed_updated ?? "never"}). Weeks without full coverage are grey and have no spike ratio.`
-    : `Data is complete through ${through}. ${remaining} newer subreddit-day(s) have not been collected yet — run collect_reddit.py collect, then Rebuild, to extend it (last rebuilt ${s.processed_updated ?? "never"}). Weeks without full coverage are grey and have no spike ratio.`;
-}
-
-async function loadWeekly() {
-  const { rows } = await get(`/api/weekly?ticker=${ticker}`);
-  const labels = rows.map(r => r.week_start);
-  const vals = rows.map(r => r.coverage_complete ? r.posts : r.posts_observed);
-  const colors = rows.map(r => r.posts_spike_flag ? css("--series-2") : (r.coverage_complete ? css("--series-1") : css("--incomplete")));
-  const data = { labels, datasets: [
-    { type: "line", label: "4-week median", data: rows.map(r => r.posts_median_4w), borderColor: css("--text-secondary"),
-      borderWidth: 1.5, pointRadius: 0, pointHoverRadius: 4, spanGaps: false, order: 0 },
-    { type: "bar", label: "posts", data: vals, backgroundColor: colors, borderRadius: { topLeft: 3, topRight: 3 },
-      borderSkipped: "bottom", categoryPercentage: 0.9, barPercentage: 0.92, order: 1 },
-  ]};
-  const opts = {
-    responsive: true, maintainAspectRatio: false, animation: false,
-    interaction: { mode: "index", intersect: false },
-    plugins: { legend: { display: false }, tooltip: { callbacks: {
-      title: (it) => `Week of ${it[0].label}`,
-      label: () => null,
-      afterBody: (it) => { const r = rows[it[0].dataIndex];
-        if (!r.coverage_complete) return [`posts observed: ${fmt(r.posts_observed)}`, "collection incomplete for this week"];
-        return [`posts: ${fmt(r.posts)}`, `4-week median: ${fmt(r.posts_median_4w, 1)}`,
-                `spike ratio: ${r.posts_spike_ratio == null ? "undefined" : fmt(r.posts_spike_ratio, 2) + "×"}${r.posts_spike_flag ? "  ← spike" : ""}`,
-                `comments: ${fmt(r.comments)} · upvotes: ${fmt(r.upvotes)}`]; } } } },
-    scales: {
-      x: { grid: { display: false }, ticks: { color: css("--text-muted"), maxTicksLimit: 12, maxRotation: 0 } },
-      y: { beginAtZero: true, grid: { color: css("--border") }, border: { display: false }, ticks: { color: css("--text-muted") },
-           title: { display: true, text: `${ticker} posts / week`, color: css("--text-secondary") } } } };
-  if (chart) chart.destroy();
-  chart = new Chart($("weekly"), { data, options: opts });
-  const comp = rows.filter(r => r.coverage_complete);
-  const spikes = rows.filter(r => r.posts_spike_flag);
-  $("weeklyStats").textContent = `${comp.length} complete weeks · ${spikes.length} post-spike weeks` +
-    (comp.length ? ` · mean ${fmt(comp.reduce((a, r) => a + r.posts, 0) / comp.length, 1)} posts/week` : "");
-}
-
-function tickerButtons() {
-  $("tickers").innerHTML = TICKERS.map(t => `<button class="${t === ticker ? "on" : ""}" data-t="${t}">${t}</button>`).join("");
-  $("tickers").querySelectorAll("button").forEach(b => b.onclick = () => { ticker = b.dataset.t; tickerButtons(); loadWeekly(); });
+  $("partialText").textContent = (e && e.active)
+    ? `Collection is running, so the analysis covers only the days collected so far (through ${through}; last rebuilt ${s.processed_updated ?? "never"}).`
+    : `Data is complete through ${through}. ${remaining} newer subreddit-day(s) have not been collected yet. Run collect_reddit.py collect, then Rebuild, to extend it (last rebuilt ${s.processed_updated ?? "never"}).`;
 }
 
 async function loadTables() {
   const bust = "?t=" + Date.now();
   $("chart1").src = "/charts/aapl_chatter_vs_price.png" + bust;
   $("chart2").src = "/charts/aapl_event_windows.png" + bust;
-  const [ev, sp, mt, cv] = await Promise.all(["events","spikes","matches","coverage"].map(k => get("/api/" + k)));
+  const [ev, mt, cv] = await Promise.all(["events", "matches", "coverage"].map(k => get("/api/" + k)));
   table($("events"), [
     { h: "Event", f: r => `${r.event_name} <span class="muted">${r.event_date}</span>` },
     { h: "Week of", k: "event_week_start" },
     { h: "Reddit coverage", f: r => r.reddit_coverage_complete ? "complete" : '<span class="muted">not yet collected</span>' },
     { h: "Posts", num: 1, f: r => fmt(r.posts) }, { h: "4w median", num: 1, f: r => fmt(r.posts_median_4w, 1) },
-    { h: "Spike ratio", num: 1, f: r => r.posts_spike_ratio == null ? "—" : fmt(r.posts_spike_ratio, 2) + "×" },
-    { h: "2× spike", f: r => r.reddit_coverage_complete ? (r.posts_spike_flag ? '<span class="yes">yes</span>' : "no") : "—" },
-    { h: "Event-week return", num: 1, f: r => pct(r.event_week_return) },
-    { h: "Next-week return", num: 1, f: r => pct(r.next_week_return) },
+    { h: "Spike ratio", num: 1, f: r => r.posts_spike_ratio == null ? "n/a" : fmt(r.posts_spike_ratio, 2) + "×" },
+    { h: "2× spike", f: r => r.reddit_coverage_complete ? (r.posts_spike_flag ? '<span class="flag">yes</span>' : "no") : "n/a" },
+    { h: "Event-week return", num: 1, f: r => dir(r.event_week_return, pct(r.event_week_return)) },
+    { h: "Next-week return", num: 1, f: r => dir(r.next_week_return, pct(r.next_week_return)) },
   ], ev.rows);
-  table($("spikes"), [
-    { h: "#", k: "rank" }, { h: "Week of", k: "week_start" }, { h: "Ticker", k: "ticker" }, { h: "Metric", k: "metric" },
-    { h: "Value", num: 1, f: r => fmt(r.value) }, { h: "4w median", num: 1, f: r => fmt(r.median_4w, 1) },
-    { h: "Ratio", num: 1, f: r => fmt(r.spike_ratio, 2) + "×" },
-  ], sp.rows.slice(0, 20));
   table($("matches"), [
     { h: "Ticker", k: "ticker" }, { h: "Cashtag", num: 1, f: r => fmt(r.cashtag_posts) }, { h: "Ticker symbol", num: 1, f: r => fmt(r.ticker_posts) },
     { h: "Company name", num: 1, f: r => fmt(r.company_name_posts) }, { h: "Total", num: 1, f: r => fmt(r.total_posts) },
   ], mt.rows);
   table($("coverage"), [
     { h: "Subreddit", f: r => "r/" + r.subreddit }, { h: "Earliest post (UTC)", k: "earliest_post_utc" },
-    { h: "Post ID", k: "earliest_post_id" }, { h: "Verified", f: r => r.verified ? "yes" : "no" },
+    { h: "Post ID", f: r => `<span class="mono">${r.earliest_post_id ?? "n/a"}</span>` }, { h: "Verified", f: r => r.verified ? "yes" : "no" },
   ], cv.rows);
 }
 
-// ---------------------------------------------------------------- Strategy Log
-const SERIES_VARS = { S1: "--series-1", S2: "--series-2", S3: "--s3", S4: "--s4", S5: "--s5", B0: "--text-secondary" };
-let equityChart, selectedRun = null;
+// ---------------------------------------------------------------- strategies
+// Market-chart convention: the selected strategy is blue, the others recede to slate, and the
+// benchmark is a dashed white line.
+let equityChart, selectedRun = null, highlight = null;
+const lastValue = (a) => { for (let i = a.length - 1; i >= 0; i--) if (a[i] != null) return a[i]; return -Infinity; };
+
+function equityStyle(id) {
+  if (id === "B0") return { borderColor: css("--chart-white"), borderWidth: 1.5, borderDash: [5, 4], order: 1 };
+  if (id === highlight) return { borderColor: css("--chart-blue"), borderWidth: 2.5, borderDash: [], order: 0 };
+  return { borderColor: css("--chart-neutral"), borderWidth: 1.25, borderDash: [], order: 2 };
+}
+
+function renderEquityKeys(run) {
+  const ids = Object.keys(run.series ?? {});
+  $("equityLegend").innerHTML = ids.map(id => {
+    const name = `${id} ${run.series[id].name}`;
+    if (id === "B0") return `<span class="key"><i class="sw sw-bench"></i>${name}</span>`;
+    return `<button type="button" class="key" aria-pressed="${id === highlight}" data-id="${id}"><i class="sw ${id === highlight ? "sw-hl" : "sw-rest"}"></i>${name}</button>`;
+  }).join("");
+  $("equityLegend").querySelectorAll("button").forEach(b => b.onclick = () => {
+    highlight = b.dataset.id;
+    renderEquityKeys(run);
+    if (equityChart) { equityChart.data.datasets.forEach(ds => Object.assign(ds, equityStyle(ds._id))); equityChart.update("none"); }
+  });
+}
 
 function verdictPill(v) {
   const s = String(v ?? "");
-  const c = s.startsWith("PROMISING") || s === "OK" ? "--good" : s.startsWith("WEAK") ? "--warn"
-          : s.startsWith("FAILED") ? "--bad" : "--text-muted";
-  return `<span class="pill"><i class="dot" style="background:var(${c})"></i>${s}</span>`;
+  const [cls, dot] = s.startsWith("PROMISING") ? ["pill pill-strong", "dot"] : s === "OK" ? ["pill", "dot"]
+    : s.startsWith("WEAK") ? ["pill", "dot dot-ring"] : s.startsWith("FAILED") ? ["pill", "dot dot-muted"] : ["pill", "dot dot-hollow"];
+  return `<span class="${cls}"><i class="${dot}"></i>${s}</span>`;
 }
 
 async function loadStrategyLog() {
   const [logRes, run] = await Promise.all([get("/api/strategy_log"), get("/api/strategy_run" + (selectedRun ? `?run_id=${selectedRun}` : ""))]);
   const rows = logRes.rows.slice().reverse();   // newest first
-  const pctS = (x) => x == null ? "—" : (x * 100).toFixed(1) + "%";
-  const sgn = (x) => x == null ? "—" : (x >= 0 ? "+" : "") + (x * 100).toFixed(1) + "%";
+  const pctS = (x) => x == null ? "n/a" : (x * 100).toFixed(1) + "%";
+  const sgn = (x) => x == null ? "n/a" : (x >= 0 ? "+" : "") + (x * 100).toFixed(1) + "%";
   const el = $("strategyLogTable");
   if (!rows.length) { el.innerHTML = '<tr><td class="muted">No strategy runs logged yet.</td></tr>'; }
   else {
@@ -282,13 +1153,13 @@ async function loadStrategyLog() {
     el.innerHTML = "<thead><tr>" + head.map((h, i) => `<th class="${i >= 5 && i <= 13 ? "num" : ""}">${h}</th>`).join("") + "</tr></thead><tbody>" +
       rows.map(r => {
         const vt = String(r.source).startsWith("vibe");
-        return `<tr><td class="muted">${r.run_id}</td><td>${vt ? "Vibe-Trading benchmark" : (r.strategy_id === "B0" ? "benchmark" : "Reddit indicator")}</td>
+        return `<tr><td class="mono muted">${r.run_id}</td><td>${vt ? "Vibe-Trading benchmark" : (r.strategy_id === "B0" ? "benchmark" : "Reddit indicator")}</td>
           <td>${r.strategy_id.replace("alpha101_", "α")}</td><td title="${(r.rule ?? "").replace(/"/g, "&quot;")}">${r.strategy_name}</td>
           <td class="muted">${r.eval_start_week} → ${r.eval_end_week}</td>
-          <td class="num">${vt ? "—" : `${fmt(r.eval_weeks)} (${fmt(r.invested_weeks)})`}</td>
-          <td class="num">${sgn(r.total_return_net)}</td><td class="num">${sgn(r.ann_return_net)}</td>
+          <td class="num">${vt ? "n/a" : `${fmt(r.eval_weeks)} (${fmt(r.invested_weeks)})`}</td>
+          <td class="num">${dir(r.total_return_net, sgn(r.total_return_net))}</td><td class="num">${dir(r.ann_return_net, sgn(r.ann_return_net))}</td>
           <td class="num">${fmt(r.sharpe_net, 2)}</td><td class="num">${fmt(r.t_stat_net, 2)}</td>
-          <td class="num">${r.max_drawdown_net == null ? "—" : (r.max_drawdown_net * 100).toFixed(1) + "%"}</td>
+          <td class="num">${r.max_drawdown_net == null ? "n/a" : (r.max_drawdown_net * 100).toFixed(1) + "%"}</td>
           <td class="num">${pctS(r.hit_rate_invested)}</td><td class="num">${fmt(r.ic_mean, 4)}</td><td class="num">${fmt(r.ir, 4)}</td>
           <td>${verdictPill(r.verdict)}</td></tr>`;
       }).join("") + "</tbody>";
@@ -297,7 +1168,10 @@ async function loadStrategyLog() {
   sel.innerHTML = run.runs.slice().reverse().map(r => `<option ${r === run.run_id ? "selected" : ""}>${r}</option>`).join("");
   sel.onchange = () => { selectedRun = sel.value; loadStrategyLog(); };
   const ids = Object.keys(run.series ?? {});
-  $("equityLegend").innerHTML = ids.map(id => `<span><i class="sw" style="background:var(${SERIES_VARS[id]})${id === "B0" ? ";height:2px" : ""}"></i>${id} ${run.series[id].name}</span>`).join("");
+  const candidates = ids.filter(id => id !== "B0");
+  if (!candidates.includes(highlight))   // default: the strategy that ends highest
+    highlight = candidates.slice().sort((a, b) => lastValue(run.series[b].growth) - lastValue(run.series[a].growth))[0] ?? null;
+  renderEquityKeys(run);
   if (equityChart) equityChart.destroy();
   if (!ids.length) return;
   const weeks = [...new Set(ids.flatMap(id => run.series[id].weeks))].sort();
@@ -305,18 +1179,17 @@ async function loadStrategyLog() {
     type: "line",
     data: { labels: weeks, datasets: ids.map(id => {
       const s = run.series[id], m = Object.fromEntries(s.weeks.map((w, i) => [w, i]));
-      return { label: `${id} ${s.name}`, data: weeks.map(w => m[w] == null ? null : s.growth[m[w]]),
-        borderColor: css(SERIES_VARS[id]), borderWidth: id === "B0" ? 1.5 : 2, borderDash: id === "B0" ? [5, 4] : [],
-        pointRadius: 0, pointHoverRadius: 4, spanGaps: true, _s: s, _m: m };
+      return { label: `${id} ${s.name}`, data: weeks.map(w => m[w] == null ? null : s.growth[m[w]]), ...equityStyle(id),
+        borderCapStyle: "round", borderJoinStyle: "round", pointRadius: 0, pointHoverRadius: 4,
+        pointHoverBorderColor: css("--panel"), pointHoverBorderWidth: 2, spanGaps: true, _id: id, _s: s, _m: m };
     }) },
     options: { responsive: true, maintainAspectRatio: false, animation: false, interaction: { mode: "index", intersect: false },
-      plugins: { legend: { display: false }, tooltip: { callbacks: {
+      plugins: { legend: { display: false }, tooltip: { ...tooltipStyle(), callbacks: {
         title: (it) => `Signal week ${it[0].label}`,
+        labelColor: (c) => ({ borderColor: c.dataset.borderColor, backgroundColor: c.dataset.borderColor }),
         label: (c) => { const ds = c.dataset, i = ds._m[c.label]; if (i == null) return null;
           return `${ds.label}: $${fmt(c.raw, 3)} (week ${sgn(ds._s.net[i])}) · ${ds._s.positions[i]}`; } } } },
-      scales: { x: { grid: { display: false }, ticks: { color: css("--text-muted"), maxTicksLimit: 10, maxRotation: 0 } },
-        y: { grid: { color: css("--border") }, border: { display: false }, ticks: { color: css("--text-muted"), callback: v => "$" + v.toFixed(2) },
-             title: { display: true, text: "growth of $1 (net)", color: css("--text-secondary") } } } },
+      scales: { x: axisX(10), y: axisY("growth of $1 (net)", { callback: v => "$" + v.toFixed(2) }) } },
   });
 }
 
@@ -324,13 +1197,13 @@ async function pollStrategies() {
   const s = await get("/api/run_strategies");
   $("runStrategies").disabled = s.running;
   $("strategyStatus").textContent = s.running ? `Running since ${s.started}…` : s.error ? `Last run failed: ${s.error.slice(0, 160)}`
-    : s.finished ? `Last run finished ${s.finished} — appended to the log` : "Refreshes signals from collected data, then backtests and logs S1–S5 + benchmark";
+    : s.finished ? `Last run finished ${s.finished}, appended to the log` : "Refreshes signals from collected data, then backtests and logs S1–S5 + benchmark";
   return s;
 }
 $("runStrategies").onclick = async () => {
   await fetch("/api/run_strategies", { method: "POST" });
   selectedRun = null;
-  const t = setInterval(async () => { const s = await pollStrategies(); if (!s.running) { clearInterval(t); loadStrategyLog(); loadStatus(); loadWeekly(); } }, 2000);
+  const t = setInterval(async () => { const s = await pollStrategies(); if (!s.running) { clearInterval(t); loadStrategyLog(); loadStatus(); } }, 2000);
   pollStrategies();
 };
 
@@ -345,13 +1218,19 @@ async function pollRebuild() {
 $("rebuild").onclick = async () => {
   await fetch("/api/rebuild", { method: "POST" });
   const t = setInterval(async () => { const s = await pollRebuild();
-    if (!s.running) { clearInterval(t); loadStatus(); loadWeekly(); loadTables(); } }, 2000);
+    if (!s.running) { clearInterval(t); nowData = null; spikeData = null; stockCache.clear(); loadStatus(); loadTables(); route(); } }, 2000);
   pollRebuild();
 };
 
-tickerButtons();
-loadStatus(); loadWeekly(); loadTables(); pollRebuild(); loadStrategyLog(); pollStrategies();
-setInterval(loadStatus, 30000);
+window.addEventListener("hashchange", route);
+// show the right page before data arrives, so nothing flashes while it loads
+{ const v0 = location.hash.slice(1).split("/")[0], v = VIEWS.includes(v0) ? v0 : "home";
+  document.body.dataset.view = v; document.querySelectorAll(".view").forEach(el => el.hidden = el.dataset.view !== v); }
+
+loadTables(); pollRebuild(); pollStrategies();
+// Wait for the web font so chart labels draw in it rather than the fallback.
+document.fonts.ready.then(async () => { applyChartTheme(); await loadNow(); route(); });
+setInterval(() => { if (current === "data") loadStatus(); }, 30000);
 </script>
 </body>
 </html>

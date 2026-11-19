@@ -26,6 +26,9 @@ def test_export_writes_every_file_the_page_asks_for(tmp_path, monkeypatch):
     monkeypatch.setattr(de.ds, "_csv", lambda p: {"rows": [], "updated": None})
     monkeypatch.setattr(de.ds, "weekly", lambda t: {"rows": [{"ticker": t}]})
     monkeypatch.setattr(de.ds, "strategy_run", lambda r: {"runs": ["run1"], "run_id": r or "run1", "series": {}})
+    monkeypatch.setattr(de.ds, "now", lambda: {"week": None, "rows": []})
+    monkeypatch.setattr(de.ds, "spike_weeks", lambda: {"rows": []})
+    monkeypatch.setattr(de.ds, "stock", lambda t: {"ticker": t, "weeks": []})
     monkeypatch.setattr(settings, "CHARTS", tmp_path / "charts_src")
     (tmp_path / "charts_src").mkdir()
     (tmp_path / "charts_src" / "aapl_chatter_vs_price.png").write_bytes(b"png")
@@ -36,5 +39,6 @@ def test_export_writes_every_file_the_page_asks_for(tmp_path, monkeypatch):
         assert (out / "api" / f"{name}.json").exists(), name
     for t in settings.TICKERS:
         assert json.loads((out / "api/weekly" / f"{t}.json").read_text())["rows"][0]["ticker"] == t
+        assert json.loads((out / "api/stock" / f"{t}.json").read_text())["ticker"] == t
     assert (out / "api/strategy_run/latest.json").exists() and (out / "api/strategy_run/run1.json").exists()
     assert (out / "charts/aapl_chatter_vs_price.png").read_bytes() == b"png"
