@@ -691,3 +691,37 @@ scope is eight PROVISIONAL portfolio diagnostics plus two non-evaluable factors
 preserved; use `india_research/reports/india_ten_strategy_provisional_comparison.md`
 for current comparison, exact output/provenance and accepted caveats. The single
 ILLIQ approval is consumed; no repeat, new convention or publication is authorized.
+
+## Approved strategies 11–15: efficient Qlib158 research
+
+The user approved `qlib158_std20`, `qlib158_rsv20`, `qlib158_sump20`,
+`qlib158_wvma20`, and `qlib158_cord10` for integration, one real-data score
+calculation each and a conditional single PROVISIONAL portfolio diagnostic.
+This is developer research approval, not final PM acceptance. Prior ten-strategy
+reports and results remain unchanged. Reuse research_v4, the 25 prior-session
+warm-up and existing portfolio/IC baseline; do not install Microsoft Qlib.
+
+Original upstream metadata lists equity_in for all five. STD is price-level
+standard deviation divided by current close, RSV is position within a rolling
+high/low range, SUMP measures positive price-change magnitude share, WVMA is the
+coefficient of variation of absolute return times volume, and CORD correlates
+gross close ratios with log volume ratios including the original +1 constant.
+Original high-score directions remain unchanged, irrespective of theme labels.
+SUMP/WVMA/CORD need an additional predecessor row beyond their rolling windows.
+See `src/india_qlib_factors.py` and `src/india_qlib_diagnostic.py` for thin reuse
+of the isolated worker, validation, signal diagnostics, accounting and original IC.
+Known frozen-vintage, Reliance, Kotak, calendar-inventory and benchmark limitations
+remain; no alternative convention may be selected from realized returns.
+
+The five conditional single runs are complete at
+`results/india_qlib158_PROVISIONAL_20261101T212235Z_dfdc1a41/`. All have 7,920 finite
+evaluation scores, 209 unique eligible weekly pairs, 208 executions and 207
+execution-aligned IC intervals. No new material input failure was identified;
+known frozen-vintage/normalization/volume uncertainties remain. All five net
+returns and Sharpes trail the saved Nifty 50 benchmark. The new report and
+Strategy Log are `india_research/reports/india_strategies_11_15_PROVISIONAL_20261101T212235Z.md`
+and `india_strategy_log_11_15_PROVISIONAL_20261101T212235Z.md/.csv` alongside it.
+Scope is now fifteen investigated factors, thirteen PROVISIONAL backtests and
+two preserved non-evaluable assessments; the original ten-strategy reports have
+not been rewritten. The 388-test suite passes. These approvals are consumed;
+repeats, final PM decisions, submission and publication require separate approval.
