@@ -1,25 +1,34 @@
-"""Week 3 complex strategies on Wikipedia attention + price/volume (James). Rules: docs/wikipedia/week3_strategies.md.
+"""Complex strategies on Wikipedia attention, FinBERT edit sentiment and price/volume (James).
+
+Rules: docs/wikipedia/week3_strategies.md (S1-S4) and docs/wikipedia/week4_strategies.md (S5-S7).
 
   S1  attention-gated momentum   regime + market attention gate + 12-1 momentum among 50-day uptrends
   S2  attention reversal         buy last week's losers among the most-viewed stocks (revert and volume filters)
   S3  news-tagged breakout       views spike + edit burst with earnings/product tags + 20-day high on volume
   S4  sentiment-confirmed attention  views above baseline + edit sentiment rising + 50-day uptrend
+  S5  bad-news overreaction reversal  attention + negative edit tone + down week, in 200-day uptrends
+  S6  positive-tone momentum, uncrowded  12-1 momentum with positive tone, no crowd, no legal/layoff news
+  S7  trend with risk filters    200-day trend + 26-week return; stock and market attention/sentiment filters
 
 Every strategy goes through the guide's full evaluation: IC, train / test Sharpe after costs vs the index,
 200 random-entry-timing runs, drop-one ablation, and the deflated Sharpe.
 
-    python -m src.wiki_complex            # US; writes results/wikipedia/week3_*.csv
+    python -m src.wiki_complex            # US; writes results/wikipedia/week4_*.csv
 """
 from __future__ import annotations
 
+import importlib.util
 import json
+import os
+import sys
 from dataclasses import dataclass, field
-from math import e as EULER_E
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy.stats import kurtosis, norm, skew, spearmanr
+from dotenv import load_dotenv
+from scipy.stats import kurtosis, skew, spearmanr
 
 from src import config
 
@@ -30,8 +39,10 @@ BREAKOUT_DAYS, VOLUME_BASE_DAYS = 20, 50
 MAX_WEIGHT, HALF = 0.10, 0.5
 GATE_Z, GATE_WEEKS, BREADTH_PCT, MIN_HISTORY_WEEKS = 1.5, 52, 0.90, 52
 SENT_WEEKS, SENT_MIN_SCORED_WEEKS = 26, 8   # S4: sentiment change vs the mean of scored weeks in the prior 26
+RET26_DAYS = 126                           # S7: 26-week return, in trading days
+SHOCK_WEEKS, SHOCK_SD, SHOCK_MIN_STOCKS = 26, 1.0, 10   # S7: market sentiment shock (week4_strategies.md)
 TRIALS_BEFORE = 21                         # James's earlier trials: 20 Vibe factor strategies + Wiki Attention Breakout
-EULER_GAMMA = 0.5772156649015329
+OUT_PREFIX = "week4"                       # results/wikipedia/week4_*; Week 3 runs are in pre_cutoff_20251001/
 
 
 # ----------------------------------------------------------------------------- data
@@ -49,16 +60,23 @@ def load_ohlcv(tickers: list[str], bench: str, start: str, end: pd.Timestamp, ca
     return {"close": df["Close"], "volume": df["Volume"]}
 
 
-def sentiment_change(weekly: pd.DataFrame, weeks: pd.DatetimeIndex) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """(change, n_scored) as week x ticker tables from weekly edit sentiment (src/wiki_sentiment.py).
+def sentiment_net(weekly: pd.DataFrame, weeks: pd.DatetimeIndex) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """(sentiment_net, n_scored) as week x ticker tables from weekly edit sentiment (src/wiki_sentiment.py).
 
-    change = this week's sentiment_net minus the mean over scored weeks among the previous SENT_WEEKS
-    (at least SENT_MIN_SCORED_WEEKS of them); NaN in weeks with no scored sentence.
+    sentiment_net is NaN in weeks with no scored sentence (never treated as neutral); n_scored is 0 there.
     """
     w = weekly.assign(week=pd.to_datetime(weekly["week"]))
     w = w[w["n_scored"] > 0]
     net = w.pivot(index="week", columns="ticker", values="sentiment_net").reindex(weeks)
     n = w.pivot(index="week", columns="ticker", values="n_scored").reindex(weeks).fillna(0)
+    return net, n
+
+
+def sentiment_change(weekly: pd.DataFrame, weeks: pd.DatetimeIndex) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """(change, n_scored): this week's sentiment_net minus the mean over scored weeks among the previous
+    SENT_WEEKS (at least SENT_MIN_SCORED_WEEKS of them); NaN in weeks with no scored sentence.
+    """
+    net, n = sentiment_net(weekly, weeks)
     prior = net.shift(1).rolling(SENT_WEEKS, min_periods=SENT_MIN_SCORED_WEEKS).mean()
     return net - prior, n
 
@@ -79,15 +97,31 @@ def weekly_features(att: pd.DataFrame, edits: pd.DataFrame, burst_ratio: float,
             "news": (piv["tag_earnings"] + piv["tag_product_launch"]) > 0,
             "bad_news": (piv["tag_legal"] + piv["tag_layoff"]) > 0}
     if sentiment is not None:
-        out["sent_change"], out["n_scored"] = sentiment_change(sentiment, out["abn_views"].index)
+        out["sent_net"], out["n_scored"] = sentiment_net(sentiment, out["abn_views"].index)
+        out["sent_change"], _ = sentiment_change(sentiment, out["abn_views"].index)
     return out
+
+
+def market_attention_z(abn_views: pd.DataFrame) -> pd.Series:
+    """Universe-mean abnormal views of each week as a z-score against the previous GATE_WEEKS weeks."""
+    level = abn_views.mean(axis=1)
+    past = level.shift(1).rolling(GATE_WEEKS, min_periods=GATE_WEEKS)
+    return (level - past.mean()) / past.std()
+
+
+def market_sentiment_shock(net: pd.DataFrame, n_scored: pd.DataFrame) -> pd.Series:
+    """True in weeks whose cross-stock mean sentiment_net is more than SHOCK_SD standard deviations below its
+    mean over the previous SHOCK_WEEKS weeks (S7 layer 4). Weeks with fewer than SHOCK_MIN_STOCKS scored
+    stocks have no value and never fire.
+    """
+    level = net.mean(axis=1).where((n_scored > 0).sum(axis=1) >= SHOCK_MIN_STOCKS)
+    past = level.shift(1).rolling(SHOCK_WEEKS, min_periods=SHOCK_WEEKS)
+    return (level < past.mean() - SHOCK_SD * past.std()).fillna(False)
 
 
 def market_gate(abn_views: pd.DataFrame, burst: pd.DataFrame) -> pd.Series:
     """True in weeks whose market attention z-score > 1.5 or edit-burst breadth is in its top 10% (S1 layer 2)."""
-    level = abn_views.mean(axis=1)
-    past = level.shift(1).rolling(GATE_WEEKS, min_periods=GATE_WEEKS)
-    z = (level - past.mean()) / past.std()
+    z = market_attention_z(abn_views)
     breadth = burst.where(abn_views.notna()).mean(axis=1)
     cut = breadth.shift(1).expanding(min_periods=MIN_HISTORY_WEEKS).quantile(BREADTH_PCT)
     return (z > GATE_Z) | (breadth > cut)
@@ -109,6 +143,8 @@ class Market:
         c = self.close[self.tickers]
         self.ret = self.close.pct_change(fill_method=None)
         self.ma50 = c.rolling(TREND_DAYS).mean()
+        self.ma200 = c.rolling(REGIME_DAYS).mean()
+        self.ret26 = c / c.shift(RET26_DAYS) - 1
         self.spy_ma200 = self.close[self.bench].rolling(REGIME_DAYS).mean()
         self.vol63 = self.ret[self.tickers].rolling(VOL_DAYS).std()
         self.mom = c.shift(MOM_SKIP) / c.shift(MOM_LOOKBACK) - 1
@@ -129,6 +165,10 @@ class Market:
                                for w, r in self.weeks.iterrows() if pd.notna(prev[w])}).T
         self.abn_ret = wk_ret[self.tickers].sub(wk_ret[self.bench], axis=0)
         self.gate = market_gate(self.weekly["abn_views"], self.weekly["burst"]).reindex(self.weeks.index).fillna(False)
+        self.att_z = market_attention_z(self.weekly["abn_views"]).reindex(self.weeks.index)
+        shock = (market_sentiment_shock(self.weekly["sent_net"], self.weekly["n_scored"])
+                 if "sent_net" in self.weekly else pd.Series(False, index=self.weeks.index))
+        self.sent_shock = shock.reindex(self.weeks.index).fillna(False).astype(bool)
 
     def regime_up(self, friday: pd.Timestamp) -> bool:
         return bool(self.close.at[friday, self.bench] > self.spy_ma200.at[friday])
@@ -300,8 +340,125 @@ class SentimentConfirmedAttention(Strategy):
         return m.wk("sent_change", week)
 
 
-STRATEGIES = (AttentionGatedMomentum, AttentionReversal, NewsTaggedBreakout, SentimentConfirmedAttention)
-MAX_LOOSEN = {AttentionReversal: 2, NewsTaggedBreakout: 3, SentimentConfirmedAttention: 2}
+def recent_rows(t: pd.DataFrame, week: pd.Timestamp, n: int) -> pd.DataFrame:
+    """The last `n` weekly rows of `t` up to and including `week` (never later weeks)."""
+    return t.loc[:week].tail(n)
+
+
+class BadNewsReversal(Strategy):
+    name = "S5 Bad-news overreaction reversal"
+    indicators = ("regime", "attention", "sentiment", "reversal", "long_trend")
+    stop, trailing = 0.07, False
+    MAX_WEEKS, MAX_NEW = 2, 5
+    ATT_PCT, MIN_SCORED = (0.7, 0.7, 0.5), (2, 1, 1)     # by loosening step
+
+    def candidates(self, m, week, fri):
+        ok = pd.Series(True, index=m.tickers)
+        if "attention" not in self.off:
+            ok &= m.wk("abn_views", week).rank(pct=True) >= self.ATT_PCT[self.loosen]
+        if "sentiment" not in self.off:
+            ok &= (m.wk("sent_net", week) < 0) & (m.wk("n_scored", week).fillna(0) >= self.MIN_SCORED[self.loosen])
+        if "long_trend" not in self.off:
+            ok &= m.close.loc[fri, m.tickers] > m.ma200.loc[fri]
+        if "reversal" not in self.off:
+            ok &= m.abn_ret.loc[week].reindex(m.tickers) < 0 if week in m.abn_ret.index else False
+        return ok[ok].index
+
+    def rebalance(self, m, week, fri, held, first_of_month):
+        keep = set()
+        for t, p in held.items():
+            p.weeks_held += 1
+            if p.weeks_held < self.MAX_WEEKS:
+                keep.add(t)
+        names = self.candidates(m, week, fri)
+        if not len(names):
+            return keep
+        if "reversal" in self.off:
+            new = m.wk("abn_views", week)[names].nlargest(self.MAX_NEW).index
+        else:
+            new = m.abn_ret.loc[week, names].dropna().nsmallest(self.MAX_NEW).index
+        return keep | set(new)
+
+    def signal(self, m, week, fri):
+        if week not in m.abn_ret.index:
+            return pd.Series(np.nan, index=m.tickers)
+        ok = (m.wk("abn_views", week).rank(pct=True) >= self.ATT_PCT[0]) & (m.wk("sent_net", week) < 0) & \
+             (m.wk("n_scored", week).fillna(0) >= self.MIN_SCORED[0])
+        return (-m.abn_ret.loc[week].reindex(m.tickers)).where(ok)
+
+
+class PositiveToneMomentum(Strategy):
+    name = "S6 Positive-tone momentum, uncrowded"
+    indicators = ("regime", "momentum", "sentiment_level", "uncrowded", "no_bad_news")
+    stop = 0.10
+    TOP, LEVEL_WEEKS, BAD_NEWS_WEEKS, CROWD_RATIO = 10, 13, 4, 1.5
+    MIN_SCORED_WEEKS = (3, 2)                            # by loosening step
+
+    def level(self, m, week, min_weeks):
+        """Mean sentiment_net over the scored weeks among weeks W-12..W; NaN with fewer than `min_weeks`."""
+        net = recent_rows(m.weekly["sent_net"], week, self.LEVEL_WEEKS).reindex(columns=m.tickers)
+        return net.mean().where(net.notna().sum() >= min_weeks)
+
+    def rebalance(self, m, week, fri, held, first_of_month):
+        if not first_of_month:
+            return set(held)
+        ok = m.close.loc[fri, m.tickers].notna()
+        if "momentum" not in self.off:
+            ok &= m.mom.loc[fri].notna()
+        if "sentiment_level" not in self.off:
+            ok &= self.level(m, week, self.MIN_SCORED_WEEKS[self.loosen]) > 0
+        if "uncrowded" not in self.off:
+            ok &= m.wk("views_ratio", week) < self.CROWD_RATIO
+        if "no_bad_news" not in self.off:
+            bad = recent_rows(m.weekly["bad_news"], week, self.BAD_NEWS_WEEKS).reindex(columns=m.tickers)
+            ok &= ~bad.fillna(False).astype(bool).any()
+        names = ok[ok].index
+        if "momentum" in self.off:
+            return set(names)
+        return set(m.mom.loc[fri, names].nlargest(self.TOP).index)
+
+    def signal(self, m, week, fri):
+        return self.level(m, week, self.MIN_SCORED_WEEKS[0])
+
+
+class TrendRiskFiltered(Strategy):
+    name = "S7 Trend with attention/sentiment risk filters"
+    indicators = ("regime", "trend200", "ret26", "stock_risk", "market_att_z", "market_sent_shock")
+    stop = 0.12
+    BLOCK_WEEKS = 4
+
+    def exposure(self, m, week, fri):
+        x = super().exposure(m, week, fri)
+        if "market_att_z" not in self.off and m.att_z.get(week, np.nan) > GATE_Z:
+            x *= HALF
+        if "market_sent_shock" not in self.off and bool(m.sent_shock.get(week, False)):
+            x *= HALF
+        return x
+
+    def risk_flag(self, m, week):
+        """Stocks whose views spiked with negative tone in any of weeks W-3..W (excluded for 4 weeks)."""
+        spike = recent_rows(m.weekly["spike"], week, self.BLOCK_WEEKS).reindex(columns=m.tickers)
+        neg = recent_rows(m.weekly["sent_net"], week, self.BLOCK_WEEKS).reindex(columns=m.tickers) < 0
+        return (spike.fillna(False).astype(bool) & neg).any()
+
+    def rebalance(self, m, week, fri, held, first_of_month):
+        ok = m.close.loc[fri, m.tickers].notna()
+        if "trend200" not in self.off:
+            ok &= m.close.loc[fri, m.tickers] > m.ma200.loc[fri]
+        if "ret26" not in self.off:
+            ok &= m.ret26.loc[fri] > 0
+        if "stock_risk" not in self.off:
+            ok &= ~self.risk_flag(m, week)
+        return set(ok[ok].index)
+
+    def signal(self, m, week, fri):
+        return m.ret26.loc[fri]
+
+
+STRATEGIES = (AttentionGatedMomentum, AttentionReversal, NewsTaggedBreakout, SentimentConfirmedAttention,
+              BadNewsReversal, PositiveToneMomentum, TrendRiskFiltered)
+MAX_LOOSEN = {AttentionReversal: 2, NewsTaggedBreakout: 3, SentimentConfirmedAttention: 2,
+              BadNewsReversal: 2, PositiveToneMomentum: 1}
 
 
 # ----------------------------------------------------------------------------- simulation
@@ -411,15 +568,39 @@ def mean_ic(strategy: Strategy, m: Market, period: tuple) -> float:
     return float(np.nanmean(ics)) if ics else np.nan
 
 
+VIBE_MULTIPLE_TESTING = "agent/src/quantlib/multipletesting.py"   # in the Vibe-Trading checkout
+
+
+@lru_cache(maxsize=1)
+def vibe_multiple_testing():
+    """Vibe-Trading's `quantlib.multipletesting` module, from the checkout at env VIBE_TRADING_ROOT (.env).
+
+    The guide requires Vibe's own `deflated_sharpe_ratio`. The file is loaded by path because both repos
+    have a top-level `src` package, so a normal import would pick up ours.
+    """
+    load_dotenv()
+    root = os.environ.get("VIBE_TRADING_ROOT")
+    if not root:
+        raise RuntimeError("set VIBE_TRADING_ROOT in .env to a Vibe-Trading checkout (see .env.example)")
+    spec = importlib.util.spec_from_file_location("vibe_multipletesting", Path(root).expanduser() / VIBE_MULTIPLE_TESTING)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = mod    # its dataclasses look the module up while it loads
+    spec.loader.exec_module(mod)
+    return mod
+
+
 def deflated_sharpe(r: pd.Series, trial_sharpes: list[float], n_trials: int) -> float:
-    """Probability the (daily) Sharpe beats the best of `n_trials` luck-only trials (Bailey & Lopez de Prado)."""
+    """Probability the daily Sharpe of `r` beats the best of `n_trials` luck-only trials.
+
+    Vibe's `deflated_sharpe_ratio` (Bailey & Lopez de Prado), fed per-day Sharpes: the trial Sharpes are
+    annualised, so their spread is divided by sqrt(TRADING_DAYS).
+    """
     r = r.dropna()
-    sr = r.mean() / r.std()
-    var = np.nanvar(np.asarray(trial_sharpes) / np.sqrt(TRADING_DAYS))   # trial Sharpes are annualised
-    sr0 = np.sqrt(var) * ((1 - EULER_GAMMA) * norm.ppf(1 - 1 / n_trials)
-                          + EULER_GAMMA * norm.ppf(1 - 1 / (n_trials * EULER_E)))
-    denom = np.sqrt(1 - skew(r) * sr + (kurtosis(r, fisher=False) - 1) / 4 * sr ** 2)
-    return float(norm.cdf((sr - sr0) * np.sqrt(len(r) - 1) / denom))
+    trial_std = float(np.nanstd(np.asarray(trial_sharpes) / np.sqrt(TRADING_DAYS)))
+    res = vibe_multiple_testing().deflated_sharpe_ratio(
+        observed_sharpe=float(r.mean() / r.std()), n_trials=n_trials, n_observations=len(r),
+        trial_sharpe_std=trial_std, skew=float(skew(r)), kurtosis=float(kurtosis(r, fisher=False)))
+    return float(res.deflated_sharpe_ratio)
 
 
 # ----------------------------------------------------------------------------- evaluation
@@ -461,10 +642,10 @@ def decide(res: dict) -> tuple[str, str]:
 
 
 def build_market(market: str = "US") -> Market:
-    from src.wiki_pipeline import PROCESSED, RAW, shared_path, universe
+    from src.wiki_pipeline import PROCESSED, RAW, cache_tag, shared_path, universe
     holdout = pd.Timestamp(config.holdout_start())
     tickers, bench = list(universe(market)), config.benchmark(market)
-    px = load_ohlcv(tickers, bench, "2014-01-01", holdout, RAW / "prices" / f"ohlcv_{market}.parquet")
+    px = load_ohlcv(tickers, bench, "2014-01-01", holdout, RAW / "prices" / f"ohlcv_{market}_{cache_tag()}.parquet")
     # edit sentiment for every stock (`python -m src.wiki_sentiment strategy`), else the tracked stocks only
     sent = next((f for f in (PROCESSED / "edit_sentiment_weekly_research_strategy.csv",
                              PROCESSED / "edit_sentiment_weekly_research.csv") if f.exists()), None)
@@ -474,7 +655,7 @@ def build_market(market: str = "US") -> Market:
 
 
 def run(market: str = "US") -> list[dict]:
-    """Evaluate S1-S3 (loosening on train only when needed) and write results/wikipedia/week3_*.csv."""
+    """Evaluate S1-S7 (loosening on train only when needed) and write results/wikipedia/{OUT_PREFIX}_*.csv."""
     from src.wiki_pipeline import ROOT
     m = build_market(market)
     split = config.load()["wikipedia"]["split"]
@@ -511,19 +692,20 @@ def run(market: str = "US") -> list[dict]:
                              "change_train": v["train"] - tr["sharpe"], "change_test": v["test"] - te["sharpe"]})
     out = ROOT / "results" / "wikipedia"
     out.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(rows).to_csv(out / f"week3_strategy_log_{market.lower()}.csv", index=False)
-    pd.DataFrame(ablation).to_csv(out / f"week3_drop_one_{market.lower()}.csv", index=False)
+    pd.DataFrame(rows).to_csv(out / f"{OUT_PREFIX}_strategy_log_{market.lower()}.csv", index=False)
+    pd.DataFrame(ablation).to_csv(out / f"{OUT_PREFIX}_drop_one_{market.lower()}.csv", index=False)
     for r in results:
         tag = r["name"].split()[0].lower() + (f"_loosen{r['loosen']}" if r["loosen"] else "")
-        r["sim"]["trades"].to_csv(out / f"week3_{tag}_trades_{market.lower()}.csv", index=False)
-        r["sim"]["weights"].to_csv(out / f"week3_{tag}_weights_{market.lower()}.csv")
-        r["sim"]["net"].rename("net").to_csv(out / f"week3_{tag}_daily_{market.lower()}.csv")
+        r["sim"]["trades"].to_csv(out / f"{OUT_PREFIX}_{tag}_trades_{market.lower()}.csv", index=False)
+        r["sim"]["weights"].to_csv(out / f"{OUT_PREFIX}_{tag}_weights_{market.lower()}.csv")
+        r["sim"]["net"].rename("net").to_csv(out / f"{OUT_PREFIX}_{tag}_daily_{market.lower()}.csv")
     return results
 
 
 VIBE_ENGINE = '''"""{name} ({market}), exported from indicatorlab src/wiki_complex.py.
 
-Target weights were computed by the pre-registered rules in docs/wikipedia/week3_strategies.md and are
+Target weights were computed by the pre-registered rules in docs/wikipedia/week3_strategies.md (S1-S4) or
+week4_strategies.md (S5-S7) and are
 read from code/weights.csv (run the runner from this directory). Vibe shifts them one bar.
 """
 import pandas as pd

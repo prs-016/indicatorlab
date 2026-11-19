@@ -178,11 +178,15 @@ function seg(el, opts, cur, onPick) {
   el.querySelectorAll("button").forEach(b => b.onclick = () => onPick(b.dataset.v));
 }
 
+let CUTOFF = "the research cutoff";   // config holdout_start, filled from /health
+
 async function loadAsOf() {
   $("apiUrl").textContent = API;
   try {
     const h = await get("/health");
     const t = Object.values(h.tables).filter(Boolean).sort().pop();
+    CUTOFF = h.research_cutoff || CUTOFF;
+    document.querySelectorAll(".cutoff").forEach(e => e.textContent = CUTOFF);
     $("asOf").textContent = t ? new Date(t).toLocaleString() : "—";
   } catch (e) { $("asOf").textContent = "API unreachable"; }
 }
@@ -270,7 +274,7 @@ function lineOpts(yTitle, extra = {}) {
 const legendHtml = (items) => items.map(([lab, v, note]) => `<span><i class="sw" style="background:var(${v})"></i>${lab}${note ? ` <span class="muted">${note}</span>` : ""}</span>`).join("");
 
 async function pageStock(el) {
-  el.innerHTML = `<section><div class="sechead"><div><h2 id="stTitle">Stock view</h2><div class="sub">Research weeks only (before 2025-10-01). Click any week, or a spike dot, to see what happened.</div></div>
+  el.innerHTML = `<section><div class="sechead"><div><h2 id="stTitle">Stock view</h2><div class="sub">Research weeks only (before <span class="cutoff">${esc(CUTOFF)}</span>). Click any week, or a spike dot, to see what happened.</div></div>
       <div class="filters" style="margin:0"><label class="muted" for="stTicker">Ticker</label>
         <input id="stTicker" list="tickerOpts" size="10" autocomplete="off" value="${esc(state.ticker)}"><datalist id="tickerOpts"></datalist>
         <div class="seg" id="rangeSeg" role="group" aria-label="Date range"></div></div></div>

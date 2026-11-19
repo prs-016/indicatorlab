@@ -11,8 +11,8 @@ Rules, fixed before the first run (parameters in config.yaml `wikipedia.strategy
   sizing    equal weight across open positions, at most 10% per stock, rest in cash
   regime    50% of that exposure while SPY closed below its 200-day average the day before
   costs     10 bps per unit of turnover (config `strategy.cost_bps`)
-Test: research data only, the team split in config.yaml `wikipedia.split` (Week 3: train Jun 2016 to
-Dec 2021, test Jan 2022 to Sep 2025; Wikipedia starts Jul 2015).
+Test: research data only, the team split in config.yaml `wikipedia.split` (train Jun 2016 to
+Dec 2021, test Jan 2022 to Oct 2026; Wikipedia starts Jul 2015).
 Benchmarks: SPY, the equal-weight universe, and 200 random portfolios that keep every trade's dates
 (same number of names, holding periods, sizing and regime) but pick a random stock not already held.
 
@@ -201,10 +201,10 @@ def log_row(res: dict, tickers: list[str], split: dict, bench: str) -> dict:
 
 def run(market: str = "US") -> dict:
     """Run on the research data and write trades, daily returns and the log row to results/wikipedia/."""
-    from src.wiki_pipeline import RAW, ROOT, shared_path, universe
+    from src.wiki_pipeline import ROOT, prices_path, shared_path, universe
     holdout = pd.Timestamp(config.holdout_start())
     tickers, bench = list(universe(market)), config.benchmark(market)
-    close = pd.read_csv(RAW / "prices" / f"daily_close_{market}.csv", index_col=0, parse_dates=True)
+    close = pd.read_csv(prices_path(market), index_col=0, parse_dates=True)
     close = close[close.index < holdout]
     att = pd.read_csv(shared_path("research"))
     split = config.load()["wikipedia"]["split"]

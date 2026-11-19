@@ -197,10 +197,11 @@ def _known(frames: list[pd.DataFrame], ticker: str) -> None:
 
 @router.get("/health")
 def health(storage: StorageDep) -> dict:
-    """Up, plus when each processed table was last written (UTC)."""
+    """Up, the research cutoff (config `holdout_start`) and when each processed table was last written (UTC)."""
     keys = [k for k in storage.keys("processed/") if k.endswith(".parquet")]
     fresh = {k.split("/")[-1].removesuffix(".parquet"): storage.modified(k) for k in keys}
     return {"status": "ok", "data_root": "s3" if storage.is_s3 else "local",
+            "research_cutoff": _holdout().date().isoformat(),
             "tables": {k: v.isoformat() if v else None for k, v in fresh.items()}}
 
 

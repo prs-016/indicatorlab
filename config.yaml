@@ -2,7 +2,7 @@
 # Add a market, stock, subreddit or Wikipedia title here, never inside a function.
 # Load it with `from src import config` (see src/config.py).
 
-holdout_start: 2025-10-01   # research, spike studies and strategy tests use data strictly before this
+holdout_start: 2026-11-01   # first date never used for research (team decision Nov 11); data from here on is display-only
 week_label: monday          # every weekly table labels a week by its Monday (00:00 UTC)
 
 # One spike rule for every attention source (Wikipedia views/edits, Reddit chatter).
@@ -191,7 +191,22 @@ wikipedia:
   bootstrap: {n_resamples: 1000, ci: 0.95, seed: 42}
   # Team split (Week 3 guide), shared with Reddit, India and HK. Wikipedia starts Jul 2015 and spike flags
   # need 8 + 26 weeks of history, so the earliest usable train start is 2016.
-  split: {train: [2016-06-01, 2021-12-31], test: [2022-01-01, 2025-09-30]}
+  split: {train: [2016-06-01, 2021-12-31], test: [2022-01-01, 2026-10-31]}
+  # FinBERT fine-tuned on Wikipedia edit sentences (src/wiki_finetune.py). Claude labels a seeded sample of
+  # sentences from weeks before the test split (silver, for training); a human labels a separate test-split
+  # sample (gold, for evaluation only). The tuned model is not used by any scorer until config `sentiment`
+  # points at it, which needs Joshua's agreement (shared scorer) and makes S4 a new trial.
+  finetune:
+    sentences: edit_sentiment_sentences_research_strategy.csv   # in data/processed/wikipedia/ (51 stocks)
+    n_silver: 3000
+    n_gold: 200
+    seed: 42
+    labeler_model: claude-opus-5-5   # same answer-key model as Joshua's Reddit labels
+    labeler_effort: medium
+    group_size: 20                   # sentences per labelling request (one request each would cost ~10x)
+    model_dir: models/finbert-wiki-v1
+    train: {lr: 2.0e-5, epochs: 4, batch_size: 16, max_len: 128, val_share: 0.1, warmup_share: 0.1,
+            weight_decay: 0.01}       # standard BERT fine-tuning values (Devlin et al. 2019; FinBERT paper)
   # Wikipedia-only strategy (rules fixed before the first run; see src/wiki_strategy.py).
   strategy:
     hold_weeks: 4              # time-limit exit
@@ -200,6 +215,16 @@ wikipedia:
     max_weight: 0.10           # cap per stock
     regime_days: 200           # SPY below its 200-day average -> half exposure
     regime_exposure: 0.5
+  # S&P 500 expansion (src/wiki_sp500.py): views and edits of every constituent's article over the `years`
+  # up to `end`. Weeks before holdout_start go to the research table, later ones to a separate recent
+  # table (dashboard and spike checks only). Constituents are read from `list_page` as it stood the day
+  # before holdout_start, so nothing after it picks the stocks (members then still carry survivorship
+  # bias back to the window start).
+  sp500:
+    list_page: List of S&P 500 companies
+    end: 2026-10-31
+    years: 5
+    workers: 4                 # stocks pulled in parallel; Wikimedia allows far more, this stays polite
   # Stocks beyond the 10 tracked ones, for strategy tests on 30+ names (the PDF's tgqm universe).
   # Same shape as a tracked stock's `wikipedia:` entry: {language: title}.
   strategy_universe:

@@ -115,17 +115,25 @@ def added_sentences(diff_html: str, min_words: int = 5) -> list[str]:
 
 
 def week_sentences(ticker: str, revs: pd.DataFrame, weeks: pd.DatetimeIndex, cache_file: Path,
-                   lang: str = "en") -> pd.DataFrame:
+                   lang: str = "en", seed_file: Path | None = None) -> pd.DataFrame:
     """Added sentences per week (one row per sentence; '' for a week that added none), cached per article.
 
     The cache is saved every CHECKPOINT_WEEKS fetched weeks, so an interrupted run resumes: weeks already
-    in `cache_file` are not fetched again.
+    in `cache_file` are not fetched again. A new `cache_file` starts from `seed_file` (an earlier cutoff's
+    cache, only read), keeping the weeks whose revision pair is unchanged.
     """
     p = params()
     pairs = week_pairs(revs, weeks)
     f = Path(cache_file)
     cols = ["ticker", "week", "from_rev", "to_rev", "sentence"]
-    out = pd.read_csv(f, parse_dates=["week"], keep_default_na=False) if f.exists() else pd.DataFrame(columns=cols)
+    read = lambda g: pd.read_csv(g, parse_dates=["week"], keep_default_na=False)
+    if f.exists():
+        out = read(f)
+    elif seed_file is not None and Path(seed_file).exists():
+        key = ["week", "from_rev", "to_rev"]
+        out = read(seed_file).merge(pairs[key], on=key)[cols]
+    else:
+        out = pd.DataFrame(columns=cols)
     todo = pairs[~pairs["week"].isin(out["week"])]
     rows = []
     for i, w in enumerate(todo.itertuples(), 1):
@@ -218,12 +226,13 @@ def build(period: str = "research", tickers: list[str] | None = None, strategy: 
     """
     from src.wiki_pipeline import (
         PROCESSED,
-        RAW,
         article_starts,
         cache_stem,
         last_complete_sunday,
+        period_dir,
         title_revisions,
         universe,
+        untagged_dir,
         windows,
     )
     win = windows(last_complete_sunday())
@@ -238,8 +247,9 @@ def build(period: str = "research", tickers: list[str] | None = None, strategy: 
         starts = article_starts(revs)
         for key, r in revs.groupby("key"):   # each article from its first week as an article
             lang, title = r["lang"].iloc[0], r["title"].iloc[0]
-            cache = RAW / f"diffs_{period}" / lang / f"{cache_stem(tk, titles, lang, title)}.csv"
-            frames.append(week_sentences(tk, r, weeks[weeks >= starts[key]], cache, lang))
+            name = f"{cache_stem(tk, titles, lang, title)}.csv"
+            cache, seed = period_dir("diffs", period) / lang / name, untagged_dir("diffs", period) / lang / name
+            frames.append(week_sentences(tk, r, weeks[weeks >= starts[key]], cache, lang, seed))
             print(tk, title, len(frames[-1]), "rows", flush=True)
     sents = pd.concat(frames, ignore_index=True)
     has = sents["sentence"].ne("")

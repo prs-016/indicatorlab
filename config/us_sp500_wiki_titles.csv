@@ -1,0 +1,503 @@
+ticker,yahoo,name,title,sector,sub_industry,date_added,cik,duplicate_of,list_revid,status
+MMM,MMM,3M,3M,Industrials,Industrial Conglomerates,1957-03-04,0000066740,,1314254751,ok
+AOS,AOS,A. O. Smith,A._O._Smith,Industrials,Building Products,2017-07-26,0000091142,,1314254751,ok
+ABT,ABT,Abbott Laboratories,Abbott_Laboratories,Health Care,Health Care Equipment,1957-03-04,0000001800,,1314254751,ok
+ABBV,ABBV,AbbVie,AbbVie,Health Care,Biotechnology,2012-12-31,0001551152,,1314254751,ok
+ACN,ACN,Accenture,Accenture,Information Technology,IT Consulting & Other Services,2011-07-06,0001467373,,1314254751,ok
+ADBE,ADBE,Adobe Inc.,Adobe_Inc.,Information Technology,Application Software,1997-05-05,0000796343,,1314254751,ok
+AMD,AMD,AMD,AMD,Information Technology,Semiconductors,2017-03-20,0000002488,,1314254751,ok
+AES,AES,AES Corporation,AES_Corporation,Utilities,Independent Power Producers & Energy Traders,1998-10-02,0000874761,,1314254751,ok
+AFL,AFL,Aflac,Aflac,Financials,Life & Health Insurance,1999-05-28,0000004977,,1314254751,ok
+A,A,Agilent Technologies,Agilent_Technologies,Health Care,Life Sciences Tools & Services,2000-06-05,0001090872,,1314254751,ok
+APD,APD,Air Products,Air_Products,Materials,Industrial Gases,1985-04-30,0000002969,,1314254751,ok
+ABNB,ABNB,Airbnb,Airbnb,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",2023-09-18,0001559720,,1314254751,ok
+AKAM,AKAM,Akamai Technologies,Akamai_Technologies,Information Technology,Internet Services & Infrastructure,2007-07-12,0001086222,,1314254751,ok
+ALB,ALB,Albemarle Corporation,Albemarle_Corporation,Materials,Specialty Chemicals,2016-07-01,0000915913,,1314254751,ok
+ARE,ARE,Alexandria Real Estate Equities,Alexandria_Real_Estate_Equities,Real Estate,Office REITs,2017-03-20,0001035443,,1314254751,ok
+ALGN,ALGN,Align Technology,Align_Technology,Health Care,Health Care Supplies,2017-06-19,0001097149,,1314254751,ok
+ALLE,ALLE,Allegion,Allegion,Industrials,Building Products,2013-12-02,0001579241,,1314254751,ok
+LNT,LNT,Alliant Energy,Alliant_Energy,Utilities,Electric Utilities,2016-07-01,0000352541,,1314254751,ok
+ALL,ALL,Allstate,Allstate,Financials,Property & Casualty Insurance,1995-07-13,0000899051,,1314254751,ok
+GOOGL,GOOGL,Alphabet Inc.,Alphabet_Inc.,Communication Services,Interactive Media & Services,2006-04-03,0001652044,,1314254751,ok
+GOOG,GOOG,Alphabet Inc.,Alphabet_Inc.,Communication Services,Interactive Media & Services,2014-04-03,0001652044,GOOGL,1314254751,ok
+MO,MO,Altria,Altria,Consumer Staples,Tobacco,1957-03-04,0000764180,,1314254751,ok
+AMZN,AMZN,Amazon (company),Amazon_(company),Consumer Discretionary,Broadline Retail,2005-11-18,0001018724,,1314254751,ok
+AMCR,AMCR,Amcor,Amcor,Materials,Paper & Plastic Packaging Products & Materials,2019-06-07,0001748790,,1314254751,ok
+AEE,AEE,Ameren,Ameren,Utilities,Multi-Utilities,1991-09-19,0001002910,,1314254751,ok
+AEP,AEP,American Electric Power,American_Electric_Power,Utilities,Electric Utilities,1957-03-04,0000004904,,1314254751,ok
+AXP,AXP,American Express,American_Express,Financials,Consumer Finance,1976-06-30,0000004962,,1314254751,ok
+AIG,AIG,American International Group,American_International_Group,Financials,Multi-line Insurance,1980-03-31,0000005272,,1314254751,ok
+AMT,AMT,American Tower,American_Tower,Real Estate,Telecom Tower REITs,2007-11-19,0001053507,,1314254751,ok
+AWK,AWK,American Water Works,American_Water_Works,Utilities,Water Utilities,2016-03-04,0001410636,,1314254751,ok
+AMP,AMP,Ameriprise Financial,Ameriprise_Financial,Financials,Asset Management & Custody Banks,2005-10-03,0000820027,,1314254751,ok
+AME,AME,Ametek,Ametek,Industrials,Electrical Components & Equipment,2013-09-23,0001037868,,1314254751,ok
+AMGN,AMGN,Amgen,Amgen,Health Care,Biotechnology,1992-01-02,0000318154,,1314254751,ok
+APH,APH,Amphenol,Amphenol,Information Technology,Electronic Components,2008-09-30,0000820313,,1314254751,ok
+ADI,ADI,Analog Devices,Analog_Devices,Information Technology,Semiconductors,1999-10-12,0000006281,,1314254751,ok
+AON,AON,Aon (company),Aon_plc,Financials,Insurance Brokers,1996-04-23,0000315293,,1314254751,ok
+APA,APA,APA Corporation,APA_Corporation,Energy,Oil & Gas Exploration & Production,1997-07-28,0001841666,,1314254751,ok
+APO,APO,Apollo Global Management,Apollo_Global_Management,Financials,Asset Management & Custody Banks,2024-12-23,0001858681,,1314254751,ok
+AAPL,AAPL,Apple Inc.,Apple_Inc.,Information Technology,"Technology Hardware, Storage & Peripherals",1982-11-30,0000320193,,1314254751,ok
+AMAT,AMAT,Applied Materials,Applied_Materials,Information Technology,Semiconductor Materials & Equipment,1995-03-16,0000006951,,1314254751,ok
+APP,APP,AppLovin,AppLovin,Information Technology,Application Software,2025-09-22,0001751008,,1314254751,ok
+APTV,APTV,Aptiv,Aptiv,Consumer Discretionary,Automotive Parts & Equipment,2012-12-24,0001521332,,1314254751,ok
+ACGL,ACGL,Arch Capital Group,Arch_Capital_Group,Financials,Property & Casualty Insurance,2022-11-01,0000947484,,1314254751,ok
+ADM,ADM,Archer Daniels Midland,Archer_Daniels_Midland,Consumer Staples,Agricultural Products & Services,1957-03-04,0000007084,,1314254751,ok
+ANET,ANET,Arista Networks,Arista_Networks,Information Technology,Communications Equipment,2018-08-28,0001596532,,1314254751,ok
+AJG,AJG,Arthur J. Gallagher & Co.,Arthur_J._Gallagher_&_Co.,Financials,Insurance Brokers,2016-05-31,0000354190,,1314254751,ok
+AIZ,AIZ,Assurant,Assurant,Financials,Multi-line Insurance,2007-04-10,0001267238,,1314254751,ok
+T,T,AT&T,AT&T,Communication Services,Integrated Telecommunication Services,1983-11-30,0000732717,,1314254751,ok
+ATO,ATO,Atmos Energy,Atmos_Energy,Utilities,Gas Utilities,2019-02-15,0000731802,,1314254751,ok
+ADSK,ADSK,Autodesk,Autodesk,Information Technology,Application Software,1989-12-01,0000769397,,1314254751,ok
+ADP,ADP,ADP (company),ADP_(company),Industrials,Human Resource & Employment Services,1981-03-31,0000008670,,1314254751,ok
+AZO,AZO,AutoZone,AutoZone,Consumer Discretionary,Automotive Retail,1997-01-02,0000866787,,1314254751,ok
+AVB,AVB,AvalonBay Communities,AvalonBay_Communities,Real Estate,Multi-Family Residential REITs,2007-01-10,0000915912,,1314254751,ok
+AVY,AVY,Avery Dennison,Avery_Dennison,Materials,Paper & Plastic Packaging Products & Materials,1987-12-31,0000008818,,1314254751,ok
+AXON,AXON,Axon Enterprise,Axon_Enterprise,Industrials,Aerospace & Defense,2023-05-04,0001069183,,1314254751,ok
+BKR,BKR,Baker Hughes,Baker_Hughes,Energy,Oil & Gas Equipment & Services,2017-07-07,0001701605,,1314254751,ok
+BALL,BALL,Ball Corporation,Ball_Corporation,Materials,"Metal, Glass & Plastic Containers",1984-10-31,0000009389,,1314254751,ok
+BAC,BAC,Bank of America,Bank_of_America,Financials,Diversified Banks,1976-06-30,0000070858,,1314254751,ok
+BAX,BAX,Baxter International,Baxter_International,Health Care,Health Care Equipment,1972-09-30,0000010456,,1314254751,ok
+BDX,BDX,BD (company),BD_(company),Health Care,Health Care Equipment,1972-09-30,0000010795,,1314254751,ok
+BRK.B,BRK-B,Berkshire Hathaway,Berkshire_Hathaway,Financials,Multi-Sector Holdings,2010-02-16,0001067983,,1314254751,ok
+BBY,BBY,Best Buy,Best_Buy,Consumer Discretionary,Computer & Electronics Retail,1999-06-29,0000764478,,1314254751,ok
+TECH,TECH,Bio-Techne,Bio-Techne,Health Care,Life Sciences Tools & Services,2021-08-30,0000842023,,1314254751,ok
+BIIB,BIIB,Biogen,Biogen,Health Care,Biotechnology,2003-11-13,0000875045,,1314254751,ok
+BLK,BLK,BlackRock,BlackRock,Financials,Asset Management & Custody Banks,2011-04-04,0002012383,,1314254751,ok
+BX,BX,Blackstone Inc.,Blackstone_Inc.,Financials,Asset Management & Custody Banks,2023-09-18,0001393818,,1314254751,ok
+XYZ,XYZ,"Block, Inc.","Block,_Inc.",Financials,Transaction & Payment Processing Services,2025-07-23,0001512673,,1314254751,ok
+BK,BK,BNY,BNY,Financials,Asset Management & Custody Banks,1995-03-31,0001390777,,1314254751,ok
+BA,BA,Boeing,Boeing,Industrials,Aerospace & Defense,1957-03-04,0000012927,,1314254751,ok
+BKNG,BKNG,Booking Holdings,Booking_Holdings,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",2009-11-06,0001075531,,1314254751,ok
+BSX,BSX,Boston Scientific,Boston_Scientific,Health Care,Health Care Equipment,1995-02-24,0000885725,,1314254751,ok
+BMY,BMY,Bristol Myers Squibb,Bristol_Myers_Squibb,Health Care,Pharmaceuticals,1957-03-04,0000014272,,1314254751,ok
+AVGO,AVGO,Broadcom,Broadcom,Information Technology,Semiconductors,2014-05-08,0001730168,,1314254751,ok
+BR,BR,Broadridge Financial Solutions,Broadridge_Financial_Solutions,Industrials,Data Processing & Outsourced Services,2018-06-18,0001383312,,1314254751,ok
+BRO,BRO,Brown & Brown,Brown_&_Brown,Financials,Insurance Brokers,2021-09-20,0000079282,,1314254751,ok
+BF.B,BF-B,Brown–Forman,Brown-Forman,Consumer Staples,Distillers & Vintners,1982-10-31,0000014693,,1314254751,ok
+BLDR,BLDR,Builders FirstSource,Builders_FirstSource,Industrials,Building Products,2023-12-18,0001316835,,1314254751,ok
+BG,BG,Bunge Global,Bunge_Global,Consumer Staples,Agricultural Products & Services,2023-03-15,0001996862,,1314254751,ok
+BXP,BXP,"BXP, Inc.","BXP,_Inc.",Real Estate,Office REITs,2006-04-03,0001037540,,1314254751,ok
+CHRW,CHRW,C.H. Robinson,C._H._Robinson,Industrials,Air Freight & Logistics,2007-03-02,0001043277,,1314254751,ok
+CDNS,CDNS,Cadence Design Systems,Cadence_Design_Systems,Information Technology,Application Software,2017-09-18,0000813672,,1314254751,ok
+CPT,CPT,Camden Property Trust,Camden_Property_Trust,Real Estate,Multi-Family Residential REITs,2022-04-04,0000906345,,1314254751,ok
+CPB,CPB,Campbell's,Campbell's,Consumer Staples,Packaged Foods & Meats,1957-03-04,0000016732,,1314254751,ok
+COF,COF,Capital One,Capital_One,Financials,Consumer Finance,1998-07-01,0000927628,,1314254751,ok
+CAH,CAH,Cardinal Health,Cardinal_Health,Health Care,Health Care Distributors,1997-05-27,0000721371,,1314254751,ok
+KMX,KMX,CarMax,CarMax,Consumer Discretionary,Automotive Retail,2010-06-28,0001170010,,1314254751,ok
+CCL,CCL,Carnival Corporation & plc,Carnival_Corporation,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",1998-12-22,0000815097,,1314254751,ok
+CARR,CARR,Carrier Global,Carrier_Global,Industrials,Building Products,2020-04-03,0001783180,,1314254751,ok
+CAT,CAT,Caterpillar Inc.,Caterpillar_Inc.,Industrials,Construction Machinery & Heavy Transportation Equipment,1957-03-04,0000018230,,1314254751,ok
+CBRE,CBRE,CBRE Group,CBRE_Group,Real Estate,Real Estate Services,2006-11-10,0001138118,,1314254751,ok
+CDW,CDW,CDW,CDW,Information Technology,Technology Distributors,2019-09-23,0001402057,,1314254751,ok
+COR,COR,Cencora,Cencora,Health Care,Health Care Distributors,2001-08-30,0001140859,,1314254751,ok
+CNC,CNC,Centene Corporation,Centene_Corporation,Health Care,Managed Health Care,2016-03-30,0001071739,,1314254751,ok
+CNP,CNP,CenterPoint Energy,CenterPoint_Energy,Utilities,Multi-Utilities,1985-07-31,0001130310,,1314254751,ok
+CF,CF,CF Industries,CF_Industries,Materials,Fertilizers & Agricultural Chemicals,2008-08-27,0001324404,,1314254751,ok
+CRL,CRL,Charles River Laboratories,Charles_River_Laboratories,Health Care,Life Sciences Tools & Services,2021-05-14,0001100682,,1314254751,ok
+SCHW,SCHW,Charles Schwab Corporation,Charles_Schwab_Corporation,Financials,Investment Banking & Brokerage,1997-06-02,0000316709,,1314254751,ok
+CHTR,CHTR,Charter Communications,Charter_Communications,Communication Services,Cable & Satellite,2016-09-08,0001091667,,1314254751,ok
+CVX,CVX,Chevron Corporation,Chevron_Corporation,Energy,Integrated Oil & Gas,1957-03-04,0000093410,,1314254751,ok
+CMG,CMG,Chipotle Mexican Grill,Chipotle_Mexican_Grill,Consumer Discretionary,Restaurants,2011-04-28,0001058090,,1314254751,ok
+CB,CB,Chubb Limited,Chubb_Limited,Financials,Property & Casualty Insurance,2010-07-15,0000896159,,1314254751,ok
+CHD,CHD,Church & Dwight,Church_&_Dwight,Consumer Staples,Household Products,2015-12-29,0000313927,,1314254751,ok
+CI,CI,Cigna,The_Cigna_Group,Health Care,Health Care Services,1976-06-30,0001739940,,1314254751,ok
+CINF,CINF,Cincinnati Financial,Cincinnati_Financial,Financials,Property & Casualty Insurance,1997-12-18,0000020286,,1314254751,ok
+CTAS,CTAS,Cintas,Cintas,Industrials,Diversified Support Services,2001-03-01,0000723254,,1314254751,ok
+CSCO,CSCO,Cisco,Cisco,Information Technology,Communications Equipment,1993-12-01,0000858877,,1314254751,ok
+C,C,Citigroup,Citigroup,Financials,Diversified Banks,1988-05-31,0000831001,,1314254751,ok
+CFG,CFG,Citizens Financial Group,Citizens_Financial_Group,Financials,Regional Banks,2016-01-29,0000759944,,1314254751,ok
+CLX,CLX,Clorox,Clorox,Consumer Staples,Household Products,1969-03-31,0000021076,,1314254751,ok
+CME,CME,CME Group,CME_Group,Financials,Financial Exchanges & Data,2006-08-11,0001156375,,1314254751,ok
+CMS,CMS,CMS Energy,CMS_Energy,Utilities,Multi-Utilities,1957-03-04,0000811156,,1314254751,ok
+KO,KO,The Coca-Cola Company,The_Coca-Cola_Company,Consumer Staples,Soft Drinks & Non-alcoholic Beverages,1957-03-04,0000021344,,1314254751,ok
+CTSH,CTSH,Cognizant,Cognizant,Information Technology,IT Consulting & Other Services,2006-11-17,0001058290,,1314254751,ok
+COIN,COIN,Coinbase,Coinbase,Financials,Financial Exchanges & Data,2025-05-19,0001679788,,1314254751,ok
+CL,CL,Colgate-Palmolive,Colgate-Palmolive,Consumer Staples,Household Products,1957-03-04,0000021665,,1314254751,ok
+CMCSA,CMCSA,Comcast,Comcast,Communication Services,Cable & Satellite,2002-11-19,0001166691,,1314254751,ok
+CAG,CAG,Conagra Brands,Conagra_Brands,Consumer Staples,Packaged Foods & Meats,1983-08-31,0000023217,,1314254751,ok
+COP,COP,ConocoPhillips,ConocoPhillips,Energy,Oil & Gas Exploration & Production,1957-03-04,0001163165,,1314254751,ok
+ED,ED,Consolidated Edison,Consolidated_Edison,Utilities,Multi-Utilities,1957-03-04,0001047862,,1314254751,ok
+STZ,STZ,Constellation Brands,Constellation_Brands,Consumer Staples,Distillers & Vintners,2005-07-01,0000016918,,1314254751,ok
+CEG,CEG,Constellation Energy,Constellation_Energy,Utilities,Electric Utilities,2022-02-02,0001868275,,1314254751,ok
+COO,COO,The Cooper Companies,The_Cooper_Companies,Health Care,Health Care Supplies,2016-09-23,0000711404,,1314254751,ok
+CPRT,CPRT,Copart,Copart,Industrials,Diversified Support Services,2018-07-02,0000900075,,1314254751,ok
+GLW,GLW,Corning Inc.,Corning_Inc.,Information Technology,Electronic Components,1995-02-27,0000024741,,1314254751,ok
+CPAY,CPAY,Corpay,Corpay,Financials,Transaction & Payment Processing Services,2018-06-20,0001175454,,1314254751,ok
+CTVA,CTVA,Corteva,Corteva,Materials,Fertilizers & Agricultural Chemicals,2019-06-03,0001755672,,1314254751,ok
+CSGP,CSGP,CoStar Group,CoStar_Group,Real Estate,Real Estate Services,2022-09-19,0001057352,,1314254751,ok
+COST,COST,Costco,Costco,Consumer Staples,Consumer Staples Merchandise Retail,1993-10-01,0000909832,,1314254751,ok
+CTRA,CTRA,Coterra,Coterra,Energy,Oil & Gas Exploration & Production,2008-06-23,0000858470,,1314254751,ok
+CRWD,CRWD,CrowdStrike,CrowdStrike,Information Technology,Systems Software,2024-06-24,0001535527,,1314254751,ok
+CCI,CCI,Crown Castle,Crown_Castle,Real Estate,Telecom Tower REITs,2012-03-14,0001051470,,1314254751,ok
+CSX,CSX,CSX Corporation,CSX_Corporation,Industrials,Rail Transportation,1957-03-04,0000277948,,1314254751,ok
+CMI,CMI,Cummins,Cummins,Industrials,Construction Machinery & Heavy Transportation Equipment,1965-03-31,0000026172,,1314254751,ok
+CVS,CVS,CVS Health,CVS_Health,Health Care,Health Care Services,1957-03-04,0000064803,,1314254751,ok
+DHR,DHR,Danaher Corporation,Danaher_Corporation,Health Care,Life Sciences Tools & Services,1998-11-18,0000313616,,1314254751,ok
+DRI,DRI,Darden Restaurants,Darden_Restaurants,Consumer Discretionary,Restaurants,1995-05-31,0000940944,,1314254751,ok
+DDOG,DDOG,Datadog,Datadog,Information Technology,Application Software,2025-07-09,0001561550,,1314254751,ok
+DVA,DVA,DaVita,DaVita,Health Care,Health Care Services,2008-07-31,0000927066,,1314254751,ok
+DAY,DAY,Dayforce,Dayforce,Industrials,Human Resource & Employment Services,2021-09-20,0001725057,,1314254751,ok
+DECK,DECK,Deckers Brands,Deckers_Brands,Consumer Discretionary,Footwear,2024-03-18,0000910521,,1314254751,ok
+DE,DE,John Deere,John_Deere,Industrials,Agricultural & Farm Machinery,1957-03-04,0000315189,,1314254751,ok
+DELL,DELL,Dell Technologies,Dell_Technologies,Information Technology,"Technology Hardware, Storage & Peripherals",2024-09-23,0001571996,,1314254751,ok
+DAL,DAL,Delta Air Lines,Delta_Air_Lines,Industrials,Passenger Airlines,2013-09-11,0000027904,,1314254751,ok
+DVN,DVN,Devon Energy,Devon_Energy,Energy,Oil & Gas Exploration & Production,2000-08-30,0001090012,,1314254751,ok
+DXCM,DXCM,Dexcom,Dexcom,Health Care,Health Care Equipment,2020-05-12,0001093557,,1314254751,ok
+FANG,FANG,Diamondback Energy,Diamondback_Energy,Energy,Oil & Gas Exploration & Production,2018-12-03,0001539838,,1314254751,ok
+DLR,DLR,Digital Realty,Digital_Realty,Real Estate,Data Center REITs,2016-05-18,0001297996,,1314254751,ok
+DG,DG,Dollar General,Dollar_General,Consumer Staples,Consumer Staples Merchandise Retail,2012-12-03,0000029534,,1314254751,ok
+DLTR,DLTR,Dollar Tree,Dollar_Tree,Consumer Staples,Consumer Staples Merchandise Retail,2011-12-19,0000935703,,1314254751,ok
+D,D,Dominion Energy,Dominion_Energy,Utilities,Multi-Utilities,2016-11-30,0000715957,,1314254751,ok
+DPZ,DPZ,Domino's,Domino's,Consumer Discretionary,Restaurants,2020-05-12,0001286681,,1314254751,ok
+DASH,DASH,DoorDash,DoorDash,Consumer Discretionary,Specialized Consumer Services,2025-03-24,0001792789,,1314254751,ok
+DOV,DOV,Dover Corporation,Dover_Corporation,Industrials,Industrial Machinery & Supplies & Components,1985-10-31,0000029905,,1314254751,ok
+DOW,DOW,Dow Chemical Company,Dow_Chemical_Company,Materials,Commodity Chemicals,2019-04-01,0001751788,,1314254751,ok
+DHI,DHI,D. R. Horton,D._R._Horton,Consumer Discretionary,Homebuilding,2005-06-22,0000882184,,1314254751,ok
+DTE,DTE,DTE Energy,DTE_Energy,Utilities,Multi-Utilities,1957-03-04,0000936340,,1314254751,ok
+DUK,DUK,Duke Energy,Duke_Energy,Utilities,Electric Utilities,1976-06-30,0001326160,,1314254751,ok
+DD,DD,DuPont,DuPont,Materials,Specialty Chemicals,2019-06-03,0001666700,,1314254751,ok
+EMN,EMN,Eastman Chemical Company,Eastman_Chemical_Company,Materials,Specialty Chemicals,1994-01-01,0000915389,,1314254751,ok
+ETN,ETN,Eaton Corporation,Eaton_Corporation,Industrials,Electrical Components & Equipment,1957-03-04,0001551182,,1314254751,ok
+EBAY,EBAY,eBay,eBay,Consumer Discretionary,Broadline Retail,2002-07-22,0001065088,,1314254751,ok
+ECL,ECL,Ecolab,Ecolab,Materials,Specialty Chemicals,1989-01-31,0000031462,,1314254751,ok
+EIX,EIX,Edison International,Edison_International,Utilities,Electric Utilities,1957-03-04,0000827052,,1314254751,ok
+EW,EW,Edwards Lifesciences,Edwards_Lifesciences,Health Care,Health Care Equipment,2011-04-01,0001099800,,1314254751,ok
+EA,EA,Electronic Arts,Electronic_Arts,Communication Services,Interactive Home Entertainment,2002-07-22,0000712515,,1314254751,ok
+ELV,ELV,Elevance Health,Elevance_Health,Health Care,Managed Health Care,2002-07-25,0001156039,,1314254751,ok
+EME,EME,Emcor,Emcor,Industrials,Construction & Engineering,2025-09-22,0000105634,,1314254751,ok
+EMR,EMR,Emerson Electric,Emerson_Electric,Industrials,Electrical Components & Equipment,1965-03-31,0000032604,,1314254751,ok
+ETR,ETR,Entergy,Entergy,Utilities,Electric Utilities,1957-03-04,0000065984,,1314254751,ok
+EOG,EOG,EOG Resources,EOG_Resources,Energy,Oil & Gas Exploration & Production,2000-11-02,0000821189,,1314254751,ok
+EPAM,EPAM,EPAM Systems,EPAM_Systems,Information Technology,IT Consulting & Other Services,2021-12-14,0001352010,,1314254751,missing
+EQT,EQT,EQT Corporation,EQT_Corporation,Energy,Oil & Gas Exploration & Production,2022-10-03,0000033213,,1314254751,ok
+EFX,EFX,Equifax,Equifax,Industrials,Research & Consulting Services,1997-06-19,0000033185,,1314254751,ok
+EQIX,EQIX,Equinix,Equinix,Real Estate,Data Center REITs,2015-03-20,0001101239,,1314254751,ok
+EQR,EQR,Equity Residential,Vivmark_Residential,Real Estate,Multi-Family Residential REITs,2001-12-03,0000906107,,1314254751,ok
+ERIE,ERIE,Erie Insurance Group,Erie_Insurance_Group,Financials,Insurance Brokers,2024-09-23,0000922621,,1314254751,ok
+ESS,ESS,Essex Property Trust,Essex_Property_Trust,Real Estate,Multi-Family Residential REITs,2014-04-02,0000920522,,1314254751,ok
+EL,EL,The Estée Lauder Companies,Estée_Lauder_Companies,Consumer Staples,Personal Care Products,2006-01-05,0001001250,,1314254751,ok
+EG,EG,Everest Group,Everest_Group,Financials,Reinsurance,2017-06-19,0001095073,,1314254751,ok
+EVRG,EVRG,Evergy,Evergy,Utilities,Electric Utilities,2018-06-05,0001711269,,1314254751,ok
+ES,ES,Eversource Energy,Eversource_Energy,Utilities,Electric Utilities,2009-07-24,0000072741,,1314254751,ok
+EXC,EXC,Exelon,Exelon,Utilities,Electric Utilities,1957-03-04,0001109357,,1314254751,ok
+EXE,EXE,Expand Energy,Expand_Energy,Energy,Oil & Gas Exploration & Production,2025-03-24,0000895126,,1314254751,ok
+EXPE,EXPE,Expedia Group,Expedia_Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",2007-10-02,0001324424,,1314254751,ok
+EXPD,EXPD,Expeditors International,Expeditors_International,Industrials,Air Freight & Logistics,2007-10-10,0000746515,,1314254751,ok
+EXR,EXR,Extra Space Storage,Extra_Space_Storage,Real Estate,Self-Storage REITs,2016-01-19,0001289490,,1314254751,ok
+XOM,XOM,ExxonMobil,ExxonMobil,Energy,Integrated Oil & Gas,1957-03-04,0000034088,,1314254751,ok
+FFIV,FFIV,"F5, Inc.","F5,_Inc.",Information Technology,Communications Equipment,2010-12-20,0001048695,,1314254751,ok
+FDS,FDS,FactSet,FactSet,Financials,Financial Exchanges & Data,2021-12-20,0001013237,,1314254751,ok
+FICO,FICO,FICO,FICO,Information Technology,Application Software,2023-03-20,0000814547,,1314254751,ok
+FAST,FAST,Fastenal,Fastenal,Industrials,Trading Companies & Distributors,2008-09-15,0000815556,,1314254751,ok
+FRT,FRT,Federal Realty Investment Trust,Federal_Realty_Investment_Trust,Real Estate,Retail REITs,2016-02-01,0000034903,,1314254751,ok
+FDX,FDX,FedEx,FedEx,Industrials,Air Freight & Logistics,1980-12-31,0001048911,,1314254751,ok
+FIS,FIS,FIS (company),FIS_(company),Financials,Transaction & Payment Processing Services,2006-11-10,0001136893,,1314254751,ok
+FITB,FITB,Fifth Third Bancorp,Fifth_Third_Bank,Financials,Regional Banks,1996-03-29,0000035527,,1314254751,ok
+FSLR,FSLR,First Solar,First_Solar,Information Technology,Semiconductors,2022-12-19,0001274494,,1314254751,ok
+FE,FE,FirstEnergy,FirstEnergy,Utilities,Electric Utilities,1997-11-28,0001031296,,1314254751,ok
+FI,FI,Fiserv,Fiserv,Financials,Transaction & Payment Processing Services,2001-04-02,0000798354,,1314254751,ok
+F,F,Ford Motor Company,Ford_Motor_Company,Consumer Discretionary,Automobile Manufacturers,1957-03-04,0000037996,,1314254751,ok
+FTNT,FTNT,Fortinet,Fortinet,Information Technology,Systems Software,2018-10-11,0001262039,,1314254751,ok
+FTV,FTV,Fortive,Fortive,Industrials,Industrial Machinery & Supplies & Components,2016-07-01,0001659166,,1314254751,ok
+FOXA,FOXA,Fox Corporation,Fox_Corporation,Communication Services,Broadcasting,2019-03-19,0001754301,,1314254751,ok
+FOX,FOX,Fox Corporation,Fox_Corporation,Communication Services,Broadcasting,2019-03-19,0001754301,FOXA,1314254751,ok
+BEN,BEN,Franklin Templeton Investments,Franklin_Templeton,Financials,Asset Management & Custody Banks,1998-04-30,0000038777,,1314254751,ok
+FCX,FCX,Freeport-McMoRan,Freeport-McMoRan,Materials,Copper,2011-07-01,0000831259,,1314254751,ok
+GRMN,GRMN,Garmin,Garmin,Consumer Discretionary,Consumer Electronics,2012-12-12,0001121788,,1314254751,ok
+IT,IT,Gartner,Gartner,Information Technology,IT Consulting & Other Services,2017-04-05,0000749251,,1314254751,ok
+GE,GE,GE Aerospace,GE_Aerospace,Industrials,Aerospace & Defense,1957-03-04,0000040545,,1314254751,ok
+GEHC,GEHC,GE HealthCare,GE_HealthCare,Health Care,Health Care Equipment,2023-01-04,0001932393,,1314254751,ok
+GEV,GEV,GE Vernova,GE_Vernova,Industrials,Heavy Electrical Equipment,2024-04-02,0001996810,,1314254751,ok
+GEN,GEN,Gen Digital,Gen_Digital,Information Technology,Systems Software,2003-03-25,0000849399,,1314254751,ok
+GNRC,GNRC,Generac,Generac,Industrials,Electrical Components & Equipment,2021-03-22,0001474735,,1314254751,ok
+GD,GD,General Dynamics,General_Dynamics,Industrials,Aerospace & Defense,1957-03-04,0000040533,,1314254751,ok
+GIS,GIS,General Mills,General_Mills,Consumer Staples,Packaged Foods & Meats,1957-03-04,0000040704,,1314254751,ok
+GM,GM,General Motors,General_Motors,Consumer Discretionary,Automobile Manufacturers,2013-06-06,0001467858,,1314254751,ok
+GPC,GPC,Genuine Parts Company,Genuine_Parts_Company,Consumer Discretionary,Distributors,1973-12-31,0000040987,,1314254751,ok
+GILD,GILD,Gilead Sciences,Gilead_Sciences,Health Care,Biotechnology,2004-07-01,0000882095,,1314254751,ok
+GPN,GPN,Global Payments,Global_Payments,Financials,Transaction & Payment Processing Services,2016-04-25,0001123360,,1314254751,ok
+GL,GL,Globe Life,Globe_Life,Financials,Life & Health Insurance,1989-04-30,0000320335,,1314254751,ok
+GDDY,GDDY,GoDaddy,GoDaddy,Information Technology,Internet Services & Infrastructure,2024-06-24,0001609711,,1314254751,ok
+GS,GS,Goldman Sachs,Goldman_Sachs,Financials,Investment Banking & Brokerage,2002-07-22,0000886982,,1314254751,ok
+HAL,HAL,Halliburton,Halliburton,Energy,Oil & Gas Equipment & Services,1957-03-04,0000045012,,1314254751,ok
+HIG,HIG,The Hartford,The_Hartford,Financials,Property & Casualty Insurance,1957-03-04,0000874766,,1314254751,ok
+HAS,HAS,Hasbro,Hasbro,Consumer Discretionary,Leisure Products,1984-09-30,0000046080,,1314254751,ok
+HCA,HCA,HCA Healthcare,HCA_Healthcare,Health Care,Health Care Facilities,2015-01-27,0000860730,,1314254751,ok
+DOC,DOC,Healthpeak Properties,Healthpeak_Properties,Real Estate,Health Care REITs,2008-03-31,0000765880,,1314254751,ok
+HSIC,HSIC,Henry Schein,Henry_Schein,Health Care,Health Care Distributors,2015-03-17,0001000228,,1314254751,ok
+HSY,HSY,The Hershey Company,The_Hershey_Company,Consumer Staples,Packaged Foods & Meats,1957-03-04,0000047111,,1314254751,ok
+HPE,HPE,Hewlett Packard Enterprise,Hewlett_Packard_Enterprise,Information Technology,"Technology Hardware, Storage & Peripherals",2015-11-02,0001645590,,1314254751,ok
+HLT,HLT,Hilton Worldwide,Hilton_Worldwide,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",2017-06-19,0001585689,,1314254751,ok
+HOLX,HOLX,Hologic,Hologic,Health Care,Health Care Equipment,2016-03-30,0000859737,,1314254751,ok
+HD,HD,Home Depot,Home_Depot,Consumer Discretionary,Home Improvement Retail,1988-03-31,0000354950,,1314254751,ok
+HON,HON,Honeywell,Honeywell,Industrials,Industrial Conglomerates,1957-03-04,0000773840,,1314254751,ok
+HRL,HRL,Hormel Foods,Hormel_Foods,Consumer Staples,Packaged Foods & Meats,2009-03-04,0000048465,,1314254751,ok
+HST,HST,Host Hotels & Resorts,Host_Hotels_&_Resorts,Real Estate,Hotel & Resort REITs,2007-03-20,0001070750,,1314254751,ok
+HWM,HWM,Howmet Aerospace,Howmet_Aerospace,Industrials,Aerospace & Defense,2016-10-21,0000004281,,1314254751,ok
+HPQ,HPQ,HP Inc.,HP_Inc.,Information Technology,"Technology Hardware, Storage & Peripherals",1974-12-31,0000047217,,1314254751,ok
+HUBB,HUBB,Hubbell Incorporated,Hubbell_Incorporated,Industrials,Industrial Machinery & Supplies & Components,2023-10-18,0000048898,,1314254751,ok
+HUM,HUM,Humana,Humana,Health Care,Managed Health Care,2012-12-10,0000049071,,1314254751,ok
+HBAN,HBAN,Huntington Bancshares,Huntington_Bancshares,Financials,Regional Banks,1997-08-28,0000049196,,1314254751,ok
+HII,HII,Huntington Ingalls Industries,Huntington_Ingalls_Industries,Industrials,Aerospace & Defense,2018-01-03,0001501585,,1314254751,ok
+IBM,IBM,IBM,IBM,Information Technology,IT Consulting & Other Services,1957-03-04,0000051143,,1314254751,ok
+IEX,IEX,IDEX Corporation,IDEX_Corporation,Industrials,Industrial Machinery & Supplies & Components,2019-08-09,0000832101,,1314254751,ok
+IDXX,IDXX,Idexx Laboratories,Idexx_Laboratories,Health Care,Health Care Equipment,2017-01-05,0000874716,,1314254751,ok
+ITW,ITW,Illinois Tool Works,Illinois_Tool_Works,Industrials,Industrial Machinery & Supplies & Components,1986-02-28,0000049826,,1314254751,ok
+INCY,INCY,Incyte,Incyte,Health Care,Biotechnology,2017-02-28,0000879169,,1314254751,ok
+IR,IR,Ingersoll Rand,Ingersoll_Rand,Industrials,Industrial Machinery & Supplies & Components,2020-03-03,0001699150,,1314254751,ok
+PODD,PODD,Insulet Corporation,Insulet_Corporation,Health Care,Health Care Equipment,2023-03-15,0001145197,,1314254751,missing
+INTC,INTC,Intel,Intel,Information Technology,Semiconductors,1976-12-31,0000050863,,1314254751,ok
+IBKR,IBKR,Interactive Brokers,Interactive_Brokers,Financials,Investment Banking & Brokerage,2025-08-28,0001381197,,1314254751,ok
+ICE,ICE,Intercontinental Exchange,Intercontinental_Exchange,Financials,Financial Exchanges & Data,2007-09-26,0001571949,,1314254751,ok
+IFF,IFF,International Flavors & Fragrances,International_Flavors_&_Fragrances,Materials,Specialty Chemicals,1976-03-31,0000051253,,1314254751,ok
+IP,IP,International Paper,International_Paper,Materials,Paper & Plastic Packaging Products & Materials,1957-03-04,0000051434,,1314254751,ok
+IPG,IPG,The Interpublic Group of Companies,The_Interpublic_Group_of_Companies,Communication Services,Advertising,1992-10-01,0000051644,,1314254751,ok
+INTU,INTU,Intuit,Intuit,Information Technology,Application Software,2000-12-05,0000896878,,1314254751,ok
+ISRG,ISRG,Intuitive Surgical,Intuitive_Surgical,Health Care,Health Care Equipment,2008-06-02,0001035267,,1314254751,ok
+IVZ,IVZ,Invesco,Invesco,Financials,Asset Management & Custody Banks,2008-08-21,0000914208,,1314254751,ok
+INVH,INVH,Invitation Homes,Invitation_Homes,Real Estate,Single-Family Residential REITs,2022-09-19,0001687229,,1314254751,ok
+IQV,IQV,IQVIA,IQVIA,Health Care,Life Sciences Tools & Services,2017-08-29,0001478242,,1314254751,ok
+IRM,IRM,Iron Mountain (company),Iron_Mountain_(company),Real Estate,Other Specialized REITs,2009-01-06,0001020569,,1314254751,ok
+JBHT,JBHT,J.B. Hunt,J._B._Hunt,Industrials,Cargo Ground Transportation,2015-07-01,0000728535,,1314254751,ok
+JBL,JBL,Jabil,Jabil,Information Technology,Electronic Manufacturing Services,2023-12-18,0000898293,,1314254751,ok
+JKHY,JKHY,Jack Henry & Associates,Jack_Henry_&_Associates,Financials,Transaction & Payment Processing Services,2018-11-13,0000779152,,1314254751,ok
+J,J,Jacobs Solutions,Jacobs_Solutions,Industrials,Construction & Engineering,2007-10-26,0000052988,,1314254751,ok
+JNJ,JNJ,Johnson & Johnson,Johnson_&_Johnson,Health Care,Pharmaceuticals,1973-06-30,0000200406,,1314254751,ok
+JCI,JCI,Johnson Controls,Johnson_Controls,Industrials,Building Products,2010-08-27,0000833444,,1314254751,ok
+JPM,JPM,JPMorgan Chase,JPMorgan_Chase,Financials,Diversified Banks,1975-06-30,0000019617,,1314254751,ok
+K,K,Kellanova,Kellanova,Consumer Staples,Packaged Foods & Meats,1989-09-11,0000055067,,1314254751,ok
+KVUE,KVUE,Kenvue,Kenvue,Consumer Staples,Personal Care Products,2023-08-25,0001944048,,1314254751,ok
+KDP,KDP,Keurig Dr Pepper,Keurig_Dr_Pepper,Consumer Staples,Soft Drinks & Non-alcoholic Beverages,2022-06-21,0001418135,,1314254751,ok
+KEY,KEY,KeyCorp,KeyBank,Financials,Regional Banks,1994-03-01,0000091576,,1314254751,ok
+KEYS,KEYS,Keysight Technologies,Keysight,Information Technology,Electronic Equipment & Instruments,2018-11-06,0001601046,,1314254751,ok
+KMB,KMB,Kimberly-Clark,Kimberly-Clark,Consumer Staples,Household Products,1957-03-04,0000055785,,1314254751,ok
+KIM,KIM,Kimco Realty,Kimco_Realty,Real Estate,Retail REITs,2006-04-04,0000879101,,1314254751,ok
+KMI,KMI,Kinder Morgan,Kinder_Morgan,Energy,Oil & Gas Storage & Transportation,2012-05-25,0001506307,,1314254751,ok
+KKR,KKR,Kohlberg Kravis Roberts,KKR_&_Co.,Financials,Asset Management & Custody Banks,2024-06-24,0001404912,,1314254751,ok
+KLAC,KLAC,KLA Corporation,KLA_Corporation,Information Technology,Semiconductor Materials & Equipment,1997-09-30,0000319201,,1314254751,ok
+KHC,KHC,Kraft Heinz,Kraft_Heinz,Consumer Staples,Packaged Foods & Meats,2015-07-06,0001637459,,1314254751,ok
+KR,KR,Kroger,Kroger,Consumer Staples,Food Retail,1957-03-04,0000056873,,1314254751,ok
+LHX,LHX,L3Harris,L3Harris,Industrials,Aerospace & Defense,2008-09-22,0000202058,,1314254751,ok
+LH,LH,Labcorp,Labcorp,Health Care,Health Care Services,2004-11-01,0000920148,,1314254751,ok
+LRCX,LRCX,Lam Research,Lam_Research,Information Technology,Semiconductor Materials & Equipment,2012-06-29,0000707549,,1314254751,ok
+LW,LW,Lamb Weston,Lamb_Weston,Consumer Staples,Packaged Foods & Meats,2018-12-03,0001679273,,1314254751,ok
+LVS,LVS,Las Vegas Sands,Las_Vegas_Sands,Consumer Discretionary,Casinos & Gaming,2019-10-03,0001300514,,1314254751,ok
+LDOS,LDOS,Leidos,Leidos,Industrials,Diversified Support Services,2019-08-09,0001336920,,1314254751,ok
+LEN,LEN,Lennar,Lennar,Consumer Discretionary,Homebuilding,2005-10-04,0000920760,,1314254751,ok
+LII,LII,Lennox International,Lennox_International,Industrials,Building Products,2024-12-23,0001069202,,1314254751,ok
+LLY,LLY,Eli Lilly and Company,Eli_Lilly_and_Company,Health Care,Pharmaceuticals,1970-12-31,0000059478,,1314254751,ok
+LIN,LIN,Linde plc,Linde_plc,Materials,Industrial Gases,1992-07-01,0001707925,,1314254751,ok
+LYV,LYV,Live Nation Entertainment,Live_Nation_Entertainment,Communication Services,Movies & Entertainment,2019-12-23,0001335258,,1314254751,ok
+LKQ,LKQ,LKQ Corporation,LKQ_Corporation,Consumer Discretionary,Distributors,2016-05-23,0001065696,,1314254751,ok
+LMT,LMT,Lockheed Martin,Lockheed_Martin,Industrials,Aerospace & Defense,1957-03-04,0000936468,,1314254751,ok
+L,L,Loews Corporation,Loews_Corporation,Financials,Multi-line Insurance,1995-05-31,0000060086,,1314254751,ok
+LOW,LOW,Lowe's,Lowe's,Consumer Discretionary,Home Improvement Retail,1984-02-29,0000060667,,1314254751,ok
+LULU,LULU,Lululemon,Lululemon,Consumer Discretionary,"Apparel, Accessories & Luxury Goods",2023-10-18,0001397187,,1314254751,ok
+LYB,LYB,LyondellBasell,LyondellBasell,Materials,Specialty Chemicals,2012-09-05,0001489393,,1314254751,ok
+MTB,MTB,M&T Bank,M&T_Bank,Financials,Regional Banks,2004-02-23,0000036270,,1314254751,ok
+MPC,MPC,Marathon Petroleum,Marathon_Petroleum,Energy,Oil & Gas Refining & Marketing,2011-07-01,0001510295,,1314254751,ok
+MAR,MAR,Marriott International,Marriott_International,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",1998-05-29,0001048286,,1314254751,ok
+MMC,MMC,Marsh McLennan,Marsh_McLennan,Financials,Insurance Brokers,1987-08-31,0000062709,,1314254751,ok
+MLM,MLM,Martin Marietta Materials,Martin_Marietta_Materials,Materials,Construction Materials,2014-07-02,0000916076,,1314254751,ok
+MAS,MAS,Masco,Masco,Industrials,Building Products,1981-06-30,0000062996,,1314254751,ok
+MA,MA,Mastercard,Mastercard,Financials,Transaction & Payment Processing Services,2008-07-18,0001141391,,1314254751,ok
+MTCH,MTCH,Match Group,Match_Group,Communication Services,Interactive Media & Services,2021-09-20,0000891103,,1314254751,ok
+MKC,MKC,McCormick & Company,McCormick_&_Company,Consumer Staples,Packaged Foods & Meats,2003-03-20,0000063754,,1314254751,ok
+MCD,MCD,McDonald's,McDonald's,Consumer Discretionary,Restaurants,1970-06-30,0000063908,,1314254751,ok
+MCK,MCK,McKesson Corporation,McKesson,Health Care,Health Care Distributors,1999-01-13,0000927653,,1314254751,ok
+MDT,MDT,Medtronic,Medtronic,Health Care,Health Care Equipment,1986-10-31,0001613103,,1314254751,ok
+MRK,MRK,Merck & Co.,Merck_&_Co.,Health Care,Pharmaceuticals,1957-03-04,0000310158,,1314254751,ok
+META,META,Meta Platforms,Meta_Platforms,Communication Services,Interactive Media & Services,2013-12-23,0001326801,,1314254751,ok
+MET,MET,MetLife,MetLife,Financials,Life & Health Insurance,2000-12-11,0001099219,,1314254751,ok
+MTD,MTD,Mettler Toledo,Mettler_Toledo,Health Care,Life Sciences Tools & Services,2016-09-06,0001037646,,1314254751,ok
+MGM,MGM,MGM Resorts,MGM_Resorts_International,Consumer Discretionary,Casinos & Gaming,2017-07-26,0000789570,,1314254751,ok
+MCHP,MCHP,Microchip Technology,Microchip_Technology,Information Technology,Semiconductors,2007-09-07,0000827054,,1314254751,ok
+MU,MU,Micron Technology,Micron_Technology,Information Technology,Semiconductors,1994-09-27,0000723125,,1314254751,ok
+MSFT,MSFT,Microsoft,Microsoft,Information Technology,Systems Software,1994-06-01,0000789019,,1314254751,ok
+MAA,MAA,Mid-America Apartment Communities,Mid-America_Apartment_Communities,Real Estate,Multi-Family Residential REITs,2016-12-02,0000912595,,1314254751,ok
+MRNA,MRNA,Moderna,Moderna,Health Care,Biotechnology,2021-07-21,0001682852,,1314254751,ok
+MHK,MHK,Mohawk Industries,Mohawk_Industries,Consumer Discretionary,Home Furnishings,2013-12-23,0000851968,,1314254751,ok
+MOH,MOH,Molina Healthcare,Molina_Healthcare,Health Care,Managed Health Care,2022-03-02,0001179929,,1314254751,ok
+TAP,TAP,Molson Coors,Molson_Coors,Consumer Staples,Brewers,1976-06-30,0000024545,,1314254751,ok
+MDLZ,MDLZ,Mondelez International,Mondelez_International,Consumer Staples,Packaged Foods & Meats,2012-10-02,0001103982,,1314254751,ok
+MPWR,MPWR,Monolithic Power Systems,Monolithic_Power_Systems,Information Technology,Semiconductors,2021-02-12,0001280452,,1314254751,ok
+MNST,MNST,Monster Beverage,Monster_Beverage,Consumer Staples,Soft Drinks & Non-alcoholic Beverages,2012-06-28,0000865752,,1314254751,ok
+MCO,MCO,Moody's Corporation,Moody's_Corporation,Financials,Financial Exchanges & Data,1998-07-01,0001059556,,1314254751,ok
+MS,MS,Morgan Stanley,Morgan_Stanley,Financials,Investment Banking & Brokerage,1993-07-29,0000895421,,1314254751,ok
+MOS,MOS,The Mosaic Company,The_Mosaic_Company,Materials,Fertilizers & Agricultural Chemicals,2011-09-26,0001285785,,1314254751,ok
+MSI,MSI,Motorola Solutions,Motorola_Solutions,Information Technology,Communications Equipment,1957-03-04,0000068505,,1314254751,ok
+MSCI,MSCI,MSCI,MSCI,Financials,Financial Exchanges & Data,2018-04-04,0001408198,,1314254751,ok
+NDAQ,NDAQ,"Nasdaq, Inc.","Nasdaq,_Inc.",Financials,Financial Exchanges & Data,2008-10-22,0001120193,,1314254751,ok
+NTAP,NTAP,NetApp,NetApp,Information Technology,"Technology Hardware, Storage & Peripherals",1999-06-25,0001002047,,1314254751,ok
+NFLX,NFLX,"Netflix, Inc.","Netflix,_Inc.",Communication Services,Movies & Entertainment,2010-12-20,0001065280,,1314254751,ok
+NEM,NEM,Newmont,Newmont,Materials,Gold,1969-06-30,0001164727,,1314254751,ok
+NWSA,NWSA,News Corp,News_Corp,Communication Services,Publishing,2013-08-01,0001564708,,1314254751,ok
+NWS,NWS,News Corp,News_Corp,Communication Services,Publishing,2015-09-18,0001564708,NWSA,1314254751,ok
+NEE,NEE,NextEra Energy,NextEra_Energy,Utilities,Multi-Utilities,1976-06-30,0000753308,,1314254751,ok
+NKE,NKE,"Nike, Inc.","Nike,_Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",1988-11-30,0000320187,,1314254751,ok
+NI,NI,NiSource,NiSource,Utilities,Multi-Utilities,2000-11-02,0001111711,,1314254751,ok
+NDSN,NDSN,Nordson Corporation,Nordson_Corporation,Industrials,Industrial Machinery & Supplies & Components,2022-02-15,0000072331,,1314254751,ok
+NSC,NSC,Norfolk Southern Railway,Norfolk_Southern_Railway,Industrials,Rail Transportation,1957-03-04,0000702165,,1314254751,ok
+NTRS,NTRS,Northern Trust,Northern_Trust,Financials,Asset Management & Custody Banks,1998-01-30,0000073124,,1314254751,ok
+NOC,NOC,Northrop Grumman,Northrop_Grumman,Industrials,Aerospace & Defense,1957-03-04,0001133421,,1314254751,ok
+NCLH,NCLH,Norwegian Cruise Line Holdings,Norwegian_Cruise_Line_Holdings,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",2017-10-13,0001513761,,1314254751,ok
+NRG,NRG,NRG Energy,NRG_Energy,Utilities,Independent Power Producers & Energy Traders,2010-01-29,0001013871,,1314254751,ok
+NUE,NUE,Nucor,Nucor,Materials,Steel,1985-04-30,0000073309,,1314254751,ok
+NVDA,NVDA,Nvidia,Nvidia,Information Technology,Semiconductors,2001-11-30,0001045810,,1314254751,ok
+NVR,NVR,"NVR, Inc.","NVR,_Inc.",Consumer Discretionary,Homebuilding,2019-09-26,0000906163,,1314254751,ok
+NXPI,NXPI,NXP Semiconductors,NXP_Semiconductors,Information Technology,Semiconductors,2021-03-22,0001413447,,1314254751,ok
+ORLY,ORLY,O'Reilly Auto Parts,O'Reilly_Auto_Parts,Consumer Discretionary,Automotive Retail,2009-03-27,0000898173,,1314254751,ok
+OXY,OXY,Occidental Petroleum,Occidental_Petroleum,Energy,Oil & Gas Exploration & Production,1957-03-04,0000797468,,1314254751,ok
+ODFL,ODFL,Old Dominion Freight Line,Old_Dominion_Freight_Line,Industrials,Cargo Ground Transportation,2019-12-09,0000878927,,1314254751,ok
+OMC,OMC,Omnicom Group,Omnicom_Group,Communication Services,Advertising,1997-12-31,0000029989,,1314254751,ok
+ON,ON,onsemi,onsemi,Information Technology,Semiconductors,2022-06-21,0001097864,,1314254751,ok
+OKE,OKE,Oneok,Oneok,Energy,Oil & Gas Storage & Transportation,2010-03-15,0001039684,,1314254751,ok
+ORCL,ORCL,Oracle Corporation,Oracle_Corporation,Information Technology,Application Software,1989-08-31,0001341439,,1314254751,ok
+OTIS,OTIS,Otis Worldwide,Otis_Worldwide,Industrials,Industrial Machinery & Supplies & Components,2020-04-03,0001781335,,1314254751,ok
+PCAR,PCAR,Paccar,Paccar,Industrials,Construction Machinery & Heavy Transportation Equipment,1980-12-31,0000075362,,1314254751,ok
+PKG,PKG,Packaging Corporation of America,Packaging_Corporation_of_America,Materials,Paper & Plastic Packaging Products & Materials,2017-07-26,0000075677,,1314254751,ok
+PLTR,PLTR,Palantir Technologies,Palantir,Information Technology,Application Software,2024-09-23,0001321655,,1314254751,ok
+PANW,PANW,Palo Alto Networks,Palo_Alto_Networks,Information Technology,Systems Software,2023-06-20,0001327567,,1314254751,ok
+PSKY,PSKY,Paramount Skydance,Skydance,Communication Services,Movies & Entertainment,1994-09-30,0002041610,,1314254751,ok
+PH,PH,Parker Hannifin,Parker_Hannifin,Industrials,Industrial Machinery & Supplies & Components,1985-11-30,0000076334,,1314254751,ok
+PAYX,PAYX,Paychex,Paychex,Industrials,Human Resource & Employment Services,1998-10-01,0000723531,,1314254751,ok
+PAYC,PAYC,Paycom,Paycom,Industrials,Human Resource & Employment Services,2020-01-28,0001590955,,1314254751,ok
+PYPL,PYPL,PayPal,PayPal,Financials,Transaction & Payment Processing Services,2015-07-20,0001633917,,1314254751,ok
+PNR,PNR,Pentair,Pentair,Industrials,Industrial Machinery & Supplies & Components,2012-10-01,0000077360,,1314254751,ok
+PEP,PEP,PepsiCo,PepsiCo,Consumer Staples,Soft Drinks & Non-alcoholic Beverages,1957-03-04,0000077476,,1314254751,ok
+PFE,PFE,Pfizer,Pfizer,Health Care,Pharmaceuticals,1957-03-04,0000078003,,1314254751,ok
+PCG,PCG,PG&E,Pacific_Gas_and_Electric_Company,Utilities,Multi-Utilities,2022-10-03,0001004980,,1314254751,ok
+PM,PM,Philip Morris International,Philip_Morris_International,Consumer Staples,Tobacco,2008-03-31,0001413329,,1314254751,ok
+PSX,PSX,Phillips 66,Phillips_66,Energy,Oil & Gas Refining & Marketing,2012-05-01,0001534701,,1314254751,ok
+PNW,PNW,Pinnacle West Capital,Pinnacle_West_Capital,Utilities,Multi-Utilities,1999-10-04,0000764622,,1314254751,ok
+PNC,PNC,PNC Financial Services,PNC_Financial_Services,Financials,Diversified Banks,1988-04-30,0000713676,,1314254751,ok
+POOL,POOL,Pool Corporation,Pool_Corporation,Consumer Discretionary,Distributors,2020-10-07,0000945841,,1314254751,ok
+PPG,PPG,PPG Industries,PPG_Industries,Materials,Specialty Chemicals,1957-03-04,0000079879,,1314254751,ok
+PPL,PPL,PPL Corporation,PPL_Corporation,Utilities,Electric Utilities,2001-10-01,0000922224,,1314254751,ok
+PFG,PFG,Principal Financial Group,Principal_Financial_Group,Financials,Life & Health Insurance,2002-07-22,0001126328,,1314254751,ok
+PG,PG,Procter & Gamble,Procter_&_Gamble,Consumer Staples,Personal Care Products,1957-03-04,0000080424,,1314254751,ok
+PGR,PGR,Progressive Corporation,Progressive_Corporation,Financials,Property & Casualty Insurance,1997-08-04,0000080661,,1314254751,ok
+PLD,PLD,Prologis,Prologis,Real Estate,Industrial REITs,2003-07-17,0001045609,,1314254751,ok
+PRU,PRU,Prudential Financial,Prudential_Financial,Financials,Life & Health Insurance,2002-07-22,0001137774,,1314254751,ok
+PEG,PEG,Public Service Enterprise Group,Public_Service_Enterprise_Group,Utilities,Electric Utilities,1957-03-04,0000788784,,1314254751,ok
+PTC,PTC,PTC (software company),PTC_Inc.,Information Technology,Application Software,2021-04-20,0000857005,,1314254751,ok
+PSA,PSA,Public Storage,Public_Storage,Real Estate,Self-Storage REITs,2005-08-19,0001393311,,1314254751,ok
+PHM,PHM,PulteGroup,PulteGroup,Consumer Discretionary,Homebuilding,1984-04-30,0000822416,,1314254751,ok
+PWR,PWR,Quanta Services,Quanta_Services,Industrials,Construction & Engineering,2009-07-01,0001050915,,1314254751,ok
+QCOM,QCOM,Qualcomm,Qualcomm,Information Technology,Semiconductors,1999-07-22,0000804328,,1314254751,ok
+DGX,DGX,Quest Diagnostics,Quest_Diagnostics,Health Care,Health Care Services,2002-12-12,0001022079,,1314254751,ok
+RL,RL,Ralph Lauren Corporation,Ralph_Lauren_Corporation,Consumer Discretionary,"Apparel, Accessories & Luxury Goods",2007-02-02,0001037038,,1314254751,ok
+RJF,RJF,Raymond James Financial,Raymond_James_Financial,Financials,Investment Banking & Brokerage,2017-03-20,0000720005,,1314254751,ok
+RTX,RTX,RTX Corporation,RTX_Corporation,Industrials,Aerospace & Defense,1957-03-04,0000101829,,1314254751,ok
+O,O,Realty Income,Realty_Income,Real Estate,Retail REITs,2015-04-07,0000726728,,1314254751,ok
+REG,REG,Regency Centers,Regency_Centers,Real Estate,Retail REITs,2017-03-02,0000910606,,1314254751,ok
+REGN,REGN,Regeneron Pharmaceuticals,Regeneron_Pharmaceuticals,Health Care,Biotechnology,2013-05-01,0000872589,,1314254751,ok
+RF,RF,Regions Financial Corporation,Regions_Financial_Corporation,Financials,Regional Banks,1998-08-28,0001281761,,1314254751,ok
+RSG,RSG,Republic Services,Republic_Services,Industrials,Environmental & Facilities Services,2008-12-05,0001060391,,1314254751,ok
+RMD,RMD,ResMed,ResMed,Health Care,Health Care Equipment,2017-07-26,0000943819,,1314254751,ok
+RVTY,RVTY,Revvity,Revvity,Health Care,Health Care Equipment,1985-05-31,0000031791,,1314254751,ok
+HOOD,HOOD,Robinhood Markets,Robinhood_(company),Financials,Investment Banking & Brokerage,2025-09-22,0001783879,,1314254751,ok
+ROK,ROK,Rockwell Automation,Rockwell_Automation,Industrials,Electrical Components & Equipment,2000-03-12,0001024478,,1314254751,ok
+ROL,ROL,"Rollins, Inc.","Rollins,_Inc.",Industrials,Environmental & Facilities Services,2018-10-01,0000084839,,1314254751,ok
+ROP,ROP,Roper Technologies,Roper_Technologies,Information Technology,Electronic Equipment & Instruments,2009-12-23,0000882835,,1314254751,ok
+ROST,ROST,Ross Stores,Ross_Stores,Consumer Discretionary,Apparel Retail,2009-12-21,0000745732,,1314254751,ok
+RCL,RCL,Royal Caribbean Group,Royal_Caribbean_Group,Consumer Discretionary,"Hotels, Resorts & Cruise Lines",2014-12-05,0000884887,,1314254751,ok
+SPGI,SPGI,S&P Global,S&P_Global,Financials,Financial Exchanges & Data,1957-03-04,0000064040,,1314254751,ok
+CRM,CRM,Salesforce,Salesforce,Information Technology,Application Software,2008-09-15,0001108524,,1314254751,ok
+SBAC,SBAC,SBA Communications,SBA_Communications,Real Estate,Telecom Tower REITs,2017-09-01,0001034054,,1314254751,ok
+SLB,SLB,Schlumberger,SLB,Energy,Oil & Gas Equipment & Services,1957-03-04,0000087347,,1314254751,ok
+STX,STX,Seagate Technology,Seagate_Technology,Information Technology,"Technology Hardware, Storage & Peripherals",2012-07-02,0001137789,,1314254751,ok
+SRE,SRE,Sempra,Sempra,Utilities,Multi-Utilities,2017-03-17,0001032208,,1314254751,ok
+NOW,NOW,ServiceNow,ServiceNow,Information Technology,Systems Software,2019-11-21,0001373715,,1314254751,ok
+SHW,SHW,Sherwin-Williams,Sherwin-Williams,Materials,Specialty Chemicals,1964-06-30,0000089800,,1314254751,ok
+SPG,SPG,Simon Property Group,Simon_Property_Group,Real Estate,Retail REITs,2002-06-26,0001063761,,1314254751,ok
+SWKS,SWKS,Skyworks Solutions,Skyworks_Solutions,Information Technology,Semiconductors,2015-03-12,0000004127,,1314254751,ok
+SJM,SJM,The J.M. Smucker Company,The_J.M._Smucker_Company,Consumer Staples,Packaged Foods & Meats,2008-11-06,0000091419,,1314254751,ok
+SW,SW,Smurfit Westrock,Smurfit_Westrock,Materials,Paper & Plastic Packaging Products & Materials,2024-07-08,0002005951,,1314254751,ok
+SNA,SNA,Snap-on,Snap-on,Industrials,Industrial Machinery & Supplies & Components,1982-09-30,0000091440,,1314254751,ok
+SOLV,SOLV,Solventum,Solventum,Health Care,Health Care Technology,2024-04-01,0001964738,,1314254751,ok
+SO,SO,Southern Company,Southern_Company,Utilities,Electric Utilities,1957-03-04,0000092122,,1314254751,ok
+LUV,LUV,Southwest Airlines,Southwest_Airlines,Industrials,Passenger Airlines,1994-07-01,0000092380,,1314254751,ok
+SWK,SWK,Stanley Black & Decker,Stanley_Black_&_Decker,Industrials,Industrial Machinery & Supplies & Components,1982-09-30,0000093556,,1314254751,ok
+SBUX,SBUX,Starbucks,Starbucks,Consumer Discretionary,Restaurants,2000-06-07,0000829224,,1314254751,ok
+STT,STT,State Street Corporation,State_Street_Corporation,Financials,Asset Management & Custody Banks,2003-03-14,0000093751,,1314254751,ok
+STLD,STLD,Steel Dynamics,Steel_Dynamics,Materials,Steel,2022-12-22,0001022671,,1314254751,ok
+STE,STE,Steris,Steris,Health Care,Health Care Equipment,2019-12-23,0001757898,,1314254751,ok
+SYK,SYK,Stryker Corporation,Stryker_Corporation,Health Care,Health Care Equipment,2000-12-12,0000310764,,1314254751,ok
+SMCI,SMCI,Supermicro,Supermicro,Information Technology,"Technology Hardware, Storage & Peripherals",2024-03-18,0001375365,,1314254751,ok
+SYF,SYF,Synchrony Financial,Synchrony_Financial,Financials,Consumer Finance,2015-11-18,0001601712,,1314254751,ok
+SNPS,SNPS,Synopsys,Synopsys,Information Technology,Application Software,2017-03-16,0000883241,,1314254751,ok
+SYY,SYY,Sysco,Sysco,Consumer Staples,Food Distributors,1986-12-31,0000096021,,1314254751,ok
+TMUS,TMUS,T-Mobile US,T-Mobile_US,Communication Services,Wireless Telecommunication Services,2019-07-15,0001283699,,1314254751,ok
+TROW,TROW,T. Rowe Price,T._Rowe_Price,Financials,Asset Management & Custody Banks,2019-07-29,0001113169,,1314254751,ok
+TTWO,TTWO,Take-Two Interactive,Take-Two_Interactive,Communication Services,Interactive Home Entertainment,2018-03-19,0000946581,,1314254751,ok
+TPR,TPR,"Tapestry, Inc.","Tapestry,_Inc.",Consumer Discretionary,"Apparel, Accessories & Luxury Goods",2004-09-01,0001116132,,1314254751,ok
+TRGP,TRGP,Targa Resources,Targa_Resources,Energy,Oil & Gas Storage & Transportation,2022-10-12,0001389170,,1314254751,ok
+TGT,TGT,Target Corporation,Target_Corporation,Consumer Staples,Consumer Staples Merchandise Retail,1976-12-31,0000027419,,1314254751,ok
+TEL,TEL,TE Connectivity,TE_Connectivity,Information Technology,Electronic Manufacturing Services,2011-10-17,0001385157,,1314254751,ok
+TDY,TDY,Teledyne Technologies,Teledyne_Technologies,Information Technology,Electronic Equipment & Instruments,2020-06-22,0001094285,,1314254751,ok
+TER,TER,Teradyne,Teradyne,Information Technology,Semiconductor Materials & Equipment,2020-09-21,0000097210,,1314254751,ok
+TSLA,TSLA,"Tesla, Inc.","Tesla,_Inc.",Consumer Discretionary,Automobile Manufacturers,2020-12-21,0001318605,,1314254751,ok
+TXN,TXN,Texas Instruments,Texas_Instruments,Information Technology,Semiconductors,2001-03-12,0000097476,,1314254751,ok
+TPL,TPL,Texas Pacific Land Corporation,Texas_Pacific_Land_Corporation,Energy,Oil & Gas Exploration & Production,2024-11-26,0001811074,,1314254751,ok
+TXT,TXT,Textron,Textron,Industrials,Aerospace & Defense,1978-12-31,0000217346,,1314254751,ok
+TMO,TMO,Thermo Fisher Scientific,Thermo_Fisher_Scientific,Health Care,Life Sciences Tools & Services,2004-08-03,0000097745,,1314254751,ok
+TJX,TJX,TJX Companies,TJX,Consumer Discretionary,Apparel Retail,1985-09-30,0000109198,,1314254751,ok
+TKO,TKO,TKO Group Holdings,TKO_Group_Holdings,Communication Services,Movies & Entertainment,2025-03-24,0001973266,,1314254751,ok
+TTD,TTD,The Trade Desk,The_Trade_Desk,Communication Services,Advertising,2025-07-18,0001671933,,1314254751,ok
+TSCO,TSCO,Tractor Supply,Tractor_Supply_Company,Consumer Discretionary,Other Specialty Retail,2014-01-24,0000916365,,1314254751,ok
+TT,TT,Trane Technologies,Trane_Technologies,Industrials,Building Products,2010-11-17,0001466258,,1314254751,ok
+TDG,TDG,TransDigm Group,TransDigm_Group,Industrials,Aerospace & Defense,2016-06-03,0001260221,,1314254751,ok
+TRV,TRV,The Travelers Companies,The_Travelers_Companies,Financials,Property & Casualty Insurance,2002-08-21,0000086312,,1314254751,ok
+TRMB,TRMB,Trimble Inc.,Trimble_Inc.,Information Technology,Electronic Equipment & Instruments,2021-01-21,0000864749,,1314254751,ok
+TFC,TFC,Truist Financial,Truist,Financials,Diversified Banks,1997-12-04,0000092230,,1314254751,ok
+TYL,TYL,Tyler Technologies,Tyler_Technologies,Information Technology,Application Software,2020-06-22,0000860731,,1314254751,ok
+TSN,TSN,Tyson Foods,Tyson_Foods,Consumer Staples,Packaged Foods & Meats,2005-08-10,0000100493,,1314254751,ok
+USB,USB,U.S. Bancorp,U.S._Bancorp,Financials,Diversified Banks,1999-11-01,0000036104,,1314254751,ok
+UBER,UBER,Uber,Uber,Industrials,Passenger Ground Transportation,2023-12-18,0001543151,,1314254751,ok
+UDR,UDR,"UDR, Inc.","UDR,_Inc.",Real Estate,Multi-Family Residential REITs,2016-03-07,0000074208,,1314254751,ok
+ULTA,ULTA,Ulta Beauty,Ulta_Beauty,Consumer Discretionary,Other Specialty Retail,2016-04-18,0001403568,,1314254751,ok
+UNP,UNP,Union Pacific Corporation,Union_Pacific_Corporation,Industrials,Rail Transportation,1957-03-04,0000100885,,1314254751,ok
+UAL,UAL,United Airlines Holdings,United_Airlines,Industrials,Passenger Airlines,2015-09-03,0000100517,,1314254751,ok
+UPS,UPS,United Parcel Service,United_Parcel_Service,Industrials,Air Freight & Logistics,2002-07-22,0001090727,,1314254751,ok
+URI,URI,United Rentals,United_Rentals,Industrials,Trading Companies & Distributors,2014-09-20,0001067701,,1314254751,ok
+UNH,UNH,UnitedHealth Group,UnitedHealth_Group,Health Care,Managed Health Care,1994-07-01,0000731766,,1314254751,ok
+UHS,UHS,Universal Health Services,Universal_Health_Services,Health Care,Health Care Facilities,2014-09-20,0000352915,,1314254751,ok
+VLO,VLO,Valero Energy,Valero_Energy,Energy,Oil & Gas Refining & Marketing,2002-12-20,0001035002,,1314254751,ok
+VTR,VTR,Ventas (company),Ventas_(company),Real Estate,Health Care REITs,2009-03-04,0000740260,,1314254751,ok
+VLTO,VLTO,Veralto,Veralto,Industrials,Environmental & Facilities Services,2023-10-02,0001967680,,1314254751,ok
+VRSN,VRSN,Verisign,Verisign,Information Technology,Internet Services & Infrastructure,2006-02-01,0001014473,,1314254751,ok
+VRSK,VRSK,Verisk Analytics,Verisk_Analytics,Industrials,Research & Consulting Services,2015-10-08,0001442145,,1314254751,ok
+VZ,VZ,Verizon,Verizon,Communication Services,Integrated Telecommunication Services,1983-11-30,0000732712,,1314254751,ok
+VRTX,VRTX,Vertex Pharmaceuticals,Vertex_Pharmaceuticals,Health Care,Biotechnology,2013-09-23,0000875320,,1314254751,ok
+VTRS,VTRS,Viatris,Viatris,Health Care,Pharmaceuticals,2004-04-23,0001792044,,1314254751,ok
+VICI,VICI,Vici Properties,Vici_Properties,Real Estate,Hotel & Resort REITs,2022-06-08,0001705696,,1314254751,ok
+V,V,Visa Inc.,Visa_Inc.,Financials,Transaction & Payment Processing Services,2009-12-21,0001403161,,1314254751,ok
+VST,VST,Vistra Corp,Vistra_Corp.,Utilities,Electric Utilities,2024-05-08,0001692819,,1314254751,ok
+VMC,VMC,Vulcan Materials Company,Vulcan_Materials_Company,Materials,Construction Materials,1999-06-30,0001396009,,1314254751,ok
+WRB,WRB,W. R. Berkley Corporation,W._R._Berkley_Corporation,Financials,Property & Casualty Insurance,2019-12-05,0000011544,,1314254751,ok
+GWW,GWW,W. W. Grainger,W._W._Grainger,Industrials,Industrial Machinery & Supplies & Components,1981-06-30,0000277135,,1314254751,ok
+WAB,WAB,Wabtec,Wabtec,Industrials,Construction Machinery & Heavy Transportation Equipment,2019-02-27,0000943452,,1314254751,ok
+WMT,WMT,Walmart,Walmart,Consumer Staples,Consumer Staples Merchandise Retail,1982-08-31,0000104169,,1314254751,ok
+DIS,DIS,The Walt Disney Company,The_Walt_Disney_Company,Communication Services,Movies & Entertainment,1976-06-30,0001744489,,1314254751,ok
+WBD,WBD,Warner Bros. Discovery,Warner_Bros._Discovery,Communication Services,Broadcasting,2022-04-11,0001437107,,1314254751,ok
+WM,WM,"Waste Management, Inc.","Waste_Management,_Inc.",Industrials,Environmental & Facilities Services,1998-08-31,0000823768,,1314254751,ok
+WAT,WAT,Waters Corporation,Waters_Corporation,Health Care,Life Sciences Tools & Services,2002-01-02,0001000697,,1314254751,ok
+WEC,WEC,WEC Energy Group,WEC_Energy_Group,Utilities,Electric Utilities,2008-10-31,0000783325,,1314254751,ok
+WFC,WFC,Wells Fargo,Wells_Fargo,Financials,Diversified Banks,1976-06-30,0000072971,,1314254751,ok
+WELL,WELL,Welltower,Welltower,Real Estate,Health Care REITs,2009-01-30,0000766704,,1314254751,ok
+WST,WST,West Pharmaceutical Services,West_Pharmaceutical_Services,Health Care,Health Care Supplies,2020-05-22,0000105770,,1314254751,ok
+WDC,WDC,Western Digital,Western_Digital,Information Technology,"Technology Hardware, Storage & Peripherals",2009-07-01,0000106040,,1314254751,ok
+WY,WY,Weyerhaeuser,Weyerhaeuser,Real Estate,Timber REITs,1979-10-01,0000106535,,1314254751,ok
+WSM,WSM,"Williams-Sonoma, Inc.","Williams-Sonoma,_Inc.",Consumer Discretionary,Homefurnishing Retail,2025-03-24,0000719955,,1314254751,ok
+WMB,WMB,Williams Companies,Williams_Companies,Energy,Oil & Gas Storage & Transportation,1975-03-31,0000107263,,1314254751,ok
+WTW,WTW,Willis Towers Watson,Willis_Towers_Watson,Financials,Insurance Brokers,2016-01-05,0001140536,,1314254751,ok
+WDAY,WDAY,"Workday, Inc.","Workday,_Inc.",Information Technology,Application Software,2024-12-23,0001327811,,1314254751,ok
+WYNN,WYNN,Wynn Resorts,Wynn_Resorts,Consumer Discretionary,Casinos & Gaming,2008-11-14,0001174922,,1314254751,ok
+XEL,XEL,Xcel Energy,Xcel_Energy,Utilities,Multi-Utilities,1957-03-04,0000072903,,1314254751,ok
+XYL,XYL,Xylem Inc.,Xylem_Inc.,Industrials,Industrial Machinery & Supplies & Components,2011-11-01,0001524472,,1314254751,ok
+YUM,YUM,Yum! Brands,Yum!_Brands,Consumer Discretionary,Restaurants,1997-10-06,0001041061,,1314254751,ok
+ZBRA,ZBRA,Zebra Technologies,Zebra_Technologies,Information Technology,Electronic Equipment & Instruments,2019-12-23,0000877212,,1314254751,ok
+ZBH,ZBH,Zimmer Biomet,Zimmer_Biomet,Health Care,Health Care Equipment,2001-08-07,0001136869,,1314254751,ok
+ZTS,ZTS,Zoetis,Zoetis,Health Care,Pharmaceuticals,2013-06-21,0001555280,,1314254751,ok

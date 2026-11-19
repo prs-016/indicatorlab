@@ -1,4 +1,6 @@
-"""Synthetic checks of the Week 3 complex-strategy simulator and evaluation (no network)."""
+"""Synthetic checks of the complex-strategy (S1-S7) simulator and evaluation (no network)."""
+import os
+
 import numpy as np
 import pandas as pd
 import pytest
@@ -103,10 +105,26 @@ def test_market_gate_fires_on_a_market_wide_attention_jump():
     assert gate.iloc[-1] and not gate.iloc[:52].any()  # undefined history leaves the gate open
 
 
+needs_vibe = pytest.mark.skipif(not os.environ.get("VIBE_TRADING_ROOT"),
+                                reason="VIBE_TRADING_ROOT (a Vibe-Trading checkout) is not set")
+
+
+@needs_vibe
 def test_deflated_sharpe_falls_as_trials_grow():
     r = pd.Series(np.random.default_rng(0).normal(0.001, 0.01, 1000))
     trials = list(np.random.default_rng(1).normal(0, 0.5, 30))
     assert wc.deflated_sharpe(r, trials, 5) > wc.deflated_sharpe(r, trials, 100)
+
+
+@needs_vibe
+def test_deflated_sharpe_is_the_bailey_lopez_de_prado_formula_on_daily_sharpes():
+    from scipy.stats import kurtosis, norm, skew
+    r = pd.Series(np.random.default_rng(2).normal(0.0008, 0.01, 750))
+    trials, n = list(np.random.default_rng(3).normal(0.3, 0.6, 40)), 40
+    sr, g = r.mean() / r.std(), 0.5772156649015329
+    sr0 = np.std(np.asarray(trials) / np.sqrt(252)) * ((1 - g) * norm.ppf(1 - 1 / n) + g * norm.ppf(1 - 1 / (n * np.e)))
+    denom = np.sqrt(1 - skew(r) * sr + (kurtosis(r, fisher=False) - 1) / 4 * sr ** 2)
+    assert np.isclose(wc.deflated_sharpe(r, trials, n), norm.cdf((sr - sr0) * np.sqrt(len(r) - 1) / denom))
 
 
 def test_keep_needs_every_pass_mark():
@@ -166,3 +184,75 @@ def test_s4_enters_on_rising_sentiment_and_exits_after_two_weaker_weeks():
     assert held.max() < m.weeks.at[weeks[53], "signal"]               # sold on the 2nd weak scored week
     assert w.loc[m.weeks.at[weeks[52], "signal"]] > 0
     assert "BBB" not in m.weekly["n_scored"].columns                  # only stocks with sentiment trade
+
+
+def with_sentiment(m, net=0.2, n=3):
+    idx = m.weekly["abn_views"].index
+    m.weekly["sent_net"] = pd.DataFrame(net, index=idx, columns=TICKERS, dtype=float)
+    m.weekly["n_scored"] = pd.DataFrame(n, index=idx, columns=TICKERS, dtype=float)
+    return m
+
+
+def at(m, k):
+    return m.weeks.index[k], m.weeks["friday"].iloc[k]
+
+
+def test_market_sentiment_shock_needs_ten_scored_stocks_and_a_drop_below_one_sd():
+    weeks = pd.date_range("2020-01-06", periods=30, freq="7D")
+    cols = [f"T{i}" for i in range(10)]
+    net = pd.DataFrame(np.repeat(0.1 + 0.01 * (np.arange(30) % 2), 10).reshape(30, 10), index=weeks, columns=cols)
+    n = pd.DataFrame(3, index=weeks, columns=cols)
+    net.iloc[27] = -0.5
+    net.iloc[29] = -0.5
+    n.iloc[29, :2] = 0                                   # same drop, but only 8 stocks scored
+    shock = wc.market_sentiment_shock(net.where(n > 0), n)
+    assert shock.iloc[27] and not shock.iloc[:27].any() and not shock.iloc[29]
+
+
+def test_s5_buys_losers_with_attention_and_negative_tone_and_holds_two_weeks():
+    m = with_sentiment(make_market(), net=-0.3)
+    idx = m.weekly["abn_views"].index
+    m.weekly["abn_views"] = pd.DataFrame([[3.0, 2.0, 1.0]] * len(idx), index=idx, columns=TICKERS)
+    m.ma200 = m.close[TICKERS] * 0                       # every stock in a 200-day uptrend
+    s = wc.BadNewsReversal(loosen=2)                     # top 50% of views: AAA and BBB
+    week, fri = at(m, 50)
+    m.abn_ret.loc[week] = [0.01, -0.05, -0.10]           # AAA rose; CCC fell most but has low attention
+    assert s.rebalance(m, week, fri, {}, False) == {"BBB"}
+    held = {"BBB": wc.Position(0, 1.0, 1.0)}
+    m.weekly["sent_net"].loc[:, :] = 0.2                 # no new entries from here
+    assert s.rebalance(m, *at(m, 51), held, False) == {"BBB"}
+    assert s.rebalance(m, *at(m, 52), held, False) == set()
+
+
+def test_s6_drops_negative_tone_crowded_and_recent_legal_news_stocks_using_past_weeks_only():
+    m = with_sentiment(make_market(n_days=400))
+    s = wc.PositiveToneMomentum()
+    week, fri = at(m, 70)
+    wi = m.weekly["bad_news"].index.get_loc(week)
+    m.weekly["sent_net"].loc[:, "BBB"] = -0.2
+    m.weekly["views_ratio"].loc[week, "CCC"] = 2.0
+    m.weekly["bad_news"].iloc[wi + 1, 0] = True          # AAA's legal news comes a week later: not known yet
+    assert s.rebalance(m, week, fri, {}, True) == {"AAA"}
+    m.weekly["views_ratio"].loc[week, "CCC"] = 1.0
+    m.weekly["bad_news"].iloc[wi - 4, 2] = True          # 4 weeks back: outside W-3..W
+    assert s.rebalance(m, week, fri, {}, True) == {"AAA", "CCC"}
+    m.weekly["bad_news"].iloc[wi - 3, 2] = True
+    assert s.rebalance(m, week, fri, {}, True) == {"AAA"}
+
+
+def test_s7_quarters_exposure_on_both_market_filters_and_blocks_a_flagged_stock_for_four_weeks():
+    m = with_sentiment(make_market(n_days=400, spy_trend=0.003), net=np.nan, n=0)
+    s = wc.TrendRiskFiltered()
+    week, fri = at(m, 70)
+    assert m.regime_up(fri)
+    m.att_z.loc[week], m.sent_shock.loc[week] = 2.0, True
+    assert s.exposure(m, week, fri) == pytest.approx(0.25)
+    assert wc.TrendRiskFiltered(off=frozenset({"market_sent_shock"})).exposure(m, week, fri) == pytest.approx(0.5)
+    m.ma200, m.ret26 = m.close[TICKERS] * 0, m.close[TICKERS] * 0 + 0.1
+    wi = m.weekly["spike"].index.get_loc(week)
+    m.weekly["spike"].iloc[wi - 3, 0] = True
+    m.weekly["sent_net"].iloc[wi - 3, 0] = -0.1          # AAA: spike on negative tone 3 weeks ago
+    assert s.rebalance(m, week, fri, {}, False) == {"BBB", "CCC"}
+    assert s.rebalance(m, *at(m, 71), {}, False) == set(TICKERS)
+    m.weekly["sent_net"].iloc[wi - 3, 0] = np.nan       # an unscored week never flags
+    assert s.rebalance(m, week, fri, {}, False) == set(TICKERS)

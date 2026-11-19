@@ -91,10 +91,10 @@ def build(market: str = "US") -> dict[str, pd.DataFrame]:
     """Write the wiki_*.parquet tables and prices_weekly.parquet from the pipeline's files."""
     from src.wiki_pipeline import (
         PROCESSED,
-        RAW,
         ROOT,
         article_titles,
         cache_stem,
+        period_dir,
         shared_path,
         universe,
     )
@@ -108,11 +108,11 @@ def build(market: str = "US") -> dict[str, pd.DataFrame]:
     rows, summaries = [], []
     for ticker, titles in universe(market).items():
         for lang, title in article_titles(titles):   # the cached research-period revisions, no network
-            f = RAW / "revisions_research" / lang / f"{cache_stem(ticker, titles, lang, title)}.csv"
+            f = period_dir("revisions", "research") / lang / f"{cache_stem(ticker, titles, lang, title)}.csv"
             if f.exists():
                 revs = pd.read_csv(f, parse_dates=["timestamp"]).assign(title=title)
                 summaries.append(edit_summaries(revs, ticker, market, holdout))
-        views = [pd.read_csv(RAW / f"views_{p}" / f"{ticker}.csv", index_col=0, parse_dates=True)[ticker]
+        views = [pd.read_csv(period_dir("views", p) / f"{ticker}.csv", index_col=0, parse_dates=True)[ticker]
                  for p in ("research", "recent")]
         rows.append(current_record(pd.concat(views), ticker, market))
     cur = pd.DataFrame(rows).sort_values("ratio", ascending=False).reset_index(drop=True)

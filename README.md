@@ -82,7 +82,7 @@ pytest                            # tests, no network needed
 - **Spike rule:** baseline = median of the previous 8 weeks; abnormal = log((views + 1) / (baseline + 1));
   spike if views are at least 1.5x the baseline and the robust z-score of abnormal, against the median and
   MAD of *earlier* weeks only (26 needed), is at least 2. Weeks are labelled by their Monday.
-- **Holdout:** research uses data before 2025-10-01; recent data sits in separate `*_recent` files.
+- **Holdout:** research uses data before `holdout_start` (2026-11-01); recent data sits in separate `*_recent` files.
   Strategy tests use the team split: train Jun 2016 to Dec 2021, test Jan 2022 to Sep 2025.
 - **Sentiment:** FinBERT through the scorer shared with Reddit (`src/sentiment/finbert_scorer.py`).
 - Results: [`docs/wikipedia/week2_report.md`](docs/wikipedia/week2_report.md),

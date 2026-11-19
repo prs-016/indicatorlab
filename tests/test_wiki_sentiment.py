@@ -70,6 +70,23 @@ def test_week_sentences_caches_and_resumes(tmp_path, monkeypatch):
     assert calls == [(1, 2), (2, 3)] and out["sentence"].tolist()[-1] == ""
 
 
+def test_week_sentences_starts_a_new_cache_from_an_old_one_without_touching_it(tmp_path, monkeypatch):
+    calls = []
+    monkeypatch.setattr(wiki_sentiment, "compare", lambda a, b, lang="en": calls.append((a, b)) or "")
+    revs = pd.DataFrame({"revid": [1, 2, 3, 4],
+                         "timestamp": pd.to_datetime(["2024-01-03", "2024-01-09", "2024-01-16", "2024-01-23"])})
+    weeks = pd.date_range("2024-01-08", periods=3, freq="7D")
+    old = tmp_path / "old.csv"
+    old.write_text("ticker,week,from_rev,to_rev,sentence\n"
+                   "X,2024-01-08,1,2,Revenue grew to a record.\n"
+                   "X,2024-01-15,9,3,From a revision pair that no longer matches.\n")
+    before = old.read_text()
+    out = week_sentences("X", revs, weeks, tmp_path / "new.csv", seed_file=old)
+    assert calls == [(2, 3), (3, 4)]                                 # week 1 reused; week 2's pair changed
+    assert out["sentence"].tolist()[0] == "Revenue grew to a record." and old.read_text() == before
+    assert (tmp_path / "new.csv").exists()
+
+
 def test_score_uses_the_shared_scorer_columns(monkeypatch):
     from src.sentiment.finbert_scorer import FinbertScorer
     monkeypatch.setattr(FinbertScorer, "score", lambda self, texts: pd.DataFrame(

@@ -5,10 +5,14 @@
 Research data (before the holdout, config `holdout_start`) and recent data are stored in separate
 files; the recent files are for the dashboard and the last-3-weeks spike check only.
 
-  data/raw/wikipedia/views_{research,recent}/<ticker>.csv      daily views: the stock's total, then each article
-  data/raw/wikipedia/revisions_{research,recent}/<lang>/<ticker>.csv  revisions, edit summaries
+  data/raw/wikipedia/views_{research,recent}_<tag>/<ticker>.csv      daily views: the stock's total, then each article
+  data/raw/wikipedia/revisions_{research,recent}_<tag>/<lang>/<ticker>.csv  revisions, edit summaries
                                                    (a stock's 2nd+ article in a language: <ticker>__<title>.csv)
-  data/raw/wikipedia/prices/daily_close_<market>.csv           Yahoo adjusted closes
+  data/raw/wikipedia/prices/daily_close_<market>_<tag>.csv           Yahoo adjusted closes
+
+<tag> is the research cutoff (`holdout_start`, e.g. 20261101; see `cache_tag`). Moving the cutoff starts
+new raw caches and leaves the old ones as they were, so results built under an earlier cutoff can still
+be reproduced. Folders without a tag were written under the first cutoff (2025-10-01).
   data/shared/attention_weekly_wikipedia_{research,recent}.csv  shared weekly table (team format)
   data/shared/attention_weekly_wikipedia.csv                   both periods together, for the Reddit code
   data/processed/wikipedia/weekly_edits_{research,recent}.csv  edits, editors, bytes, reverts, tags
@@ -37,6 +41,26 @@ SHARED_COLS = ["week", "ticker", "market", "source", "posts", "comments", "upvot
 EXTRA_COLS = ["abnormal", "rz"]
 
 log = logging.getLogger("wiki_pipeline")
+
+
+def cache_tag() -> str:
+    """Suffix of every raw cache name: the research cutoff (config `holdout_start`) as YYYYMMDD."""
+    return f"{config.holdout_start():%Y%m%d}"
+
+
+def period_dir(kind: str, period: str, raw: Path = RAW) -> Path:
+    """Raw cache folder of one kind (views, revisions, diffs) and period under the current cutoff."""
+    return raw / f"{kind}_{period}_{cache_tag()}"
+
+
+def untagged_dir(kind: str, period: str, raw: Path = RAW) -> Path:
+    """The same folder as written before caches were tagged (first cutoff); only ever read."""
+    return raw / f"{kind}_{period}"
+
+
+def prices_path(market: str, raw: Path = RAW) -> Path:
+    """Cached daily adjusted closes of one market under the current cutoff."""
+    return raw / "prices" / f"daily_close_{market}_{cache_tag()}.csv"
 
 
 def shared_path(period: str) -> Path:
@@ -112,7 +136,7 @@ def load_views(ticker: str, titles: dict, win: dict, starts: dict[str, pd.Timest
     before the requested end (so a weekly rerun picks up the new weeks).
     """
     keys = [title_key(lang, t) for lang, t in article_titles(titles)]
-    files = {p: raw / f"views_{p}" / f"{ticker}.csv" for p in PERIODS}
+    files = {p: period_dir("views", p, raw) / f"{ticker}.csv" for p in PERIODS}
     cached = {p: pd.read_csv(f, index_col=0, parse_dates=True) for p, f in files.items() if f.exists()}
     if len(keys) == 1:   # a cache written before per-article columns: its one column is that article
         cached = {p: c if keys[0] in c else c.iloc[:, :1].set_axis(keys, axis=1) for p, c in cached.items()}
@@ -144,10 +168,10 @@ def title_revisions(ticker: str, titles: dict, win: dict, raw: Path = RAW) -> pd
     for p, (a, b) in win.items():
         for lang, title in article_titles(titles):
             stem = cache_stem(ticker, titles, lang, title)
-            f = raw / f"revisions_{p}" / lang / f"{stem}.csv"
+            f = period_dir("revisions", p, raw) / lang / f"{stem}.csv"
             if p == "recent" and f.exists() and _views_behind(raw, ticker, b):
                 f.unlink()
-            revs.append(load_revisions(stem, title, a, b, raw / f"revisions_{p}" / lang, lang)
+            revs.append(load_revisions(stem, title, a, b, period_dir("revisions", p, raw) / lang, lang)
                         .assign(lang=lang, title=title, key=title_key(lang, title)))
     # the earlier period's last revision is the later period's `before_start`; keep one copy
     df = pd.concat(revs).drop_duplicates(["key", "revid"]).sort_values("timestamp")
@@ -170,13 +194,13 @@ def load_edits(ticker: str, titles: dict, win: dict, raw: Path = RAW) -> pd.Data
 
 def _views_behind(raw: Path, ticker: str, end: pd.Timestamp) -> bool:
     """True when the recent views cache was written for an earlier end date than `end`."""
-    f = raw / "views_recent" / f"{ticker}.csv"
+    f = period_dir("views", "recent", raw) / f"{ticker}.csv"
     return not f.exists() or _cached_end(f) < end
 
 
 def load_prices(tickers: list[str], market: str, end: pd.Timestamp, raw: Path = RAW) -> pd.DataFrame:
     """Daily adjusted closes of the tickers and the market benchmark, cached."""
-    f = raw / "prices" / f"daily_close_{market}.csv"
+    f = prices_path(market, raw)
     symbols = tickers + [config.benchmark(market)]
     if f.exists():
         df = pd.read_csv(f, index_col=0, parse_dates=True)

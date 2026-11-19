@@ -13,6 +13,7 @@ from src.wiki_pipeline import (
     attention_rows,
     cache_stem,
     last_complete_sunday,
+    period_dir,
     split_period,
     universe,
     windows,
@@ -20,9 +21,9 @@ from src.wiki_pipeline import (
 
 
 def test_windows_split_at_the_holdout():
-    w = windows(pd.Timestamp("2026-10-25"))
-    assert w["research"] == (pd.Timestamp("2015-07-01"), pd.Timestamp("2025-09-30"))
-    assert w["recent"] == (pd.Timestamp("2025-10-01"), pd.Timestamp("2026-10-25"))
+    w = windows(pd.Timestamp("2026-11-15"))
+    assert w["research"] == (pd.Timestamp("2015-07-01"), pd.Timestamp("2026-10-31"))
+    assert w["recent"] == (pd.Timestamp("2026-11-01"), pd.Timestamp("2026-11-15"))
 
 
 def test_last_complete_sunday():
@@ -49,9 +50,9 @@ def test_attention_rows_are_in_the_shared_format():
 
 
 def test_split_period_puts_the_straddling_week_in_recent():
-    df = pd.DataFrame({"week": pd.to_datetime(["2025-09-22", "2025-09-29", "2025-10-06"])})
+    df = pd.DataFrame({"week": pd.to_datetime(["2026-10-19", "2026-10-26", "2026-11-02"])})
     parts = split_period(df)
-    assert parts["research"]["week"].tolist() == [pd.Timestamp("2025-09-22")]
+    assert parts["research"]["week"].tolist() == [pd.Timestamp("2026-10-19")]   # Oct 26 week ends Nov 1
     assert len(parts["recent"]) == 2
 
 
@@ -120,7 +121,7 @@ def test_load_views_splits_periods_and_refreshes_a_stale_recent_file(tmp_path, m
            "recent": (pd.Timestamp("2025-10-01"), pd.Timestamp("2025-10-12"))}
     v = wiki_pipeline.load_views("X", {"en": "X"}, win, raw=tmp_path)
     assert len(v) == 42 and v.index.is_monotonic_increasing
-    research = pd.read_csv(tmp_path / "views_research" / "X.csv", index_col=0, parse_dates=True)
+    research = pd.read_csv(period_dir("views", "research", tmp_path) / "X.csv", index_col=0, parse_dates=True)
     assert research.index.max() == pd.Timestamp("2025-09-30")
     wiki_pipeline.load_views("X", {"en": "X"}, win, raw=tmp_path)                 # cached: no new pull
     later = {**win, "recent": (win["recent"][0], pd.Timestamp("2025-10-19"))}
@@ -134,11 +135,11 @@ def test_load_edits_keeps_one_copy_of_the_boundary_revision(tmp_path):
     research = cols + "1,2025-08-31 10:00:00,a,1000,,True\n2,2025-09-10 10:00:00,b,1050,earnings,False\n"
     recent = cols + "2,2025-09-10 10:00:00,b,1050,earnings,True\n3,2025-10-02 10:00:00,c,1020,rv,False\n"
     for p, text in (("research", research), ("recent", recent)):
-        d = tmp_path / f"revisions_{p}" / "en"
+        d = period_dir("revisions", p, tmp_path) / "en"
         d.mkdir(parents=True)
         (d / "X.csv").write_text(text)
-        (tmp_path / f"views_{p}").mkdir()
-    (tmp_path / "views_recent" / "X.csv").write_text("date,X\n2025-10-12,1\n")
+        (period_dir("views", p, tmp_path)).mkdir()
+    (period_dir("views", "recent", tmp_path) / "X.csv").write_text("date,X\n2025-10-12,1\n")
     win = {"research": (pd.Timestamp("2025-09-01"), pd.Timestamp("2025-09-30")),
            "recent": (pd.Timestamp("2025-10-01"), pd.Timestamp("2025-10-12"))}
     e = load_edits("X", {"en": "X"}, win, raw=tmp_path)
@@ -178,11 +179,11 @@ def test_load_views_sums_articles_from_their_start_and_reuses_an_old_single_colu
     v = wiki_pipeline.load_views("X", {"en": ["A", "B"]}, win, starts, raw=tmp_path)
     assert v.index.min() == pd.Timestamp("2025-09-08")                        # before both starts: dropped
     assert v.loc["2025-09-14"] == 1 and v.loc["2025-09-15"] == 11 and pulls == ["A", "B"]
-    cached = pd.read_csv(tmp_path / "views_recent" / "X.csv", index_col=0)
+    cached = pd.read_csv(period_dir("views", "recent", tmp_path) / "X.csv", index_col=0)
     assert list(cached.columns) == ["X", "en:A", "en:B"]
     for p in ("research", "recent"):                                         # cache from before this change
-        f = tmp_path / f"views_{p}" / "Y.csv"
-        cached = pd.read_csv(tmp_path / f"views_{p}" / "X.csv", index_col=0)
+        f = period_dir("views", p, tmp_path) / "Y.csv"
+        cached = pd.read_csv(period_dir("views", p, tmp_path) / "X.csv", index_col=0)
         cached[["en:A"]].rename(columns={"en:A": "Y"}).to_csv(f)
     assert wiki_pipeline.load_views("Y", {"en": "A"}, win, raw=tmp_path).eq(1).all() and len(pulls) == 2
 
@@ -193,12 +194,20 @@ def test_load_edits_drops_edits_from_before_the_page_was_an_article(tmp_path):
     research = cols + ("1,2019-08-31 10:00:00,a,80,,True\n2,2019-09-04 10:00:00,b,90,fix redirect,False\n"
                        "3,2019-09-11 10:00:00,c,3000,split from Facebook,False\n4,2019-09-17 10:00:00,d,3100,,False\n")
     for p, text in (("research", research), ("recent", cols)):
-        d = tmp_path / f"revisions_{p}" / "en"
+        d = period_dir("revisions", p, tmp_path) / "en"
         d.mkdir(parents=True)
         (d / "X.csv").write_text(text)
-    (tmp_path / "views_recent").mkdir()
-    (tmp_path / "views_recent" / "X.csv").write_text("date,X\n2019-10-06,1\n")
+    (period_dir("views", "recent", tmp_path)).mkdir()
+    (period_dir("views", "recent", tmp_path) / "X.csv").write_text("date,X\n2019-10-06,1\n")
     win = {"research": (pd.Timestamp("2019-09-01"), pd.Timestamp("2019-09-30")),
            "recent": (pd.Timestamp("2019-10-01"), pd.Timestamp("2019-10-06"))}
     e = load_edits("X", {"en": "X"}, win, raw=tmp_path)
     assert e["revid"].tolist() == [4] and e["key"].tolist() == ["en:X"]      # article from Mon Sep 16
+
+
+def test_raw_caches_are_named_after_the_cutoff_and_old_ones_are_left_alone(tmp_path, monkeypatch):
+    from src import config, wiki_pipeline
+    monkeypatch.setattr(config, "holdout_start", lambda: date(2026, 11, 1))
+    assert period_dir("views", "research", tmp_path) == tmp_path / "views_research_20261101"
+    assert wiki_pipeline.untagged_dir("diffs", "research", tmp_path) == tmp_path / "diffs_research"
+    assert wiki_pipeline.prices_path("US", tmp_path).name == "daily_close_US_20261101.csv"

@@ -6,6 +6,7 @@ GET /spikes?ticker= until his routes move under /reddit/ (see src/api/main.py).
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pandas as pd
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -14,10 +15,12 @@ from src.api import dashboard
 from src.api.storage import Storage
 
 FIXTURES = Path(__file__).parent / "fixtures" / "api"
+FIXTURE_CUTOFF = pd.Timestamp("2025-10-01")   # the fixture tables straddle this date, whatever config says
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch):
+    monkeypatch.setattr(dashboard, "_holdout", lambda: FIXTURE_CUTOFF)
     app = FastAPI()
     app.include_router(dashboard.router)
     app.dependency_overrides[dashboard.get_storage] = lambda: Storage(str(FIXTURES))
@@ -33,6 +36,7 @@ def test_main_app_mounts_the_dashboard_routes():
 def test_health_lists_each_table_with_its_write_time(client):
     body = client.get("/health").json()
     assert body["status"] == "ok" and body["data_root"] == "local"
+    assert body["research_cutoff"] == "2025-10-01"
     assert {"wiki_weekly", "reddit_weekly", "wiki_current", "prices_weekly"} <= set(body["tables"])
 
 

@@ -140,7 +140,7 @@ Indian and Hong Kong stocks can be added as a config change. For the DS3 team an
 │   ├── wiki_sentiment.py  # FinBERT sentiment of the article text added each week, returns tests
 │   ├── wiki_analysis.py   # spike-vs-normal returns, edit timing, tags, tone, last-3-weeks table
 │   ├── wiki_strategy.py   # Wikipedia-only strategy with random-portfolio baseline
-│   ├── wiki_complex.py    # Week 3 complex strategies S1-S3, full evaluation, Vibe-Trading export
+│   ├── wiki_complex.py    # complex strategies S1-S7, full evaluation, Vibe-Trading export
 │   ├── wiki_export.py     # attention records (wiki_weekly / wiki_current / prices_weekly / wiki_edit_summaries parquet) for the API
 │   ├── sentiment/finbert_scorer.py  # Joshua's FinbertScorer, shared by Reddit and Wikipedia (+ ScoreCache)
 │   ├── trends_compare.py  # Google Trends alternatives (GDELT, trendspy) vs Wikipedia views
@@ -181,9 +181,20 @@ cp .env.example .env   # then fill in your own local values — never commit .en
 - Edit sentiment (FinBERT; the first run downloads the model and one diff per stock-week, then caches):
   `python -m src.wiki_sentiment`, or `python -m src.wiki_sentiment analyse` for the returns tests only; `python -m src.wiki_sentiment strategy` scores all 51 stocks for S4 (`*_research_strategy.csv`)
 - Wikipedia-only strategy (team train/test split, 200 random portfolios): `python -m src.wiki_strategy`
-- Week 3 complex strategies (rules: `docs/wikipedia/week3_strategies.md`, fixed before the first run):
-  `python -m src.wiki_complex`; add `--vibe` to also write Vibe-Trading run dirs to `~/.vibe-trading/runs/`.
-  First run pulls Yahoo OHLCV into `data/raw/wikipedia/prices/ohlcv_US.parquet` (network).
+- Complex strategies S1-S7 (rules fixed before the first run: `docs/wikipedia/week3_strategies.md` for S1-S4,
+  `docs/wikipedia/week4_strategies.md` for S5-S7): `python -m src.wiki_complex`, writing
+  `results/wikipedia/week4_*.csv`; add `--vibe` to also write Vibe-Trading run dirs to `~/.vibe-trading/runs/`.
+  - Needs `VIBE_TRADING_ROOT` in `.env` (a Vibe-Trading checkout): the deflated Sharpe is Vibe's
+    `deflated_sharpe_ratio` (`agent/src/quantlib/multipletesting.py`), loaded by file path because both repos
+    have a `src` package. Its two tests skip when the variable is unset.
+  - First run per cutoff pulls Yahoo OHLCV into `data/raw/wikipedia/prices/ohlcv_US_<YYYYMMDD>.parquet` (network).
+  - Week 3 outputs (cutoff 2025-10-01) are kept in `results/wikipedia/pre_cutoff_20251001/`.
+- S&P 500 views and edits, Nov 2021 to Oct 2026 (`wikipedia.sp500` in config.yaml): `python -m src.wiki_sp500`.
+  - `python -m src.wiki_sp500 titles` alone rebuilds `config/us_sp500_wiki_titles.csv` from the list page as of
+    the day before the holdout.
+  - Raw caches go to `data/raw/wikipedia/sp500/`.
+  - Weekly tables: `data/processed/wikipedia/sp500_weekly_{research,recent}.csv`. The recent table is never
+    for strategy tests.
 - Attention records for the API and dashboard: `python -m src.wiki_export` (after the pipeline and sentiment)
 - Results notebook: `jupyter lab notebooks/wikipedia.ipynb` (Restart and Run All; needs the pipeline output)
 - API: `uvicorn src.api.main:app --reload --port 8000`, docs at http://localhost:8000/docs
@@ -212,7 +223,7 @@ cp .env.example .env   # then fill in your own local values — never commit .en
 - No magic numbers in logic: thresholds and windows live in `config.yaml` or as named constants.
 - No hardcoded tickers, subreddits or Wikipedia languages inside functions: read them from `config.yaml`.
 - Weeks are labelled by their Monday (Monday-Sunday weeks). Every output table has a `market` column.
-- Holdout: research, spike studies and strategy tests use data before `holdout_start` (2025-10-01).
+- Holdout: research, spike studies and strategy tests use data before `holdout_start` (2026-11-01).
   Recent data lives in separate `*_recent` files and is only for the dashboard and spike checks.
 - One spike rule for every source (`config.yaml` `spike`, past weeks only): `src/wiki_attention.flag_spikes`.
 
@@ -255,7 +266,7 @@ task done. Do this even if the person didn't explicitly ask you to.
 - Never commit data files, `__pycache__/`, `.xlsx` or notebook checkpoints.
 - Never install packages beyond what's needed without calling it out and
   updating `requirements.txt`.
-- Never use holdout data (on/after 2025-10-01) for research, spike studies or strategy tests.
+- Never use holdout data (on/after 2026-11-01) for research, spike studies or strategy tests.
 - Never finish a task that changed structure/commands/conventions
   without also updating AGENTS.md — see "Keeping this file up to date"
   above.
