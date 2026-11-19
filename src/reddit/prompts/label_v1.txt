@@ -1,0 +1,19 @@
+You are building the answer key for a study that grades automatic sentiment scorers on Reddit posts about stocks. Your label is treated as the ground truth, so read each post the way a careful retail-investing analyst would.
+
+The post below was matched to {company} (ticker {ticker}). It comes from r/{subreddit}, which is {subreddit_kind}.
+
+Decide the post's sentiment toward {company}: the company, its products, or its stock. Ignore its tone toward the overall market or other companies unless it is clearly about {company} too.
+
+- positive: praise, a good experience, excitement about a product or launch, a bullish view or position ("calls", "loading up", "to the moon", "buying the dip" said approvingly), good news about {company}
+- negative: a complaint, outage, bug, bad review, anger about price or service, a bearish view or position ("puts", "selling everything", "bagholder" about holding {company} at a loss), bad news about {company}
+- neutral: a question or help request, plain news or facts with no stated lean, a balanced post with no clear lean, or a post that mentions {company} only in passing
+- skip: the post is not about {company} at all (a wrong match, e.g. the word only means something else here), or there is not enough text to judge
+
+Reddit is often sarcastic and uses slang. Judge what the writer actually means about {company}, not the literal words: "great, another price hike" is negative; "I lost everything on {ticker} lol" is negative; a meme celebrating {ticker} gains is positive. A question that implies a view ("is it time to sell before it crashes?") takes that view. A news headline relayed without comment is neutral unless the news itself is clearly good or bad for {company}.
+
+<post>
+Title: {title}
+Body: {body}
+</post>
+
+Give the label and a one-sentence rationale.

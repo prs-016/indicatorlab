@@ -26,9 +26,8 @@ below its 200-day average (checked at the previous close). Costs: 10 bps per uni
 A period with no trades is logged as "Insufficient data", not as a Drop.
 Benchmarks: SPY, the equal-weight universe, and 200 random portfolios that keep every trade's dates
 (so the same number of names, holding periods, sizing and regime) but pick a random stock not
-already held. Train 2023-01-02..2024-06-30, test 2024-07-01..2025-09-30 (Reddit data starts in 2023,
-so this replaces the standard 2011-2019 / 2020-2025 split). 10 stocks is a signal study, not a
-stock-picking test.
+already held. Train and test windows are the team split in config.yaml (`strategy.split`). 10 stocks
+is a signal study, not a stock-picking test.
 
     python -m src.reddit.strategy_product_buzz --note "first run"
 """
@@ -56,7 +55,7 @@ STRAT = config.load()["strategy"]
 COST_BPS = STRAT["cost_bps"]
 N_RANDOM = STRAT["n_random_portfolios"]
 SEED = STRAT["random_seed"]
-SPLIT = {k: [pd.Timestamp(v[0], tz="UTC"), pd.Timestamp(v[1], tz="UTC")] for k, v in STRAT["reddit_split"].items()}
+SPLIT = {k: [pd.Timestamp(v[0], tz="UTC"), pd.Timestamp(v[1], tz="UTC")] for k, v in STRAT["split"].items()}
 TRADING_DAYS = 252
 KEEP_RANDOM_PCT = 90.0          # keep/drop rule: beat at least 90% of random portfolios
 MAX_WEIGHT = 0.25
@@ -247,6 +246,12 @@ def random_trades(trades: pd.DataFrame, tickers: list[str], rng: np.random.Gener
     return pd.DataFrame(out, columns=trades.columns)
 
 
+def _split_label(name: str) -> str:
+    """A split window as `YYYY-MM-DD..YYYY-MM-DD` for the Strategy Log."""
+    start, end = SPLIT[name]
+    return f"{start.date()}..{end.date()}"
+
+
 def _period(df: pd.DataFrame, name: str) -> pd.DataFrame:
     lo, hi = SPLIT[name]
     return df[(df.index >= lo) & (df.index <= hi)]
@@ -325,6 +330,10 @@ def run(note: str = "", who: str = "Joshua", wiki_path: Path = WIKI_PATH) -> lis
     close = load_daily_close(market)
     close = close[close.index < pd.Timestamp(settings.HOLDOUT_START, tz="UTC")]
     att = pd.read_csv(OUT_RESEARCH)
+    first_week = pd.to_datetime(att["week"].min(), utc=True) if len(att) else None
+    if first_week is None or first_week > SPLIT["train"][0] + pd.Timedelta(days=28):
+        raise SystemExit(f"Reddit weekly data starts {first_week}, after the train start {SPLIT['train'][0].date()}: "
+                         "finish the 2016-2022 backfill and rebuild the weekly tables before running")
     wiki = pd.read_csv(wiki_path) if wiki_path.exists() else None
     f = weekly_features(att, wiki)
     use_wiki = wiki is not None
@@ -350,7 +359,7 @@ def run(note: str = "", who: str = "Joshua", wiki_path: Path = WIKI_PATH) -> lis
                      "sizing": "equal weight across open positions, max 25% per stock",
                      "regime_filter": "50% total exposure while SPY < 200-day average",
                      "universe": " ".join(tickers), "universe_size": len(tickers),
-                     "train_period": "2023-01-02..2024-06-30", "test_period": "2024-07-01..2025-09-30",
+                     "train_period": _split_label("train"), "test_period": _split_label("test"),
                      "train_sharpe": tr["sharpe"], "test_sharpe": te["sharpe"],
                      "index_sharpe_train": tr["index_sharpe"], "index_sharpe_test": te["index_sharpe"],
                      "ew_sharpe_test": te["ew_sharpe"], "pct_random_beaten_train": tr["pct_random_beaten"],

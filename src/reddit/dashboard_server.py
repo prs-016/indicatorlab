@@ -23,6 +23,7 @@ from urllib.parse import parse_qs, urlparse
 
 import pandas as pd
 
+from src import config
 from src.reddit import settings
 from src.reddit.collect_reddit import load_manifest_latest
 from src.reddit.utils import daterange
@@ -91,6 +92,109 @@ def weekly(ticker: str):
     df = df[df["ticker"] == ticker][["week_start", "posts", "posts_observed", "posts_median_4w", "posts_spike_ratio",
                                      "posts_spike_flag", "comments", "upvotes", "coverage_complete"]]
     return {"rows": json.loads(df.to_json(orient="records")), "updated": _mtime(p)}
+
+
+# ------------------------------------------------------------------ attention views
+# The research tables (team spike rule: 8-week baseline, ratio and robust z) side by side with
+# weekly prices. "inv" = investor subreddits (reddit_stock), "prod" = product subreddits.
+ATTENTION = settings.PROCESSED / "attention_weekly_research.csv"
+PRICES = settings.PROCESSED / "weekly_prices.csv"
+TOP_POSTS = settings.PROCESSED / "reddit_top_posts.parquet"
+CAUSE = settings.TABLES / "cause_vs_reaction.csv"
+SOURCES = {"reddit_stock": "inv", "reddit_product": "prod"}
+SOURCE_NAMES = {"inv": "investor", "prod": "product"}
+ATT_COLS = ["posts", "baseline", "ratio", "spike", "sentiment_mean", "n_scored"]
+
+
+def _records(df: pd.DataFrame) -> list[dict]:
+    return json.loads(df.round(4).to_json(orient="records"))
+
+
+def attention_wide(ticker: str | None = None) -> pd.DataFrame:
+    """One row per ticker-week: inv_* and prod_* attention columns, then close/ret/abn_ret/ret_prev/ret_next1."""
+    if not ATTENTION.exists():
+        return pd.DataFrame()
+    a = pd.read_csv(ATTENTION)
+    if ticker:
+        a = a[a["ticker"] == ticker]
+    parts = [a[a["source"] == src].set_index(["ticker", "week"])[ATT_COLS].add_prefix(pre + "_")
+             for src, pre in SOURCES.items()]
+    w = pd.concat(parts, axis=1).reset_index().sort_values(["ticker", "week"])
+    for pre in SOURCES.values():
+        w[f"{pre}_spike"] = w[f"{pre}_spike"].astype("boolean").fillna(False).astype(bool)
+    if PRICES.exists():
+        p = pd.read_csv(PRICES)[["week", "ticker", "close", "ret", "abn_ret", "ret_next1"]]
+        w = w.merge(p, on=["ticker", "week"], how="left")
+        w["ret_prev"] = w.groupby("ticker")["ret"].shift(1)
+    return w.reset_index(drop=True)
+
+
+def _spikes_long(w: pd.DataFrame) -> pd.DataFrame:
+    """Spike weeks from the wide table, one row per ticker-week-source, newest first."""
+    keep = [c for c in ["close", "ret", "ret_next1"] if c in w]
+    parts = []
+    for pre, name in SOURCE_NAMES.items():
+        s = w[w[f"{pre}_spike"]][["week", "ticker", *[f"{pre}_{c}" for c in ATT_COLS if c != "spike"], *keep]]
+        parts.append(s.rename(columns=lambda c: c[len(pre) + 1:] if c.startswith(pre + "_") else c).assign(source=name))
+    out = pd.concat(parts) if parts else pd.DataFrame()
+    return out.sort_values(["week", "ratio"], ascending=[False, False]) if len(out) else out
+
+
+def now(spark_weeks: int = 12):
+    """The latest week for every ticker, with the last `spark_weeks` ratios, plus recent spikes."""
+    w = attention_wide()
+    rule = config.spike_rule()
+    if w.empty:
+        return {"week": None, "rows": [], "recent_spikes": [], "rule": rule, "updated": None}
+    week = w.loc[w["inv_ratio"].notna() | w["prod_ratio"].notna(), "week"].max()
+    rows = []
+    for t, g in w[w["week"] <= week].groupby("ticker"):
+        g = g.tail(spark_weeks)
+        cur = _records(g[g["week"] == week])
+        rows.append({"ticker": t, "name": settings.TICKERS.get(t, t), **(cur[0] if cur else {"week": week}),
+                     "spark": {"weeks": g["week"].tolist(),
+                               **{pre: g[f"{pre}_ratio"].round(3).tolist() for pre in SOURCE_NAMES},
+                               **{f"{pre}_spike": g[f"{pre}_spike"].tolist() for pre in SOURCE_NAMES}}})
+    first = sorted(w["week"].unique())[max(0, len(w["week"].unique()) - spark_weeks)]
+    recent = _spikes_long(w[w["week"] >= first])
+    return {"week": week, "rows": rows, "recent_spikes": _records(recent), "rule": rule,
+            "names": settings.TICKERS, "updated": _mtime(ATTENTION)}
+
+
+def spike_weeks():
+    """Every spike week (either source) for every ticker, newest first."""
+    w = attention_wide()
+    return {"rows": _records(_spikes_long(w)) if len(w) else [], "rule": config.spike_rule(),
+            "names": settings.TICKERS, "updated": _mtime(ATTENTION)}
+
+
+def stock(ticker: str, posts_per_source: int = 3):
+    """Weekly attention, tone and price for one ticker, its top posts per week, and the lead/lag table.
+
+    Posts carry the Reddit id; the page links to reddit.com/r/<sub>/comments/<id>.
+    """
+    w = attention_wide(ticker)
+    posts = {}
+    if TOP_POSTS.exists():
+        tp = pd.read_parquet(TOP_POSTS, columns=["ticker", "week", "rank", "post_id", "subreddit", "subreddit_type",
+                                                 "title", "score", "num_comments", "sentiment_label"],
+                             filters=[("ticker", "==", ticker)])
+        tp["week"] = tp["week"].astype(str)
+        tp = tp.sort_values(["week", "subreddit_type", "rank"]).groupby(["week", "subreddit_type"]).head(posts_per_source)
+        for wk, g in tp.groupby("week"):
+            posts[wk] = [{"title": r.title, "sub": r.subreddit, "type": r.subreddit_type, "score": int(r.score),
+                          "comments": int(r.num_comments), "tone": r.sentiment_label, "id": r.post_id}
+                         for r in g.itertuples()]
+    cause = pd.read_csv(CAUSE) if CAUSE.exists() else pd.DataFrame(columns=["ticker"])
+    return {"ticker": ticker, "name": settings.TICKERS.get(ticker, ticker), "weeks": _records(w) if len(w) else [],
+            "posts": posts, "cause": _records(cause[(cause["ticker"] == ticker) | (cause["ticker"] == "ALL")]),
+            "rule": config.spike_rule(),
+            "updated": _mtime(ATTENTION)}
+
+
+def _ticker(q) -> str:
+    t = q.get("ticker", [""])[0].upper()
+    return t if t in settings.TICKERS else next(iter(settings.TICKERS))
 
 
 def _run_rebuild():
@@ -172,6 +276,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self._json(_csv(settings.TABLES / "match_method_summary.csv"))
             if u.path == "/api/weekly":
                 return self._json(weekly(q.get("ticker", [next(iter(settings.TICKERS))])[0].upper()))
+            if u.path == "/api/now":
+                return self._json(now())
+            if u.path == "/api/spike_weeks":
+                return self._json(spike_weeks())
+            if u.path == "/api/stock":
+                return self._json(stock(_ticker(q)))
             if u.path == "/api/rebuild":
                 return self._json(rebuild_state)
             if u.path == "/api/strategy_log":

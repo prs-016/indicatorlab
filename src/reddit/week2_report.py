@@ -8,6 +8,7 @@ exist yet say "pending" and what produces them, so the report can be regenerated
 from __future__ import annotations
 
 import json
+from datetime import timedelta
 
 import pandas as pd
 
@@ -16,6 +17,11 @@ from src.reddit.utils import utc_now_iso
 
 OUT = settings.ROOT / "docs" / "reddit" / "week2_report.md"
 T = settings.TABLES
+
+
+def _last_research_day() -> str:
+    """The day before the cutoff (`holdout_start` in config.yaml), as YYYY-MM-DD."""
+    return (settings.HOLDOUT_START - timedelta(days=1)).isoformat()
 
 
 def _md(df: pd.DataFrame, floatfmt: str = "{:.3f}") -> str:
@@ -48,7 +54,7 @@ def section_subreddits() -> str:
 def section_collection() -> str:
     p = T / "collection_summary.csv"
     if not p.exists():
-        return _pending("`python -m src.reddit.collect_reddit status --end 2025-09-30`")
+        return _pending(f"`python -m src.reddit.collect_reddit status --end {_last_research_day()}`")
     d = pd.read_csv(p)
     cols = ["subreddit", "type", "ticker", "start", "end", "days_expected", "complete", "failed", "partial", "missing",
             "posts_in_complete_days", "raw_storage_mb"]
@@ -131,7 +137,8 @@ def section_strategy() -> str:
     return f"Run `{last['run_id'].iloc[0]}` (every run is kept in the append-only log):\n\n" + _md(last[cols])
 
 
-API_NOTE = ("`GET /sentiment` and `GET /spikes` in `src/api/reddit.py`, tested in `tests/test_api_reddit.py`. "
+API_NOTE = ("(Replaced in Week 3 by the `/reddit/*` router in `src/api/reddit_routes.py`.) "
+            "`GET /sentiment` and `GET /spikes` in `src/api/reddit.py`, tested in `tests/test_api_reddit.py`. "
             "Run `.venv/bin/uvicorn src.api.main:app` and open `/docs`.")
 
 SECTIONS = [
@@ -149,8 +156,10 @@ SECTIONS = [
 def build() -> str:
     """The whole report as markdown."""
     head = ["# Week 2 Reddit results (Joshua)", "",
-            f"Generated {utc_now_iso()[:16]} UTC by `python -m src.reddit.week2_report`. Research numbers use data "
-            "before 2025-10-01 only; the spike check (section 6) looks at the holdout weeks without testing.", ""]
+            (f"Generated {utc_now_iso()[:16]} UTC by `python -m src.reddit.week2_report`. Research numbers use "
+             f"data before {settings.HOLDOUT_START} only; the spike check (section 6) looks at later weeks "
+             "without testing."),
+            ""]
     body = [f"## {title}\n\n{fn()}\n" for title, fn in SECTIONS]
     return "\n".join(head + body)
 

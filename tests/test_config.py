@@ -11,8 +11,12 @@ def test_three_markets_with_benchmarks():
     assert [config.benchmark(m) for m in config.markets()] == ["SPY", "^NSEI", "^HSI"]
 
 
-def test_holdout_is_oct_1_2025():
-    assert config.holdout_start() == date(2025, 10, 1)
+def test_cutoff_and_team_split_are_the_week_4_values():
+    assert config.holdout_start() == date(2026, 11, 1)          # research data runs through 2026-10-31
+    split = config.load()["strategy"]["split"]
+    assert split["train"] == [date(2016, 6, 1), date(2021, 12, 31)]
+    assert split["test"] == [date(2022, 1, 1), date(2026, 10, 31)]
+    assert split["test"][1] < config.holdout_start()            # the test window never reaches the cutoff
 
 
 def test_us_stocks_have_name_match_rules_and_wikipedia_title():

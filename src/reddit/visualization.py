@@ -18,8 +18,9 @@ from src.reddit.utils import get_logger
 
 log = get_logger("visualization", "pipeline.log")
 
-SURFACE, INK, INK2, GRID = "#fcfcfb", "#0b0b0b", "#52514e", "#e6e5e0"
-SERIES, SPIKE, INCOMPLETE = "#2a78d6", "#eb6834", "#c3c2b7"
+# Light palette for the saved PNG figures (paper / pine ink / signal orange); the dashboard itself is dark.
+SURFACE, INK, INK2, GRID = "#fcfbf8", "#1f3d37", "#4a615b", "#d8dad4"
+SERIES, SPIKE, INCOMPLETE = "#7f8e88", "#c7431b", "#ced1cb"
 
 plt.rcParams.update({
     "figure.facecolor": SURFACE, "axes.facecolor": SURFACE, "axes.edgecolor": GRID, "axes.labelcolor": INK2,
@@ -69,12 +70,12 @@ def plot_timeline(df: pd.DataFrame, prices: pd.DataFrame, path, title_suffix="")
     if (~complete).any():
         handles.insert(2, Patch(color=INCOMPLETE, label="incomplete collection (observed only)"))
     ax1.legend(handles=handles, loc="upper right", frameon=True, facecolor=SURFACE, edgecolor=GRID, framealpha=0.95, fontsize=8, ncol=1)
-    ax1.set_title(f"AAPL Reddit chatter vs. AAPL price — r/stocks + r/investing + r/wallstreetbets{title_suffix}",
+    ax1.set_title(f"AAPL Reddit chatter vs. AAPL price: r/stocks + r/investing + r/wallstreetbets{title_suffix}",
                   loc="left", fontsize=12, color=INK)
 
     pr = prices[(prices["date"] >= df["week_start"].min()) &
                 (prices["date"] <= df["week_start"].max() + pd.Timedelta(days=7))]
-    ax2.plot(pr["date"], pr["Close"], color=SERIES, lw=1.6, zorder=2)
+    ax2.plot(pr["date"], pr["Close"], color=INK, lw=1.6, zorder=2)
     spike_weeks = df.loc[df["posts_spike_flag"], "week_start"]
     for w in spike_weeks:
         ax2.axvspan(w, w + pd.Timedelta(days=7), color=SPIKE, alpha=0.18, lw=0, zorder=1)
@@ -104,12 +105,12 @@ def plot_event_windows(df: pd.DataFrame, prices: pd.DataFrame, path, weeks_befor
                width=5.6, color=colors, lw=0, zorder=2)
         ax.plot(sub["week_start"] + pd.Timedelta(days=3.5), sub["posts_median_4w"], color=INK2, lw=1.2, zorder=4)
         ax.axvline(d, color=INK, lw=1, ls=(0, (4, 3)))
-        ax.set_title(f"{e['event_name']} — {d:%b %d, %Y}", loc="left", fontsize=10)
+        ax.set_title(f"{e['event_name']}, {d:%b %d, %Y}", loc="left", fontsize=10)
         if j == 0:
             ax.set_ylabel("AAPL posts / week")
         ax2 = axes[1, j]
         pr = prices[(prices["date"] >= lo) & (prices["date"] <= hi + pd.Timedelta(days=7))]
-        ax2.plot(pr["date"], pr["Close"], color=SERIES, lw=1.6)
+        ax2.plot(pr["date"], pr["Close"], color=INK, lw=1.6)
         ax2.axvspan(ws, ws + pd.Timedelta(days=7), color=INK2, alpha=0.10, lw=0)
         ax2.axvline(d, color=INK, lw=1, ls=(0, (4, 3)))
         if j == 0:

@@ -6,7 +6,7 @@ India or Hong Kong is a config change. Typical use::
     from src import config
     config.tickers("US")                  # ['AAPL', 'MSFT', ...]
     config.subreddit_map("US")["iphone"]  # {'market': 'US', 'type': 'product', 'ticker': 'AAPL', ...}
-    config.holdout_start()                # date(2025, 10, 1)
+    config.holdout_start()                # date(2026, 11, 1)
 """
 from __future__ import annotations
 

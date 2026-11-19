@@ -2,11 +2,14 @@
 
     .venv/bin/uvicorn src.api.main:app --reload --port 8000     # from the repo root
     open http://localhost:8000/docs
+
+James's service mounts the same Reddit router; set INDICATORLAB_DATA_URI (local folder or
+s3://<bucket>/processed) to choose where the tables are read from.
 """
 from fastapi import FastAPI
 
-from src.api import reddit
+from src.api import reddit_routes
 
-app = FastAPI(title="Indicator Lab API", version="0.2.0",
+app = FastAPI(title="Indicator Lab API", version="0.3.0",
               description="Weekly attention, sentiment and spikes for the tracked stocks (weeks labelled by Monday).")
-app.include_router(reddit.router)
+app.include_router(reddit_routes.router)

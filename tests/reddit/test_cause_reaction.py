@@ -40,3 +40,12 @@ def test_block_resampling_keeps_consecutive_weeks():
     rng = np.random.default_rng(1)
     s = cr._resample_weeks(np.arange(20), rng, 4)
     assert len(s) == 20 and all(s[i + 1] - s[i] == 1 for i in range(0, 20, 4) if i + 1 < 20)
+
+
+def test_missing_sentiment_column_does_not_break_the_chatter_pairs(monkeypatch):
+    monkeypatch.setattr(cr, "N_BOOT", 50)
+    p = _panel()
+    p["prod_sent"] = np.nan                       # no sentiment scored yet
+    p["prod_sent"] = p["prod_sent"].astype(object)
+    table, _ = cr.correlations(cr.lagged_pairs(p))
+    assert set(table["x"]) == {"prod_chatter", "stock_chatter", "abn_ret"}
