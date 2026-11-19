@@ -201,6 +201,7 @@ cp .env.example .env   # then fill in your own local values — never commit .en
   (Week 2: `/tickers`, `/attention`, `/price`; Week 3: `/health`, `/attention/{ticker}`, `/prices/{ticker}`,
   `/edits/{ticker}`, `/sentiment/{ticker}`, `/spikes`, `/hot`, `/live/{market}`, `/runs`). It reads `data/` unless `INDICATORLAB_DATA` is set
   (e.g. `s3://indicatorlab-data`, which needs `boto3` and AWS credentials); see `.env.example`.
+  Joshua's Reddit routes are under `/reddit/` (`src/api/reddit_routes.py`) and read `INDICATORLAB_DATA_URI` instead.
 - Dashboard v1: start the API with `CORS_ORIGINS=http://localhost:5173`, then
   `python -m http.server 5173 -d frontend/dashboard` and open http://localhost:5173.
   Details, `?api=` override and deploy steps: `frontend/dashboard/README.md`.
@@ -282,4 +283,4 @@ task done. Do this even if the person didn't explicitly ask you to.
   full week after its first revision of `min_article_bytes`, so redirect years are skipped: META's data
   starts in late Nov 2019, when `Facebook, Inc.` stopped redirecting to the `Facebook` product article.
   `python -m src.wiki_titles` fails on a missing, redirect or disambiguation title.
-- Reddit pipeline (Joshua): `docs/reddit/README.md` on the `reddit` branch.
+- Reddit pipeline (Joshua): `docs/reddit/README.md`.

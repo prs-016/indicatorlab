@@ -1,6 +1,6 @@
 """Week 1 (legacy): backtest five Reddit-chatter strategies and append EVERY result to the Strategy Log.
 
-Week 2 note: signals now stop before the holdout date (Oct 1, 2025) unless --include-holdout is
+Week 2 note: signals now stop before the cutoff date (`holdout_start` in config.yaml) unless --include-holdout is
 given, which only exists to reproduce the Week 1 log rows. Week 2 strategies live in
 strategy_product_buzz.py.
 
@@ -309,7 +309,7 @@ def run(cost_bps: float = 10.0, refresh_prices: bool = False, note: str = "", in
             "data_snapshot": f"Reddit collection {pct:.1%} complete; {len(net)} evaluable signal weeks",
             "code_sha1": code_sha1, "details_path": f"results/strategy_logs/runs/{run_id}",
             "notes": note + ("; includes holdout weeks (Week 1 reproduction)" if include_holdout
-                             else "; weeks before the 2025-10-01 holdout only"),
+                             else f"; weeks before the {settings.HOLDOUT_START} cutoff only"),
         })
         weekly[sid].to_csv(run_dir / f"{sid}_{name}_weekly.csv", index_label="signal_week")
     append_log(rows)

@@ -1,4 +1,6 @@
 """Weekly returns, 52-week betas without look-ahead, forward returns and the holdout cut."""
+from datetime import date
+
 import numpy as np
 import pandas as pd
 
@@ -29,7 +31,8 @@ def test_weekly_close_labels_by_monday_and_leaves_gaps():
     assert wc["A"].tolist()[0] == 2.0 and np.isnan(wc["A"].iloc[1]) and wc["A"].iloc[2] == 3.0
 
 
-def test_research_only_blanks_forward_windows_that_cross_the_holdout():
+def test_research_only_blanks_forward_windows_that_cross_the_holdout(monkeypatch):
+    monkeypatch.setattr(md.settings, "HOLDOUT_START", date(2025, 10, 1))
     weeks = pd.date_range("2025-09-01", periods=5, freq="7D", tz="UTC")        # Sep 1 .. Sep 29
     df = pd.DataFrame({"week": weeks, **{f"{p}ret_next{k}": 0.01 for p in ("", "abn_") for k in range(1, 5)}})
     out = md.research_only(df)

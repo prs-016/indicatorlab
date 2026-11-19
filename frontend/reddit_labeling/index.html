@@ -66,6 +66,7 @@
   <div class="tabs" role="group" aria-label="Task">
     <button data-task="sentiment" aria-pressed="true">Sentiment</button>
     <button data-task="match" aria-pressed="false">Match check</button>
+    <button data-task="human120" aria-pressed="false">Human check (120)</button>
   </div>
   <div class="row" style="margin:0">
     <span class="progress" id="progress">–</span>
@@ -101,7 +102,9 @@ const GUIDES = {
     <li><b>Unsure</b>: you cannot tell from the text. Unsure posts are reported separately.</li>
     <li>Keys: 1 correct · 2 incorrect · 3 unsure · ← → move · N next unlabelled.</li></ul>`,
 };
+GUIDES.human120 = GUIDES.sentiment;
 const KEYS = { sentiment: { "1": "positive", "2": "negative", "3": "neutral", "s": "skip" },
+               human120: { "1": "positive", "2": "negative", "3": "neutral", "s": "skip" },
                match: { "1": "correct", "2": "incorrect", "3": "unsure" } };
 let state = { task: "sentiment", items: [], labels: {}, choices: [], i: 0, rater: "" };
 

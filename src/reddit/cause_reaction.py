@@ -64,6 +64,7 @@ def build_panel(attention: pd.DataFrame, prices: pd.DataFrame) -> pd.DataFrame:
     holdout = pd.Timestamp(settings.HOLDOUT_START, tz="UTC")
     assert (df["week"] + pd.Timedelta(days=6) < holdout).all(), "holdout weeks in cause/reaction input"
     for c in ["prod_chatter", "prod_sent", "stock_chatter", "abn_ret"]:
+        df[c] = pd.to_numeric(df[c], errors="coerce")   # an all-missing pivot column comes back as object
         g = df.groupby("ticker")[c]
         df[c] = (df[c] - g.transform("mean")) / g.transform("std")
     return df
@@ -87,6 +88,7 @@ def lagged_pairs(panel: pd.DataFrame) -> pd.DataFrame:
 
 
 def _corr(x: np.ndarray, y: np.ndarray) -> float:
+    x, y = np.asarray(x, dtype=float), np.asarray(y, dtype=float)
     if len(x) < 3 or np.std(x) == 0 or np.std(y) == 0:
         return np.nan
     return float(np.corrcoef(x, y)[0, 1])
