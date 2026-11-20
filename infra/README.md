@@ -101,7 +101,7 @@ tier. ECS Express Mode, AWS's replacement, needs a load balancer and an always-o
    ACCOUNT=$(aws sts get-caller-identity --query Account --output text); REG=$ACCOUNT.dkr.ecr.us-east-2.amazonaws.com
    aws ecr get-login-password --region us-east-2 | docker login --username AWS --password-stdin $REG
    for s in api wikipedia; do
-     docker buildx build --platform linux/arm64 --provenance=false -f infra/$s/Dockerfile -t $REG/indicatorlab-$s:latest --push .
+     docker buildx build --platform linux/arm64 --provenance=false -f infra/${s}/Dockerfile -t "$REG/indicatorlab-${s}:latest" --push .
    done
    ```
    `--provenance=false` keeps the push a single-platform image, which is the only kind Lambda accepts.

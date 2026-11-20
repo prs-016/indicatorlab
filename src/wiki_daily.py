@@ -100,6 +100,15 @@ def published_end(totals: dict[str, pd.Series]) -> pd.Timestamp:
     return by_day.index[end]
 
 
+def own_end(daily: pd.Series) -> pd.Series:
+    """A stock's views up to its own last day with views. Wikimedia publishes a day article by article over
+    a few hours (at 04:43 UTC on Nov 20, 2026 Nvidia had its Nov 19 views and at 03:40 it had none), so a
+    zero on the newest day is more likely "not yet" than "nobody read it"; the stock's window then ends a day
+    earlier. Only an article with no views at all keeps its zeros."""
+    seen = daily[daily > 0]
+    return daily.loc[:seen.index.max()] if len(seen) else daily
+
+
 def run(day: pd.Timestamp, root: str) -> dict:
     """Pull every market's stocks for `day`, write the raw and processed tables under `root`."""
     jobs = [(t, m, a) for m in config.markets() for t, a in map_titles(m).items()]
@@ -118,7 +127,7 @@ def run(day: pd.Timestamp, root: str) -> dict:
     if not done:
         raise RuntimeError(f"no stock could be pulled for {day.date()}")
     end = published_end({job[0]: out[0] for job, out in done})
-    current = pd.DataFrame([current_record(out[0].loc[:end], t, m) for (t, m, _), out in done])
+    current = pd.DataFrame([current_record(own_end(out[0].loc[:end]), t, m) for (t, m, _), out in done])
     current = current.sort_values("ratio", ascending=False).reset_index(drop=True)
     raw = f"{root}/raw/wikipedia/date={day:%Y-%m-%d}"
     views = pd.concat([out[1] for _, out in done], ignore_index=True).assign(complete=day <= end)

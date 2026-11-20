@@ -95,3 +95,11 @@ def test_a_half_published_day_is_left_out_but_a_quiet_one_is_kept():
     quiet = steady.copy()
     quiet.iloc[-1] = 700                                       # a slow day, still most of the usual traffic
     assert wiki_daily.published_end({"A": quiet}) == pd.Timestamp("2026-11-18")
+
+
+def test_a_stock_still_waiting_for_its_newest_day_ends_a_day_earlier():
+    days = pd.date_range("2026-11-10", "2026-11-19", freq="D")
+    waiting = pd.Series([100] * 9 + [0], index=days)
+    assert wiki_daily.own_end(waiting).index.max() == pd.Timestamp("2026-11-18")
+    assert wiki_daily.own_end(pd.Series(100, index=days)).index.max() == pd.Timestamp("2026-11-19")
+    assert len(wiki_daily.own_end(pd.Series(0, index=days))) == len(days)    # never read: zeros kept
