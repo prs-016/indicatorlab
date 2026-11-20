@@ -12,7 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CSV = ROOT / "config/india_wiki_titles.csv"
-DEFAULT_LEDGER = ROOT / "config/india_nifty100_wikipedia.proposed/mapping_ledger.json"
+DEFAULT_LEDGER = ROOT / "config/india_wiki_mapping_ledger.json"
 FIELDS = ["symbol", "title", "lang", "valid_from"]
 KINDS = {"current", "historical_move_observed"}
 
