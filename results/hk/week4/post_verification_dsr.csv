@@ -1,0 +1,13 @@
+market,strategy,period,original_probability_352,post_verification_probability_354,return_observations,source_return_arrays
+HK,liquidity_repair,train,1.5369008555073809e-06,1.5204879953103593e-06,1378,data/hk_week4/runs/three_v2_paths_20261115/HK_train_evaluations.npz
+HK,defensive_attention_gate,train,1.8083955297795493e-06,1.7888072046178385e-06,1378,data/hk_week4/runs/three_v2_paths_20261115/HK_train_evaluations.npz
+HK,residual_repair,train,1.7513529648798988e-05,1.7346992903519145e-05,1378,data/hk_week4/runs/three_v2_paths_20261115/HK_train_evaluations.npz
+US,liquidity_repair,train,0.0014213529700409138,0.0014099558117223899,1408,data/hk_week4/runs/three_v2_paths_20261115/US_train_evaluations.npz
+US,defensive_attention_gate,train,0.11969305336136771,0.11923403496783291,1408,data/hk_week4/runs/three_v2_paths_20261115/US_train_evaluations.npz
+US,residual_repair,train,0.008048882163130145,0.007996802283190208,1408,data/hk_week4/runs/three_v2_paths_20261115/US_train_evaluations.npz
+HK,liquidity_repair,test,0.010163394929758459,0.010198214851971407,1185,data/hk_week4/runs/three_v2_paths_20261115/HK_test_evaluations.npz
+HK,defensive_attention_gate,test,0.00014600747901638274,0.0001467166589170432,1185,data/hk_week4/runs/three_v2_paths_20261115/HK_test_evaluations.npz
+HK,residual_repair,test,0.02681488557417876,0.026896390295906767,1185,data/hk_week4/runs/three_v2_paths_20261115/HK_test_evaluations.npz
+US,liquidity_repair,test,0.004806998322050675,0.004824954153577026,1212,data/hk_week4/runs/three_v2_paths_20261115/US_test_evaluations.npz
+US,defensive_attention_gate,test,0.05662901878260007,0.05677631367674076,1212,data/hk_week4/runs/three_v2_paths_20261115/US_test_evaluations.npz
+US,residual_repair,test,0.12579204165482133,0.12605172353585814,1212,data/hk_week4/runs/three_v2_paths_20261115/US_test_evaluations.npz

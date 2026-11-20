@@ -1,0 +1,149 @@
+{
+  "prepared_at_utc": "2026-11-16T05:18:30.416985+00:00",
+  "purpose": "Reporting-only DSR supplement after two fixed-hypothesis native verification invocations; no portfolio rerun, no selection or KEEP change. Frozen352-statistic outputs remain unchanged.",
+  "original_recorded_trials": 352,
+  "post_verification_recorded_trials": 354,
+  "count_breakdown": {
+    "prior_recorded": 268,
+    "new_train_selection": 12,
+    "new_base_and_ablation": 72,
+    "native_fixed_hypothesis_verification": 2
+  },
+  "repeated_validation_counted_conservatively": true,
+  "independent_search_claim": false,
+  "arithmetic_fixed_fill_replays_counted_as_strategy_trials": false,
+  "implementation": "Unchanged Vibe agent/src/quantlib/multipletesting.py::deflated_sharpe_ratio",
+  "implementation_sha256": "49967ce6f9666e9bfe5c9485677b6cdc43165bffa4fc24bcd7121cf61ebe5a24",
+  "frequency": "Per-session daily net Sharpe (annualized SR divided by sqrt252); separate same-period dispersion",
+  "dispersion": {
+    "train": {
+      "observed_per_day_sharpes": 48,
+      "sample_std_ddof1": 0.034378025606635394,
+      "sha256": "461ec50266e311524fe845a47409c3553885e16a2a70e3a9ed87403528dd5026",
+      "native_sharpes_included": false
+    },
+    "test": {
+      "observed_per_day_sharpes": 38,
+      "sample_std_ddof1": 0.026312052213468412,
+      "sha256": "18f8b89c9eff9eded942fe4f484897e8a41de6bec143a3d3173abcb6a6f39bae",
+      "native_sharpes_included": true
+    }
+  },
+  "missing_prior_sharpes": "Older values and undocumented searches are not fabricated; dispersion uses comparable actually observed current-period values. Thus search-history calibration remains approximate.",
+  "records": [
+    {
+      "market": "HK",
+      "strategy": "liquidity_repair",
+      "period": "train",
+      "original_probability_352": 1.5369008555073809e-06,
+      "post_verification_probability_354": 1.5204879953103593e-06,
+      "return_observations": 1378,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/HK_train_evaluations.npz"
+    },
+    {
+      "market": "HK",
+      "strategy": "defensive_attention_gate",
+      "period": "train",
+      "original_probability_352": 1.8083955297795493e-06,
+      "post_verification_probability_354": 1.7888072046178385e-06,
+      "return_observations": 1378,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/HK_train_evaluations.npz"
+    },
+    {
+      "market": "HK",
+      "strategy": "residual_repair",
+      "period": "train",
+      "original_probability_352": 1.7513529648798988e-05,
+      "post_verification_probability_354": 1.7346992903519145e-05,
+      "return_observations": 1378,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/HK_train_evaluations.npz"
+    },
+    {
+      "market": "US",
+      "strategy": "liquidity_repair",
+      "period": "train",
+      "original_probability_352": 0.0014213529700409138,
+      "post_verification_probability_354": 0.0014099558117223899,
+      "return_observations": 1408,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/US_train_evaluations.npz"
+    },
+    {
+      "market": "US",
+      "strategy": "defensive_attention_gate",
+      "period": "train",
+      "original_probability_352": 0.11969305336136771,
+      "post_verification_probability_354": 0.11923403496783291,
+      "return_observations": 1408,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/US_train_evaluations.npz"
+    },
+    {
+      "market": "US",
+      "strategy": "residual_repair",
+      "period": "train",
+      "original_probability_352": 0.008048882163130145,
+      "post_verification_probability_354": 0.007996802283190208,
+      "return_observations": 1408,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/US_train_evaluations.npz"
+    },
+    {
+      "market": "HK",
+      "strategy": "liquidity_repair",
+      "period": "test",
+      "original_probability_352": 0.010163394929758459,
+      "post_verification_probability_354": 0.010198214851971407,
+      "return_observations": 1185,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/HK_test_evaluations.npz"
+    },
+    {
+      "market": "HK",
+      "strategy": "defensive_attention_gate",
+      "period": "test",
+      "original_probability_352": 0.00014600747901638274,
+      "post_verification_probability_354": 0.0001467166589170432,
+      "return_observations": 1185,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/HK_test_evaluations.npz"
+    },
+    {
+      "market": "HK",
+      "strategy": "residual_repair",
+      "period": "test",
+      "original_probability_352": 0.02681488557417876,
+      "post_verification_probability_354": 0.026896390295906767,
+      "return_observations": 1185,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/HK_test_evaluations.npz"
+    },
+    {
+      "market": "US",
+      "strategy": "liquidity_repair",
+      "period": "test",
+      "original_probability_352": 0.004806998322050675,
+      "post_verification_probability_354": 0.004824954153577026,
+      "return_observations": 1212,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/US_test_evaluations.npz"
+    },
+    {
+      "market": "US",
+      "strategy": "defensive_attention_gate",
+      "period": "test",
+      "original_probability_352": 0.05662901878260007,
+      "post_verification_probability_354": 0.05677631367674076,
+      "return_observations": 1212,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/US_test_evaluations.npz"
+    },
+    {
+      "market": "US",
+      "strategy": "residual_repair",
+      "period": "test",
+      "original_probability_352": 0.12579204165482133,
+      "post_verification_probability_354": 0.12605172353585814,
+      "return_observations": 1212,
+      "source_return_arrays": "data/hk_week4/runs/three_v2_paths_20261115/US_test_evaluations.npz"
+    }
+  ],
+  "source_sha256": {
+    "data/hk_week4/runs/three_v2_paths_20261115/evaluation_complete.json": "f79bec5b4f665804e9110cd3cfcd57f9884dd18e157623b8ce8381c0a116fc80",
+    "results/hk/week4/native_verification_summary.json": "701e728d51e5d671703b742e48a92002f7951e177deb8f344ca5cc7a8ff3876c",
+    "data/hk_week4/runs/three_v2_paths_20261115/HK_test_evaluations.npz": "1b097d8e7d8aa00874d838cd6028183082cb02f069c5ebea763d08b74f63fd2f",
+    "data/hk_week4/runs/three_v2_paths_20261115/US_test_evaluations.npz": "257e28b540592100e6f220592b71bea2b8c7341249a57d49575f16bd21a80a9b"
+  }
+}

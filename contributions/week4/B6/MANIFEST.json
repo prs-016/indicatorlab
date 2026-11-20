@@ -1,0 +1,16 @@
+{
+  "upstream_base": "1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2",
+  "local_checkout": "/private/tmp/hk-week4-b3-hk",
+  "branch": "feat/cross-market-portfolio-design-week4",
+  "head": "74e3e50aa6aca5ab439cf3e1b43a601d5fe7ed75",
+  "parent": "bec5fc6c5928b8b587585b47595b6fe4ac4a9127",
+  "patch": "B6_PORTFOLIO_DESIGN.patch",
+  "patch_sha256": "447430eb37cc88cc245dc58c4c378b616c24d3bf9fdce6cf122a2ac15de92ee0",
+  "source_hashes": {
+    "agent/backtest/CROSS_MARKET_PORTFOLIO_DESIGN.md": "c8d6ad8e171cb06085a95b32c8c6a988c9b3750b75aa3d03220650105247bc4e"
+  },
+  "commit_trailers": "Document staged cross-market portfolio design over HK market layer\n\nSigned-off-by: Jack <234474744+jaz024@users.noreply.github.com>\nCo-authored-by: Jamal <188647228+Jampip@users.noreply.github.com>\nCo-authored-by: Joshua <239461382+Joshuaamm7@users.noreply.github.com>\nCo-authored-by: James <238608756+james-mulyono@users.noreply.github.com>\nCo-authored-by: Prakhar Shah <195330099+prs-016@users.noreply.github.com>",
+  "reconstruction": "applied B3 then B6 to clean base; all 10 target files byte-match",
+  "published": false,
+  "aws_deployed": false
+}

@@ -1,0 +1,840 @@
+diff --git a/README.md b/README.md
+index 7f00964..a4410cc 100644
+--- a/README.md
++++ b/README.md
+@@ -683,3 +683,12 @@ Vibe-Trading is research and trading software. It is not investment advice, hold
+ ## License
+ 
+ MIT License — see [LICENSE](LICENSE)
++
++### Hong Kong market-layer inputs
++
++HK backtests support a dated `hk_lot_sizes_file` CSV and statutory bilateral
++stamp duty with session dates and whole-HKD ceiling. Historical FX helpers report
++local and USD returns using only earlier, published closes; missing rates fail
++closed. The existing XHKG calendar validator excludes lunch and sourced weather
++exceptions. See [the HK market-layer contract](agent/backtest/HK_MARKET_LAYER.md) for
++usage, the current-lot historical assumption, data requirements and limits.
+diff --git a/agent/backtest/HK_MARKET_LAYER.md b/agent/backtest/HK_MARKET_LAYER.md
+new file mode 100644
+index 0000000..a5d1975
+--- /dev/null
++++ b/agent/backtest/HK_MARKET_LAYER.md
+@@ -0,0 +1,126 @@
++# B3: Hong Kong market layer
++
++Authors: @Jampip, @Joshuaamm7, @james-mulyono, @jaz024, @prs-016.
++
++Local HK implementation against upstream `1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2`.
++This is Jack's portion of the proposed joint B3 PR; it does not claim Jamal's
++India changes, a joint PR, a running AWS service or a complete B6 portfolio.
++
++## Calendar choice and execution boundaries
++
++Reuse the existing `exchange-calendars>=4.13.2,<5` dependency and existing
++`src.data_gateway.calendars.schedule/validate` interface. No new calendar library
++is added. XHKG normal sessions are 09:30–12:00 and 13:00–16:00 HKT; half-days
++and holidays come from the library. XNYS remains available for alignment.
++`validate` rejects lunch bar opens, missing bars, duplicates and extra sessions;
++callers must supply the actual bar timezone and bar-open semantics. Calendar
++validation does not fabricate missing prices or make them executable.
++
++Auditing installed version 4.13.2 found these missing historical exceptions, now
++corrected by `src/data_gateway/hk_sessions.py`:
++
++- August 2 and October 21, 2016; August 23, 2017; July 17, September 1 and
++  September 8, 2023: full closures.
++- October 9, 2023: opens at 14:00 HKT, with no lunch segment remaining.
++
++Each override links to the relevant HKEX or official SSE Stock Connect notice.
++This is an explicit, limited correction inventory, not certification of every
++historical weather event. Any further evidenced exceptions should be added as
++dated records with tests. Existing library holidays are retained.
++
++[HKEX's approved reform](https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2024/CT14824E.pdf)
++took effect September 23, 2024: ordinary typhoon/black-rain signals no longer
++imply closure. Do not apply the old weather rule to current sessions. Exceptional
++future closure notices still require an evidenced override. Intraday validation
++and the portfolio execution clock remain distinct: B6 must use the same schedule
++for executable orders as well as data checks.
++
++## Dated board lots and actual engine duty
++
++The included `agent/backtest/data/hk_board_lots_20261112.csv` contains the 95-name
++operational HSI roster's lot sizes, selected from the unchanged November 12 HKEX
++[List of Securities](https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx)
++snapshot. Each row retains retrieval time, source URL and original workbook hash.
++This reference roster differs from the current Wikipedia loader's observed
++85-name table; B3 does not silently substitute constituent sources.
++
++Pass `hk_lot_sizes_file` in a run config, using a path visible to the engine:
++
++```json
++{"hk_lot_sizes_file": "backtest/data/hk_board_lots_20261112.csv"}
++```
++
++The file is mutually exclusive with `hk_lot_sizes`. File-backed sizing requires
++every traded symbol to have a lot and fails on a missing one; it does not assume
++100. Existing in-memory maps keep their prior default unless
++`hk_require_lot_sizes: true` is set. Snapshot provenance appears in engine
++`hk_board_lot_snapshot` diagnostics and sets `historical_lots_verified: false`.
++
++Retrieval date is not an effective-from date. Using this table in 2016–2026
++research is an explicit current-lot assumption, not verified historical lot
++sizes. Future reviews and changes need a fresh dated snapshot. This CSV is not
++an historical constituent-membership database.
++
++`GlobalEquityEngine.calc_commission` now applies whole-HKD ceiling to duty on
++both bought and sold notes. The default is 0.1% from September 1, 2001, 0.13%
++August 1, 2021–November 16, 2023, and 0.1% from November 17, 2023.
++[IRD history](https://www.ird.gov.hk/eng/pdf/sd_stock_rates.pdf),
++[the 2023 change](https://www.ird.gov.hk/eng/ppr/archives/23111501.htm) and
++[HKEX's bilateral rounding rule](https://www.hkex.com.hk/Services/Rules-and-Forms-and-Fees/Fees/Securities-%28Hong-Kong%29/Trading/Transaction?sc_lang=en)
++are cited in the implementation. Before September 2001 an explicit researched
++`hk_stamp_tax` override is required. Undated direct method calls retain today's
++0.1% default; actual engine fills carry their session timestamp. An explicit
++`hk_stamp_tax` run override remains available and is still rounded.
++
++Hand calculation: 255 desired Tencent shares round down to 200 with lot 100;
++at HKD100.01 the HKD20,002 consideration incurs duty of ceil(20,002×0.0013)=HKD27
++on November 16, 2023 and ceil(20,002×0.001)=HKD21 on November 17, on each side.
++The other existing engine fees and slippage are retained unchanged. This is not
++certification of historical levy schedules, stamp-duty exemptions, short-sale
++eligibility, non-HKD counters or fee aggregation across multiple fills.
++
++Composite commission dispatch now synchronizes its current bar timestamp to
++the market engine. The existing India T+1/price-band routing is unchanged and
++its related tests pass. No India fee implementation is duplicated here.
++
++## Previous-close FX valuation contract
++
++`backtest.market_layer.previous_close_fx` takes a daily FX-observation table
++with timezone-aware `close_at`, `available_at` and positive `rate` columns.
++Rates are **HKD per USD** for HK portfolios. A caller may acquire `HKD=X` via
++`src.market_data.fetch_market_data(..., include_provenance=True, as_frames=True)`;
++retain the provider's price/time provenance. Daily date labels alone do not
++prove the close or publication instant. Establish those source semantics before
++constructing this observation table, or leave USD evaluation unavailable.
++
++For each valuation instant, select the latest close with BOTH timestamps
++strictly earlier than valuation. Missing or older-than-configured rates fail
++closed (default maximum age seven days). Weekend carry is permitted within that
++limit; future/backward filling is not. Returned rows include the selected close
++and availability timestamps for audit. The HKD peg is not treated as a fixed7.8.
++
++`local_and_usd_returns` divides the same local portfolio value by its selected
++HKD-per-USD rate, then computes local and unhedged USD returns side by side.
++The first return is missing. It neither adds local and FX returns nor changes
++native input price/volume units. Source adjustment consistency still needs to
++be established by the caller. The same utility can consume INR-per-USD
++observations supplied by Jamal; this patch does not acquire or certify them.
++
++These utilities are offline and dependency-injected. They do not ship a verified
++historical FX dataset or infer historical publication times. B4/B5 must reject a
++requested USD metric when no compliant observations are supplied. They also do
++not implement an FX cash ledger, hedge returns, executable FX trading, or the
++multicurrency portfolio mode proposed in B6.
++
++## Local verification
++
++153 tests passed in the selected eight files, including 35 new B3 cases, with
++socket and DNS calls prohibited and zero attempted calls. Exact commands and
++raw output accompany the contribution package. The tests cover holiday/weather
++closures, late-open and half-day sessions, lunch rejection, prior FX close and
++publication-time causality, missing/stale/invalid FX, USD conversion direction,
++dated lot coverage, both duty-rate boundaries, whole-dollar hand calculation,
++composite timestamp routing and existing India/composite/FX currency guards.
++
++Scoped Ruff passes for all six changed/new Python files. Only the three new
++Python files were Black-formatted; unrelated upstream files were not reformatted.
+diff --git a/agent/backtest/data/hk_board_lots_20261112.csv b/agent/backtest/data/hk_board_lots_20261112.csv
+new file mode 100644
+index 0000000..672131c
+--- /dev/null
++++ b/agent/backtest/data/hk_board_lots_20261112.csv
+@@ -0,0 +1,96 @@
++symbol,board_lot,stamp_duty_subject,pulled_at,source,source_sha256
++0001.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0002.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0003.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0005.HK,400,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0006.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0012.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0016.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0027.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0066.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0101.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0175.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0241.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0267.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0285.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0288.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0291.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0300.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0316.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0322.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0386.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0388.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0669.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0688.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0700.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0728.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0762.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0823.HK,100, ,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0836.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0857.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0868.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0883.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0939.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0941.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0960.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0968.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0981.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++0992.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1024.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1038.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1044.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1088.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1093.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1099.HK,400,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1109.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1113.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1177.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1209.HK,200,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1211.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1299.HK,200,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1347.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1378.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1398.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1519.HK,200,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1801.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1810.HK,200,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1876.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1928.HK,400,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1929.HK,200,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++1997.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2015.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2020.HK,200,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2057.HK,50,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2269.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2313.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2318.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2319.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2331.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2338.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2359.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2382.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2388.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2600.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2618.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2628.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2688.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++2899.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++3690.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++3692.HK,2000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++3750.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++3968.HK,500,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++3988.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++3993.HK,3000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++6160.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++6181.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++6618.HK,50,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++6690.HK,200,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++6862.HK,1000,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++9618.HK,50,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++9633.HK,200,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++9888.HK,50,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++9901.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++9961.HK,50,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++9988.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++9992.HK,200,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
++9999.HK,100,Y,2026-11-12T04:57:41.983841+00:00,https://www.hkex.com.hk/eng/services/trading/securities/securitieslists/ListOfSecurities.xlsx,85a9bd99558951625e5dcb0c880c3f233087798a40bb47837034a13b180e387a
+diff --git a/agent/backtest/engines/composite.py b/agent/backtest/engines/composite.py
+index 6f24bff..559233c 100644
+--- a/agent/backtest/engines/composite.py
++++ b/agent/backtest/engines/composite.py
+@@ -311,6 +311,7 @@ class CompositeEngine(BaseEngine):
+         """Delegate to active symbol's sub-engine."""
+         sub = self._rule_for(self._active_symbol)
+         sub._active_symbol = self._active_symbol
++        sub._bar_ts = self._bar_ts
+         return sub.calc_commission(size, price, direction, is_open)
+ 
+     def apply_slippage(self, price: float, direction: int) -> float:
+diff --git a/agent/backtest/engines/global_equity.py b/agent/backtest/engines/global_equity.py
+index 3bf8ba8..2e1521e 100644
+--- a/agent/backtest/engines/global_equity.py
++++ b/agent/backtest/engines/global_equity.py
+@@ -63,7 +63,7 @@ class GlobalEquityEngine(BaseEngine):
+     Config keys:
+       - slippage_us: default 0.0005
+       - slippage_hk: default 0.001
+-      - hk_stamp_tax: default 0.001 (0.1% bilateral)
++      - hk_stamp_tax: optional explicit override; otherwise dated statutory duty, whole-HKD ceiling
+       - hk_commission: default 0.00015 (万1.5)
+       - hk_levy: default 0.0000565 (SFC + FRC)
+       - hk_settlement: default 0.00002 (CCASS)
+@@ -71,6 +71,10 @@ class GlobalEquityEngine(BaseEngine):
+         issuer, so a flat 100 mis-sizes most names. Any HK symbol missing
+         from the table falls back to 100 and is reported in the run metrics
+         under ``lot_assumptions``, including runs with no table.
++      - hk_lot_sizes_file: dated HKEX CSV; mutually exclusive with hk_lot_sizes.
++        File-backed sizing requires every traded symbol; missing lots fail closed.
++        Snapshot retrieval time does not prove historical lot validity.
++      - hk_require_lot_sizes: require complete coverage for an in-memory lot map.
+       - slippage_ca: defaults to slippage_us
+       - ca_commission: broker commission rate, default 0.0
+       - slippage_uk: defaults to slippage_us
+@@ -99,6 +103,7 @@ class GlobalEquityEngine(BaseEngine):
+         # HK defaults
+         self.slippage_hk: float = config.get("slippage_hk", 0.001)
+         self.hk_stamp_tax: float = config.get("hk_stamp_tax", 0.001)
++        self._hk_stamp_tax_override = config.get("hk_stamp_tax")
+         self.hk_commission: float = config.get("hk_commission", 0.00015)
+         self.hk_levy: float = config.get("hk_levy", 0.0000565)
+         self.hk_settlement: float = config.get("hk_settlement", 0.00002)
+@@ -106,6 +111,15 @@ class GlobalEquityEngine(BaseEngine):
+             _hk_lot_key(k): int(v)
+             for k, v in (config.get("hk_lot_sizes") or {}).items()
+         }
++        self.hk_lot_snapshot = None
++        self.hk_require_lot_sizes = bool(config.get("hk_require_lot_sizes", False))
++        if config.get("hk_lot_sizes_file"):
++            from backtest.market_layer import load_hk_board_lots
++
++            if config.get("hk_lot_sizes"):
++                raise ValueError("Use hk_lot_sizes or hk_lot_sizes_file, not both")
++            self.hk_lot_sizes, self.hk_lot_snapshot = load_hk_board_lots(config["hk_lot_sizes_file"])
++            self.hk_require_lot_sizes = True
+         self.lot_assumptions: dict[str, int] = {}
+         # Canada defaults. Commission varies by broker, so the model exposes a
+         # rate instead of inventing an exchange-wide charge.
+@@ -140,6 +154,8 @@ class GlobalEquityEngine(BaseEngine):
+         lot = self.hk_lot_sizes.get(key, 0)
+         if lot > 0:
+             return lot
++        if self.hk_require_lot_sizes:
++            raise ValueError(f"HK board lot missing from the declared snapshot: {key}")
+         if key not in self.lot_assumptions:
+             self.lot_assumptions[key] = _DEFAULT_HK_BOARD_LOT
+             logger.warning(
+@@ -160,9 +176,10 @@ class GlobalEquityEngine(BaseEngine):
+                 "slippage_sell_rate": 1.0 - self._execution_price(1.0, -1),
+                 "commission_rate": self._execution_commission(1.0, 1.0, 1, True),
+             }}
+-        if not self.lot_assumptions:
++        if not self.lot_assumptions and not self.hk_lot_snapshot:
+             return {}
+         return {
++            **({"hk_board_lot_snapshot": self.hk_lot_snapshot} if self.hk_lot_snapshot else {}),
+             "lot_assumptions": [
+                 {"symbol": symbol, "field": "board_lot", "value": lot}
+                 for symbol, lot in sorted(self.lot_assumptions.items())
+@@ -198,9 +215,13 @@ class GlobalEquityEngine(BaseEngine):
+         to purchases of every kind: opening long and buying to cover.
+         """
+         if self.market == "hk":
++            from backtest.market_layer import hk_stamp_duty
++
+             notional = size * price
+             comm = notional * self.hk_commission       # broker commission
+-            comm += notional * self.hk_stamp_tax       # stamp tax bilateral
++            comm += hk_stamp_duty(
++                size, price, self._bar_ts, rate_override=self._hk_stamp_tax_override,
++            )
+             comm += notional * self.hk_levy            # SFC + FRC levies
+             comm += notional * self.hk_settlement      # CCASS settlement
+             return comm
+diff --git a/agent/backtest/market_layer.py b/agent/backtest/market_layer.py
+new file mode 100644
+index 0000000..deea8ac
+--- /dev/null
++++ b/agent/backtest/market_layer.py
+@@ -0,0 +1,173 @@
++"""Historical FX valuation and dated HK board-lot input, without network calls.
++
++FX observations are local currency units per USD. `close_at` and `available_at`
++are separate UTC instants: a previous close cannot be used before publication.
++Callers acquire daily USD/HKD (e.g. HKD=X) through the shared market-data layer
++and retain its provenance; this module never treats today's display FX as history.
++"""
++
++from __future__ import annotations
++
++import csv
++from datetime import date
++from decimal import Decimal, ROUND_CEILING
++from pathlib import Path
++
++import numpy as np
++import pandas as pd
++
++
++# IRD historical rates, then the 2023-11-17 restoration of 0.1% on EACH note:
++# https://www.ird.gov.hk/eng/pdf/sd_stock_rates.pdf
++# https://www.ird.gov.hk/eng/ppr/archives/23111501.htm
++# HKEX: round duty UP to a whole HK dollar on both buyer and seller:
++# https://www.hkex.com.hk/Services/Rules-and-Forms-and-Fees/Fees/Securities-(Hong-Kong)/Trading/Transaction?sc_lang=en
++# Exemptions and non-HKD counters require their own declared policy; this is
++# the ordinary HKD-equity contract, not a complete historical fee certification.
++def hk_stamp_duty(size, price, timestamp=None, *, rate_override=None) -> float:
++    """Return bilateral, per-note duty, optionally using an explicit run override.
++
++    An undated direct engine call retains the current 0.1% default. Actual
++    backtest fills carry their session timestamp. The dated default is supported
++    from 2001-09-01; earlier runs must supply a researched explicit override.
++    """
++    if rate_override is None:
++        rate = Decimal("0.001")
++        if timestamp is not None:
++            stamp = pd.Timestamp(timestamp)
++            if pd.isna(stamp):
++                raise ValueError("HK duty requires a valid session date")
++            day = (
++                stamp.tz_convert("Asia/Hong_Kong").date()
++                if stamp.tzinfo
++                else stamp.date()
++            )
++            if day < date(2001, 9, 1):
++                raise ValueError(
++                    "HK duty before 2001-09-01 requires an explicit rate override"
++                )
++            if date(2021, 8, 1) <= day < date(2023, 11, 17):
++                rate = Decimal("0.0013")
++    else:
++        rate = Decimal(str(rate_override))
++    quantity, px = Decimal(str(size)), Decimal(str(price))
++    if not all(value.is_finite() and value >= 0 for value in (quantity, px, rate)):
++        raise ValueError("HK duty inputs must be finite and nonnegative")
++    return float((quantity * px * rate).to_integral_value(rounding=ROUND_CEILING))
++
++
++def load_hk_board_lots(path: str | Path) -> tuple[dict[str, int], dict]:
++    """Read an explicitly supplied dated HKEX CSV; reject aliases/conflicts/gaps.
++
++    This input is a current snapshot unless separately evidenced historical
++    validity is supplied. Retrieval time is not an effective-from date.
++    """
++    from backtest.engines.global_equity import _hk_lot_key
++
++    lots, retrieved, sources, hashes = {}, set(), set(), set()
++    with Path(path).open(encoding="utf-8-sig", newline="") as handle:
++        for row in csv.DictReader(handle):
++            symbol = _hk_lot_key(row["symbol"])
++            lot = int(row["board_lot"])
++            if (
++                not symbol.endswith(".HK")
++                or not symbol[:-3].isdigit()
++                or not 0 < int(symbol[:-3]) < 100000
++                or lot <= 0
++            ):
++                raise ValueError("Invalid HK board-lot record")
++            if symbol in lots:
++                raise ValueError(f"Duplicate HK board-lot instrument: {symbol}")
++            if (
++                not row.get("pulled_at")
++                or not row.get("source")
++                or not row.get("source_sha256")
++            ):
++                raise ValueError(
++                    "HK board lots require retrieval time, source URL and source hash"
++                )
++            lots[symbol] = lot
++            retrieved.add(row["pulled_at"])
++            sources.add(row["source"])
++            hashes.add(row["source_sha256"])
++    if not lots or len(retrieved) != 1 or len(sources) != 1 or len(hashes) != 1:
++        raise ValueError(
++            "HK board-lot CSV must contain one coherent dated source snapshot"
++        )
++    return lots, {
++        "retrieved_at": retrieved.pop(),
++        "source": sources.pop(),
++        "source_sha256": hashes.pop(),
++        "historical_lots_verified": False,
++    }
++
++
++def previous_close_fx(
++    valuation_times, observations: pd.DataFrame, *, max_age="7D"
++) -> pd.DataFrame:
++    """Select the last available FX CLOSE strictly before each valuation instant.
++
++    Required columns: close_at, available_at (timezone-aware), rate (>0).
++    Future/unpublished rates never participate. Missing/stale observations fail
++    closed rather than backfill. The returned timestamps make each choice auditable.
++    """
++    instants = pd.DatetimeIndex(valuation_times)
++    if (
++        instants.tz is None
++        or instants.hasnans
++        or instants.has_duplicates
++        or not instants.is_monotonic_increasing
++    ):
++        raise ValueError(
++            "Valuation instants must be unique, increasing and timezone-aware"
++        )
++    quotes = observations.copy()
++    if quotes.empty:
++        raise ValueError("No FX close observations")
++    for field in ("close_at", "available_at"):
++        parsed = pd.DatetimeIndex(quotes[field])
++        if parsed.tz is None or parsed.hasnans:
++            raise ValueError(f"FX {field} must be timezone-aware")
++        quotes[field] = parsed.tz_convert("UTC")
++    quotes["rate"] = pd.to_numeric(quotes["rate"], errors="raise")
++    if not np.isfinite(quotes["rate"]).all() or (quotes["rate"] <= 0).any():
++        raise ValueError("FX rates must be finite and positive")
++    if (
++        quotes["close_at"].duplicated().any()
++        or (quotes["available_at"] < quotes["close_at"]).any()
++    ):
++        raise ValueError(
++            "FX closes must be unique and cannot be available before their close"
++        )
++    age_limit = pd.Timedelta(max_age)
++    if pd.isna(age_limit) or age_limit <= pd.Timedelta(0):
++        raise ValueError("FX maximum age must be positive")
++    result = []
++    for at in instants.tz_convert("UTC"):
++        known = quotes[
++            (quotes["close_at"] < at) & (quotes["available_at"] < at)
++        ].sort_values("close_at")
++        if known.empty or at - known.iloc[-1]["close_at"] > age_limit:
++            raise ValueError(f"Missing or stale prior FX close at {at.isoformat()}")
++        result.append(known.iloc[-1][["rate", "close_at", "available_at"]].to_dict())
++    return pd.DataFrame(result, index=instants)
++
++
++def local_and_usd_returns(
++    local_values: pd.Series, observations: pd.DataFrame, *, max_age="7D"
++) -> pd.DataFrame:
++    """Report local and unhedged USD returns from the same portfolio value path.
++
++    Divide by local-currency-per-USD before computing pct_change. No cashbook,
++    hedge implementation, FX forward fill or daily-return addition is implied.
++    """
++    if not np.isfinite(local_values).all() or (local_values <= 0).any():
++        raise ValueError("Portfolio values must be finite and positive")
++    selected = previous_close_fx(local_values.index, observations, max_age=max_age)
++    values_usd = local_values / selected["rate"]
++    return selected.assign(
++        value_local=local_values,
++        value_usd=values_usd,
++        return_local=local_values.pct_change(fill_method=None),
++        return_usd=values_usd.pct_change(fill_method=None),
++    )
+diff --git a/agent/src/data_gateway/calendars.py b/agent/src/data_gateway/calendars.py
+index af817d3..6720508 100644
+--- a/agent/src/data_gateway/calendars.py
++++ b/agent/src/data_gateway/calendars.py
+@@ -34,7 +34,12 @@ def schedule(market, start, end):
+     # Padding permits an all-weekend/holiday request; never create the default
+     # multi-decade calendar or its materialized all-minutes property.
+     calendar = calendar_type(start=lower - timedelta(days=7), end=upper + timedelta(days=7), side="left")
+-    return name, str(calendar.tz), calendar.schedule.loc[start:end].copy()
++    frame = calendar.schedule.loc[start:end].copy()
++    if name == "XHKG":
++        from src.data_gateway.hk_sessions import apply_weather_overrides
++
++        frame = apply_weather_overrides(frame)
++    return name, str(calendar.tz), frame
+ 
+ 
+ def validate(rows, market, start, end, interval, provenance, *, prepared=None):
+@@ -71,6 +76,10 @@ def validate(rows, market, start, end, interval, provenance, *, prepared=None):
+         "coverage_verified": False,
+         "coverage": "exchange_calendar_grid",
+     }
++    if name == "XHKG":
++        meta["calendar_limitations"] = (
++            "exchange_calendars plus dated weather overrides; historical weather inventory is not exhaustive"
++        )
+     raw = [row.get("trade_date", row.get("time")) for row in rows]
+     excluded = []
+     kept = list(rows)
+diff --git a/agent/src/data_gateway/hk_sessions.py b/agent/src/data_gateway/hk_sessions.py
+new file mode 100644
+index 0000000..68a2fea
+--- /dev/null
++++ b/agent/src/data_gateway/hk_sessions.py
+@@ -0,0 +1,38 @@
++"""Sourced corrections to the library's HKEX historical session schedule.
++
++These are observed exceptions, not an exhaustive weather-event reconstruction.
++Since 2024-09-23 ordinary severe weather no longer implies a market closure:
++https://www.hkex.com.hk/News/Market-Communications/2024/240618news?sc_lang=en
++"""
++
++import pandas as pd
++
++# HKEX explicitly cancelled every securities session on these dates.
++FULL_CLOSURES = {
++    "2016-08-02": "https://www.hkex.com.hk/News/Market-Communications/2016/1608022news?sc_lang=en",
++    "2016-10-21": "https://www.hkex.com.hk/News/Market-Communications/2016/1610212news?sc_lang=en",
++    "2017-08-23": "https://www.hkex.com.hk/news/market-communications/2017/1708232news?sc_lang=en",
++    "2023-07-17": "https://www.hkex.com.hk/News/Market-Communications/2023/2307172news?sc_lang=en",
++    "2023-09-01": "https://www.hkex.com.hk/News/Market-Communications/2023/2309012news?sc_lang=en",
++    "2023-09-08": "https://www.hkex.com.hk/News/Market-Communications/2023/2309083news?sc_lang=en",
++}
++# Official Stock Connect notice: resumed at 14:00 HKT, after the normal lunch.
++LATE_OPENS = {
++    "2023-10-09": (
++        "14:00",
++        "https://www.sse.com.cn/services/hkexsc/disclo/announ/c/c_20231009_5727317.shtml",
++    ),
++}
++
++
++def apply_weather_overrides(frame: pd.DataFrame) -> pd.DataFrame:
++    """Correct known pre-reform dates without inferring closures from weather."""
++    frame = frame.drop(index=pd.DatetimeIndex(FULL_CLOSURES), errors="ignore").copy()
++    for day, (opening, _source) in LATE_OPENS.items():
++        stamp = pd.Timestamp(day)
++        if stamp in frame.index:
++            frame.loc[stamp, "open"] = pd.Timestamp(
++                f"{day} {opening}", tz="Asia/Hong_Kong"
++            ).tz_convert("UTC")
++            frame.loc[stamp, ["break_start", "break_end"]] = pd.NaT
++    return frame
+diff --git a/agent/tests/test_hk_market_layer.py b/agent/tests/test_hk_market_layer.py
+new file mode 100644
+index 0000000..95dbbee
+--- /dev/null
++++ b/agent/tests/test_hk_market_layer.py
+@@ -0,0 +1,235 @@
++"""Offline B3: calendar/FX causality, official lots and actual execution costs."""
++
++from pathlib import Path
++
++import pandas as pd
++import pytest
++
++from backtest.engines.composite import CompositeEngine
++from backtest.engines.global_equity import GlobalEquityEngine
++from backtest.market_layer import (
++    hk_stamp_duty,
++    load_hk_board_lots,
++    local_and_usd_returns,
++    previous_close_fx,
++)
++from src.data_gateway.calendars import CalendarCoverageError, schedule, validate
++
++LOTS = Path(__file__).parents[1] / "backtest/data/hk_board_lots_20261112.csv"
++
++
++@pytest.mark.parametrize(
++    "day",
++    [
++        "2026-10-01",
++        "2016-08-02",
++        "2016-10-21",
++        "2017-08-23",
++        "2023-07-17",
++        "2023-09-01",
++        "2023-09-08",
++    ],
++)
++def test_hk_holiday_and_historical_weather_closures(day):
++    assert schedule("hk_equity", day, day)[2].empty
++
++
++def test_hk_weather_late_open_has_no_fictitious_lunch():
++    row = schedule("hk_equity", "2023-10-09", "2023-10-09")[2].iloc[0]
++    assert row["open"] == pd.Timestamp("2023-10-09T06:00:00Z")
++    assert pd.isna(row["break_start"]) and pd.isna(row["break_end"])
++
++
++def test_hk_post_reform_weather_does_not_imply_a_closure():
++    # Typhoon Toraji, 14 Nov 2024: ordinary severe weather trading now continues.
++    # The calendar contains the session; no universal T8/black-rain switch is used.
++    assert len(schedule("hk_equity", "2024-11-14", "2024-11-14")[2]) == 1
++
++
++def test_hk_halfday_and_nyse_alignment_available():
++    row = schedule("hk_equity", "2026-12-24", "2026-12-24")[2].iloc[0]
++    assert row["close"] == pd.Timestamp("2026-12-24T04:00:00Z")
++    assert schedule("us_equity", "2026-10-01", "2026-10-01")[0] == "XNYS"
++
++
++def test_lunch_bar_rejected_by_actual_calendar_validator():
++    # Complete valid hourly continuous-session bar opens, plus an invalid lunch bar.
++    stamps = ["01:30", "02:30", "03:30", "05:00", "06:00", "07:00", "04:30"]
++    rows = [{"time": f"2026-11-12T{stamp}:00Z"} for stamp in stamps]
++    with pytest.raises(CalendarCoverageError, match="extra=1"):
++        validate(
++            rows,
++            "hk_equity",
++            "2026-11-12",
++            "2026-11-12",
++            "1H",
++            {"timezone": "UTC", "timestamp_basis": "bar_open"},
++        )
++    _, meta = validate(
++        rows[:-1],
++        "hk_equity",
++        "2026-11-12",
++        "2026-11-12",
++        "1H",
++        {"timezone": "UTC", "timestamp_basis": "bar_open"},
++    )
++    assert (
++        meta["coverage_verified"] and "not exhaustive" in meta["calendar_limitations"]
++    )
++
++
++def fx_quotes():
++    return pd.DataFrame(
++        {
++            "close_at": pd.to_datetime(
++                ["2026-10-29T22:00Z", "2026-10-30T22:00Z", "2026-11-02T22:00Z"]
++            ),
++            "available_at": pd.to_datetime(
++                ["2026-10-29T22:05Z", "2026-10-30T22:05Z", "2026-11-02T22:05Z"]
++            ),
++            "rate": [7.8, 7.9, 8.0],
++        }
++    )
++
++
++def test_fx_previous_available_close_and_weekend_no_future_rate():
++    at = pd.to_datetime(["2026-10-30T08:00Z", "2026-11-02T08:00Z"])
++    got = previous_close_fx(at, fx_quotes())
++    assert got["rate"].tolist() == [7.8, 7.9]
++    assert (got["close_at"].array < at).all()
++    assert (got["available_at"].array < at).all()
++
++
++def test_fx_unpublished_close_never_used_even_at_its_publication_instant():
++    got = previous_close_fx(pd.to_datetime(["2026-10-30T22:05Z"]), fx_quotes())
++    assert got.iloc[0]["rate"] == 7.8
++
++
++def test_fx_conversion_is_division_and_returns_include_fx():
++    values = pd.Series(
++        [780.0, 790.0], index=pd.to_datetime(["2026-10-30T08:00Z", "2026-11-02T08:00Z"])
++    )
++    result = local_and_usd_returns(values, fx_quotes())
++    assert result["value_usd"].tolist() == pytest.approx([100, 100])
++    assert result["return_usd"].iloc[1] == pytest.approx(0)
++    assert result["return_local"].iloc[1] == pytest.approx(790 / 780 - 1)
++
++
++@pytest.mark.parametrize("at", ["2026-10-29T08:00Z", "2026-11-15T08:00Z"])
++def test_fx_missing_or_stale_is_an_error(at):
++    with pytest.raises(ValueError, match="Missing or stale"):
++        previous_close_fx(pd.to_datetime([at]), fx_quotes())
++
++
++@pytest.mark.parametrize("bad_rate", [0, -1, float("nan"), float("inf")])
++def test_fx_invalid_rates_rejected(bad_rate):
++    quotes = fx_quotes()
++    quotes.loc[0, "rate"] = bad_rate
++    with pytest.raises(ValueError, match="finite and positive"):
++        previous_close_fx(pd.to_datetime(["2026-10-30T08:00Z"]), quotes)
++
++
++def test_fx_cannot_claim_availability_before_close_or_use_naive_instants():
++    quotes = fx_quotes()
++    quotes.loc[0, "available_at"] = pd.Timestamp("2026-10-29T21:00Z")
++    with pytest.raises(ValueError, match="before their close"):
++        previous_close_fx(pd.to_datetime(["2026-10-30T08:00Z"]), quotes)
++    with pytest.raises(ValueError, match="timezone-aware"):
++        previous_close_fx(pd.to_datetime(["2026-10-30"]), fx_quotes())
++
++
++@pytest.mark.parametrize(
++    "day,expected",
++    [
++        ("2021-07-30", 11),
++        ("2021-08-01", 14),
++        ("2023-11-16", 14),
++        ("2023-11-17", 11),
++    ],
++)
++def test_duty_date_boundaries_and_whole_dollar_ceiling(day, expected):
++    assert hk_stamp_duty(100, 100.01, day) == expected
++
++
++@pytest.mark.parametrize(
++    "direction,is_open", [(1, True), (1, False), (-1, True), (-1, False)]
++)
++def test_actual_engine_lot_rounding_and_bilateral_duty_hand_calculation(
++    direction, is_open
++):
++    config = {
++        "initial_cash": 100000,
++        "hk_lot_sizes_file": str(LOTS),
++        "hk_commission": 0,
++        "hk_levy": 0,
++        "hk_settlement": 0,
++    }
++    engine = GlobalEquityEngine(config, market="hk")
++    engine._active_symbol = "700.HK"
++    assert engine.round_size(255, 100.01) == 200  # Tencent's dated board lot is 100.
++    engine._bar_ts = pd.Timestamp("2023-11-16")
++    assert (
++        engine.calc_commission(200, 100.01, direction, is_open) == 27
++    )  # ceil(20002*.0013)
++    engine._bar_ts = pd.Timestamp("2023-11-17")
++    assert (
++        engine.calc_commission(200, 100.01, direction, is_open) == 21
++    )  # ceil(20002*.001)
++    assert not engine.hk_lot_snapshot["historical_lots_verified"]
++
++
++def test_lot_file_is_dated_95_name_source_and_missing_lot_fails_closed():
++    lots, meta = load_hk_board_lots(LOTS)
++    assert len(lots) == 95 and lots["0005.HK"] == 400
++    assert meta["retrieved_at"].startswith("2026-11-12")
++    engine = GlobalEquityEngine({"hk_lot_sizes_file": str(LOTS)}, market="hk")
++    engine._active_symbol = "1234.HK"
++    with pytest.raises(ValueError, match="board lot missing"):
++        engine.round_size(1000, 1)
++
++
++def test_lot_alias_duplicates_rejected(tmp_path):
++    path = tmp_path / "lots.csv"
++    path.write_text(
++        "symbol,board_lot,pulled_at,source,source_sha256\n700.HK,100,2026-11-12,https://example.test,abc\n0700.HK,100,2026-11-12,https://example.test,abc\n"
++    )
++    with pytest.raises(ValueError, match="Duplicate"):
++        load_hk_board_lots(path)
++
++
++def test_composite_syncs_timestamp_before_hk_commission_without_changing_india_rules():
++    config = {
++        "initial_cash": 100000,
++        "codes": ["0700.HK"],
++        "hk_commission": 0,
++        "hk_levy": 0,
++        "hk_settlement": 0,
++    }
++    engine = CompositeEngine(config, config["codes"])
++    engine._active_symbol = "0700.HK"
++    for day, expected in [("2023-11-16", 14), ("2023-11-17", 11)]:
++        engine._bar_ts = pd.Timestamp(day)
++        assert engine.calc_commission(100, 100.01, 1, True) == expected
++
++
++def test_explicit_stamp_override_retained_but_still_rounded():
++    engine = GlobalEquityEngine({"hk_stamp_tax": 0}, market="hk")
++    engine._bar_ts = pd.Timestamp("2022-01-05")
++    assert hk_stamp_duty(100, 100.01, "2022-01-05", rate_override=0) == 0
++    assert engine._hk_stamp_tax_override == 0
++
++
++def test_invalid_fx_age_and_duplicate_close_fail_closed():
++    with pytest.raises(ValueError, match="maximum age"):
++        previous_close_fx(
++            pd.to_datetime(["2026-10-30T08:00Z"]), fx_quotes(), max_age=pd.NaT
++        )
++    quotes = pd.concat([fx_quotes(), fx_quotes().iloc[[0]]], ignore_index=True)
++    with pytest.raises(ValueError, match="unique"):
++        previous_close_fx(pd.to_datetime(["2026-10-30T08:00Z"]), quotes)
++
++
++def test_duty_out_of_supported_history_requires_override():
++    with pytest.raises(ValueError, match="before 2001"):
++        hk_stamp_duty(100, 100.01, "2000-01-05")
++    assert hk_stamp_duty(100, 100.01, "2000-01-05", rate_override=0.001125) == 12

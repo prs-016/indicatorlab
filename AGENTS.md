@@ -1,3 +1,85 @@
+# HK dashboard connection repair (2026-11-19)
+
+- `Start HK Dashboard.command` now runs `src.hk.dashboard start --with-feed
+  --open-browser`. It starts/reuses one loopback API in the background and
+  reuses the existing known local collector, starting it only if stopped.
+  Closing the launcher Terminal is safe. No login daemon or cloud job is added.
+- `Stop HK Dashboard.command` / `python -B -m src.hk.dashboard stop` stops only
+  the verified owned API. State/logs in ignored `data/hk_dashboard/` use a file
+  lock, process instance ID and checkout/config fingerprint. Foreign ports or
+  recycled PIDs must never be signalled. Standard `serve` stays foreground and
+  API-only. Tests: `tests/test_hk_dashboard_startup.py`.
+- `src/hk/live_paths.py` centralizes snapshot discovery for CLI and direct API
+  use. Explicit source paths win; auto mode follows valid latest receipt times
+  and can discover a late-starting collector. Historical research is unchanged.
+- Frontend `file://` opens show launcher instructions; HTTP503/data errors,
+  transport errors and unsupported markets are distinct. All+missing India/US
+  remains connected to working HK. New recovery helpers have Node tests.
+- Do not change the Forked VT/HKVT submission or frozen study for this repair.
+
+---
+
+# HK live dashboard (2026-11-18; original implementation)
+
+
+- The user requested the HK live frontend locally in IndicatorLab. Read
+  `frontend/live_markets/README.md` and `docs/HK_LIVE_DASHBOARD.md`.
+- Plain HTML/CSS/JS in `frontend/live_markets/`, read-only API adapter in
+  `src/api/live_data.py` / `live_routes.py`, mounted by `src/api/main.py`.
+  Preserve the existing Reddit router and team frontend.
+- The updated launcher uses managed `start`; manual `serve` remains available
+  in a project environment. It discovers existing latest quotes; never start
+  a duplicate collector. Source mode defaults to local, AWS opt-in.
+- Node checks in `frontend/live_markets`: `npm test`, `npm run check`,
+  `npm run build` (no npm dependencies). Backend: `python -B -m pytest
+  tests/test_hk_dashboard.py -q -p no:cacheprovider`.
+- Commit source/config examples/docs; generated `dist/`, live quotes and
+  credentials stay ignored. User handles GitHub and AWS deployment remains
+  deferred. This UI is not part of HKVT's standalone upstream contribution.
+- No order entry, portfolio rerun or frozen strategy modification is authorized
+  by the frontend task. James's full team dashboard/API remain a separate scope.
+
+---
+
+# Active Jack Week 4 context (2026-11-15)
+
+- This is the IndicatorLab research branch `Jack`. Never paste a Vibe app tree
+  here or edit/push `main`, the teammate's India/NIFTY branch, or the running
+  collector in `../indicatorlab-clean`. User handles remote publishing; AWS is
+  explicitly deferred. Older team/India context below is retained as history.
+- Start at `docs/HK_WEEK4_STATUS.md`. Current work uses `src/hk/week4/`,
+  `results/hk/week4/` and ignored `data/hk_week4/`. The active root config cutoff
+  is 2026-11-01; train 2016-06-01..2021-12-31, test 2022-01-01..2026-10-31.
+  Read dates/baseline from config. The older 2025-cutoff Week1–3 sources/results
+  are frozen historical artifacts, not active candidate commands.
+- Rules, source/input hashes, train-only variant/candidate selections and prior
+  test exposure must be logged before the extended test. Never rerun/tune an
+  observed test or overwrite prior input/results snapshots.
+- Shared scorer `src/sentiment/` and `src/storage.py` come from team Reddit
+  commit ca3d391cd596a08af6d7ea290563c2fb1712fda9; preserve attribution and
+  pinned model revision. Model weights, market inputs and traces stay ignored.
+- `src/live/base.py` / `src/live/hk.py` is a separate opt-in shared loop, tested
+  offline. It was not started. Local CLI: `python -m src.live.hk --config
+  config.yaml --output data/live_hk_week4`. Do not start a duplicate worker.
+- Full HSI attention handoff: `config/hk_week4_handoff.json`, referenced in root
+  config; 95 symbols/270 title intervals, one unknown date excluded. No surveyed
+  market-specific subreddit qualified; preserve empty lists and survey errors.
+- B4/B5 schema is a proposal awaiting team agreement. `src/hk/week4_compare.py`
+  uses upstream DSR only with portfolio returns and an explicit complete ledger;
+  missing metrics remain null. B6 is design/branch preparation, not a finished
+  multicurrency trading engine.
+- Authoritative upstream handoff is the separate `HK vt/indicatorlab` HK branch,
+  `contributions/week4/`. B2 universe, B3 HK market layer and B6 design are
+  separate scopes; the older `contributions/vibe-trading/` is a historical snapshot.
+- Test current HK/config paths: `python -B -m pytest tests/test_config.py
+  tests/test_hk_*.py -q -p no:cacheprovider`. Tests use fixtures/mocked network.
+  Run docs/codeReviewer.md before publishing. Do not format untouched files.
+- Update this file with changed structure, commands or conventions. Never claim
+  remote PRs, source certification, AWS service acceptance or team agreement
+  from local tests.
+
+---
+
 # AGENTS.md
 
 ## Project overview

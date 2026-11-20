@@ -1,0 +1,150 @@
+{
+  "package_version": 3,
+  "preferred": true,
+  "scope": "Week 4 B2 HSI stacked on latest NIFTY contribution; no quote/cloud code",
+  "dependency": {
+    "repository": "https://github.com/Jampip/Vibe-Trading",
+    "branch": "feat/alpha-bench-nifty100",
+    "commit": "342259f40d04ad79f586f9585384ce44b3025058"
+  },
+  "base_commit": "342259f40d04ad79f586f9585384ce44b3025058",
+  "standalone_alternate_base": "1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2",
+  "created_at_utc": "2026-11-15T22:37:59.935494+00:00",
+  "patch_sha256": "07d76b0f1817f637fd5d7b95b657685a44fabb724a6c1ecf3305f693996fb741",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "dd396ab9420a98ba3b81e898a5535ab6aba49f2bcd6cd1b9e871360b34cb2320"
+    },
+    {
+      "path": "agent/backtest/loaders/_symbol_utils.py",
+      "sha256": "452dba9a248630f89d222c4211c50b8039727949a6778b21e8a1edc3fd4195cd"
+    },
+    {
+      "path": "agent/src/api/alpha_routes.py",
+      "sha256": "0c9b78c76ce3880762f7a1e74b6e4bc6c29ee0bb3449ea62e2c6e68194b05071"
+    },
+    {
+      "path": "agent/src/factors/cli_handlers.py",
+      "sha256": "e9caa210dbfa16f98e73e3d1f09bc0b1ff6109374c3adc103b79682f62564424"
+    },
+    {
+      "path": "agent/src/factors/data_availability.py",
+      "sha256": "2439e37f792bc7ba677016cde3012c86e5e0f9df47876465dd1cad8799efea80"
+    },
+    {
+      "path": "agent/src/tools/alpha_bench_tool.py",
+      "sha256": "2de787ad85149c80e521c8c23c82b8a5ac7e722132a72a7eac07dfbfab7234c1"
+    },
+    {
+      "path": "agent/src/tools/alpha_compare_tool.py",
+      "sha256": "345fa64c718e0f2d3771496ee20410a9567d17c5548fdd640c2e05b3481301e9"
+    },
+    {
+      "path": "agent/src/tools/hsi_metadata.py",
+      "sha256": "ce2e3d5da9a24e9a4ef5aa43f9f5c4383aaa8cbf4a9a7b023e155b580826ae1c"
+    },
+    {
+      "path": "agent/src/tools/hsi_universe.py",
+      "sha256": "8edf805fbd0e24f89e13b514951649cca34583543fc3ed88735f671f31a72205"
+    },
+    {
+      "path": "agent/tests/test_alpha_bench_hsi.py",
+      "sha256": "c8fd553b84b35f7a4430abf7e058d2dd4888040210b59b152265df8d17bd4ada"
+    },
+    {
+      "path": "agent/tests/test_data_availability.py",
+      "sha256": "d01a29c60cca7da1694f044898964f8c515a30173f88798906b1c24dcf397038"
+    },
+    {
+      "path": "agent/tests/test_hsi_benchmark_validation.py",
+      "sha256": "524cf589ab4a04f84450135d36fa888127baf8c272dd0e661b8c585fcbba4ba2"
+    },
+    {
+      "path": "agent/tests/test_hsi_membership_reference.py",
+      "sha256": "bcc1b36a380d09bc84bf5aec48cb24443ec015951da29af5f62f7154b5d41595"
+    },
+    {
+      "path": "agent/tests/test_nifty100_api_cli.py",
+      "sha256": "37da579c0ebb623f18f12fb9bfc0b2c2266a76983ad59dd8c551b0c57f5dee65"
+    },
+    {
+      "path": "frontend/src/i18n/locales/ar.json",
+      "sha256": "33b3a882ac85ba629ad2b5b75c0256f45c9f4ac397d236cdcbe78d2809bb33eb"
+    },
+    {
+      "path": "frontend/src/i18n/locales/de.json",
+      "sha256": "2f869a30e2a26c47c746c99e7c263e04de8d71f1695c2f91ea7635d15394e08a"
+    },
+    {
+      "path": "frontend/src/i18n/locales/en.json",
+      "sha256": "ee385b0bcfbfd980eae024b3a33774bc6b19f8bf688ab7b64add3639fe3e02d2"
+    },
+    {
+      "path": "frontend/src/i18n/locales/es.json",
+      "sha256": "9d74ae5001d6534802d26d9dc668c2d414bf514ba17d5eab92e1f554ee2691b1"
+    },
+    {
+      "path": "frontend/src/i18n/locales/fa.json",
+      "sha256": "d63e0be69b8965ce7cc14d441577332c3352322431fcbf253aeec72042740a23"
+    },
+    {
+      "path": "frontend/src/i18n/locales/id.json",
+      "sha256": "5746d659de73e60e30ce3dbe4f71187f36115698ae69a5bb255951f504a3c08c"
+    },
+    {
+      "path": "frontend/src/i18n/locales/ja.json",
+      "sha256": "f0743d1df10430f00043afa74c67c1f60034488caf15e62c494aa11c013a40ae"
+    },
+    {
+      "path": "frontend/src/i18n/locales/ko.json",
+      "sha256": "d1a0ffbc65ab6f4f3eb514ded8e5070d2a93f509cc7ab49b6b94aa10bd62d2e1"
+    },
+    {
+      "path": "frontend/src/i18n/locales/pt-BR.json",
+      "sha256": "22c42815d081f2ff8c40ecdba6e855f1217673447fcd09be3f0ffea878071c44"
+    },
+    {
+      "path": "frontend/src/i18n/locales/tr.json",
+      "sha256": "44f20606ff6d9f59c52a5c69a515da8b0f760a1e3be09a7140cc1f300ef60d84"
+    },
+    {
+      "path": "frontend/src/i18n/locales/zh-CN.json",
+      "sha256": "dd2531807371d72f5d2fc1a166e730ff969d0e050dffbe027bd5e0a32b44f57c"
+    },
+    {
+      "path": "frontend/src/pages/AlphaZoo.tsx",
+      "sha256": "fe5aedbd1e1fd6c1d39bcc9635b0e722dce71c31875f91f5ae77950c485558fd"
+    },
+    {
+      "path": "frontend/src/pages/__tests__/AlphaZoo.test.tsx",
+      "sha256": "b702ffcf56060dcab3c9dfaa86d5d10312c9e72fa13b887b54ecd3d141989e4f"
+    }
+  ],
+  "nifty_code_preservation": "Three NIFTY loader/context functions byte-matched original; shared registrations/locale/UI/test assertions reconciled only",
+  "limitations": [
+    "strict Wikipedia85 vs published95 count prevents real benchmark; annual coverage not generated",
+    "no PR/push/remote CI performed",
+    "not a quote service or cloud deployment"
+  ],
+  "checks": {
+    "base_commit": "342259f40d04ad79f586f9585384ce44b3025058",
+    "backend_passed": 1228,
+    "backend_skipped": 23,
+    "frontend_passed": 982,
+    "frontend_files": 101,
+    "typescript": "passed",
+    "ruff_changed_python": "passed",
+    "git_diff_check": "passed",
+    "backend_command": "python -m pytest -q tests/test_alpha_bench_*.py tests/test_nifty100_api_cli.py tests/test_nifty100_sector_vwap.py tests/test_bench_universe_selection.py tests/factors/test_alpha_purity.py tests/factors/test_lookahead.py tests/test_hsi_membership_reference.py tests/test_hsi_benchmark_validation.py tests/test_data_availability.py",
+    "frontend_command": "npm run test:run",
+    "typescript_command": "npx tsc --noEmit"
+  },
+  "joint_offline_guard": {
+    "passed": 184,
+    "socket_calls": 0,
+    "dns_calls": 0,
+    "command": "PYTHONPATH=/private/tmp/hk-week4-review python -B -m pytest -p b2_offline_guard -q tests/test_alpha_bench_hsi.py tests/test_hsi_membership_reference.py tests/test_hsi_benchmark_validation.py tests/test_data_availability.py tests/test_alpha_bench_nifty100.py tests/test_nifty100_api_cli.py tests/test_nifty100_sector_vwap.py tests/test_bench_universe_selection.py"
+  },
+  "real_benchmark": "attempted; strict Wikipedia85/published95 count mismatch; zero alphas evaluated; annual coverage unavailable"
+}

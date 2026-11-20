@@ -1,0 +1,35 @@
+{
+  "status": "Native CLI runs completed; direct Sharpe agreement fails in both markets, and the gaps are quantitatively reconciled from sealed fills. No candidate promotion or strategy tuning.",
+  "method": "Read-only cash-and-share identities and ordered fixed-fill counterfactual accounting; quantities never regenerate or resize. No new portfolio/backtest invocation. Decomposition is ordered, not a unique causal attribution.",
+  "HK": {
+    "currency": "HKD",
+    "research_sharpe": -0.46134972492416726,
+    "native_sharpe": -0.04815536172628209,
+    "sessions": 1185,
+    "equity_advantage_native": 261690.17500080075,
+    "components": {
+      "fees_saved_native": 151016.97863564454,
+      "slippage_saved_native": 114770.44504470233,
+      "gross_unadjusted_price_and_quantity_path_native_minus_research": 12560.994720458984,
+      "dividends_lost_native": -16658.2434
+    },
+    "direct_agreement_within_point_one": false,
+    "source": "HK_NATIVE_RECONCILIATION.json"
+  },
+  "US": {
+    "currency": "USD",
+    "research_sharpe": 0.5139634731861161,
+    "native_sharpe": 0.7035670873144159,
+    "sessions": 1212,
+    "equity_advantage_native": 17709.809546507197,
+    "components": {
+      "fees_saved_native": 0.0,
+      "slippage_saved_native": 18756.998760599483,
+      "gross_unadjusted_price_and_quantity_path_native_minus_research": 431.4863359055016,
+      "dividends_lost_native": -1478.6755500000002
+    },
+    "direct_agreement_within_point_one": false,
+    "source": "US_NATIVE_RECONCILIATION.json"
+  },
+  "native_benchmark_limit": "metrics benchmark_kind=equal_weight, label equal-weight basket of5symbols, despite config benchmark^HSI. Native benchmark is not the study Hang Seng Index baseline."
+}

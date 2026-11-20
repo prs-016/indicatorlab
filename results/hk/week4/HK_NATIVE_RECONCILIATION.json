@@ -1,0 +1,197 @@
+{
+  "status": "Direct Sharpe agreement fails; explained by different execution/accounting contracts, not a confirmed interchangeable result",
+  "method": "Read-only fixed-fill cash-and-shares arithmetic reconciliation. No signals, thresholds, sizing decisions or native CLI rerun; counterfactual paths reuse the exact sealed fills and quantities.",
+  "candidate": "defensive_attention_gate",
+  "train_eligible": false,
+  "window": {
+    "first": "2022-01-03",
+    "last": "2026-10-30",
+    "observations": 1185,
+    "identical_research_native_dates": true
+  },
+  "native": {
+    "sharpe": -0.04815536172628209,
+    "saved_metrics_sharpe": -0.0481553574452121,
+    "final_value": 7762711.408414697,
+    "fees": 47954.347059775886,
+    "slippage_cash": 39098.579776380124,
+    "dividends": 0.0,
+    "actual_fill_count": 205,
+    "fill_actions": {
+      "open": 52,
+      "increase": 58,
+      "close": 52,
+      "reduce": 43
+    },
+    "realized_exit_records": 95,
+    "flat_to_position_cycles": 52,
+    "traded_notional": 39098530.012047194
+  },
+  "research": {
+    "sharpe": -0.46134972492416726,
+    "saved_sharpe": -0.46134972492416865,
+    "final_value": 7501021.2334138965,
+    "fees": 198971.3256954204,
+    "slippage_cash": 153869.02482108245,
+    "dividends": 16658.2434,
+    "round_trips": 239,
+    "actual_fill_legs": 478,
+    "traded_notional": 153868987.61775017
+  },
+  "reconstruction_checks": {
+    "research_equity_max_abs_difference": 3.5390257835388184e-08,
+    "native_equity_max_abs_difference": 1.862645149230957e-09,
+    "research_dividend_difference": 0.0,
+    "research_fee_difference": 0.0
+  },
+  "frame_checks": {
+    "0700.HK": {
+      "sha256_valid": true,
+      "max_open_difference_from_study": 5.684341886080802e-14,
+      "max_close_difference_from_study": 5.684341886080802e-14
+    },
+    "0005.HK": {
+      "sha256_valid": true,
+      "max_open_difference_from_study": 1.4210854715202004e-14,
+      "max_close_difference_from_study": 1.4210854715202004e-14
+    },
+    "9988.HK": {
+      "sha256_valid": true,
+      "max_open_difference_from_study": 1.4210854715202004e-14,
+      "max_close_difference_from_study": 2.842170943040401e-14
+    },
+    "3690.HK": {
+      "sha256_valid": true,
+      "max_open_difference_from_study": 2.842170943040401e-14,
+      "max_close_difference_from_study": 2.842170943040401e-14
+    },
+    "1810.HK": {
+      "sha256_valid": true,
+      "max_open_difference_from_study": 3.552713678800501e-15,
+      "max_close_difference_from_study": 3.552713678800501e-15
+    }
+  },
+  "timing_and_exposure": {
+    "held_symbol_day_binary_mismatches": 0,
+    "quantity_symbol_days_different": 379,
+    "any_quantity_difference_days": 318,
+    "native_executions_match_same_day_open_plus_signed_10bps": true,
+    "research_executions_match_same_day_open_plus_signed_10bps": true,
+    "first_research_cycle": {
+      "entry": "2022-01-03",
+      "exit": "2022-01-10",
+      "symbol": "0700.HK",
+      "shares": 1000
+    },
+    "first_native_cycle": "Jan3 opens1000, Jan10 retains1000 and buys100 additional, Jan17 closes1100; research Jan10 closes1000 and opens1100.",
+    "explanation": "Same invested symbol-days and one-bar execution timing; weekly close/reopen versus retained target rebalancing changes turnover, sizing/lot rounding and path-dependent shares. This is not a double-shift mismatch."
+  },
+  "terminal_cash_difference_components": {
+    "gross_price_pnl_native_minus_research": 127331.43976515623,
+    "fees_saved_native": 151016.97863564454,
+    "dividends_lost_native": -16658.2434
+  },
+  "total_native_minus_research_final_value": 261690.17500080075,
+  "ordered_fixed_fill_sharpe_bridge": [
+    {
+      "step": "A research frozen fills, dated rounded fees and dividends",
+      "sharpe": -0.46134972492416726,
+      "final_value": 7501021.2334138965,
+      "sharpe_increment_from_previous": null,
+      "final_value_increment_from_previous": null
+    },
+    {
+      "step": "B same research fills, remove dividend credits",
+      "sharpe": -0.4871033942118431,
+      "final_value": 7484362.9900138965,
+      "sharpe_increment_from_previous": -0.025753669287675862,
+      "final_value_increment_from_previous": -16658.243400000036
+    },
+    {
+      "step": "C same research fills, remove all fees",
+      "sharpe": -0.1744911827760841,
+      "final_value": 7683334.315709307,
+      "sharpe_increment_from_previous": 0.312612211435759,
+      "final_value_increment_from_previous": 198971.32569541037
+    },
+    {
+      "step": "D same research fills, remove fees and slippage",
+      "sharpe": 0.0669423342699569,
+      "final_value": 7837203.3405303955,
+      "sharpe_increment_from_previous": 0.241433517046041,
+      "final_value_increment_from_previous": 153869.02482108865
+    },
+    {
+      "step": "E native frozen fills, remove fees and slippage",
+      "sharpe": 0.0850064530166561,
+      "final_value": 7849764.3352508545,
+      "sharpe_increment_from_previous": 0.018064118746699206,
+      "final_value_increment_from_previous": 12560.994720458984
+    },
+    {
+      "step": "F same native fills, retain slippage but remove fees",
+      "sharpe": 0.02521082015369646,
+      "final_value": 7810665.755474474,
+      "sharpe_increment_from_previous": -0.05979563286295964,
+      "final_value_increment_from_previous": -39098.57977638021
+    },
+    {
+      "step": "G native actual frozen fills and fees",
+      "sharpe": -0.04815536172628209,
+      "final_value": 7762711.408414697,
+      "sharpe_increment_from_previous": -0.07336618187997855,
+      "final_value_increment_from_previous": -47954.34705977701
+    }
+  ],
+  "isolated_duty_and_dividend_counterfactuals": {
+    "research_actual_fills_native_constant_fractional_duty": {
+      "sharpe": -0.4455755494880943,
+      "final_value": 7511272.245796144,
+      "fees": 188720.31331317057,
+      "dated_rounding_extra_fees": 10251.012382249843
+    },
+    "native_actual_fills_research_dated_rounded_duty": {
+      "sharpe": -0.053308159437470144,
+      "final_value": 7759333.938426747,
+      "fees": 51331.81704772869,
+      "extra_fees": 3377.4699879528052
+    },
+    "native_actual_fills_add_dividends": {
+      "sharpe": -0.022704144424441082,
+      "final_value": 7779369.651814697,
+      "credited_dividends": 16658.2434
+    },
+    "native_actual_fills_both_research_duty_and_dividends": {
+      "sharpe": -0.027866551037526315,
+      "final_value": 7775992.181826747
+    }
+  },
+  "native_benchmark_limit": "metrics benchmark_kind=equal_weight, label equal-weight basket of5symbols, despite config benchmark^HSI. Native benchmark is not the study Hang Seng Index baseline.",
+  "limits": [
+    "Arithmetic counterfactuals hold executed quantities fixed and are verification only; they are not investable alternate strategy results or retuned backtests.",
+    "Gross price P&L differences include avoided slippage and path-dependent share sizing under retain-versus-close/reopen semantics. The ordered Sharpe bridge isolates fee/slippage effects but the order is a chosen accounting decomposition, not a unique causal attribution.",
+    "Native base1dbe5d5 retains constant fractional0.1percent duty; newly prepared B3 correction was not installed into the sealed native run.",
+    "Current lot sizes are a historical assumption in both runs; dividend and source-adjustment limits remain.",
+    "The0.413194Sharpe gap exceeds0.1; original numerical verification remains failed and the train-ineligible nominee is not promoted to KEEP."
+  ],
+  "source_sha256": {
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/runs/three_v2_paths_20261115/HK_test_evaluations.json": "2b3cfd9b23b3e58529c9cbab8cdc55bb4eb0fe3755d83b2ff1b89f0f99c0ffd7",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/runs/three_v2_paths_20261115/HK_test_evaluations.npz": "1b097d8e7d8aa00874d838cd6028183082cb02f069c5ebea763d08b74f63fd2f",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/runs/three_v2_paths_20261115/HK.npz": "7b7fc582941703dbc5cc41544de8b1a6eaa0c10f6f0790c827b4d4d8d50e8493",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/HK/artifacts/fills.jsonl": "bc5f187bfbf6025aed4a7b800a56650b5bd1c57864060f7c999b718652f048d7",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/HK/artifacts/equity.csv": "a22aa65d1925e65815580cbef2e2a89f884749ee401bb2e4ba374be1a650c1d6",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/HK/artifacts/trades.csv": "86e0613552d41ab63114b7327fc52b814a8930696b4742385c7239bc41af2d5d",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/HK/artifacts/metrics.csv": "0b6e70f37bfd155e4c4f56ee3ce3b6059da395c0246123dd29e9852e50db60c6",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/HK/config.json": "6341792ca767bf5972e449d8d9b8cb09028aab92c7d95a1d5b9177ec7717a979",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/HK/code/signal_engine.py": "a64c01d70af4df41e698e6bfa29948663a72883a95e77c48eca34100f1636e6e",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/HK/frozen_data_manifest.json": "8e2c9b30079aed45cb27eecb7890ca4cc7ac7fe45da8edf1ffb1e5e5c14f0a7d",
+    "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/runs/three_v2_paths_20261115/candidate_before_test.json": "eb7b06975381fe50ca2db982b00d7b4d1ba2797b4237f9eaac39543421239bd9"
+  },
+  "terminal_cash_difference_components_refined": {
+    "fees_saved_native": 151016.97863564454,
+    "slippage_saved_native": 114770.44504470233,
+    "gross_unadjusted_price_and_quantity_path_native_minus_research": 12560.994720458984,
+    "dividends_lost_native": -16658.2434
+  },
+  "reconciliation_script_sha256": "a8995c1a0531ed261ca93bf01dd64b81e480b57e2d5b807f92b42a79495f4246"
+}

@@ -1,2 +1,4 @@
 # Unified diffs preserve a leading space on blank context lines.
 contributions/vibe-trading/*.patch -whitespace
+
+contributions/week4/**/*.patch -whitespace

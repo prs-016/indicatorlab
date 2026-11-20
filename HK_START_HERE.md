@@ -1,3 +1,34 @@
+# Open the Hong Kong live dashboard
+
+Double-click **`Start HK Dashboard.command`** here, then open
+<http://127.0.0.1:8765/live-markets/> after the launcher starts the local services. You can close its Terminal.
+[Setup, live-data conventions and AWS handoff](frontend/live_markets/README.md).
+Code: `frontend/live_markets/` and `src/api/live_*.py`.
+It reuses the existing HK collector and starts it if stopped. No AWS deployment.
+Use `Stop HK Dashboard.command` to stop only the display/API.
+
+---
+
+# Current work: Week 4
+
+Open [the seven-item checklist](docs/HK_WEEK4_STATUS.md) for local evidence and
+remaining external actions. The rest of this file preserves older Week1–3 notes.
+
+| Current deliverable | Where |
+|---|---|
+| Three extended strategy evaluations | `src/hk/week4/`, `results/hk/week4/` |
+| Full HSI config/title handoff | `config/hk_week4_handoff.json`, `docs/HK_WEEK4_HANDOFF.md` |
+| Shared live loop (opt-in; AWS deferred) | `src/live/`, `docs/HK_WEEK4_LIVE_LOCAL.md` |
+| B4/B5 contract proposal and B5 consumer | `docs/HK_WEEK4_B4_B5_DRAFT.md`, `src/hk/week4_compare.py` |
+| Cross-market issue/B6 design draft | `docs/HK_WEEK4_CROSS_MARKET_ISSUE_DRAFT.md` |
+| Upstream code patches | Separate `HK vt/indicatorlab/contributions/week4/` |
+
+The current research cutoff is2026-11-01. The extended test ends2026-10-31.
+Old metrics below retain their earlier dates; they are not fresh Week4 results.
+No raw market inputs, model weights or full Vibe app should be committed here.
+
+---
+
 # Hong Kong work: all weeks on Jack
 
 This checkout is **/Users/jackgui/Desktop/hk/indicatorlab-Jack**, on branch

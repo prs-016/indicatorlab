@@ -1,0 +1,104 @@
+{
+  "prepared_at_utc": "2026-11-16T05:13:12.765457+00:00",
+  "scope": "Accounting-only replay of already executed fixed fill streams; no signal computation, order generation, parameter change, portfolio resizing or new strategy test. Counterfactual cash is not reinvested.",
+  "study": "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/runs/three_v2_paths_20261115",
+  "native": "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/US",
+  "sessions": 1212,
+  "first": "2022-01-03",
+  "last": "2026-10-30",
+  "bars_per_year": 252,
+  "first_research_entry": "2022-01-18",
+  "first_native_entry": "2022-01-18",
+  "research_roundtrips": 191,
+  "research_fill_legs": 382,
+  "native_fill_legs": 246,
+  "native_completed_records": 117,
+  "native_fill_actions": {
+    "increase": 72,
+    "reduce": 60,
+    "open": 57,
+    "close": 57
+  },
+  "research_mean_exposure": 0.05367798363361553,
+  "native_mean_exposure": 0.053705730687285624,
+  "research_max_holding_bars": 5.000000000000001,
+  "native_max_recorded_holding_bars": 42.810116808414314,
+  "research_cash_identity_max_abs_error": 2.444721758365631e-09,
+  "native_cash_identity_max_abs_error": 2.3283064365386963e-10,
+  "native_metrics_reported_sharpe": 0.703567026547586,
+  "bridge": [
+    {
+      "stage": "A_research_actual",
+      "sharpe": 0.5139634731861161,
+      "final_equity": 1045594.0043771986,
+      "dividend_cash": 1478.6755500000002,
+      "slippage_cash": 27862.3508699896,
+      "fees": 0.0,
+      "open_notional_turnover": 27.862350869991086,
+      "sharpe_change_from_previous": 0.0,
+      "equity_change_from_previous": 0.0
+    },
+    {
+      "stage": "B_study_fills_without_dividends",
+      "sharpe": 0.49786776299362306,
+      "final_equity": 1044115.3288271988,
+      "dividend_cash": 0.0,
+      "slippage_cash": 27862.3508699896,
+      "fees": 0.0,
+      "open_notional_turnover": 27.862350869991086,
+      "sharpe_change_from_previous": -0.016095710192493062,
+      "equity_change_from_previous": -1478.6755499998108
+    },
+    {
+      "stage": "C_study_fills_without_dividends_or_slippage",
+      "sharpe": 0.8044279920549862,
+      "final_equity": 1071977.6796971904,
+      "dividend_cash": 0.0,
+      "slippage_cash": 27862.3508699896,
+      "fees": 0.0,
+      "open_notional_turnover": 27.862350869991086,
+      "sharpe_change_from_previous": 0.3065602290613631,
+      "equity_change_from_previous": 27862.350869991584
+    },
+    {
+      "stage": "D_native_fills_without_slippage",
+      "sharpe": 0.8026590868865668,
+      "final_equity": 1072409.166033096,
+      "dividend_cash": 0.0,
+      "slippage_cash": 9105.352109390116,
+      "fees": 0.0,
+      "open_notional_turnover": 9.10535210939064,
+      "sharpe_change_from_previous": -0.0017689051684193213,
+      "equity_change_from_previous": 431.4863359055016
+    },
+    {
+      "stage": "E_native_actual",
+      "sharpe": 0.7035670873144159,
+      "final_equity": 1063303.8139237058,
+      "dividend_cash": 0.0,
+      "slippage_cash": 9105.352109390116,
+      "fees": 0.0,
+      "open_notional_turnover": 9.10535210939064,
+      "sharpe_change_from_previous": -0.09909199957215098,
+      "equity_change_from_previous": -9105.352109390078
+    }
+  ],
+  "native_fixed_fills_with_dividends": {
+    "sharpe": 0.7194999504055892,
+    "final_equity": 1064793.314423706,
+    "dividend_cash": 1489.5004999999999,
+    "slippage_cash": 9105.352109390116,
+    "fees": 0.0,
+    "open_notional_turnover": 9.10535210939064
+  },
+  "net_sharpe_gap": 0.18960361412829974,
+  "net_equity_gap": 17709.809546507197,
+  "inputs_sha256": {
+    "data/hk_week4/runs/three_v2_paths_20261115/US.npz": "150636198ba7bef9ad25b5c95b128327036f9df46abc46c8c25ae047aaf7aef5",
+    "data/hk_week4/runs/three_v2_paths_20261115/US_test_evaluations.npz": "257e28b540592100e6f220592b71bea2b8c7341249a57d49575f16bd21a80a9b",
+    "data/hk_week4/native/US/artifacts/fills.jsonl": "63c3d0a8b51b71c700024bf1c4f3b0e053eb18e7b6352be2902e7b8626da4805",
+    "data/hk_week4/native/US/artifacts/equity.csv": "088eafadf96cf03ea63471e6988407057ac3283f9731812243e3836d29a1895b"
+  },
+  "conclusion": "Neither an extra signal shift nor a different evaluation window explains the gap. Weekly forced roundtrips in research incur much more gross turnover/slippage than native target-retention/resizing. Separate cash dividends improve research slightly; native does not credit them. The bridge isolates exact executed cash accounting and leaves the remaining gross-PnL difference to the observed distinct quantity paths, rather than claiming identical portfolios.",
+  "reconciliation_script_sha256": "763a7b689ff6fb75742d3d149c58a29138056fbc17cf2ad85823b22dbdf86e31"
+}

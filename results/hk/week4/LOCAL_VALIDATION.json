@@ -1,0 +1,36 @@
+{
+  "local_date": "2026-11-15",
+  "hk_config_tests": {
+    "passed": 103,
+    "skipped": 0,
+    "command": "python -B -m pytest -q tests/test_config.py tests/test_hk_*.py -p no:cacheprovider"
+  },
+  "ruff": {
+    "result": "passed",
+    "command": "ruff check --no-cache src/live src/hk/week4 src/hk/week4_compare.py src/sentiment src/storage.py tests/test_hk_week4_*.py",
+    "scope": "new authored/copied Python; unchanged src/config.py retains existing UP033 style"
+  },
+  "whitespace": "passed",
+  "upstream_b2": {
+    "related_backend_passed": 1228,
+    "skipped": 23,
+    "frontend_passed": 982,
+    "typescript": "passed"
+  },
+  "upstream_b3": {
+    "selected_passed": 153
+  },
+  "combined_b2_nifty_b3": {
+    "passed": 181,
+    "socket_calls": 0,
+    "dns_calls": 0
+  },
+  "overlapping_suites_not_summed": true,
+  "remote_ci_verified": false,
+  "aws_deployed": false,
+  "strategy_cases": 6,
+  "all_drop": true,
+  "native_numerical_agreement": false,
+  "native_accounting_reconciled": true,
+  "source_policy_blocker": "Wikipedia85 vs datedofficial95 prevents strict real HSI benchmark"
+}

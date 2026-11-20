@@ -1,0 +1,17 @@
+{
+  "repository": "/private/tmp/hk-week4-b2-niftycheck",
+  "branch": "feat/alpha-bench-hsi-week4",
+  "head_commit": "80a266f9a27846fca6ced8f24f6af164402dd128",
+  "base_commit": "342259f40d04ad79f586f9585384ce44b3025058",
+  "dependency": "Jampip/Vibe-Trading feat/alpha-bench-nifty100",
+  "worktree_clean": true,
+  "signed_off": true,
+  "coauthors": [
+    "Jamal",
+    "Joshua",
+    "James",
+    "Prakhar Shah"
+  ],
+  "remote_push_performed": false,
+  "source_patch_hashes_unchanged": true
+}

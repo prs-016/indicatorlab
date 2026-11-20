@@ -1,0 +1,7 @@
+feat(alpha-zoo): add Hang Seng Index benchmark universe
+
+Signed-off-by: Jack <234474744+jaz024@users.noreply.github.com>
+Co-authored-by: Jamal <188647228+Jampip@users.noreply.github.com>
+Co-authored-by: Joshua <239461382+Joshuaamm7@users.noreply.github.com>
+Co-authored-by: James <238608756+james-mulyono@users.noreply.github.com>
+Co-authored-by: Prakhar Shah <195330099+prs-016@users.noreply.github.com>

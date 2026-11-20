@@ -1,0 +1,454 @@
+{
+  "prepared_at_utc": "2026-11-16T05:03:28.366686+00:00",
+  "research_cutoff": "2026-11-01 exclusive; display-only afterward",
+  "prices": [
+    {
+      "ticker": "0005.HK",
+      "rows": 2913,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "HKD",
+      "timezone": "Asia/Hong_Kong",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/0005.HK?period1=1420070400&period2=1793462399&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.084105+00:00",
+      "sha256": "0c221aef551c9e5967f618703f7ac0c303d557ef92dad9994271e1eacd0b9de4",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "0700.HK",
+      "rows": 2913,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "HKD",
+      "timezone": "Asia/Hong_Kong",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/0700.HK?period1=1420070400&period2=1793462399&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.112538+00:00",
+      "sha256": "814ead56481707b7f67301e0114831e1ee8d83977c52addf1a90d3549b8a6224",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "1810.HK",
+      "rows": 2047,
+      "first": "2018-07-09",
+      "last": "2026-10-30",
+      "currency": "HKD",
+      "timezone": "Asia/Hong_Kong",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/1810.HK?period1=1420070400&period2=1793462399&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.376808+00:00",
+      "sha256": "80b6ed2a3dd7e8c46a37bb6b7280c29b05037775f240d8ef3e4e287f6419d831",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "3690.HK",
+      "rows": 1994,
+      "first": "2018-09-20",
+      "last": "2026-10-30",
+      "currency": "HKD",
+      "timezone": "Asia/Hong_Kong",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/3690.HK?period1=1420070400&period2=1793462399&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.328424+00:00",
+      "sha256": "8bd0272288df39432dba718771efeb4407558d74cdd6576dbfb3bc141043b070",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "9988.HK",
+      "rows": 1704,
+      "first": "2019-11-26",
+      "last": "2026-10-30",
+      "currency": "HKD",
+      "timezone": "Asia/Hong_Kong",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/9988.HK?period1=1420070400&period2=1793462399&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.083548+00:00",
+      "sha256": "c0278fec05780f86d30bc2d4a7944056483b83d9f42d6bc223a5b0663df5257c",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "AAPL",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [
+        {
+          "date": "2020-08-31",
+          "numerator": 4.0,
+          "denominator": 1.0
+        }
+      ],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/AAPL?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.346581+00:00",
+      "sha256": "133e93b146db979a2beb99cea47a00ca23b2234ecf85afa82244092483aff716",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "AMD",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/AMD?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:37.044212+00:00",
+      "sha256": "39e8f2ef6905c1fb30f22a4c12ad14b711a40508e383657fc3ca1b2ef4ce11da",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "AMZN",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [
+        {
+          "date": "2022-06-06",
+          "numerator": 20.0,
+          "denominator": 1.0
+        }
+      ],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/AMZN?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.868525+00:00",
+      "sha256": "a85006475037310da992958c4418115dd483b5c65db28b8958b9d94da23b2bfd",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "GOOGL",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [
+        {
+          "date": "2022-07-18",
+          "numerator": 20.0,
+          "denominator": 1.0
+        }
+      ],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/GOOGL?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.924616+00:00",
+      "sha256": "6ec51f83dc171af220a0dfd07d7aafcca5380e419f960c06d3eace88ef56d758",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "HKD=X",
+      "rows": 3087,
+      "first": "2015-01-01",
+      "last": "2026-10-30",
+      "currency": "HKD",
+      "timezone": "Europe/London",
+      "splits": [],
+      "missing_ohlcv_rows": 8,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/HKD%3DX?period1=1420070400&period2=1793491199&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:37.494535+00:00",
+      "sha256": "5f4f7aaf5192ce6f41431b3e2461ae8aa40d84cd3859296937793dd8783ce612",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "^HSI",
+      "rows": 2913,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "HKD",
+      "timezone": "Asia/Hong_Kong",
+      "splits": [],
+      "missing_ohlcv_rows": 3,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/%5EHSI?period1=1420070400&period2=1793462399&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:37.256542+00:00",
+      "sha256": "d3ace4aaec549420c9213ff49cac27a2b807f2aa2934d6165518d70dca1f2e9d",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "JPM",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/JPM?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:37.219551+00:00",
+      "sha256": "06f2384c72827377e0b66fc83bc85577e2e9177d1d0143466baaccd9dada234e",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "META",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/META?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.907471+00:00",
+      "sha256": "e9fa3d9d973a35bb6b794fd1d50cb55a5507cd5eedc27b73e683358bba3ec338",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "MSFT",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/MSFT?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.678840+00:00",
+      "sha256": "7e8eaedb146c932be71df4800320e16a71b9ce48512d460e76f63819b3e7f911",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "NFLX",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [
+        {
+          "date": "2015-07-15",
+          "numerator": 7.0,
+          "denominator": 1.0
+        },
+        {
+          "date": "2025-11-17",
+          "numerator": 10.0,
+          "denominator": 1.0
+        }
+      ],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/NFLX?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:37.099262+00:00",
+      "sha256": "382c7913fdbb206ed1d1480e5a1b253f41802a2824180ad99eccd3adf443aae9",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "NVDA",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [
+        {
+          "date": "2021-07-20",
+          "numerator": 4.0,
+          "denominator": 1.0
+        },
+        {
+          "date": "2024-06-10",
+          "numerator": 10.0,
+          "denominator": 1.0
+        }
+      ],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/NVDA?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.583057+00:00",
+      "sha256": "c2de5897940116a7de0b33f99de189dada3c314a9cf3282ca1863b2885feb71e",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "SPY",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:37.391027+00:00",
+      "sha256": "4af70108748c45771975e0b7b299cb019a820ce425b2d0f362ffdc43d7b5da44",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    },
+    {
+      "ticker": "TSLA",
+      "rows": 2975,
+      "first": "2015-01-02",
+      "last": "2026-10-30",
+      "currency": "USD",
+      "timezone": "America/New_York",
+      "splits": [
+        {
+          "date": "2020-08-31",
+          "numerator": 5.0,
+          "denominator": 1.0
+        },
+        {
+          "date": "2022-08-25",
+          "numerator": 3.0,
+          "denominator": 1.0
+        }
+      ],
+      "missing_ohlcv_rows": 0,
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/TSLA?period1=1420070400&period2=1793505599&interval=1d&events=div%2Csplits",
+      "retrieved_at": "2026-11-15T22:39:36.606581+00:00",
+      "sha256": "400ef1432de16a6ad6d342fd5b3d0a3f775207cfbb54a4bcb64de9a8d5d5dc4a",
+      "price_basis": "Yahoo split-adjusted OHLC; dividends separate; retrieval-vintage adjusted-close retained for diagnostics only"
+    }
+  ],
+  "attention": {
+    "completed_at_utc": "2026-11-15T22:43:59.912713+00:00",
+    "records": [
+      {
+        "ticker": "0700.HK",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "c70fe43cd50e17159b4514205be8e34781afaa98020f678b15fa79a6f7bad5e0"
+      },
+      {
+        "ticker": "0005.HK",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "961d67bc6ff335a050a9700f29bf27fa2ee4832c65236f6819432e0a4d8248b9"
+      },
+      {
+        "ticker": "9988.HK",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "05f1251c46ef6c30a9fe7750fd06d95b43f4c7e7800ebdc16aa579e9c8e2c9a2"
+      },
+      {
+        "ticker": "3690.HK",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "fe183560f6a7e45f318ede7c8db8f13dc94f9f84c7bcb4341582ad6c0fe917f2"
+      },
+      {
+        "ticker": "1810.HK",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "92284f57ef7ebc13d9c00e57d7b98d2a3208078183a5fe82ba0b1afd378e32a6"
+      },
+      {
+        "ticker": "AAPL",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "82728c1633feadf593087fe3c22f6ed5cb0b452736c0b829a29933dbc0374eeb"
+      },
+      {
+        "ticker": "MSFT",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "f89fbea0992ceff7000401e1af6b45fe28742cc59f922d3eaaff636329ce6878"
+      },
+      {
+        "ticker": "NVDA",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "f5419157560c493480d007a007698b03e17c05d7bd50c3323f88a4ceb88767c0"
+      },
+      {
+        "ticker": "TSLA",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "387e620b1793571123f33fce81490bca8efbfb7e5a51a127a12e99bca25696ab"
+      },
+      {
+        "ticker": "AMZN",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "7346bbe32a5ffdcd8a65ad458695095621090f496e74eba649f21120d7bd29f0"
+      },
+      {
+        "ticker": "META",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "a715fc4cb350655742dd594fbfd7c811d097751c3c70749bdf3030a566e1fa43"
+      },
+      {
+        "ticker": "GOOGL",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 5,
+        "sha256": "868f012e3ae0281db5129a10cdf0a60e8b2b271c2e7ce1fb297d8db54c099bc0"
+      },
+      {
+        "ticker": "AMD",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "f4e51013711e91ed38d5c30342de1b05b0e57e5690a6051709a082f60d02770b"
+      },
+      {
+        "ticker": "NFLX",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "33e90ad49a0d0c61871de3d3601c6dd2ff897772aae6b659271c9bca90295e48"
+      },
+      {
+        "ticker": "JPM",
+        "weeks": 590,
+        "first": "2015-07-06",
+        "last": "2026-10-19",
+        "missing_views": 0,
+        "sha256": "f6b7a309cd20224562d62a38de315a456d0597ee4070822d0d7adf429689c490"
+      }
+    ]
+  },
+  "sentiment": {
+    "shared_scorer_commit": "ca3d391cd596a08af6d7ea290563c2fb1712fda9",
+    "shared_scorer_sha256": "8663385349511360891a2a4524aa7ca98a4cce61e197284c5b532bc86b5d373b",
+    "model": "ProsusAI/finbert",
+    "revision": "0bc2ac10dda6929bcb1f77ccc43c7ec5c424f031",
+    "max_tokens": 512,
+    "records": 5648,
+    "tickers": 15,
+    "new_texts_scored": 0,
+    "completed_at_utc": "2026-11-16T04:50:40.747395+00:00",
+    "data_sha256": "0ddebe690d0b413f0c2b30be1570c0baa338e9d1f3bf4eecca6141eee77b2221",
+    "missing_text_policy": "Missing additions remain missing; never neutral zero"
+  },
+  "weekly_signal_end": "2026-10-19",
+  "missing_weekly_pageviews": {
+    "GOOGL": 5
+  },
+  "all_other_attention_panels_missing_views": 0,
+  "raw_provenance_cached_locally": true,
+  "raw_data_published_to_git": false
+}

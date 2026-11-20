@@ -1,0 +1,188 @@
+# Proposal: parallel cross-market factor benchmarking (US, India, Hong Kong)
+
+Authors: @Jampip, @Joshuaamm7, @james-mulyono, @jaz024, @prs-016.
+
+Local Week 4 draft for team review. This has not been posted, and does not replace
+Jamal's shared issue without coordination. Source audit: upstream
+`1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2` and NIFTY dependency
+`342259f40d04ad79f586f9585384ce44b3025058`.
+
+The upstream Alpha Zoo bench exposes CSI300, SP500 and BTC-USDT. Existing India/HK
+price loaders and execution engines do not by themselves supply benchmark
+universes, synchronized cross-market evaluation or multicurrency accounting.
+
+Proposed stages:
+
+1. B1 NIFTY100 (Jamal), B2 HSI (Jack), separately scoped universe contributions.
+2. B3 market layer: India/HK calendars, prior-available FX closes, native costs/lots.
+3. B4 isolated parallel workers: illustrative `--universe sp500,nifty100,hsi`,
+   one cache and bounded concurrency; each market's failure remains in the index.
+4. B5 common-period report: local/USD IC and portfolio metrics when available,
+   decay relative to the US and upstream DSR with the complete trial ledger.
+5. B6 composite cross-market book with actual multicurrency accounting and
+   causal market allocation. The detailed design follows below.
+
+The staged CLI and schema are proposals. See `HK_WEEK4_B4_B5_DRAFT.md`; agreement
+with Joshua/Jamal/James and upstream maintainers remains pending.
+
+HK source policy changed explicitly for Week 4: Wikipedia remains primary, but
+benchmark symbol/count/provenance validation now fails closed. Its observed85
+names differ from the dated official95-name reference, so the real2016–Oct2026
+benchmark attempt stopped before factor evaluation. The prior permissive v2
+benchmark remains historical evidence. Do not describe either as95 Wikipedia
+constituents or point-in-time membership. Operational quote fallback remains a
+separate policy and contribution.
+
+Data conventions remain provider-native: Tencent HK raw prices, provider-declared
+adjustment elsewhere; no invented harmonization or blanket volume multiplier.
+Missing sessions/cells and provider-level zero-fill/drop behavior are disclosed.
+HSI source sectors pass a90% coverage gate; labels are not globally harmonized.
+Current HSI VWAP is always the explicitly labeled OHLC4 proxy. Preserving true
+provider VWAP is a future shared design choice.
+
+B3 reuses the installed `exchange_calendars` dependency, with sourced HK historical
+weather overrides, lunch and half-days. Severe weather has not automatically
+closed HKEX since2024-09-23. The exceptions are not an exhaustive history.
+Jamal must confirm NSE special sessions separately. USD valuation divides native
+value by local-units-per-USD using the last prior close actually available at the
+valuation instant; missing/stale FX fails rather than using today's display FX.
+India reuses IndiaEquityEngine costs; HK uses dated bilateral stamp duty with
+whole-HKD ceiling and a dated HKEX board-lot snapshot. Current lots do not prove
+historical lots; exemptions and other fees need their own supported policies.
+
+Prior work: the Week4 guide identifies the closed[NIFTY50 attempt#1303](https://github.com/HKUDS/Vibe-Trading/pull/1303).
+This proposal separates universe registration from calendars/FX/costs, parallel
+factor comparison and portfolio execution, with mocked-network tests and explicit
+membership/data limitations. Review the prior discussion before asserting why it
+closed; that reason has not been independently verified here.
+
+Maintainer decisions: preferred comma-list CLI shape and result schema; reuse of
+the current calendar dependency; FX close/availability contract; how B6 should
+extend composite execution while retaining existing currency and India safety
+checks. Team decisions: resolve the HSI source/count discrepancy and confirm the
+B4/B5 contract before producing a joint report.
+
+---
+
+# B6 design: one US / India / Hong Kong book
+
+Authors: @Jampip, @Joshuaamm7, @james-mulyono, @jaz024, @prs-016.
+
+**Status:** design and local branch started over Jack's HK B3 implementation.
+No portfolio-mode implementation, joint-team agreement, posted issue or PR is
+claimed. The joint B3 branch must also include Jamal's reviewed India pieces
+before this becomes the shared B6 implementation base.
+
+## Existing upstream behavior audited
+
+Source base: `1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2`, not an older package.
+
+- `backtest/engines/composite.py::CompositeEngine` uses one capital pool and
+  routes symbols to market-specific rule engines. `_reject_mixed_currency`
+  rejects a US/IN/HK currency mix before data acquisition. This is essential:
+  simply deleting the guard would add USD, INR and HKD as interchangeable units.
+- `CompositeEngine.can_execute` calls `india_can_execute` with the composite's
+  positions/data and India's rule parameters. That preserves India's T+1 and
+  price-band checks in composite runs; do not replace this state-aware routing
+  with a stateless delegate. `test_composite_market_rules.py` covers it.
+- Lot rounding and execution fees/slippage already dispatch by active symbol;
+  P&L, margin and raw sizing dispatch by the relevant market. B3 synchronizes the
+  execution timestamp before fee dispatch so dated HK duty is applied correctly.
+- The engine has no cross-currency cash accounts, historical FX ledger,
+  executable FX conversion, market-level risk parity or hedge book.
+- `src.portfolio.fx` already establishes local-units-per-USD direction for a
+  separate portfolio quote/valuation path. It is not a historical backtest FX
+  feed and must not be used to value an old run with today's display quote.
+- The gateway has XHKG and XNYS calendar validation. B3 adds sourced pre-2024 HK
+  weather exceptions, retains lunch/half-days, and does not impose the obsolete
+  typhoon closure policy on post-September-23-2024 sessions. India calendar and
+  its evidenced special sessions remain Jamal's B3 contribution.
+
+## Proposed book and execution contract
+
+One run declares `base_currency: USD`, the three market universes, calendar
+policies, native-currency cost schedules, dated lot inputs, historical FX close
+and availability timestamps, and `fx_hedging: unhedged|hedged`. This is a proposed
+configuration contract, not an accepted CLI/API extension.
+
+1. Keep positions, native prices and costs in their actual instrument currency.
+   Keep separate USD/INR/HKD cash accounts, settlement/unavailable cash and an
+   explicit timestamped FX conversion ledger. A USD presentation currency does
+   not imply every execution is a USD transaction.
+2. Build a union of exchange events in UTC. Only execute orders while that
+   instrument's own session permits them, with no HK lunch fills and no execution
+   on holidays or before an evidenced delayed opening. Missing/suspended prices
+   remain nonexecutable; the last observed mark is labeled stale rather than
+   synthesizing a fresh close or filling orders at an old price.
+3. Route India through the existing state-aware T+1/price-band rules. Reuse its
+   engine cost stack. Route HK through B3's dated bilateral duty and lot sizes,
+   with current-lot historical assumptions explicitly disclosed. Calendar
+   acceptance never overrides settlement, borrow or execution eligibility.
+4. Value to USD with the last prior FX close available at the valuation instant,
+   retaining both `close_at` and `available_at`. For HKD-per-USD, divide. The same
+   direction applies to INR-per-USD. Never infer availability from a date label.
+   Missing/stale FX prevents a USD valuation; it does not silently use7.8 or1.
+5. Publish one daily portfolio valuation at a documented UTC reporting instant,
+   plus market-native value/return paths and selected FX timestamps. A closed
+   market's unchanged mark and a missing valuation have different statuses.
+   Compare B4/B5 metrics only over an explicitly matched period/horizon and
+   document mixed adjustment bases and non-point-in-time membership.
+
+## Market risk parity
+
+Estimate market sleeve risk from past observations only, with the lookback,
+minimum history, rebalance schedule, volatility floor, caps and covariance
+method frozen in configuration before testing. A first supported contract is
+inverse-volatility market weights normalized across eligible sleeves, with no
+leverage and cash retained when a sleeve is unavailable. Do not call this exact
+covariance-aware equal-risk contribution without implementing/validating that
+solver. A covariance-aware alternative requires an explicit method decision.
+
+Compute weights at a common information cutoff, then schedule each sleeve's
+orders for its next eligible session. Later US closes must not influence the
+same calendar day's earlier India/HK orders. Store allocation decisions,
+information timestamps and actual fills separately for audit. Universe-level
+risk budgets do not bypass single-name lots/costs or capacity constraints.
+
+## Hedged and unhedged modes
+
+Unhedged mode contains the native book's FX exposure and translates equity using
+the historical rate contract. Hedged mode additionally requires real hedge
+instruments (or a separately labeled synthetic research hedge), hedge notional,
+quote/availability times, financing/carry, bid/ask, roll schedule, trading
+calendar and collateral accounting. It must not merely subtract FX returns or
+freeze the conversion rate. Initially reject `hedged` until a reviewed hedge
+model and data contract exist; discuss the supported instrument choice with
+Prakhar/upstream maintainers. Report hedge P&L and costs separately.
+
+## Staged implementation and acceptance tests
+
+1. Complete/review joint B3: combine India/HK calendar, FX and cost contracts;
+   keep source-provenance and historical-data limitations visible.
+2. Add a multicurrency ledger behind an explicit mode, retaining the existing
+   single-currency guard/default path. Test cash conservation, fees in the native
+   currency, FX direction, rounding and failure on missing rates.
+3. Add the UTC event/session clock and asynchronous target execution. Test HK
+   lunch, a holiday, evidenced HK late open, India special sessions/T+1/bands,
+   US daylight-saving boundaries and stale/absent bars.
+4. Add the frozen market allocation rule and causal volatility estimates. Test
+   that changing future prices/FX cannot alter earlier orders or weights; test
+   caps, zero/insufficient volatility, missing sleeves and lot residual cash.
+5. Add unhedged valuation/reporting, with a hand-computed USD/INR/HKD book and
+   reconciliation to three independent native-engine runs using identical fills.
+6. Add hedge support only after its data/accounting contract is reviewed. Until
+   then hedged mode fails clearly. Test carry/roll/collateral instead of labeling
+   an FX-neutral arithmetic result as an executable hedge.
+
+All tests use fixtures/mocked acquisition. Empirical strategy evaluations remain
+separate from these accounting tests and must record every trial. This design
+is intended as the B6 section of the shared B0 issue; Jack will publish it after
+teammate coordination. No AWS deployment is needed to review or implement it.
+
+## Decisions for coordinated review
+
+Confirm the common daily valuation instant, inverse-vol versus full covariance
+risk parity, accepted FX close/publication policy, maximum quote age, and hedge
+instruments/model. The existing calendar dependency can be reused. The proposed
+configuration/CLI shape and relationship between composite execution and B4/B5
+parallel single-market evaluation need maintainer review before implementation.

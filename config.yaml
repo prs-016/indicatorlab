@@ -2,7 +2,7 @@
 # Add a market, stock, subreddit or Wikipedia title here, never inside a function.
 # Load it with `from src import config` (see src/config.py).
 
-holdout_start: 2025-10-01   # research, spike studies and strategy tests use data strictly before this
+holdout_start: 2026-11-01   # research, spike studies and strategy tests use data strictly before this
 week_label: monday          # every weekly table labels a week by its Monday (00:00 UTC)
 
 # One spike rule for every attention source (Wikipedia views/edits, Reddit chatter).
@@ -23,11 +23,12 @@ strategy:
   cost_bps: 10
   n_random_portfolios: 200
   random_seed: 42
-  # Week 3 uses this split in both US and HK; legacy reports retain their own splits.
-  week3_split: {train: [2016-06-01, 2021-12-31], test: [2022-01-01, 2025-09-30]}
+  # Active Week 4 research split; archived Week 3 results retain their original window.
+  week4_split: {train: [2016-06-01, 2021-12-31], test: [2022-01-01, 2026-10-31]}
   n_random_timing_runs: 200
-  # Standard split. Reddit data starts in 2023, so Reddit strategies use `reddit_split` instead.
-  split: {train: [2011-01-01, 2019-12-31], test: [2020-01-01, 2025-09-30]}
+  # Active team standard. Pre-2023 Reddit history must be acquired separately.
+  split: {train: [2016-06-01, 2021-12-31], test: [2022-01-01, 2026-10-31]}
+  # Legacy short-corpus split, not used for Week 4 candidate evaluation.
   reddit_split: {train: [2023-01-02, 2024-06-30], test: [2024-07-01, 2025-09-30]}
 
 reddit:
@@ -188,3 +189,28 @@ markets:
         match:
           symbols: [1810.HK, 01810.HK]
           names: [{pattern: Xiaomi, ignore_case: true}, {pattern: '小米集团|小米集團'}]
+
+# Week 4 local service; deployments and operational worker changes are deferred.
+live:
+  region: us-west-2
+  bucket: indicatorlab-data
+  hk:
+    interval_seconds: 5
+    symbols_file: config/hsi_constituents_2026-11-04.csv
+    roster_policy: dated_official_operational_snapshot_not_current_Wikipedia_benchmark
+    table: indicatorlab-live-hk
+
+# Full current-HSI title-map handoff; the five strategy stocks above are a subset.
+hk_handoff:
+  config_export: config/hk_week4_handoff.json
+  wikipedia_title_intervals: config/hk_wiki_title_intervals.csv
+  hsi_snapshot: config/hsi_constituents_2026-11-04.csv
+  unresolved_title_dates: exclude_from_historical_research
+  reddit_selection_status: no_surveyed_market_specific_source_passed_activity_rule
+
+# Shared scorer copied unchanged from Joshua's reddit branch, commit ca3d391.
+sentiment:
+  model: ProsusAI/finbert
+  revision: 0bc2ac10dda6929bcb1f77ccc43c7ec5c424f031
+  batch_size: 32
+  max_tokens: 512

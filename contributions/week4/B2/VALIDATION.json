@@ -1,0 +1,45 @@
+{
+  "standalone": {
+    "base_commit": "1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2",
+    "backend_passed": 1106,
+    "backend_skipped": 23,
+    "frontend_passed": 968,
+    "frontend_files": 101,
+    "typescript": "passed",
+    "ruff_changed_python": "passed",
+    "git_diff_check": "passed",
+    "backend_command": "python -m pytest -q tests/test_alpha_bench_*.py tests/test_bench_universe_selection.py tests/factors/test_alpha_purity.py tests/factors/test_lookahead.py tests/test_hsi_membership_reference.py tests/test_hsi_benchmark_validation.py tests/test_data_availability.py"
+  },
+  "preferred_on_nifty": {
+    "base_commit": "342259f40d04ad79f586f9585384ce44b3025058",
+    "backend_passed": 1228,
+    "backend_skipped": 23,
+    "frontend_passed": 982,
+    "frontend_files": 101,
+    "typescript": "passed",
+    "ruff_changed_python": "passed",
+    "git_diff_check": "passed",
+    "backend_command": "python -m pytest -q tests/test_alpha_bench_*.py tests/test_nifty100_api_cli.py tests/test_nifty100_sector_vwap.py tests/test_bench_universe_selection.py tests/factors/test_alpha_purity.py tests/factors/test_lookahead.py tests/test_hsi_membership_reference.py tests/test_hsi_benchmark_validation.py tests/test_data_availability.py",
+    "frontend_command": "npm run test:run",
+    "typescript_command": "npx tsc --noEmit"
+  },
+  "joint_offline_guard": {
+    "passed": 184,
+    "socket_calls": 0,
+    "dns_calls": 0,
+    "command": "PYTHONPATH=/private/tmp/hk-week4-review python -B -m pytest -p b2_offline_guard -q tests/test_alpha_bench_hsi.py tests/test_hsi_membership_reference.py tests/test_hsi_benchmark_validation.py tests/test_data_availability.py tests/test_alpha_bench_nifty100.py tests/test_nifty100_api_cli.py tests/test_nifty100_sector_vwap.py tests/test_bench_universe_selection.py"
+  },
+  "b3_stack": {
+    "result": "181 passed",
+    "b3_commit": "bec5fc6c5928b8b587585b47595b6fe4ac4a9127",
+    "b3_patch_sha256": "b8c43e481843b993a05a30249dd7562c8c502a63f4980ef3b666f70a1830aee1",
+    "reconciliation": "README append only; source patch applies without conflicts",
+    "command": "PYTHONPATH=/private/tmp/hk-week4-review /Users/jackgui/Desktop/hk/indicatorlab-clean/.venv/bin/python -B -m pytest -p b2_offline_guard -q tests/test_hk_market_layer.py tests/test_alpha_bench_hsi.py tests/test_hsi_benchmark_validation.py tests/test_alpha_bench_nifty100.py tests/test_nifty100_api_cli.py tests/test_composite_market_rules.py -p no:cacheprovider",
+    "socket_calls": 0,
+    "dns_calls": 0,
+    "source_hash_check": "All eight current B3 files excluding intentionally reconciled README byte-match manifest"
+  },
+  "warning": "Suites overlap; do not sum counts. Selected local checks, not full upstream backend suite or remote CI.",
+  "real_benchmark": "attempted; strict Wikipedia85/published95 count mismatch; zero alphas evaluated; annual coverage unavailable",
+  "python": "/Users/jackgui/Desktop/hk/indicatorlab-clean/.venv/bin/python"
+}

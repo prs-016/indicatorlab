@@ -1,0 +1,596 @@
+{
+  "generated_at_utc": "2026-11-16T05:14:17.206056+00:00",
+  "prior_trials": 268,
+  "prior_breakdown": {
+    "legacy_strategies": 21,
+    "hsi_factor_attempts": 101,
+    "train_variants": 22,
+    "base_and_ablation_evaluations": 124
+  },
+  "new_train_selection_invocations": 12,
+  "new_base_and_ablation_invocations": 72,
+  "total_recorded_trials": 352,
+  "random_null_draws": 2400,
+  "unknown_searches": "No claim that undocumented outside trials are complete",
+  "dsr_implementation": "Vibe agent/src/quantlib/multipletesting.py::deflated_sharpe_ratio",
+  "dsr_variance_scope": "Comparable observed current-period per-day Sharpes; older unavailable Sharpe values not invented",
+  "train_selection": [
+    {
+      "id": "HK.liquidity_repair.v0.train",
+      "sharpe": 0.0,
+      "entries": 0
+    },
+    {
+      "id": "HK.liquidity_repair.v1.train",
+      "sharpe": 0.006084745271078858,
+      "entries": 29
+    },
+    {
+      "id": "HK.liquidity_repair.v2.train",
+      "sharpe": -0.41816228259817856,
+      "entries": 108
+    },
+    {
+      "id": "HK.defensive_attention_gate.v0.train",
+      "sharpe": -0.36193247798298495,
+      "entries": 202
+    },
+    {
+      "id": "HK.residual_repair.v0.train",
+      "sharpe": 0.4903878556027198,
+      "entries": 1
+    },
+    {
+      "id": "HK.residual_repair.v1.train",
+      "sharpe": 0.167082040874768,
+      "entries": 15
+    },
+    {
+      "id": "HK.residual_repair.v2.train",
+      "sharpe": -0.20111312820260013,
+      "entries": 60
+    },
+    {
+      "id": "US.liquidity_repair.v0.train",
+      "sharpe": 0.3590082516798155,
+      "entries": 1
+    },
+    {
+      "id": "US.liquidity_repair.v1.train",
+      "sharpe": 0.446232737891219,
+      "entries": 43
+    },
+    {
+      "id": "US.defensive_attention_gate.v0.train",
+      "sharpe": 1.1177161395105673,
+      "entries": 263
+    },
+    {
+      "id": "US.residual_repair.v0.train",
+      "sharpe": 0.3069066443922641,
+      "entries": 1
+    },
+    {
+      "id": "US.residual_repair.v1.train",
+      "sharpe": 0.6344877595952007,
+      "entries": 51
+    }
+  ],
+  "evaluations": [
+    {
+      "id": "HK.liquidity_repair.train.base",
+      "sharpe": -0.41816228259817856,
+      "entries": 108,
+      "period": "train",
+      "ablation": "base"
+    },
+    {
+      "id": "HK.liquidity_repair.train.index_volatility_regime",
+      "sharpe": -0.4266712534012994,
+      "entries": 108,
+      "period": "train",
+      "ablation": "index_volatility_regime"
+    },
+    {
+      "id": "HK.liquidity_repair.train.negative_volatility_scaled_return",
+      "sharpe": -0.4601523317214743,
+      "entries": 383,
+      "period": "train",
+      "ablation": "negative_volatility_scaled_return"
+    },
+    {
+      "id": "HK.liquidity_repair.train.turnover_ratio",
+      "sharpe": -0.817628038451083,
+      "entries": 137,
+      "period": "train",
+      "ablation": "turnover_ratio"
+    },
+    {
+      "id": "HK.liquidity_repair.train.wiki_views_ratio",
+      "sharpe": -0.32343016888427595,
+      "entries": 114,
+      "period": "train",
+      "ablation": "wiki_views_ratio"
+    },
+    {
+      "id": "HK.liquidity_repair.train.wiki_added_text_sentiment",
+      "sharpe": -0.5435685763846877,
+      "entries": 196,
+      "period": "train",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "HK.defensive_attention_gate.train.base",
+      "sharpe": -0.36193247798298495,
+      "entries": 202,
+      "period": "train",
+      "ablation": "base"
+    },
+    {
+      "id": "HK.defensive_attention_gate.train.index_volatility_target",
+      "sharpe": -0.30524873765541777,
+      "entries": 202,
+      "period": "train",
+      "ablation": "index_volatility_target"
+    },
+    {
+      "id": "HK.defensive_attention_gate.train.stock_volatility_rank",
+      "sharpe": -0.41236127948477336,
+      "entries": 352,
+      "period": "train",
+      "ablation": "stock_volatility_rank"
+    },
+    {
+      "id": "HK.defensive_attention_gate.train.turnover_rank",
+      "sharpe": -0.2360847951630021,
+      "entries": 250,
+      "period": "train",
+      "ablation": "turnover_rank"
+    },
+    {
+      "id": "HK.defensive_attention_gate.train.wiki_added_text_sentiment",
+      "sharpe": -0.26838208763850996,
+      "entries": 298,
+      "period": "train",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "HK.defensive_attention_gate.train.market_attention_risk_gate",
+      "sharpe": -0.4036393060681038,
+      "entries": 202,
+      "period": "train",
+      "ablation": "market_attention_risk_gate"
+    },
+    {
+      "id": "HK.residual_repair.train.base",
+      "sharpe": -0.20111312820260013,
+      "entries": 60,
+      "period": "train",
+      "ablation": "base"
+    },
+    {
+      "id": "HK.residual_repair.train.index_downside_regime",
+      "sharpe": -0.3770839610550703,
+      "entries": 60,
+      "period": "train",
+      "ablation": "index_downside_regime"
+    },
+    {
+      "id": "HK.residual_repair.train.residual_return_dislocation",
+      "sharpe": -0.18871663666035657,
+      "entries": 269,
+      "period": "train",
+      "ablation": "residual_return_dislocation"
+    },
+    {
+      "id": "HK.residual_repair.train.volume_ratio",
+      "sharpe": 0.03966142114093765,
+      "entries": 81,
+      "period": "train",
+      "ablation": "volume_ratio"
+    },
+    {
+      "id": "HK.residual_repair.train.wiki_edit_ratio",
+      "sharpe": 0.026735839602963527,
+      "entries": 87,
+      "period": "train",
+      "ablation": "wiki_edit_ratio"
+    },
+    {
+      "id": "HK.residual_repair.train.wiki_added_text_sentiment",
+      "sharpe": -0.35374873522660216,
+      "entries": 128,
+      "period": "train",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "US.liquidity_repair.train.base",
+      "sharpe": 0.446232737891219,
+      "entries": 43,
+      "period": "train",
+      "ablation": "base"
+    },
+    {
+      "id": "US.liquidity_repair.train.index_volatility_regime",
+      "sharpe": 0.43711737370963566,
+      "entries": 43,
+      "period": "train",
+      "ablation": "index_volatility_regime"
+    },
+    {
+      "id": "US.liquidity_repair.train.negative_volatility_scaled_return",
+      "sharpe": 0.4547391548221652,
+      "entries": 363,
+      "period": "train",
+      "ablation": "negative_volatility_scaled_return"
+    },
+    {
+      "id": "US.liquidity_repair.train.turnover_ratio",
+      "sharpe": 0.4901644889704787,
+      "entries": 65,
+      "period": "train",
+      "ablation": "turnover_ratio"
+    },
+    {
+      "id": "US.liquidity_repair.train.wiki_views_ratio",
+      "sharpe": 0.2782839983596063,
+      "entries": 77,
+      "period": "train",
+      "ablation": "wiki_views_ratio"
+    },
+    {
+      "id": "US.liquidity_repair.train.wiki_added_text_sentiment",
+      "sharpe": 0.4987855391069935,
+      "entries": 105,
+      "period": "train",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "US.defensive_attention_gate.train.base",
+      "sharpe": 1.1177161395105673,
+      "entries": 263,
+      "period": "train",
+      "ablation": "base"
+    },
+    {
+      "id": "US.defensive_attention_gate.train.index_volatility_target",
+      "sharpe": 1.1522230654747465,
+      "entries": 263,
+      "period": "train",
+      "ablation": "index_volatility_target"
+    },
+    {
+      "id": "US.defensive_attention_gate.train.stock_volatility_rank",
+      "sharpe": 0.734955036044695,
+      "entries": 535,
+      "period": "train",
+      "ablation": "stock_volatility_rank"
+    },
+    {
+      "id": "US.defensive_attention_gate.train.turnover_rank",
+      "sharpe": 1.2709906460103717,
+      "entries": 493,
+      "period": "train",
+      "ablation": "turnover_rank"
+    },
+    {
+      "id": "US.defensive_attention_gate.train.wiki_added_text_sentiment",
+      "sharpe": 0.7083825174243451,
+      "entries": 859,
+      "period": "train",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "US.defensive_attention_gate.train.market_attention_risk_gate",
+      "sharpe": 1.2436740221342013,
+      "entries": 263,
+      "period": "train",
+      "ablation": "market_attention_risk_gate"
+    },
+    {
+      "id": "US.residual_repair.train.base",
+      "sharpe": 0.6344877595952007,
+      "entries": 51,
+      "period": "train",
+      "ablation": "base"
+    },
+    {
+      "id": "US.residual_repair.train.index_downside_regime",
+      "sharpe": 0.47247653769819337,
+      "entries": 51,
+      "period": "train",
+      "ablation": "index_downside_regime"
+    },
+    {
+      "id": "US.residual_repair.train.residual_return_dislocation",
+      "sharpe": 0.8158905495127868,
+      "entries": 339,
+      "period": "train",
+      "ablation": "residual_return_dislocation"
+    },
+    {
+      "id": "US.residual_repair.train.volume_ratio",
+      "sharpe": 0.464199351489386,
+      "entries": 78,
+      "period": "train",
+      "ablation": "volume_ratio"
+    },
+    {
+      "id": "US.residual_repair.train.wiki_edit_ratio",
+      "sharpe": 0.3705225828755281,
+      "entries": 91,
+      "period": "train",
+      "ablation": "wiki_edit_ratio"
+    },
+    {
+      "id": "US.residual_repair.train.wiki_added_text_sentiment",
+      "sharpe": 0.850751502505802,
+      "entries": 132,
+      "period": "train",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "HK.liquidity_repair.test.base",
+      "sharpe": 0.17495494250740143,
+      "entries": 143,
+      "period": "test",
+      "ablation": "base"
+    },
+    {
+      "id": "HK.liquidity_repair.test.index_volatility_regime",
+      "sharpe": 0.31175860721093845,
+      "entries": 143,
+      "period": "test",
+      "ablation": "index_volatility_regime"
+    },
+    {
+      "id": "HK.liquidity_repair.test.negative_volatility_scaled_return",
+      "sharpe": -0.13322783955186046,
+      "entries": 531,
+      "period": "test",
+      "ablation": "negative_volatility_scaled_return"
+    },
+    {
+      "id": "HK.liquidity_repair.test.turnover_ratio",
+      "sharpe": 0.13959010857433826,
+      "entries": 211,
+      "period": "test",
+      "ablation": "turnover_ratio"
+    },
+    {
+      "id": "HK.liquidity_repair.test.wiki_views_ratio",
+      "sharpe": 0.0636121026227806,
+      "entries": 151,
+      "period": "test",
+      "ablation": "wiki_views_ratio"
+    },
+    {
+      "id": "HK.liquidity_repair.test.wiki_added_text_sentiment",
+      "sharpe": -0.1234441662102846,
+      "entries": 233,
+      "period": "test",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "HK.defensive_attention_gate.test.base",
+      "sharpe": -0.46134972492416865,
+      "entries": 239,
+      "period": "test",
+      "ablation": "base"
+    },
+    {
+      "id": "HK.defensive_attention_gate.test.index_volatility_target",
+      "sharpe": -0.48890900660454767,
+      "entries": 239,
+      "period": "test",
+      "ablation": "index_volatility_target"
+    },
+    {
+      "id": "HK.defensive_attention_gate.test.stock_volatility_rank",
+      "sharpe": -0.5470103249081877,
+      "entries": 450,
+      "period": "test",
+      "ablation": "stock_volatility_rank"
+    },
+    {
+      "id": "HK.defensive_attention_gate.test.turnover_rank",
+      "sharpe": -0.6257702755745853,
+      "entries": 415,
+      "period": "test",
+      "ablation": "turnover_rank"
+    },
+    {
+      "id": "HK.defensive_attention_gate.test.wiki_added_text_sentiment",
+      "sharpe": -0.6639287349270685,
+      "entries": 360,
+      "period": "test",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "HK.defensive_attention_gate.test.market_attention_risk_gate",
+      "sharpe": -0.45284147208848957,
+      "entries": 239,
+      "period": "test",
+      "ablation": "market_attention_risk_gate"
+    },
+    {
+      "id": "HK.residual_repair.test.base",
+      "sharpe": 0.37101121732099074,
+      "entries": 102,
+      "period": "test",
+      "ablation": "base"
+    },
+    {
+      "id": "HK.residual_repair.test.index_downside_regime",
+      "sharpe": 0.3932820366782104,
+      "entries": 102,
+      "period": "test",
+      "ablation": "index_downside_regime"
+    },
+    {
+      "id": "HK.residual_repair.test.residual_return_dislocation",
+      "sharpe": 0.16600603303364433,
+      "entries": 363,
+      "period": "test",
+      "ablation": "residual_return_dislocation"
+    },
+    {
+      "id": "HK.residual_repair.test.volume_ratio",
+      "sharpe": -0.08956000410677126,
+      "entries": 153,
+      "period": "test",
+      "ablation": "volume_ratio"
+    },
+    {
+      "id": "HK.residual_repair.test.wiki_edit_ratio",
+      "sharpe": 0.11621940668087687,
+      "entries": 162,
+      "period": "test",
+      "ablation": "wiki_edit_ratio"
+    },
+    {
+      "id": "HK.residual_repair.test.wiki_added_text_sentiment",
+      "sharpe": -0.18708997238606206,
+      "entries": 164,
+      "period": "test",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "US.liquidity_repair.test.base",
+      "sharpe": 0.05035260244310971,
+      "entries": 38,
+      "period": "test",
+      "ablation": "base"
+    },
+    {
+      "id": "US.liquidity_repair.test.index_volatility_regime",
+      "sharpe": 0.02253331601413593,
+      "entries": 38,
+      "period": "test",
+      "ablation": "index_volatility_regime"
+    },
+    {
+      "id": "US.liquidity_repair.test.negative_volatility_scaled_return",
+      "sharpe": 0.3601201939120575,
+      "entries": 286,
+      "period": "test",
+      "ablation": "negative_volatility_scaled_return"
+    },
+    {
+      "id": "US.liquidity_repair.test.turnover_ratio",
+      "sharpe": 0.14024944193616667,
+      "entries": 61,
+      "period": "test",
+      "ablation": "turnover_ratio"
+    },
+    {
+      "id": "US.liquidity_repair.test.wiki_views_ratio",
+      "sharpe": 0.5526932240755371,
+      "entries": 88,
+      "period": "test",
+      "ablation": "wiki_views_ratio"
+    },
+    {
+      "id": "US.liquidity_repair.test.wiki_added_text_sentiment",
+      "sharpe": 0.3096737100023717,
+      "entries": 95,
+      "period": "test",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "US.defensive_attention_gate.test.base",
+      "sharpe": 0.5139634731861161,
+      "entries": 191,
+      "period": "test",
+      "ablation": "base"
+    },
+    {
+      "id": "US.defensive_attention_gate.test.index_volatility_target",
+      "sharpe": 0.6547498195382069,
+      "entries": 191,
+      "period": "test",
+      "ablation": "index_volatility_target"
+    },
+    {
+      "id": "US.defensive_attention_gate.test.stock_volatility_rank",
+      "sharpe": 0.1829681389788538,
+      "entries": 503,
+      "period": "test",
+      "ablation": "stock_volatility_rank"
+    },
+    {
+      "id": "US.defensive_attention_gate.test.turnover_rank",
+      "sharpe": 0.5555613064609732,
+      "entries": 462,
+      "period": "test",
+      "ablation": "turnover_rank"
+    },
+    {
+      "id": "US.defensive_attention_gate.test.wiki_added_text_sentiment",
+      "sharpe": 0.08472771218441713,
+      "entries": 576,
+      "period": "test",
+      "ablation": "wiki_added_text_sentiment"
+    },
+    {
+      "id": "US.defensive_attention_gate.test.market_attention_risk_gate",
+      "sharpe": 0.545652522974367,
+      "entries": 191,
+      "period": "test",
+      "ablation": "market_attention_risk_gate"
+    },
+    {
+      "id": "US.residual_repair.test.base",
+      "sharpe": 0.6965128847965115,
+      "entries": 55,
+      "period": "test",
+      "ablation": "base"
+    },
+    {
+      "id": "US.residual_repair.test.index_downside_regime",
+      "sharpe": 0.6962894853877639,
+      "entries": 55,
+      "period": "test",
+      "ablation": "index_downside_regime"
+    },
+    {
+      "id": "US.residual_repair.test.residual_return_dislocation",
+      "sharpe": 1.015286875541953,
+      "entries": 298,
+      "period": "test",
+      "ablation": "residual_return_dislocation"
+    },
+    {
+      "id": "US.residual_repair.test.volume_ratio",
+      "sharpe": 0.7629533610360442,
+      "entries": 78,
+      "period": "test",
+      "ablation": "volume_ratio"
+    },
+    {
+      "id": "US.residual_repair.test.wiki_edit_ratio",
+      "sharpe": 0.36041995679165373,
+      "entries": 100,
+      "period": "test",
+      "ablation": "wiki_edit_ratio"
+    },
+    {
+      "id": "US.residual_repair.test.wiki_added_text_sentiment",
+      "sharpe": 0.29213250772190125,
+      "entries": 132,
+      "period": "test",
+      "ablation": "wiki_added_text_sentiment"
+    }
+  ],
+  "frozen_study_total_recorded_trials": 352,
+  "native_fixed_hypothesis_verification_invocations": 2,
+  "post_verification_total_recorded_trials": 354,
+  "verification_count_policy": "Conservatively includes two repeated fixed-hypothesis native runs, not independent strategy searches. Fixed-fill arithmetic checks are not strategy invocations.",
+  "infrastructure_only_failed_namespaces": [
+    {
+      "name": "three_v1_20261115",
+      "portfolio_invocations": 0,
+      "cause": "Worker cwd changed to Vibe while request path was relative; FileNotFoundError before any engine portfolio execution. Preserved protocol/source, mechanical absolute-path fix, fresh v2 namespace."
+    }
+  ]
+}

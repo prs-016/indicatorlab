@@ -1,0 +1,131 @@
+{
+  "package_version": 3,
+  "scope": "Week 4 B2 standalone HSI universe only",
+  "base_commit": "1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2",
+  "created_at_utc": "2026-11-15T22:34:13.318474+00:00",
+  "patch_sha256": "038da451fc7d0dac66fba29970c59ca6c88720e99af7dbad08743fa4a006ec83",
+  "files": [
+    {
+      "path": "README.md",
+      "sha256": "515a27febfc499f24edb9fc68198cb04902fe15fa24ff6fad0c31a6bd5984393"
+    },
+    {
+      "path": "agent/backtest/loaders/_symbol_utils.py",
+      "sha256": "452dba9a248630f89d222c4211c50b8039727949a6778b21e8a1edc3fd4195cd"
+    },
+    {
+      "path": "agent/src/api/alpha_routes.py",
+      "sha256": "d14ade5f1f7c253341498a9eaed894944766fa6f6fb8b2aea3a37877603b1666"
+    },
+    {
+      "path": "agent/src/factors/cli_handlers.py",
+      "sha256": "e5421a8bb16c4539d660ab3136473f5dc352bcef23a7a4c146e4895de839dc91"
+    },
+    {
+      "path": "agent/src/factors/data_availability.py",
+      "sha256": "2439e37f792bc7ba677016cde3012c86e5e0f9df47876465dd1cad8799efea80"
+    },
+    {
+      "path": "agent/src/tools/alpha_bench_tool.py",
+      "sha256": "d75c87ee0b58a039e8e240ca38228f0bfa84d63c58e05cdcb2bd0bb6bea19f2d"
+    },
+    {
+      "path": "agent/src/tools/alpha_compare_tool.py",
+      "sha256": "625d785d052865a3bcd33a4585820b74790b115490a266586462fb6654af17ec"
+    },
+    {
+      "path": "agent/src/tools/hsi_metadata.py",
+      "sha256": "ce2e3d5da9a24e9a4ef5aa43f9f5c4383aaa8cbf4a9a7b023e155b580826ae1c"
+    },
+    {
+      "path": "agent/src/tools/hsi_universe.py",
+      "sha256": "8edf805fbd0e24f89e13b514951649cca34583543fc3ed88735f671f31a72205"
+    },
+    {
+      "path": "agent/tests/test_alpha_bench_hsi.py",
+      "sha256": "c8fd553b84b35f7a4430abf7e058d2dd4888040210b59b152265df8d17bd4ada"
+    },
+    {
+      "path": "agent/tests/test_data_availability.py",
+      "sha256": "d01a29c60cca7da1694f044898964f8c515a30173f88798906b1c24dcf397038"
+    },
+    {
+      "path": "agent/tests/test_hsi_benchmark_validation.py",
+      "sha256": "524cf589ab4a04f84450135d36fa888127baf8c272dd0e661b8c585fcbba4ba2"
+    },
+    {
+      "path": "agent/tests/test_hsi_membership_reference.py",
+      "sha256": "bcc1b36a380d09bc84bf5aec48cb24443ec015951da29af5f62f7154b5d41595"
+    },
+    {
+      "path": "frontend/src/i18n/locales/ar.json",
+      "sha256": "3e56e1e5c8333b8364c90dbe953a692d7fd71a4eec590eb898a9e5f1f8d3f28d"
+    },
+    {
+      "path": "frontend/src/i18n/locales/de.json",
+      "sha256": "ea973c5a2c014d8a11981251e0765512be8c5796fa2170cbfaafd7d96e74a2ad"
+    },
+    {
+      "path": "frontend/src/i18n/locales/en.json",
+      "sha256": "09765192128750bb106d8968b845a27363146d3e18b84b72cefddfacaf0aa8cc"
+    },
+    {
+      "path": "frontend/src/i18n/locales/es.json",
+      "sha256": "67f464d9ab232a7aa0f3693db382ad13507f5878100283b3008df72f90164dc8"
+    },
+    {
+      "path": "frontend/src/i18n/locales/fa.json",
+      "sha256": "bdda18113b5ce29bf9978bab55dc47b22d2c096c666d0e57857864147f7b12da"
+    },
+    {
+      "path": "frontend/src/i18n/locales/id.json",
+      "sha256": "485b075dac6d7d7cf65c9ef20a319b3468df5d09cb3af33f43ea17c5f365b9cd"
+    },
+    {
+      "path": "frontend/src/i18n/locales/ja.json",
+      "sha256": "1ac12ef85c7d91e5e12ad61cb21aeb7779f4ebf70ffdbaab3593bac8f22e6aa0"
+    },
+    {
+      "path": "frontend/src/i18n/locales/ko.json",
+      "sha256": "fae620a759907077d87f6fa6d54410cc9daadb40b750765f296e10cc292d8a4a"
+    },
+    {
+      "path": "frontend/src/i18n/locales/pt-BR.json",
+      "sha256": "0c9f7b8fb4005149d0a144140dd2ff175ce99354da7f699ebb2be75bddf649ef"
+    },
+    {
+      "path": "frontend/src/i18n/locales/tr.json",
+      "sha256": "67ccc1d03a4dab4013bfc90ed7a62013ddfb0d2707abd27b060032b7d5830795"
+    },
+    {
+      "path": "frontend/src/i18n/locales/zh-CN.json",
+      "sha256": "eef23ee120c6b9a8805a2140258ede69bb5cea040a5d9de265b5d5b1c258152b"
+    },
+    {
+      "path": "frontend/src/pages/AlphaZoo.tsx",
+      "sha256": "b79c81d3554f4f968e42d9b09a47a0afe0019766df6f1940b736feef730b54c3"
+    },
+    {
+      "path": "frontend/src/pages/__tests__/AlphaZoo.test.tsx",
+      "sha256": "754eb816ae09bcc3493d93ef14e9213738675e1335f3d73792df9656f6f26cec"
+    }
+  ],
+  "checks": {
+    "base_commit": "1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2",
+    "backend_passed": 1106,
+    "backend_skipped": 23,
+    "frontend_passed": 968,
+    "frontend_files": 101,
+    "typescript": "passed",
+    "ruff_changed_python": "passed",
+    "git_diff_check": "passed",
+    "backend_command": "python -m pytest -q tests/test_alpha_bench_*.py tests/test_bench_universe_selection.py tests/factors/test_alpha_purity.py tests/factors/test_lookahead.py tests/test_hsi_membership_reference.py tests/test_hsi_benchmark_validation.py tests/test_data_availability.py"
+  },
+  "joint_offline_guard": {
+    "passed": 184,
+    "socket_calls": 0,
+    "dns_calls": 0,
+    "command": "PYTHONPATH=/private/tmp/hk-week4-review python -B -m pytest -p b2_offline_guard -q tests/test_alpha_bench_hsi.py tests/test_hsi_membership_reference.py tests/test_hsi_benchmark_validation.py tests/test_data_availability.py tests/test_alpha_bench_nifty100.py tests/test_nifty100_api_cli.py tests/test_nifty100_sector_vwap.py tests/test_bench_universe_selection.py"
+  },
+  "real_benchmark": "attempted; strict Wikipedia85/published95 count mismatch; zero alphas evaluated; annual coverage unavailable"
+}

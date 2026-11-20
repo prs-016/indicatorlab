@@ -1,0 +1,13 @@
+{
+  "result": "153 passed",
+  "new_b3_cases": 35,
+  "socket_calls": 0,
+  "dns_calls": 0,
+  "python": "/Users/jackgui/Desktop/hk/indicatorlab-clean/.venv/bin/python",
+  "command": "PYTHONPATH=/private/tmp/hk-week4-review /Users/jackgui/Desktop/hk/indicatorlab-clean/.venv/bin/python -B -m pytest -p offline_guard agent/tests/test_hk_market_layer.py agent/tests/test_global_equity_engine.py agent/tests/test_global_equity_hk_lot_sizes.py agent/tests/test_composite_market_rules.py agent/tests/test_composite_currency_guard.py agent/tests/test_gateway_calendars.py agent/tests/test_data_gateway_boundaries.py agent/tests/test_data_gateway.py -q -p no:cacheprovider",
+  "scoped_ruff": "passed six changed/new Python files",
+  "black": "passed the three new Python files only",
+  "git_diff_check": "passed",
+  "scope_limit": "Selected related suite, not full upstream suite or CI; historical FX dataset not acquired by this patch.",
+  "calendar_update": "Three additional official full closures: 2016-08-02, 2016-10-21, 2017-08-23. Added from input/calendar quality review, not strategy performance."
+}

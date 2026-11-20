@@ -1,0 +1,11 @@
+{
+  "name": "indicatorlab-live-markets",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check app.mjs && node --check model.mjs && node --check build.mjs",
+    "build": "node build.mjs"
+  },
+  "engines": { "node": ">=20" }
+}

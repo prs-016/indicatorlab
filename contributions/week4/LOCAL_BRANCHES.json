@@ -1,0 +1,29 @@
+{
+  "vibe_checkout": "/Users/jackgui/Desktop/vib/Vibe-Trading",
+  "branches": [
+    {
+      "branch": "feat/alpha-bench-hsi-week4",
+      "head": "80a266f9a27846fca6ced8f24f6af164402dd128",
+      "base": "342259f40d04ad79f586f9585384ce44b3025058",
+      "source": "/private/tmp/hk-week4-b2-niftycheck",
+      "scope": "B2 on NIFTY"
+    },
+    {
+      "branch": "feat/market-layer-hk-week4",
+      "head": "bec5fc6c5928b8b587585b47595b6fe4ac4a9127",
+      "base": "1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2",
+      "source": "/private/tmp/hk-week4-b3-hk",
+      "scope": "B3 HK"
+    },
+    {
+      "branch": "feat/cross-market-portfolio-design-week4",
+      "head": "74e3e50aa6aca5ab439cf3e1b43a601d5fe7ed75",
+      "base": "bec5fc6c5928b8b587585b47595b6fe4ac4a9127",
+      "source": "/private/tmp/hk-week4-b3-hk",
+      "scope": "B6 design"
+    }
+  ],
+  "remote_push_performed": false,
+  "transfer_status": "verified imported into the existing Vibe clone; main/worktree unchanged",
+  "verification_file": "local_copy_result.json (local operation evidence)"
+}

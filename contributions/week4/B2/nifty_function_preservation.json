@@ -1,0 +1,14 @@
+{
+  "_fetch_nifty100_constituents": {
+    "byte_preserved": true,
+    "sha256": "0d4809d0bd973cb37addd110f76b79e104f877bf870a3997a7e0d7058b2beebc"
+  },
+  "_attach_nifty100_context": {
+    "byte_preserved": true,
+    "sha256": "e135f27f07564afebce607313ebb9e12815ddc7e0a6ca561986a47832db982a2"
+  },
+  "_load_nifty100_panel": {
+    "byte_preserved": true,
+    "sha256": "1fe966f8562ea48d36e9a5e733fe7997621431219813194244a57c3ed11576ff"
+  }
+}

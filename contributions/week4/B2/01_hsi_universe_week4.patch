@@ -1,0 +1,1468 @@
+diff --git a/README.md b/README.md
+index 7f00964..e66a1b2 100644
+--- a/README.md
++++ b/README.md
+@@ -683,3 +683,14 @@ Vibe-Trading is research and trading software. It is not investment advice, hold
+ ## License
+ 
+ MIT License — see [LICENSE](LICENSE)
++
++## Hang Seng Index benchmark
++
++Run `vibe alpha bench --universe hsi --zoo alpha101 --period 2016-01-01/2026-10-31`.
++HSI works in the benchmark/compare API, CLI and Alpha Zoo selector.
++Current Wikipedia membership is revision-stamped and checked against the dated published count.
++A count mismatch or source failure stops the benchmark; there is no benchmark roster fallback.
++Prices use the shared HK provider chain with provider-native adjustment/volume provenance.
++Sector labels require 90% coverage; VWAP is a labeled OHLC4 proxy.
++Current members and sectors have survivorship bias, not point-in-time membership.
++Inspect missing instruments, observation counts and data-quality warnings before using results.
+diff --git a/agent/backtest/loaders/_symbol_utils.py b/agent/backtest/loaders/_symbol_utils.py
+index 2099dad..e1bdd60 100644
+--- a/agent/backtest/loaders/_symbol_utils.py
++++ b/agent/backtest/loaders/_symbol_utils.py
+@@ -9,6 +9,14 @@ from __future__ import annotations
+ _ETF_PREFIXES = frozenset({"15", "16", "50", "51", "52", "56", "58"})
+ 
+ 
++def normalize_hk_symbol(code: str) -> str:
++    """Canonicalize numeric HK aliases (700/0700/0700.HK) to one instrument."""
++    digits = str(code).strip().upper().removeprefix("HK.").removesuffix(".HK")
++    if not digits.isascii() or not digits.isdigit() or not 0 < int(digits) < 100000:
++        raise ValueError(f"Invalid Hong Kong equity symbol: {code!r}")
++    return f"{int(digits):04d}.HK"
++
++
+ def _is_etf_listed(code: str) -> bool:
+     """Detect exchange-listed ETF / LOF symbols (e.g. 510050.SH, 159915.SZ)."""
+     upper = code.upper()
+diff --git a/agent/src/api/alpha_routes.py b/agent/src/api/alpha_routes.py
+index 6c6c55a..75457c4 100644
+--- a/agent/src/api/alpha_routes.py
++++ b/agent/src/api/alpha_routes.py
+@@ -118,7 +118,7 @@ _VALID_UNIVERSES = {
+ # Ranking metrics for /alpha/compare — keep in sync with
+ # ``src.factors.compare_runner.SORT_KEYS`` (kept local to avoid a heavy import).
+ _VALID_SORTS = {"ir", "ic_mean", "ic_positive_ratio", "ic_count"}
+-_BENCH_UNIVERSES = {"csi300", "sp500", "btc-usdt"}
++_BENCH_UNIVERSES = {"csi300", "sp500", "hsi", "btc-usdt"}
+ 
+ 
+ def _now_iso() -> str:
+@@ -413,6 +413,7 @@ def register_alpha_routes(
+         return {"universes": {
+             "csi300": {"ready": configured and installed, "reason": "tushare_ready" if configured and installed else "tushare_token_missing" if not configured else "tushare_dependency_missing"},
+             "sp500": {"ready": True, "reason": "public_data"},
++            "hsi": {"ready": True, "reason": "public_data"},
+             "btc-usdt": {"ready": False, "reason": "single_asset"},
+         }, "zoo_counts": {zoo: len(registry.list(zoo=zoo)) for zoo in sorted(_VALID_ZOOS)}}
+ 
+@@ -443,7 +444,12 @@ def register_alpha_routes(
+                 detail=f"unknown theme {theme!r}; expected one of {sorted(_VALID_THEMES)}",
+             )
+         if universe is not None:
+-            _ALIAS = {"csi300": "equity_cn", "sp500": "equity_us", "btc-usdt": "crypto"}
++            _ALIAS = {
++                "csi300": "equity_cn",
++                "sp500": "equity_us",
++                "hsi": "equity_hk",
++                "btc-usdt": "crypto",
++            }
+             universe = _ALIAS.get(universe, universe)
+         if universe is not None and universe not in _VALID_UNIVERSES:
+             raise HTTPException(
+diff --git a/agent/src/factors/cli_handlers.py b/agent/src/factors/cli_handlers.py
+index c21ae9c..8f83a84 100644
+--- a/agent/src/factors/cli_handlers.py
++++ b/agent/src/factors/cli_handlers.py
+@@ -94,7 +94,7 @@ def _load_cli_env() -> None:
+ # ``src.tools.alpha_bench_tool._UNIVERSE_TAG``. There is no KRX (or NSE/BSE)
+ # panel yet, so Korea/India are deliberately absent — ``alpha bench`` would
+ # fail at universe load, not produce a Korean benchmark.
+-_UNIVERSE_CHOICES = ["csi300", "sp500", "btc-usdt"]
++_UNIVERSE_CHOICES = ["csi300", "sp500", "hsi", "btc-usdt"]
+ 
+ # Per-row fields that only ``bench_runner_strict`` produces. They are the
+ # statistics ``categorise_strict`` actually gates on, so a strict run that
+@@ -122,6 +122,7 @@ _LIST_UNIVERSE_CHOICES = [
+ _LIST_UNIVERSE_ALIASES = {
+     "csi300": "equity_cn",
+     "sp500": "equity_us",
++    "hsi": "equity_hk",
+     "btc-usdt": "crypto",
+ }
+ 
+diff --git a/agent/src/factors/data_availability.py b/agent/src/factors/data_availability.py
+index 75e39a6..2af56f2 100644
+--- a/agent/src/factors/data_availability.py
++++ b/agent/src/factors/data_availability.py
+@@ -76,6 +76,10 @@ _ADAPTERS: dict[str, AvailabilityAdapter] = {
+         "us_equity",
+         MarketContext("equity", "XNYS+XNAS", "USD", "America/New_York", "NYSE/NASDAQ"),
+     ),
++    "hsi": _BuiltinAdapter(
++        "hk_equity",
++        MarketContext("equity", "XHKG", "HKD", "Asia/Hong_Kong", "XHKG"),
++    ),
+     "btc-usdt": _BuiltinAdapter(
+         "crypto",
+         MarketContext("crypto", "global", "USDT", "UTC", "24/7"),
+diff --git a/agent/src/tools/alpha_bench_tool.py b/agent/src/tools/alpha_bench_tool.py
+index 934d9f8..b779643 100644
+--- a/agent/src/tools/alpha_bench_tool.py
++++ b/agent/src/tools/alpha_bench_tool.py
+@@ -62,6 +62,8 @@ _SP500_CONSTITUENT_SOURCE_DATE = "2026-05-17"
+ # "unknown" bucket demeans as a single group, which is the global fallback
+ # the alphas already have, but reported as industry neutralization.
+ _SP500_MIN_SECTOR_COVERAGE = 0.9
++# Keep the HSI gate explicit so market-specific label policies do not couple.
++_HSI_MIN_SECTOR_COVERAGE = 0.9
+ 
+ # Concurrent Tushare ``pro.daily`` fetches when building CSI300. Free tier
+ # allows ~200 calls/min; 4 workers stays well under that with a 300-name list.
+@@ -80,6 +82,7 @@ _PERIOD_DATE = re.compile(r"^(\d{4}-\d{2}-\d{2})/(\d{4}-\d{2}-\d{2})$")
+ _UNIVERSE_TAG = {
+     "csi300": "equity_cn",
+     "sp500": "equity_us",
++    "hsi": "equity_hk",
+     "btc-usdt": "crypto",
+ }
+ 
+@@ -115,7 +118,7 @@ def _load_universe_panel(
+     with one column per instrument.
+ 
+     Args:
+-        universe: ``csi300`` | ``sp500`` | ``btc-usdt``.
++        universe: ``csi300`` | ``sp500`` | ``hsi`` | ``btc-usdt``.
+         period: ``YYYY-YYYY`` or ``YYYY-MM-DD/YYYY-MM-DD``.
+         use_cache: When True (default) reuse a pickle in
+             ``~/.vibe-trading/cache/`` if the same universe+period was fetched
+@@ -132,7 +135,12 @@ def _load_universe_panel(
+     start, end = _parse_period(period)
+ 
+     cache_dir = get_runtime_root() / "cache"
+-    cache_path = cache_dir / f"{universe}_{start}_{end}.pkl"
++    # Old HSI cache entries predate canonical provenance and roster reconciliation.
++    # Keep other universes' cache names stable; this versions HSI metadata only.
++    # Prior HSI caches accepted an incomplete 85-name roster/frozen fallback.
++    # A new namespace prevents bypassing the strict published-count validation.
++    cache_universe = "hsi_v3" if universe == "hsi" else universe
++    cache_path = cache_dir / f"{cache_universe}_{start}_{end}.pkl"
+     if use_cache and cache_path.is_file():
+         cached = _read_pickle_cache(cache_path)
+         if cached is not None:
+@@ -143,6 +151,8 @@ def _load_universe_panel(
+         panel = _load_csi300_panel(start, end)
+     elif universe == "sp500":
+         panel = _load_sp500_panel(start, end)
++    elif universe == "hsi":
++        panel = _load_hsi_panel(start, end)
+     elif universe == "btc-usdt":
+         panel = _load_btc_panel(start, end)
+     else:  # pragma: no cover — guarded above
+@@ -624,6 +634,139 @@ def _fetch_sp500_constituents() -> tuple[list[str], dict[str, str]]:
+     return [], {}
+ 
+ 
++def _fetch_hsi_constituents() -> tuple[list[str], dict[str, str], dict]:
++    """Fetch the strict benchmark roster, separate from operational quote fallback."""
++    from src.tools.hsi_universe import fetch_benchmark_constituents
++
++    return fetch_benchmark_constituents()
++
++
++def _load_hsi_panel(start: str, end: str) -> dict[str, pd.DataFrame]:
++    """Load current HSI stocks through the shared HK fallback with provenance."""
++    from backtest.loaders._symbol_utils import normalize_hk_symbol
++    from backtest.loaders.registry import FALLBACK_CHAINS, resolve_loader
++    from src.market_data import fetch_market_data
++    from src.tools.hsi_metadata import canonical_symbol_metadata, provenance_summary
++
++    codes, sectors, metadata = _fetch_hsi_constituents()
++    codes = list(dict.fromkeys(normalize_hk_symbol(code) for code in codes))
++    sectors = {normalize_hk_symbol(code): label for code, label in sectors.items()}
++    loader = resolve_loader("hk_equity")
++    response = (
++        _retry(
++            lambda: fetch_market_data(
++                codes=codes,
++                start_date=start,
++                end_date=end,
++                source=loader.name,
++                max_fallback_attempts=len(FALLBACK_CHAINS["hk_equity"]),
++                include_provenance=True,
++                as_frames=True,
++            )
++        )
++        or {}
++    )
++    fetched, chosen_aliases = {}, {}
++    for code, frame in response.items():
++        if str(code).startswith("_") or not isinstance(frame, pd.DataFrame) or frame.empty:
++            continue
++        canonical = normalize_hk_symbol(code)
++        if canonical in codes:
++            bounded = frame.loc[start:end]
++            if canonical in fetched and not fetched[canonical].equals(bounded):
++                raise ValueError(
++                    f"Conflicting HSI price frames for aliases of {canonical}"
++                )
++            if canonical not in fetched:
++                fetched[canonical] = bounded
++                chosen_aliases[canonical] = str(code)
++    fetched = {
++        code: frame for code, frame in fetched.items()
++        if not frame.empty and "close" in frame and frame["close"].notna().any()
++    }
++    if len(fetched) < 2:
++        raise RuntimeError(
++            "HSI prices unavailable: fewer than two instruments with observed close prices"
++        )
++    raw_provenance = response.get("_provenance", {})
++    provenance, provenance_conflicts = canonical_symbol_metadata(
++        raw_provenance, codes, chosen_aliases
++    )
++    diagnostics, diagnostic_conflicts = canonical_symbol_metadata(
++        response.get("_diagnostics", {}), codes, chosen_aliases, diagnostics=True
++    )
++    panel = _wide_from_fetched(fetched, include_amount=False)
++    if all(key in panel for key in ("open", "high", "low", "close")):
++        panel["vwap"] = (
++            sum(panel[key] for key in ("open", "high", "low", "close")) / 4.0
++        )
++    coverage = 0.0
++    if "close" in panel and len(panel["close"].columns):
++        close = panel["close"]
++        labels = [sectors.get(code, "") for code in close.columns]
++        coverage = sum(bool(label) for label in labels) / len(labels)
++        if coverage >= _HSI_MIN_SECTOR_COVERAGE:
++            panel["sector"] = pd.DataFrame(
++                np.repeat(
++                    np.array([label or "UNKNOWN" for label in labels], dtype=object)[
++                        None, :
++                    ],
++                    len(close.index),
++                    axis=0,
++                ),
++                index=close.index,
++                columns=close.columns,
++            )
++    panel["_meta"] = metadata | {
++        "universe": "hsi",
++        "hsi_metadata_version": 3,
++        "universe_tag": "equity_hk",
++        "currency": "HKD",
++        "exchange_timezone": "Asia/Hong_Kong",
++        "calendar": "XHKG",
++        "calendar_policy": "provider-observed daily dates; no calendar reindex or fabricated bars",
++        "survivorship_bias": True,
++        "pit_membership": False,
++        "point_in_time_membership": False,
++        "missing_observations": {
++            field: int(frame.isna().sum().sum())
++            for field, frame in panel.items()
++            if isinstance(frame, pd.DataFrame) and field != "sector"
++        },
++        "missing_observation_policy": "count missing cells on provider-observed union of dates; not absent whole sessions",
++        "degraded": bool(metadata.get("degraded") or provenance_conflicts),
++        "requested_instruments": len(codes),
++        "fetched_instruments": len(fetched),
++        "missing_instruments": sorted(set(codes) - set(fetched)),
++        "constituent_count": len(codes),
++        "data_diagnostics": diagnostics,
++        "raw_data_diagnostics": response.get("_diagnostics", {}),
++        "diagnostic_alias_conflicts": diagnostic_conflicts,
++        "price_provenance": provenance,
++        "raw_price_provenance": raw_provenance,
++        "provenance_alias_conflicts": provenance_conflicts,
++        "price_sources": sorted(
++            {value["source"] for code, value in provenance.items() if code in fetched and value.get("source")}
++        ),
++        **provenance_summary(fetched, provenance),
++        "missing_data_policy": (
++            "HSI panel outer-joins observed provider dates without filling cells; "
++            "shared upstream adapters may already drop incomplete OHLC or fill missing volume with zero"
++        ),
++        "vwap_method": "OHLC arithmetic mean proxy; not traded VWAP",
++        "sector_source": (
++            "Wikipedia sector/industry/sub-index" if "sector" in panel else None
++        ),
++        "sector_coverage": round(coverage, 4),
++        "sector_coverage_threshold": _HSI_MIN_SECTOR_COVERAGE,
++        "sector_note": (
++            "Current source-table labels, not harmonized with GICS/NSE classifications; "
++            "omitted below the HSI coverage threshold."
++        ),
++    }
++    return panel
++
++
+ def _load_btc_panel(start: str, end: str) -> dict[str, pd.DataFrame]:
+     """Single-instrument BTC-USDT panel via OKX. Adds vwap = typical price."""
+     from backtest.loaders.registry import resolve_loader
+@@ -1488,7 +1631,7 @@ class AlphaBenchTool(BaseTool):
+             },
+             "universe": {
+                 "type": "string",
+-                "description": "csi300 | sp500 | btc-usdt (resolved via existing data tools).",
++                "description": "csi300 | sp500 | hsi | btc-usdt (resolved via existing data tools).",
+             },
+             "period": {
+                 "type": "string",
+diff --git a/agent/src/tools/alpha_compare_tool.py b/agent/src/tools/alpha_compare_tool.py
+index 1e9d1ec..f47654d 100644
+--- a/agent/src/tools/alpha_compare_tool.py
++++ b/agent/src/tools/alpha_compare_tool.py
+@@ -63,7 +63,7 @@ class AlphaCompareTool(BaseTool):
+             },
+             "universe": {
+                 "type": "string",
+-                "description": "csi300 | sp500 | btc-usdt.",
++                "description": "csi300 | sp500 | hsi | btc-usdt.",
+             },
+             "period": {
+                 "type": "string",
+diff --git a/agent/src/tools/hsi_metadata.py b/agent/src/tools/hsi_metadata.py
+new file mode 100644
+index 0000000..430816b
+--- /dev/null
++++ b/agent/src/tools/hsi_metadata.py
+@@ -0,0 +1,73 @@
++"""Canonical HK metadata without silently changing price or quantity values."""
++
++from __future__ import annotations
++
++import json
++from collections.abc import Mapping
++
++from backtest.loaders._symbol_utils import normalize_hk_symbol
++
++
++def canonical_symbol_metadata(values, requested, preferred, *, diagnostics=False):
++    """Return canonical records and preserved alias conflicts for requested stocks.
++
++    An exact metadata entry for the alias that supplied the selected frame wins.
++    Otherwise, only a single or identical set of alias entries is unambiguous.
++    All conflicting entries remain visible; unknown provenance is never guessed.
++    """
++    groups = {}
++    if not isinstance(values, Mapping):
++        return {}, {}
++    for alias, value in values.items():
++        try:
++            code = normalize_hk_symbol(alias)
++        except ValueError:
++            continue
++        if code in requested:
++            groups.setdefault(code, {})[str(alias)] = value
++    result, conflicts = {}, {}
++    for code, entries in groups.items():
++        fingerprints = {json.dumps(value, sort_keys=True, default=str) for value in entries.values()}
++        conflict = len(fingerprints) > 1
++        chosen = preferred.get(code)
++        if chosen in entries:
++            value = entries[chosen]
++        elif not conflict:
++            value = next(iter(entries.values()))
++        else:
++            value = {}
++        record = dict(value) if isinstance(value, Mapping) else {"raw_value": value}
++        if conflict:
++            conflicts[code] = entries
++            record["alias_metadata_conflict"] = True
++        if diagnostics and len(entries) > 1:
++            record["alias_diagnostics"] = entries
++        result[code] = record
++    return result, conflicts
++
++
++def provenance_summary(codes, provenance):
++    """Disclose provider-native adjustment/volume bases without transforming bars."""
++    adjustments = {code: provenance.get(code, {}).get("adjustment") or "unknown" for code in codes}
++    units = {code: provenance.get(code, {}).get("volume_unit") for code in codes}
++    warnings = []
++    if len(set(adjustments.values())) > 1:
++        warnings.append("Price adjustment bases differ between instruments.")
++    if any(value != "split_dividend" for value in adjustments.values()):
++        warnings.append(
++            "At least one price series is not declared split/dividend adjusted; "
++            "returns and cross-market comparisons need adjustment-basis review."
++        )
++    if any(value != "shares" for value in units.values()):
++        warnings.append(
++            "At least one volume unit is unknown or not declared in shares; "
++            "no board-lot multiplier or implicit unit conversion was applied."
++        )
++    return {
++        "price_adjustment_policy": "provider-native; not harmonized by HSI loader",
++        "price_adjustments": adjustments,
++        "mixed_price_adjustments": len(set(adjustments.values())) > 1,
++        "volume_units": units,
++        "volume_normalization": "none; preserve declared provider quantities",
++        "data_quality_warnings": warnings,
++    }
+diff --git a/agent/src/tools/hsi_universe.py b/agent/src/tools/hsi_universe.py
+new file mode 100644
+index 0000000..3281376
+--- /dev/null
++++ b/agent/src/tools/hsi_universe.py
+@@ -0,0 +1,255 @@
++"""Current HSI constituents for a deliberately survivorship-biased benchmark."""
++
++from __future__ import annotations
++
++from datetime import datetime, timezone
++import hashlib
++import io
++import logging
++import re
++
++import pandas as pd
++import requests
++
++from backtest.loaders._symbol_utils import normalize_hk_symbol
++
++LOG = logging.getLogger(__name__)
++WIKIPEDIA_URL = "https://en.wikipedia.org/wiki/Hang_Seng_Index"
++# Full frozen operational roster as of 2026-11-04, from HSI review announcements.
++# Never represent this fallback as historical membership or a live official list.
++FALLBACK_DATE = "2026-11-04"
++# Official reference: the review announced on 2026-08-21, effective 2026-09-07.
++# This frozen set is an audit reference, not an indefinitely current index list.
++REFERENCE_EFFECTIVE_DATE = "2026-09-07"
++PUBLISHED_CONSTITUENT_COUNT = 95  # Appendix 1 of the dated official review below.
++REFERENCE_SOURCE_URL = "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf"
++FALLBACK_CODES = """
++0001.HK 0002.HK 0003.HK 0005.HK 0006.HK 0012.HK 0016.HK 0027.HK 0066.HK
++0101.HK 0175.HK 0241.HK 0267.HK 0285.HK 0288.HK 0291.HK 0300.HK 0316.HK
++0322.HK 0386.HK 0388.HK 0669.HK 0688.HK 0700.HK 0728.HK 0762.HK 0823.HK
++0836.HK 0857.HK 0868.HK 0883.HK 0939.HK 0941.HK 0960.HK 0968.HK 0981.HK
++0992.HK 1024.HK 1038.HK 1044.HK 1088.HK 1093.HK 1099.HK 1109.HK 1113.HK
++1177.HK 1209.HK 1211.HK 1299.HK 1347.HK 1378.HK 1398.HK 1519.HK 1801.HK
++1810.HK 1876.HK 1928.HK 1929.HK 1997.HK 2015.HK 2020.HK 2057.HK 2269.HK
++2313.HK 2318.HK 2319.HK 2331.HK 2338.HK 2359.HK 2382.HK 2388.HK 2600.HK
++2618.HK 2628.HK 2688.HK 2899.HK 3690.HK 3692.HK 3750.HK 3968.HK 3988.HK
++3993.HK 6160.HK 6181.HK 6618.HK 6690.HK 6862.HK 9618.HK 9633.HK 9888.HK
++9901.HK 9961.HK 9988.HK 9992.HK 9999.HK
++""".split()
++
++
++def _with_reference_metadata(codes: list[str], metadata: dict) -> dict:
++    """Disclose set differences against the dated reference without changing codes."""
++    observed, reference = set(codes), set(FALLBACK_CODES)
++    missing = sorted(reference - observed)
++    unexpected = sorted(observed - reference)
++    matches = not missing and not unexpected
++    if not matches:
++        LOG.warning(
++            "HSI roster differs from frozen %s reference: %d missing, %d unexpected; "
++            "review both sources before treating either as current",
++            FALLBACK_DATE,
++            len(missing),
++            len(unexpected),
++        )
++    return {
++        **metadata,
++        "constituent_observed_count": len(observed),
++        "constituent_reference_source": REFERENCE_SOURCE_URL,
++        "constituent_reference_effective_date": REFERENCE_EFFECTIVE_DATE,
++        "constituent_reference_snapshot_date": FALLBACK_DATE,
++        "constituent_reference_frozen": True,
++        "constituent_reference_count": len(reference),
++        "constituent_reference_overlap_count": len(observed & reference),
++        "constituent_reference_missing_symbols": missing,
++        "constituent_reference_unexpected_symbols": unexpected,
++        "constituent_reference_matches": matches,
++        "constituent_reference_note": (
++            "Dated set comparison only; the frozen reference can become stale after "
++            "index reviews. A mismatch requires review and does not establish which "
++            "source is current. Returned source codes are unchanged; neither set "
++            "provides historical point-in-time membership."
++        ),
++        "degraded": bool(metadata.get("degraded")) or not matches,
++    }
++
++
++def parse_constituents(html: str) -> tuple[list[str], dict[str, str]]:
++    """Parse Wikipedia tickers and optional sector/industry/sub-index labels."""
++    for table in pd.read_html(io.StringIO(html)):
++        columns = {str(column).strip().lower(): column for column in table.columns}
++        ticker = next(
++            (columns[key] for key in ("ticker", "stock code", "symbol") if key in columns),
++            None,
++        )
++        if ticker is None:
++            continue
++        sector = next(
++            (columns[key] for key in ("sector", "industry", "sub-index") if key in columns),
++            None,
++        )
++        codes, sectors = [], {}
++        for _, row in table.iterrows():
++            match = re.fullmatch(r"(?:SEHK\s*:\s*)?(\d{1,5})(?:\.HK)?", str(row[ticker]).strip(), re.I)
++            if not match:
++                continue
++            code = normalize_hk_symbol(match.group(1))
++            if code not in codes:
++                codes.append(code)
++            if sector is not None and pd.notna(row[sector]) and str(row[sector]).strip():
++                sectors[code] = str(row[sector]).strip()
++        if codes:
++            return codes, sectors
++    raise ValueError("No HSI constituent table found")
++
++
++def fetch_constituents() -> tuple[list[str], dict[str, str], dict]:
++    """Fetch a revision-dated current roster, or disclose a frozen degraded fallback."""
++    fetched_at = datetime.now(timezone.utc).isoformat()
++    try:
++        response = requests.get(
++            WIKIPEDIA_URL,
++            headers={"User-Agent": "Vibe-Trading/0.1 (research bench; https://github.com/HKUDS/Vibe-Trading)"},
++            timeout=20,
++        )
++        response.raise_for_status()
++        codes, sectors = parse_constituents(response.text)
++        if len(codes) < 50:
++            raise ValueError("Suspiciously short current HSI table")
++        # Read the revision date from this very HTML, avoiding a race with a
++        # separate API request for a newer revision than the parsed table.
++        modified = re.search(r'"dateModified"\s*:\s*"([^"]+)"', response.text)
++        revision = re.search(r'"wgRevisionId"\s*:\s*(\d+)', response.text)
++        date = datetime.fromisoformat(modified.group(1).replace("Z", "+00:00")).date().isoformat() if modified else None
++        return (
++            codes,
++            sectors,
++            _with_reference_metadata(
++                codes,
++                {
++                    "constituent_source": WIKIPEDIA_URL,
++                    "constituent_source_date": date,
++                    "constituent_source_date_kind": "wikipedia_revision_date",
++                    "constituent_revision_id": revision.group(1) if revision else None,
++                    "constituent_retrieved_at": fetched_at,
++                    "degraded": date is None or revision is None,
++                    "constituent_note": "Wikipedia page revision date is not a membership effective date; current roster can lag reviews and is not point-in-time membership.",
++                },
++            ),
++        )
++    except (requests.RequestException, ValueError, ImportError) as exc:
++        LOG.warning("hsi Wikipedia failed (%s); using dated fallback", type(exc).__name__)
++        return (
++            list(FALLBACK_CODES),
++            {},
++            _with_reference_metadata(
++                FALLBACK_CODES,
++                {
++                    "constituent_source": "frozen HSI fallback",
++                    "constituent_source_date": FALLBACK_DATE,
++                    "constituent_source_date_kind": "frozen_snapshot_as_of",
++                    "constituent_revision_id": None,
++                    "constituent_retrieved_at": fetched_at,
++                    "degraded": True,
++                    "constituent_note": "Frozen roster; refresh required after index reviews.",
++                },
++            ),
++        )
++
++
++class HSIConstituentError(ValueError):
++    """A stable, sanitized benchmark roster failure safe to expose to users."""
++
++    def __init__(self, reason: str, detail: str = "") -> None:
++        self.reason = reason
++        super().__init__(f"HSI constituent load failed: {reason}" + (f" ({detail})" if detail else ""))
++
++
++def fetch_benchmark_constituents() -> tuple[list[str], dict[str, str], dict]:
++    """Load a validated Wikipedia roster; benchmark failures never use a fallback.
++
++    The published count/reference is dated, not a live membership certification.
++    Keep ``fetch_constituents`` separate for existing operational quote consumers.
++    Review this reference after index reviews, rather than suppressing mismatches.
++    """
++    fetched_at = datetime.now(timezone.utc).isoformat()
++    try:
++        response = requests.get(
++            WIKIPEDIA_URL,
++            headers={"User-Agent": "Vibe-Trading/0.1 (research bench; https://github.com/HKUDS/Vibe-Trading)"},
++            timeout=20,
++        )
++        response.raise_for_status()
++    except Exception as exc:  # noqa: BLE001 — untrusted transport boundary
++        if isinstance(exc, requests.Timeout):
++            reason = "request timed out"
++        elif isinstance(exc, requests.HTTPError):
++            reason = "HTTP request failed"
++        elif isinstance(exc, requests.ConnectionError):
++            reason = "connection failed"
++        elif isinstance(exc, requests.RequestException):
++            reason = "request failed"
++        elif isinstance(exc, ValueError):
++            reason = "invalid constituent data"
++        else:
++            reason = "constituent source failed"
++        raise HSIConstituentError(reason) from None
++    try:
++        tables = pd.read_html(io.StringIO(response.text))
++        candidates = []
++        for table in tables:
++            columns = {str(column).strip().lower(): column for column in table.columns}
++            ticker = next((columns[key] for key in ("ticker", "stock code", "symbol") if key in columns), None)
++            if ticker is not None:
++                candidates.append((table, ticker))
++        if len(candidates) != 1:
++            raise HSIConstituentError("invalid constituent data", "parse_error")
++        table, ticker = candidates[0]
++        raw_codes = []
++        for value in table[ticker]:
++            match = re.fullmatch(r"(?:SEHK\s*:\s*)?(\d{1,5})(?:\.HK)?", str(value).strip(), re.I)
++            if not match:
++                raise HSIConstituentError("invalid constituent data", "invalid_symbols")
++            code = normalize_hk_symbol(match.group(1))
++            if not re.fullmatch(r"[0-9]{4}\.HK", code):
++                raise HSIConstituentError("invalid constituent data", "invalid_symbols")
++            raw_codes.append(code)
++        if len(set(raw_codes)) != len(raw_codes):
++            raise HSIConstituentError("invalid constituent data", "duplicate_symbols")
++        if len(raw_codes) != PUBLISHED_CONSTITUENT_COUNT:
++            raise HSIConstituentError(
++                "invalid constituent data",
++                f"count_mismatch: observed={len(raw_codes)}, published_reference={PUBLISHED_CONSTITUENT_COUNT}, effective={REFERENCE_EFFECTIVE_DATE}",
++            )
++        codes, sectors = parse_constituents(response.text)
++        modified = re.search(r'"dateModified"\s*:\s*"([^"]+)"', response.text)
++        revision = re.search(r'"wgRevisionId"\s*:\s*(\d+)', response.text)
++        if modified is None or revision is None:
++            raise HSIConstituentError("invalid constituent data", "missing_provenance")
++        timestamp = datetime.fromisoformat(modified.group(1).replace("Z", "+00:00"))
++        if timestamp.tzinfo is None:
++            raise HSIConstituentError("invalid constituent data", "missing_provenance")
++    except HSIConstituentError:
++        raise
++    except Exception as exc:  # noqa: BLE001 — untrusted parser boundary
++        reason = "invalid constituent data" if isinstance(exc, ValueError) else "constituent source failed"
++        raise HSIConstituentError(reason) from None
++    return (
++        codes,
++        sectors,
++        _with_reference_metadata(
++            codes,
++            {
++                "constituent_source": WIKIPEDIA_URL,
++                "constituent_source_date": timestamp.date().isoformat(),
++                "constituent_source_timestamp": timestamp.isoformat(),
++                "constituent_sha256": hashlib.sha256(response.text.encode("utf-8")).hexdigest(),
++                "constituent_source_date_kind": "wikipedia_revision_date",
++                "constituent_revision_id": revision.group(1),
++                "constituent_retrieved_at": fetched_at,
++                "constituent_count_validation": "distinct canonical symbols equal dated published count",
++                "degraded": False,
++                "constituent_note": "Current Wikipedia roster; revision time is not a membership effective date. The published reference is dated and must be reviewed after index reviews; neither is historical membership.",
++            },
++        ),
++    )
+diff --git a/agent/tests/test_alpha_bench_hsi.py b/agent/tests/test_alpha_bench_hsi.py
+new file mode 100644
+index 0000000..96a2ec4
+--- /dev/null
++++ b/agent/tests/test_alpha_bench_hsi.py
+@@ -0,0 +1,295 @@
++"""HSI alias identity, public roster metadata and loader-chain integration."""
++
++from types import SimpleNamespace
++
++import pandas as pd
++import pytest
++import requests
++
++from backtest.loaders._symbol_utils import normalize_hk_symbol
++from src.tools import alpha_bench_tool as tool
++from src.tools import hsi_universe as hsi
++
++
++@pytest.mark.parametrize("value", ["700", "0700", "0700.HK", "00700.HK", "HK.00700"])
++def test_same_instrument(value):
++    assert normalize_hk_symbol(value) == "0700.HK"
++
++
++@pytest.mark.parametrize("value", ["0", "-700", "700.US", "abc", "100000"])
++def test_bad_symbol(value):
++    with pytest.raises(ValueError):
++        normalize_hk_symbol(value)
++
++
++def test_parse_table_without_counting_aliases_twice():
++    html = "<table><tr><th>Ticker</th><th>Name</th><th>Sub-index</th></tr>"
++    for code in ["SEHK: 700", "0700.HK", "SEHK: 5"]:
++        html += f"<tr><td>{code}</td><td>Fixture</td><td>Finance</td></tr>"
++    codes, sectors = hsi.parse_constituents(html + "</table>")
++    assert codes == ["0700.HK", "0005.HK"]
++    assert sectors == {code: "Finance" for code in codes}
++
++
++def test_revision_date_belongs_to_parsed_html(monkeypatch):
++    html = '<script>{"dateModified":"2026-10-01T18:43:56Z","wgRevisionId":123}</script>'
++    html += pd.DataFrame(
++        {
++            "Ticker": [f"SEHK: {code}" for code in range(1, 51)],
++            "Sector": ["Finance"] * 50,
++        }
++    ).to_html(index=False)
++    monkeypatch.setattr(
++        hsi.requests,
++        "get",
++        lambda *a, **kw: SimpleNamespace(text=html, raise_for_status=lambda: None),
++    )
++    codes, sectors, meta = hsi.fetch_constituents()
++    assert len(codes) == len(sectors) == 50
++    assert meta["constituent_source_date"] == "2026-10-01"
++    assert meta["constituent_revision_id"] == "123"
++    assert meta["degraded"] is True
++    assert meta["constituent_reference_matches"] is False
++
++
++def test_network_failure_has_full_dated_fallback(monkeypatch):
++    def fail(*args, **kwargs):
++        raise requests.Timeout()
++
++    monkeypatch.setattr(hsi.requests, "get", fail)
++    codes, sectors, meta = hsi.fetch_constituents()
++    assert len(codes) == len(set(codes)) == 95
++    assert "0700.HK" in codes
++    assert sectors == {}
++    assert meta["degraded"] is True
++    assert meta["constituent_source_date"] == hsi.FALLBACK_DATE
++
++
++def patch_panel(monkeypatch, *, sectors=None):
++    codes = ["700", "0700", "0700.HK", "0005.HK", "9988.HK"]
++    metadata = {
++        "constituent_source": "fixture",
++        "constituent_source_date": "2026-10-01",
++        "degraded": False,
++    }
++    monkeypatch.setattr(hsi, "fetch_benchmark_constituents", lambda: (codes, sectors or {}, metadata))
++    monkeypatch.setattr(
++        "backtest.loaders.registry.resolve_loader",
++        lambda market: SimpleNamespace(name="tencent") if market == "hk_equity" else None,
++    )
++    frame = pd.DataFrame(
++        {
++            "open": [10.0, 11.0, 12.0],
++            "high": [12.0, 13.0, 14.0],
++            "low": [9.0, 10.0, 11.0],
++            "close": [11.0, 12.0, 13.0],
++            "volume": [100.0, 200.0, 300.0],
++        },
++        index=pd.date_range("2024-01-01", periods=3),
++    )
++
++    def fetch(**kwargs):
++        assert kwargs["codes"] == ["0700.HK", "0005.HK", "9988.HK"]
++        assert kwargs["source"] == "tencent"
++        assert kwargs["max_fallback_attempts"] == 9
++        assert kwargs["include_provenance"] and kwargs["as_frames"]
++        return {
++            "700.HK": frame,
++            "0005.HK": frame,
++            "_unresolved": ["9988.HK"],
++            "_provenance": {
++                "700.HK": {
++                    "source": "tencent",
++                    "adjustment": "raw",
++                    "volume_unit": "shares",
++                }
++            },
++        }
++
++    monkeypatch.setattr("src.market_data.fetch_market_data", fetch)
++    return frame
++
++
++def test_panel_metadata_missing_names_and_currency(monkeypatch):
++    patch_panel(monkeypatch)
++    panel = tool._load_hsi_panel("2024-01-01", "2024-01-02")
++    assert list(panel["close"].columns) == ["0005.HK", "0700.HK"]
++    assert len(panel["close"]) == 2
++    assert panel["_meta"]["missing_instruments"] == ["9988.HK"]
++    assert panel["_meta"]["survivorship_bias"] is True
++    assert panel["_meta"]["currency"] == "HKD"
++    assert panel["_meta"]["price_sources"] == ["tencent"]
++    assert panel["_meta"]["price_provenance"]["0700.HK"]["adjustment"] == "raw"
++    assert panel["_meta"]["price_adjustments"]["0700.HK"] == "raw"
++    assert panel["_meta"]["volume_units"]["0700.HK"] == "shares"
++    assert "700.HK" in panel["_meta"]["raw_price_provenance"]
++    assert "sector" not in panel
++    pd.testing.assert_frame_equal(panel["vwap"], sum(panel[k] for k in ("open", "high", "low", "close")) / 4)
++
++
++@pytest.mark.parametrize(
++    "sectors,expected",
++    [({"700": "Finance", "5": "Finance"}, True), ({"700": "Finance"}, False)],
++)
++def test_same_sector_coverage_threshold_as_sp500(monkeypatch, sectors, expected):
++    patch_panel(monkeypatch, sectors=sectors)
++    panel = tool._load_hsi_panel("2024-01-01", "2024-01-02")
++    assert ("sector" in panel) is expected
++    if expected:
++        assert panel["sector"].index.equals(panel["close"].index)
++        assert panel["sector"].columns.equals(panel["close"].columns)
++
++
++def test_cache_keeps_hsi_metadata_without_refetch(monkeypatch, tmp_path):
++    patch_panel(monkeypatch)
++    monkeypatch.setattr(tool, "get_runtime_root", lambda: tmp_path)
++    first = tool._load_universe_panel("hsi", "2024-01-01/2024-01-02")
++    monkeypatch.setattr(tool, "_load_hsi_panel", lambda *a: pytest.fail("cache was not used"))
++    second = tool._load_universe_panel("hsi", "2024-01-01/2024-01-02")
++    assert second["_meta"] == first["_meta"]
++
++
++def test_api_cli_universe_wiring():
++    from src.api.alpha_routes import BenchRequest, CompareRequest
++    from src.factors.cli_handlers import _LIST_UNIVERSE_ALIASES, _UNIVERSE_CHOICES
++
++    assert BenchRequest(zoo="alpha101", universe="hsi", period="2024-2024").universe == "hsi"
++    assert (
++        CompareRequest(
++            alpha_ids=["alpha101_001", "alpha101_002"],
++            universe="hsi",
++            period="2024-2024",
++        ).universe
++        == "hsi"
++    )
++    assert "hsi" in _UNIVERSE_CHOICES
++    assert _LIST_UNIVERSE_ALIASES["hsi"] == "equity_hk"
++
++
++def test_legacy_hsi_cache_cannot_hide_reconciliation_and_provenance_fix(monkeypatch, tmp_path):
++    patch_panel(monkeypatch)
++    monkeypatch.setattr(tool, "get_runtime_root", lambda: tmp_path)
++    cache = tmp_path / "cache"
++    legacy = {
++        "close": pd.DataFrame({"0700.HK": [1.0]}, index=pd.to_datetime(["2024-01-01"])),
++        "_meta": {"legacy": True},
++    }
++    tool._write_pickle_cache(cache, cache / "hsi_2024-01-01_2024-01-02.pkl", legacy)
++    panel = tool._load_universe_panel("hsi", "2024-01-01/2024-01-02")
++    assert panel["_meta"]["hsi_metadata_version"] == 3
++    assert "legacy" not in panel["_meta"]
++    assert (cache / "hsi_v3_2024-01-01_2024-01-02.pkl").is_file()
++
++
++def test_observed_panel_gaps_are_not_filled_by_hsi_layer(monkeypatch):
++    frame = patch_panel(monkeypatch)
++    frame.loc[pd.Timestamp("2024-01-02"), "volume"] = float("nan")
++    panel = tool._load_hsi_panel("2024-01-01", "2024-01-02")
++    assert pd.isna(panel["volume"].loc["2024-01-02", "0700.HK"])
++    assert panel["_meta"]["missing_observations"]["volume"] == 2
++    assert panel["_meta"]["universe_tag"] == "equity_hk"
++    assert panel["_meta"]["point_in_time_membership"] is False
++    assert "shared upstream adapters may already" in panel["_meta"]["missing_data_policy"]
++
++
++def test_equal_alias_frames_deduplicate_but_conflicting_metadata_is_visible(
++    monkeypatch,
++):
++    from src import market_data
++
++    patch_panel(monkeypatch)
++    fetch = market_data.fetch_market_data
++
++    def aliases(**kwargs):
++        result = fetch(**kwargs)
++        result["0700.HK"] = result["700.HK"].copy()
++        result["_provenance"]["0700.HK"] = {
++            "source": "yahoo",
++            "adjustment": "split_dividend",
++            "volume_unit": "shares",
++        }
++        return result
++
++    monkeypatch.setattr(market_data, "fetch_market_data", aliases)
++    panel = tool._load_hsi_panel("2024-01-01", "2024-01-02")
++    assert list(panel["close"].columns) == ["0005.HK", "0700.HK"]
++    meta = panel["_meta"]
++    assert meta["price_provenance"]["0700.HK"]["source"] == "tencent"
++    assert set(meta["provenance_alias_conflicts"]["0700.HK"]) == {"700.HK", "0700.HK"}
++    assert meta["degraded"] is True
++
++
++def test_conflicting_alias_frames_cannot_silently_select_a_price_history(monkeypatch):
++    from src import market_data
++
++    patch_panel(monkeypatch)
++    fetch = market_data.fetch_market_data
++
++    def aliases(**kwargs):
++        result = fetch(**kwargs)
++        other = result["700.HK"].copy()
++        other.loc[pd.Timestamp("2024-01-01"), "close"] += 1
++        result["0700.HK"] = other
++        return result
++
++    monkeypatch.setattr(market_data, "fetch_market_data", aliases)
++    with pytest.raises(ValueError, match="Conflicting HSI price frames"):
++        tool._load_hsi_panel("2024-01-01", "2024-01-02")
++
++
++def test_ambiguous_provenance_is_unknown_and_all_alias_diagnostics_survive():
++    from src.tools.hsi_metadata import canonical_symbol_metadata, provenance_summary
++
++    raw = {
++        "700": {"source": "tencent", "adjustment": "raw", "volume_unit": "shares"},
++        "0700.HK": {
++            "source": "yahoo",
++            "adjustment": "split_dividend",
++            "volume_unit": "shares",
++        },
++    }
++    canonical, conflicts = canonical_symbol_metadata(raw, ["0700.HK"], {"0700.HK": "00700.HK"})
++    assert canonical["0700.HK"].get("source") is None
++    assert conflicts["0700.HK"] == raw
++    assert provenance_summary(["0700.HK"], canonical)["price_adjustments"] == {"0700.HK": "unknown"}
++    diagnostics, _ = canonical_symbol_metadata(
++        {"700": {"attempts": ["first"]}, "0700.HK": {"attempts": ["second"]}},
++        ["0700.HK"],
++        {},
++        diagnostics=True,
++    )
++    assert set(diagnostics["0700.HK"]["alias_diagnostics"]) == {"700", "0700.HK"}
++
++
++def test_real_hsi_panel_uses_hk_identity_without_claiming_pit_data(monkeypatch):
++    from src.factors.data_availability import build_availability_contract
++
++    patch_panel(monkeypatch)
++    contract = build_availability_contract(tool._load_hsi_panel("2024-01-01", "2024-01-02"), universe="hsi")
++    assert (
++        contract["venue"],
++        contract["currency"],
++        contract["timezone"],
++        contract["calendar"],
++    ) == ("XHKG", "HKD", "Asia/Hong_Kong", "XHKG")
++    membership = next(item for item in contract["fields"] if item["field"] == "universe:membership")
++    assert membership["status"] == "unknown" and membership["pit_safe"] is False
++
++
++@pytest.mark.parametrize("available", [0, 1])
++def test_fewer_than_two_usable_prices_fail_clearly(monkeypatch, available):
++    from src import market_data
++
++    patch_panel(monkeypatch)
++    fetch = market_data.fetch_market_data
++
++    def insufficient(**kwargs):
++        result = fetch(**kwargs)
++        result.pop("0005.HK")
++        if available == 0:
++            result["700.HK"]["close"] = float("nan")
++        return result
++
++    monkeypatch.setattr(market_data, "fetch_market_data", insufficient)
++    with pytest.raises(RuntimeError, match="HSI prices unavailable: fewer than two"):
++        tool._load_hsi_panel("2024-01-01", "2024-01-02")
+diff --git a/agent/tests/test_data_availability.py b/agent/tests/test_data_availability.py
+index 0d10e4c..600af63 100644
+--- a/agent/tests/test_data_availability.py
++++ b/agent/tests/test_data_availability.py
+@@ -128,3 +128,44 @@ def test_metadata_without_source_is_explicitly_unknown() -> None:
+     assert close["status"] == "unknown"
+     assert close["source"] is None
+     assert close["pit_safe"] is False
++
++
++def _hsi_panel() -> dict:
++    return {
++        "close": pd.DataFrame(
++            {"0700.HK": [400.0]}, index=pd.DatetimeIndex(["2024-01-02"])
++        ),
++        "_meta": {
++            "price_sources": ["tencent"],
++            "constituent_source": "wikipedia",
++            "constituent_source_date": "2026-10-01",
++            "pit_membership": False,
++            "survivorship_bias": True,
++        },
++    }
++
++
++def test_hsi_uses_hong_kong_context_in_the_existing_schema() -> None:
++    contract = build_availability_contract(
++        _hsi_panel(), universe="hsi", period="2024-01-01/2024-01-31"
++    )
++    assert contract["schema"] == "alpha-bench.data-availability/v1"
++    assert contract["adapter"] == "hk_equity"
++    assert contract["asset_class"] == "equity"
++    assert contract["venue"] == "XHKG"
++    assert contract["currency"] == "HKD"
++    assert contract["timezone"] == "Asia/Hong_Kong"
++    assert contract["calendar"] == "XHKG"
++    assert json.loads(json.dumps(contract)) == contract
++
++
++def test_hsi_identity_does_not_upgrade_unverified_availability() -> None:
++    contract = build_availability_contract(_hsi_panel(), universe="hsi")
++    fields = _fields(contract)
++    assert fields["close"]["availability_mode"] == "bar_close"
++    assert fields["close"]["status"] == "assumed"
++    assert fields["close"]["pit_safe"] is False
++    assert fields["universe:membership"]["availability_mode"] == "effective_date"
++    assert fields["universe:membership"]["status"] == "unknown"
++    assert fields["universe:membership"]["pit_safe"] is False
++    assert any("not point-in-time" in warning for warning in contract["warnings"])
+diff --git a/agent/tests/test_hsi_benchmark_validation.py b/agent/tests/test_hsi_benchmark_validation.py
+new file mode 100644
+index 0000000..17e3352
+--- /dev/null
++++ b/agent/tests/test_hsi_benchmark_validation.py
+@@ -0,0 +1,92 @@
++"""Strict benchmark roster contracts; every HTTP call is mocked offline."""
++
++from types import SimpleNamespace
++
++import pandas as pd
++import pytest
++import requests
++
++from src.tools import hsi_universe as hsi
++
++
++def html_fixture(codes=None, *, revision=True):
++    """Return a dated roster fixture without contacting Wikipedia."""
++    codes = hsi.FALLBACK_CODES if codes is None else codes
++    header = '<script>{"dateModified":"2026-10-01T18:43:56Z","wgRevisionId":123}</script>' if revision else ""
++    return header + pd.DataFrame({"Ticker": codes, "Sector": ["Finance"] * len(codes)}).to_html(index=False)
++
++
++def response_fixture(monkeypatch, html):
++    monkeypatch.setattr(
++        hsi.requests, "get", lambda *args, **kwargs: SimpleNamespace(text=html, raise_for_status=lambda: None)
++    )
++
++
++def test_published_count_and_provenance_pass(monkeypatch):
++    response_fixture(monkeypatch, html_fixture())
++    codes, sectors, meta = hsi.fetch_benchmark_constituents()
++    assert len(codes) == len(set(codes)) == len(sectors) == 95
++    assert meta["constituent_source_timestamp"] == "2026-10-01T18:43:56+00:00"
++    assert meta["constituent_revision_id"] == "123"
++    assert len(meta["constituent_sha256"]) == 64
++    assert meta["degraded"] is False
++
++
++@pytest.mark.parametrize(
++    "mutation,reason",
++    [
++        ("short", "count_mismatch"),
++        ("duplicate", "duplicate_symbols"),
++        ("invalid", "invalid_symbols"),
++        ("five_digits", "invalid_symbols"),
++        ("undated", "missing_provenance"),
++        ("broken", "invalid constituent data"),
++    ],
++)
++def test_invalid_rosters_fail_without_substitution(monkeypatch, mutation, reason):
++    codes = list(hsi.FALLBACK_CODES)
++    if mutation == "short":
++        codes = codes[:85]
++    elif mutation == "duplicate":
++        codes[-1] = codes[0]
++    elif mutation == "invalid":
++        codes[-1] = "<private source body>"
++    elif mutation == "five_digits":
++        codes[-1] = "10000.HK"
++    html = html_fixture(codes, revision=mutation != "undated")
++    if mutation == "broken":
++        html = "<h1>private page</h1>"
++    response_fixture(monkeypatch, html)
++    monkeypatch.setattr(hsi, "fetch_constituents", lambda: pytest.fail("operational fallback must not run"))
++    with pytest.raises(hsi.HSIConstituentError, match=reason) as failure:
++        hsi.fetch_benchmark_constituents()
++    assert "<private" not in str(failure.value)
++
++
++@pytest.mark.parametrize(
++    "exc,reason",
++    [
++        (requests.Timeout, "request timed out"),
++        (requests.HTTPError, "HTTP request failed"),
++        (requests.ConnectionError, "connection failed"),
++        (requests.RequestException, "request failed"),
++        (ValueError, "invalid constituent data"),
++        (RuntimeError, "constituent source failed"),
++    ],
++)
++def test_transport_failures_share_nifty_sanitized_reasons(monkeypatch, exc, reason):
++    def fail(*args, **kwargs):
++        raise exc("secret http://private.invalid?token=private responsebody")
++
++    monkeypatch.setattr(hsi.requests, "get", fail)
++    with pytest.raises(hsi.HSIConstituentError) as failure:
++        hsi.fetch_benchmark_constituents()
++    assert str(failure.value) == f"HSI constituent load failed: {reason}"
++
++
++def test_benchmark_does_not_use_quote_fallback(monkeypatch):
++    response_fixture(monkeypatch, html_fixture(hsi.FALLBACK_CODES[:85]))
++    from src.tools import alpha_bench_tool
++
++    with pytest.raises(hsi.HSIConstituentError, match="count_mismatch"):
++        alpha_bench_tool._load_hsi_panel("2016-01-01", "2026-10-31")
+diff --git a/agent/tests/test_hsi_membership_reference.py b/agent/tests/test_hsi_membership_reference.py
+new file mode 100644
+index 0000000..ddf59ef
+--- /dev/null
++++ b/agent/tests/test_hsi_membership_reference.py
+@@ -0,0 +1,130 @@
++"""Dated roster reconciliation stays separate from source selection and price gaps."""
++
++from types import SimpleNamespace
++
++import pytest
++import requests
++
++from src.tools import hsi_universe as hsi
++
++
++def wikipedia_response(monkeypatch, codes, *, header=None):
++    """Supply a dated page and parsed roster without any network request."""
++    if header is None:
++        header = '{"dateModified":"2026-10-01T18:43:56Z","wgRevisionId":1377881667}'
++    monkeypatch.setattr(
++        hsi.requests,
++        "get",
++        lambda *args, **kwargs: SimpleNamespace(text=header, raise_for_status=lambda: None),
++    )
++    monkeypatch.setattr(hsi, "parse_constituents", lambda _: (list(codes), {}))
++
++
++def test_matching_roster_keeps_wikipedia_order_and_records_separate_dates(monkeypatch):
++    expected = list(reversed(hsi.FALLBACK_CODES))
++    wikipedia_response(monkeypatch, expected)
++    codes, sectors, meta = hsi.fetch_constituents()
++    assert codes == expected and sectors == {}
++    assert meta["constituent_source"] == hsi.WIKIPEDIA_URL
++    assert meta["constituent_source_date"] == "2026-10-01"
++    assert meta["constituent_source_date_kind"] == "wikipedia_revision_date"
++    assert meta["constituent_reference_source"] == hsi.REFERENCE_SOURCE_URL
++    assert meta["constituent_reference_effective_date"] == "2026-09-07"
++    assert meta["constituent_reference_snapshot_date"] == "2026-11-04"
++    assert meta["constituent_observed_count"] == 95
++    assert meta["constituent_reference_count"] == 95
++    assert meta["constituent_reference_overlap_count"] == 95
++    assert meta["constituent_reference_matches"] is True
++    assert meta["constituent_reference_missing_symbols"] == []
++    assert meta["constituent_reference_unexpected_symbols"] == []
++    assert meta["constituent_reference_frozen"] is True
++    assert "can become stale" in meta["constituent_reference_note"]
++    assert meta["degraded"] is False
++
++
++def test_known_85_name_mismatch_reports_eleven_missing_and_one_extra(monkeypatch):
++    missing = {
++        "0728.HK",
++        "1347.HK",
++        "1519.HK",
++        "1801.HK",
++        "2338.HK",
++        "2600.HK",
++        "3750.HK",
++        "3993.HK",
++        "6160.HK",
++        "6181.HK",
++        "9901.HK",
++    }
++    expected = [code for code in hsi.FALLBACK_CODES if code not in missing] + ["0881.HK"]
++    wikipedia_response(monkeypatch, expected)
++    codes, _sectors, meta = hsi.fetch_constituents()
++    assert codes == expected and len(codes) == 85
++    assert meta["constituent_reference_missing_symbols"] == sorted(missing)
++    assert meta["constituent_reference_unexpected_symbols"] == ["0881.HK"]
++    assert meta["constituent_reference_overlap_count"] == 84
++    assert meta["constituent_reference_matches"] is False
++    assert meta["degraded"] is True
++    assert "missing_instruments" not in meta  # These are not provider price failures.
++
++
++def test_equal_counts_do_not_hide_different_members(monkeypatch):
++    expected = hsi.FALLBACK_CODES[:-1] + ["0881.HK"]
++    wikipedia_response(monkeypatch, expected)
++    codes, _sectors, meta = hsi.fetch_constituents()
++    assert codes == expected
++    assert meta["constituent_observed_count"] == meta["constituent_reference_count"]
++    assert meta["constituent_reference_missing_symbols"] == [hsi.FALLBACK_CODES[-1]]
++    assert meta["constituent_reference_unexpected_symbols"] == ["0881.HK"]
++    assert meta["constituent_reference_matches"] is False
++    assert meta["degraded"] is True
++
++
++@pytest.mark.parametrize(
++    "header",
++    [
++        "{}",
++        '{"dateModified":"2026-10-01T18:43:56Z"}',
++        '{"wgRevisionId":1377881667}',
++    ],
++)
++def test_reference_match_does_not_clear_missing_revision_degradation(monkeypatch, header):
++    wikipedia_response(monkeypatch, hsi.FALLBACK_CODES, header=header)
++    codes, _sectors, meta = hsi.fetch_constituents()
++    assert codes == hsi.FALLBACK_CODES
++    assert meta["constituent_reference_matches"] is True
++    assert meta["degraded"] is True
++
++
++def test_source_after_reference_is_returned_without_enforcing_a_95_name_limit(
++    monkeypatch,
++):
++    expected = hsi.FALLBACK_CODES + ["9998.HK"]
++    wikipedia_response(
++        monkeypatch,
++        expected,
++        header='{"dateModified":"2027-01-01T00:00:00Z","wgRevisionId":999}',
++    )
++    codes, _sectors, meta = hsi.fetch_constituents()
++    assert codes == expected and len(codes) == 96
++    assert meta["constituent_source_date"] == "2027-01-01"
++    assert meta["constituent_reference_snapshot_date"] == hsi.FALLBACK_DATE
++    assert meta["constituent_reference_unexpected_symbols"] == ["9998.HK"]
++    assert "does not establish which source is current" in meta["constituent_reference_note"]
++
++
++def test_fallback_stays_degraded_despite_matching_the_same_frozen_reference(
++    monkeypatch,
++):
++    def fail(*_args, **_kwargs):
++        raise requests.Timeout()
++
++    monkeypatch.setattr(hsi.requests, "get", fail)
++    codes, sectors, meta = hsi.fetch_constituents()
++    assert codes == hsi.FALLBACK_CODES and sectors == {}
++    assert codes is not hsi.FALLBACK_CODES
++    assert meta["constituent_reference_matches"] is True
++    assert meta["constituent_reference_overlap_count"] == 95
++    assert meta["constituent_source_date_kind"] == "frozen_snapshot_as_of"
++    assert meta["constituent_source_date"] == hsi.FALLBACK_DATE
++    assert meta["degraded"] is True
+diff --git a/frontend/src/i18n/locales/ar.json b/frontend/src/i18n/locales/ar.json
+index 0cf546a..b08e1f1 100644
+--- a/frontend/src/i18n/locales/ar.json
++++ b/frontend/src/i18n/locales/ar.json
+@@ -1817,6 +1817,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (الصين A)",
+       "sp500": "S&P 500 (الولايات المتحدة)",
++      "hsi": "مؤشر هانغ سنغ (هونغ كونغ)",
+       "btc-usdt": "BTC-USDT (عملات رقمية)",
+       "equity_cn": "أسهم الصين A",
+       "equity_us": "أسهم أمريكية",
+diff --git a/frontend/src/i18n/locales/de.json b/frontend/src/i18n/locales/de.json
+index 9416774..dc83374 100644
+--- a/frontend/src/i18n/locales/de.json
++++ b/frontend/src/i18n/locales/de.json
+@@ -1823,6 +1823,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (China A)",
+       "sp500": "S&P 500 (US)",
++      "hsi": "Hang-Seng-Index (Hongkong)",
+       "btc-usdt": "BTC-USDT (Krypto)",
+       "equity_cn": "China-A-Aktien",
+       "equity_us": "US-Aktien",
+diff --git a/frontend/src/i18n/locales/en.json b/frontend/src/i18n/locales/en.json
+index 0606b02..45bf23d 100644
+--- a/frontend/src/i18n/locales/en.json
++++ b/frontend/src/i18n/locales/en.json
+@@ -1823,6 +1823,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (China A)",
+       "sp500": "S&P 500 (US)",
++      "hsi": "Hang Seng Index (HK)",
+       "btc-usdt": "BTC-USDT (Crypto)",
+       "equity_cn": "China A-Shares",
+       "equity_us": "US Equities",
+diff --git a/frontend/src/i18n/locales/es.json b/frontend/src/i18n/locales/es.json
+index c5aaf72..d4b2435 100644
+--- a/frontend/src/i18n/locales/es.json
++++ b/frontend/src/i18n/locales/es.json
+@@ -1823,6 +1823,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (China A)",
+       "sp500": "S&P 500 (EE. UU.)",
++      "hsi": "Índice Hang Seng (Hong Kong)",
+       "btc-usdt": "BTC-USDT (Cripto)",
+       "equity_cn": "Acciones A de China",
+       "equity_us": "Acciones de EE. UU.",
+diff --git a/frontend/src/i18n/locales/fa.json b/frontend/src/i18n/locales/fa.json
+index 76ef391..8a1280f 100644
+--- a/frontend/src/i18n/locales/fa.json
++++ b/frontend/src/i18n/locales/fa.json
+@@ -1823,6 +1823,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (سهام A چین)",
+       "sp500": "S&P 500 (آمریکا)",
++      "hsi": "شاخص هنگ سنگ (هنگ کنگ)",
+       "btc-usdt": "BTC-USDT (رمزارز)",
+       "equity_cn": "سهام A چین",
+       "equity_us": "سهام آمریکا",
+diff --git a/frontend/src/i18n/locales/id.json b/frontend/src/i18n/locales/id.json
+index e217d32..14eae56 100644
+--- a/frontend/src/i18n/locales/id.json
++++ b/frontend/src/i18n/locales/id.json
+@@ -1823,6 +1823,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (China A)",
+       "sp500": "S&P 500 (AS)",
++      "hsi": "Indeks Hang Seng (Hong Kong)",
+       "btc-usdt": "BTC-USDT (Crypto)",
+       "equity_cn": "A-Share China",
+       "equity_us": "Saham AS",
+diff --git a/frontend/src/i18n/locales/ja.json b/frontend/src/i18n/locales/ja.json
+index 40c605c..b585519 100644
+--- a/frontend/src/i18n/locales/ja.json
++++ b/frontend/src/i18n/locales/ja.json
+@@ -1817,6 +1817,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (中国 A 株)",
+       "sp500": "S&P 500 (米国)",
++      "hsi": "ハンセン指数（香港）",
+       "btc-usdt": "BTC-USDT (暗号資産)",
+       "equity_cn": "中国 A 株",
+       "equity_us": "米国株式",
+diff --git a/frontend/src/i18n/locales/ko.json b/frontend/src/i18n/locales/ko.json
+index 375447f..2a0fdda 100644
+--- a/frontend/src/i18n/locales/ko.json
++++ b/frontend/src/i18n/locales/ko.json
+@@ -1817,6 +1817,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (중국 A주)",
+       "sp500": "S&P 500 (미국)",
++      "hsi": "항셍 지수 (홍콩)",
+       "btc-usdt": "BTC-USDT (암호화폐)",
+       "equity_cn": "중국 A주",
+       "equity_us": "미국 주식",
+diff --git a/frontend/src/i18n/locales/pt-BR.json b/frontend/src/i18n/locales/pt-BR.json
+index 44bff3b..0e2a7dc 100644
+--- a/frontend/src/i18n/locales/pt-BR.json
++++ b/frontend/src/i18n/locales/pt-BR.json
+@@ -1823,6 +1823,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (China A)",
+       "sp500": "S&P 500 (EUA)",
++      "hsi": "Índice Hang Seng (Hong Kong)",
+       "btc-usdt": "BTC-USDT (criptomoeda)",
+       "equity_cn": "Ações A da China",
+       "equity_us": "Ações dos EUA",
+diff --git a/frontend/src/i18n/locales/tr.json b/frontend/src/i18n/locales/tr.json
+index bde49e9..afd6945 100644
+--- a/frontend/src/i18n/locales/tr.json
++++ b/frontend/src/i18n/locales/tr.json
+@@ -1783,6 +1783,7 @@
+     "universeOption": {
+       "csi300": "CSI 300 (Çin A hisseleri)",
+       "sp500": "S&P 500 (ABD)",
++      "hsi": "Hang Seng Endeksi (Hong Kong)",
+       "btc-usdt": "BTC-USDT (Kripto)",
+       "equity_cn": "Çin A hisseleri",
+       "equity_us": "ABD hisseleri",
+diff --git a/frontend/src/i18n/locales/zh-CN.json b/frontend/src/i18n/locales/zh-CN.json
+index 5601b4d..b0445d3 100644
+--- a/frontend/src/i18n/locales/zh-CN.json
++++ b/frontend/src/i18n/locales/zh-CN.json
+@@ -1817,6 +1817,7 @@
+     "universeOption": {
+       "csi300": "沪深 300（A 股）",
+       "sp500": "标普 500（美股）",
++      "hsi": "恒生指数（香港）",
+       "btc-usdt": "BTC-USDT（加密货币）",
+       "equity_cn": "A 股",
+       "equity_us": "美股",
+diff --git a/frontend/src/pages/AlphaZoo.tsx b/frontend/src/pages/AlphaZoo.tsx
+index 179061d..6531022 100644
+--- a/frontend/src/pages/AlphaZoo.tsx
++++ b/frontend/src/pages/AlphaZoo.tsx
+@@ -79,6 +79,7 @@ const ZOO_CARDS: ZooCard[] = [
+ const UNIVERSE_OPTIONS = [
+   { value: "csi300" },
+   { value: "sp500" },
++  { value: "hsi" },
+   { value: "btc-usdt" },
+ ];
+ 
+@@ -87,6 +88,7 @@ const UNIVERSE_OPTIONS = [
+ const BENCH_UNIVERSE_FOR_METADATA: Record<string, string> = {
+   equity_cn: "csi300",
+   equity_us: "sp500",
++  equity_hk: "hsi",
+   crypto: "btc-usdt",
+ };
+ 
+@@ -332,7 +334,7 @@ function BrowseView() {
+           {selected.size >= 2 ? ` (${selected.size})` : ""}
+         </Link>
+         <Link
+-          to={selected.size === 1 ? `/alpha-zoo/bench?alpha_id=${encodeURIComponent([...selected][0])}&zoo=${encodeURIComponent(alphas.find((a) => a.id === [...selected][0])?.zoo ?? "alpha101")}&universe=${alphas.find((a) => a.id === [...selected][0])?.universe.includes("equity_us") ? "sp500" : "csi300"}` : selected.size > 1 ? compareHref : "/alpha-zoo/bench"}
++          to={selected.size === 1 ? `/alpha-zoo/bench?alpha_id=${encodeURIComponent([...selected][0])}&zoo=${encodeURIComponent(alphas.find((a) => a.id === [...selected][0])?.zoo ?? "alpha101")}&universe=${alphas.find((a) => a.id === [...selected][0])?.universe.map((u) => BENCH_UNIVERSE_FOR_METADATA[u]).find(Boolean) || "csi300"}` : selected.size > 1 ? compareHref : "/alpha-zoo/bench"}
+           className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition"
+         >
+           <Play className="h-3.5 w-3.5" aria-hidden="true" /> {selected.size ? i18n.t("analysis.evaluateSelected", { count: selected.size }) : i18n.t("alphaZoo.runBenchmark")}
+@@ -511,7 +513,7 @@ function DetailView({ alphaId }: DetailProps) {
+   const formulaLatex = (meta["formula_latex"] as string | undefined) || "";
+   const nickname = (meta["nickname"] as string | undefined) || "";
+   // An alpha's metadata universes (equity_us, equity_kr, ...) are not bench
+-  // universes; only the three names with panel loaders are. Translate, and drop
++  // universes; only names with panel loaders are. Translate, and drop
+   // the prefill when the alpha's markets have no benchmark panel (Korea, India)
+   // rather than handing BenchView a value its selector cannot hold.
+   const benchUniverse = (((meta["universe"] as string[] | undefined) || [])
+diff --git a/frontend/src/pages/__tests__/AlphaZoo.test.tsx b/frontend/src/pages/__tests__/AlphaZoo.test.tsx
+index 20ad7f7..07b94fe 100644
+--- a/frontend/src/pages/__tests__/AlphaZoo.test.tsx
++++ b/frontend/src/pages/__tests__/AlphaZoo.test.tsx
+@@ -1,11 +1,11 @@
+ import { fireEvent, render, screen } from "@testing-library/react";
+-import { MemoryRouter } from "react-router";
++import { MemoryRouter, Route, Routes } from "react-router";
+ import { AlphaZoo } from "../AlphaZoo";
+ import { clearAnalysisState } from "@/hooks/useAnalysisState";
+-const mock = vi.hoisted(() => ({ job: vi.fn(), submit: vi.fn() }));
++const mock = vi.hoisted(() => ({ job: vi.fn(), submit: vi.fn(), detail: vi.fn() }));
+ vi.mock("@/hooks/useAlphaJob", () => ({ useAlphaJob: mock.job }));
+ vi.mock("@/hooks/useChartLifecycle", () => ({ useChartLifecycle: vi.fn() }));
+-vi.mock("@/lib/api", () => ({ api: { getAlphaReadiness: vi.fn().mockResolvedValue({ universes: { sp500: { ready: true, reason: "public_data" } }, zoo_counts: { alpha101: 101 } }) } }));
++vi.mock("@/lib/api", () => ({ api: { getAlpha: mock.detail, getAlphaReadiness: vi.fn().mockResolvedValue({ universes: { hsi: { ready: true, reason: "public_data" }, sp500: { ready: true, reason: "public_data" } }, zoo_counts: { alpha101: 101 } }) } }));
+ beforeEach(() => {
+   clearAnalysisState("alpha-bench:alpha101:alpha101_001"); vi.clearAllMocks();
+   mock.job.mockReturnValue({ status: "idle", jobId: null, progress: null, result: null, formError: null, busy: false, submit: mock.submit, reconnect: vi.fn(), setFormError: vi.fn() });
+@@ -25,3 +25,30 @@ it("explains how to recover when all selected factors were skipped", async () =>
+   expect(screen.getByRole("alert")).toHaveTextContent("No factors could be evaluated. Try a longer history");
+   await screen.findByText("Uses public data. Availability is checked when the task runs.");
+ });
++
++it("selects HSI and submits its canonical benchmark universe", async () => {
++  page();
++  const selector = screen.getByLabelText("Universe");
++  expect(screen.getByRole("option", { name: "Hang Seng Index (HK)" })).toBeEnabled();
++  fireEvent.change(selector, { target: { value: "hsi" } });
++  await screen.findByText("Uses public data. Availability is checked when the task runs.");
++  fireEvent.click(screen.getByRole("button", { name: "Run benchmark" }));
++  expect(mock.submit).toHaveBeenCalledWith(expect.objectContaining({ universe: "hsi" }));
++});
++
++it("prefills HSI from Hong Kong factor metadata", async () => {
++  mock.detail.mockResolvedValue({ status: "ok", alpha: { id: "hk_factor", zoo: "alpha101", meta: { universe: ["equity_hk"] } }, source_code: "" });
++  render(<MemoryRouter initialEntries={["/alpha-zoo/hk_factor"]}><Routes><Route path="/alpha-zoo/:alphaId" element={<AlphaZoo />} /><Route path="/alpha-zoo/bench" element={<AlphaZoo />} /></Routes></MemoryRouter>);
++  fireEvent.click(await screen.findByRole("button", { name: "Evaluate this factor" }));
++  expect(screen.getByLabelText("Universe")).toHaveValue("hsi");
++  await screen.findByText("Uses public data. Availability is checked when the task runs.");
++});
++
++it("offers HSI in the comparison selector", async () => {
++  render(<MemoryRouter initialEntries={["/alpha-zoo/compare?ids=alpha101_001,alpha101_002"]}><AlphaZoo /></MemoryRouter>);
++  expect(screen.getByRole("option", { name: "Hang Seng Index (HK)" })).toBeEnabled();
++  fireEvent.change(screen.getByLabelText("Universe"), { target: { value: "hsi" } });
++  await screen.findByText("Uses public data. Availability is checked when the task runs.");
++  fireEvent.click(screen.getByRole("button", { name: "Compare" }));
++  expect(mock.submit).toHaveBeenCalledWith(expect.objectContaining({ universe: "hsi" }));
++});

@@ -1,0 +1,13 @@
+{
+  "shared_scorer_commit": "ca3d391cd596a08af6d7ea290563c2fb1712fda9",
+  "shared_scorer_sha256": "8663385349511360891a2a4524aa7ca98a4cce61e197284c5b532bc86b5d373b",
+  "model": "ProsusAI/finbert",
+  "revision": "0bc2ac10dda6929bcb1f77ccc43c7ec5c424f031",
+  "max_tokens": 512,
+  "records": 5648,
+  "tickers": 15,
+  "new_texts_scored": 0,
+  "completed_at_utc": "2026-11-16T04:50:40.747395+00:00",
+  "data_sha256": "0ddebe690d0b413f0c2b30be1570c0baa338e9d1f3bf4eecca6141eee77b2221",
+  "missing_text_policy": "Missing additions remain missing; never neutral zero"
+}

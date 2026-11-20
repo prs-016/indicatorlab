@@ -1,0 +1,52 @@
+{
+  "completed_at_utc": "2026-11-16T05:09:47.182316+00:00",
+  "rows": [
+    {
+      "prepared_at_utc": "2026-11-16T05:09:38.002894+00:00",
+      "candidate": "defensive_attention_gate",
+      "market": "HK",
+      "study_preregistration_sha256": "aa5de02c79db92691a471085102e84c9ed97be5aff9599cdc6ea4d776878a857",
+      "native_upstream_commit": "1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2",
+      "comparison_policy": "Verification of fixed candidate; no strategy tuning. Research closes/reopens weekly even in same name; native target rebalancing may retain it. Native engine omits separate dividend credits and uses constant HK duty; research uses separate dividends and dated rounded duty. These differences must be reconciled, not hidden.",
+      "hsi_native_benchmark_limit": true,
+      "planned_entries": 239,
+      "command": [
+        "/Users/jackgui/Desktop/hk/indicatorlab-clean/.venv/bin/python",
+        "-B",
+        "-m",
+        "backtest.runner",
+        "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/HK"
+      ],
+      "exit_code": 0,
+      "native_sharpe": -0.0481553574452121,
+      "research_sharpe": -0.46134972492416865,
+      "sharpe_difference": 0.41319436747895655,
+      "native_metrics_path": "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/HK/artifacts/metrics.csv",
+      "within_point_one": false
+    },
+    {
+      "prepared_at_utc": "2026-11-16T05:09:43.088503+00:00",
+      "candidate": "defensive_attention_gate",
+      "market": "US",
+      "study_preregistration_sha256": "aa5de02c79db92691a471085102e84c9ed97be5aff9599cdc6ea4d776878a857",
+      "native_upstream_commit": "1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2",
+      "comparison_policy": "Verification of fixed candidate; no strategy tuning. Research closes/reopens weekly even in same name; native target rebalancing may retain it. Native engine omits separate dividend credits and uses constant HK duty; research uses separate dividends and dated rounded duty. These differences must be reconciled, not hidden.",
+      "hsi_native_benchmark_limit": false,
+      "planned_entries": 191,
+      "command": [
+        "/Users/jackgui/Desktop/hk/indicatorlab-clean/.venv/bin/python",
+        "-B",
+        "-m",
+        "backtest.runner",
+        "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/US"
+      ],
+      "exit_code": 0,
+      "native_sharpe": 0.703567026547586,
+      "research_sharpe": 0.5139634731861161,
+      "sharpe_difference": 0.18960355336146983,
+      "native_metrics_path": "/Users/jackgui/Desktop/hk/indicatorlab-Jack/data/hk_week4/native/US/artifacts/metrics.csv",
+      "within_point_one": false
+    }
+  ],
+  "confirmation": "Only comparisons with abs(Sharpe difference)<=0.1 pass direct numerical agreement; larger differences need quantified cost/timing/dividend reconciliation before nomination."
+}

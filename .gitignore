@@ -28,6 +28,7 @@ results/hk/*
 !results/hk/week1/
 !results/hk/week2/
 !results/hk/week3/
+!results/hk/week4/
 results/hk/*/*
 !results/hk/*/*.md
 !results/hk/*/*summary.json
@@ -48,6 +49,17 @@ results/hk/*/*
 !results/hk/week3/five_strategy_random_timing.csv
 !results/hk/week3/strategy_log_sheet_ready.csv
 !results/hk/week3/hsi_alpha101_top20.csv
+# Week 4 compact evaluation evidence only; raw inputs/traces remain under data/.
+!results/hk/week4/three_strategy_results.csv
+!results/hk/week4/three_strategy_ablations.csv
+!results/hk/week4/three_strategy_random_timing.csv
+!results/hk/week4/three_strategy_preregistration.json
+!results/hk/week4/three_strategy_selected_variants.json
+!results/hk/week4/candidate_before_test.json
+!results/hk/week4/strategy_log_sheet_ready.csv
+!results/hk/week4/LOCAL_VALIDATION.json
+!results/hk/week4/native_candidate_verification.json
+!results/hk/week4/week4_manifest.json
 *.sqlite3
 *.sqlite3-wal
 *.sqlite3-shm
@@ -65,6 +77,10 @@ models/*
 .coverage
 htmlcov/
 
+# Rebuildable frontend assets; commit source instead of generated bundles.
+/frontend/live_markets/dist/
+node_modules/
+
 # Logs and spreadsheet exports (never commit)
 logs/
 *.log
@@ -77,3 +93,9 @@ research/*/data/
 research/hk_market_history/prices/
 research/hk_market_history/benchmark/
 /Vibe Trading Original/
+
+!results/hk/week4/trial_ledger.json
+!results/hk/week4/post_verification_dsr.csv
+!results/hk/week4/report_verification.json
+!results/hk/week4/HK_NATIVE_RECONCILIATION.json
+!results/hk/week4/US_NATIVE_RECONCILIATION.json

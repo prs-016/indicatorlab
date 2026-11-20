@@ -1,3 +1,24 @@
+# Jack: Hong Kong live dashboard
+
+Double-click **`Start HK Dashboard.command`** in this folder. It opens the
+dashboard and keeps its local API running after Terminal closes. Use
+`Stop HK Dashboard.command` to stop the display/API. The [live dashboard guide](frontend/live_markets/README.md)
+covers the 95-stock HK feed, five-second refresh, local setup and later AWS
+hosting. Source is in `frontend/live_markets/`; the API reads existing quotes.
+This is local work prepared for GitHub; no push or AWS deployment was performed.
+
+---
+
+# Jack: Hong Kong Week 4
+
+Start with [the seven-item status](docs/HK_WEEK4_STATUS.md),
+[the strategy report](results/hk/week4/THREE_STRATEGY_REPORT.md) and
+[the Vibe contribution package](contributions/week4/README.md).
+All six evaluated strategy cases are DROP; the status records the blocked HSI
+benchmark and the external GitHub/team/AWS steps. Older project context follows.
+
+---
+
 # IndicatorLab
 
 Hong Kong local work: start with [HK_START_HERE.md](HK_START_HERE.md) for the

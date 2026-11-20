@@ -1,0 +1,10 @@
+Add HK market-layer calendar, lot and dated-duty support
+
+Expose prior available FX-close valuation helpers, correct sourced historical
+XHKG weather sessions, and preserve existing composite India execution rules.
+
+Signed-off-by: Jack <234474744+jaz024@users.noreply.github.com>
+Co-authored-by: Jamal <188647228+Jampip@users.noreply.github.com>
+Co-authored-by: Joshua <239461382+Joshuaamm7@users.noreply.github.com>
+Co-authored-by: James <238608756+james-mulyono@users.noreply.github.com>
+Co-authored-by: Prakhar Shah <195330099+prs-016@users.noreply.github.com>

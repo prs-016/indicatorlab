@@ -1,0 +1,3328 @@
+{
+  "schema_version": "indicatorlab.hk-attention-handoff/v1",
+  "prepared_at_utc": "2026-11-15",
+  "market": "HK",
+  "roster_snapshot_date": "2026-11-04",
+  "constituent_effective_date": "2026-09-07",
+  "roster_source": "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+  "survivorship_bias": true,
+  "point_in_time_membership": false,
+  "reddit": {
+    "general": [],
+    "sector": [],
+    "qualifying_source_status": "none_observed",
+    "rule": "market-specific source >=20 archived posts/week in 2024",
+    "survey_file": "results/hk/week3/reddit_survey_2024.csv",
+    "unavailable_sources": [
+      "Xiaomi"
+    ],
+    "note": "Do not replace unavailable observations with zero. General HongKong community is excluded because it is not market-specific."
+  },
+  "title_intervals_file": "config/hk_wiki_title_intervals.csv",
+  "title_intervals_sha256": "ee59bcb0184b363543818c1d7736dd52580a7eb5d18213b3d8b3a18702ffcc95",
+  "title_intervals_unavailable": [
+    {
+      "title": "香港電燈",
+      "lang": "zh",
+      "valid_from": null,
+      "valid_to": "2011-02-16T10:56:17Z",
+      "pageid": "1523392",
+      "evidence": "entity_move_log:1986552; original_logpage:1523392; history_merge_changed_identity; earliest_title_date_unknown",
+      "symbol": "0006.HK",
+      "research_available": false
+    }
+  ],
+  "stocks": {
+    "0001.HK": {
+      "name": "Cheung Kong",
+      "wikipedia_title_intervals": [
+        {
+          "title": "CK_Hutchison_Holdings",
+          "lang": "en",
+          "valid_from": "2015-08-25T16:07:31Z",
+          "valid_to": null,
+          "pageid": "47622238",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "長江和記實業",
+          "lang": "zh",
+          "valid_from": "2015-03-10T14:44:46Z",
+          "valid_to": null,
+          "pageid": "4555386",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0002.HK": {
+      "name": "CLP",
+      "wikipedia_title_intervals": [
+        {
+          "title": "中電集團",
+          "lang": "zh",
+          "valid_from": "2005-04-18T08:02:14Z",
+          "valid_to": "2018-09-15T00:50:13Z",
+          "pageid": "96378",
+          "evidence": "move_log:8164187",
+          "research_available": true
+        },
+        {
+          "title": "中華電力",
+          "lang": "zh",
+          "valid_from": "2018-09-15T00:50:13Z",
+          "valid_to": null,
+          "pageid": "96378",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "CLP_Group",
+          "lang": "en",
+          "valid_from": "2004-02-29T22:06:50Z",
+          "valid_to": null,
+          "pageid": "495796",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0003.HK": {
+      "name": "Hong Kong and China Gas",
+      "wikipedia_title_intervals": [
+        {
+          "title": "The_Hong_Kong_and_China_Gas_Company",
+          "lang": "en",
+          "valid_from": "2006-05-08T07:06:58Z",
+          "valid_to": null,
+          "pageid": "5058149",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "香港中華煤氣",
+          "lang": "zh",
+          "valid_from": "2005-05-01T11:05:07Z",
+          "valid_to": null,
+          "pageid": "101360",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0005.HK": {
+      "name": "HSBC",
+      "wikipedia_title_intervals": [
+        {
+          "title": "HSBC",
+          "lang": "en",
+          "valid_from": "2003-09-20T08:42:34Z",
+          "valid_to": null,
+          "pageid": "322572",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "滙豐",
+          "lang": "zh",
+          "valid_from": "2004-04-22T10:10:55Z",
+          "valid_to": null,
+          "pageid": "86760",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0006.HK": {
+      "name": "Power Assets",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Power_Assets_Holdings",
+          "lang": "en",
+          "valid_from": "2005-11-18T06:34:51Z",
+          "valid_to": null,
+          "pageid": "3188660",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "香港電燈",
+          "lang": "zh",
+          "valid_from": null,
+          "valid_to": "2011-02-16T10:56:17Z",
+          "pageid": "1523392",
+          "evidence": "entity_move_log:1986552; original_logpage:1523392; history_merge_changed_identity; earliest_title_date_unknown",
+          "research_available": false
+        },
+        {
+          "title": "電能實業",
+          "lang": "zh",
+          "valid_from": "2011-02-16T10:56:17Z",
+          "valid_to": null,
+          "pageid": "1524109",
+          "evidence": "entity_move_log:1986552; original_logpage:1523392; history_merge_changed_identity",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0012.HK": {
+      "name": "Henderson Land",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Henderson_Land_Development",
+          "lang": "en",
+          "valid_from": "2005-12-26T06:05:35Z",
+          "valid_to": null,
+          "pageid": "3528362",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "恆基兆業地產",
+          "lang": "zh",
+          "valid_from": "2005-05-08T05:38:01Z",
+          "valid_to": "2015-06-17T15:19:37Z",
+          "pageid": "103908",
+          "evidence": "move_log:6057057",
+          "research_available": true
+        },
+        {
+          "title": "恒基兆業地產",
+          "lang": "zh",
+          "valid_from": "2015-06-17T15:19:37Z",
+          "valid_to": "2026-06-30T02:35:18Z",
+          "pageid": "103908",
+          "evidence": "move_log:16530046",
+          "research_available": true
+        },
+        {
+          "title": "恒基地產",
+          "lang": "zh",
+          "valid_from": "2026-06-30T02:35:18Z",
+          "valid_to": null,
+          "pageid": "103908",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0016.HK": {
+      "name": "Sun Hung Kai Properties",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Sun_Hung_Kai_Properties",
+          "lang": "en",
+          "valid_from": "2005-01-15T04:47:56Z",
+          "valid_to": null,
+          "pageid": "1397985",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "新鴻基地產",
+          "lang": "zh",
+          "valid_from": "2005-05-08T05:42:38Z",
+          "valid_to": null,
+          "pageid": "103917",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0027.HK": {
+      "name": "Galaxy Entertainment",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Galaxy_Entertainment_Group",
+          "lang": "en",
+          "valid_from": "2007-06-27T12:22:38Z",
+          "valid_to": null,
+          "pageid": "11974566",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "銀河娛樂",
+          "lang": "zh",
+          "valid_from": "2005-05-08T05:53:57Z",
+          "valid_to": null,
+          "pageid": "103949",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0066.HK": {
+      "name": "MTR",
+      "wikipedia_title_intervals": [
+        {
+          "title": "港鐵公司",
+          "lang": "zh",
+          "valid_from": "2005-05-08T06:21:42Z",
+          "valid_to": null,
+          "pageid": "104011",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "MTR_Corporation",
+          "lang": "en",
+          "valid_from": "2004-10-29T00:27:24Z",
+          "valid_to": null,
+          "pageid": "1110253",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0101.HK": {
+      "name": "Hang Lung Properties",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Hang_Lung_Properties",
+          "lang": "en",
+          "valid_from": "2008-03-25T21:29:52Z",
+          "valid_to": null,
+          "pageid": "16577465",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "恆隆地產",
+          "lang": "zh",
+          "valid_from": "2005-05-08T05:32:08Z",
+          "valid_to": "2015-06-16T14:09:26Z",
+          "pageid": "103901",
+          "evidence": "move_log:6055862",
+          "research_available": true
+        },
+        {
+          "title": "恒隆地產",
+          "lang": "zh",
+          "valid_from": "2015-06-16T14:09:26Z",
+          "valid_to": null,
+          "pageid": "103901",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0175.HK": {
+      "name": "Geely Automobile",
+      "wikipedia_title_intervals": [
+        {
+          "title": "吉利汽車",
+          "lang": "zh",
+          "valid_from": "2006-07-17T06:40:02Z",
+          "valid_to": null,
+          "pageid": "330350",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Geely_Auto",
+          "lang": "en",
+          "valid_from": "2010-03-28T21:22:50Z",
+          "valid_to": null,
+          "pageid": "26739210",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0241.HK": {
+      "name": "Alibaba Health",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Alibaba_Health",
+          "lang": "en",
+          "valid_from": "2024-06-01T09:01:33Z",
+          "valid_to": null,
+          "pageid": "77058490",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中信21世紀",
+          "lang": "zh",
+          "valid_from": "2005-05-08T05:51:07Z",
+          "valid_to": "2014-10-21T11:12:51Z",
+          "pageid": "103942",
+          "evidence": "move_log:5250756",
+          "research_available": true
+        },
+        {
+          "title": "阿里健康信息",
+          "lang": "zh",
+          "valid_from": "2014-10-21T11:12:51Z",
+          "valid_to": "2019-04-24T19:10:13Z",
+          "pageid": "103942",
+          "evidence": "move_log:8717137",
+          "research_available": true
+        },
+        {
+          "title": "阿里健康",
+          "lang": "zh",
+          "valid_from": "2019-04-24T19:10:13Z",
+          "valid_to": null,
+          "pageid": "103942",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0267.HK": {
+      "name": "CITIC Pacific",
+      "wikipedia_title_intervals": [
+        {
+          "title": "中信股份",
+          "lang": "zh",
+          "valid_from": "2005-05-08T05:52:50Z",
+          "valid_to": null,
+          "pageid": "103946",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "CITIC_Pacific",
+          "lang": "en",
+          "valid_from": "2006-01-04T11:12:56Z",
+          "valid_to": "2016-10-03T09:20:48Z",
+          "pageid": "3615109",
+          "evidence": "move_log:77774943",
+          "research_available": true
+        },
+        {
+          "title": "CITIC_Limited",
+          "lang": "en",
+          "valid_from": "2016-10-03T09:20:48Z",
+          "valid_to": "2016-10-06T07:55:05Z",
+          "pageid": "3615109",
+          "evidence": "move_log:77843504",
+          "research_available": true
+        },
+        {
+          "title": "CITIC_Pacific",
+          "lang": "en",
+          "valid_from": "2016-10-06T07:55:05Z",
+          "valid_to": "2016-10-13T06:04:57Z",
+          "pageid": "3615109",
+          "evidence": "move_log:78024230",
+          "research_available": true
+        },
+        {
+          "title": "CITIC_Limited",
+          "lang": "en",
+          "valid_from": "2016-10-13T06:04:57Z",
+          "valid_to": null,
+          "pageid": "3615109",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0285.HK": {
+      "name": "BYD Electronic",
+      "wikipedia_title_intervals": [
+        {
+          "title": "BYD_Company",
+          "lang": "en",
+          "valid_from": "2008-05-16T13:54:53Z",
+          "valid_to": null,
+          "pageid": "17456242",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "比亚迪",
+          "lang": "zh",
+          "valid_from": "2007-10-14T08:17:18Z",
+          "valid_to": null,
+          "pageid": "641600",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0288.HK": {
+      "name": "WH Group",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Shuanghui",
+          "lang": "en",
+          "valid_from": "2009-02-18T14:52:15Z",
+          "valid_to": "2018-09-05T14:02:03Z",
+          "pageid": "21592156",
+          "evidence": "move_log:93036029",
+          "research_available": true
+        },
+        {
+          "title": "WH_Group",
+          "lang": "en",
+          "valid_from": "2018-09-05T14:02:03Z",
+          "valid_to": null,
+          "pageid": "21592156",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "萬洲國際",
+          "lang": "zh",
+          "valid_from": "2014-08-07T16:38:54Z",
+          "valid_to": null,
+          "pageid": "4102207",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0291.HK": {
+      "name": "China Resources Enterprise / China Resources Beer",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Resources_Enterprise",
+          "lang": "en",
+          "valid_from": "2008-03-12T14:20:56Z",
+          "valid_to": "2020-01-04T22:30:41Z",
+          "pageid": "16256969",
+          "evidence": "move_log:104728418",
+          "research_available": true
+        },
+        {
+          "title": "China_Resources_Beer",
+          "lang": "en",
+          "valid_from": "2020-01-04T22:30:41Z",
+          "valid_to": null,
+          "pageid": "16256969",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "華潤創業",
+          "lang": "zh",
+          "valid_from": "2005-05-08T05:55:07Z",
+          "valid_to": null,
+          "pageid": "103951",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0300.HK": {
+      "name": "MIDEA GROUP",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Midea_(company)",
+          "lang": "en",
+          "valid_from": "2006-01-08T02:44:25Z",
+          "valid_to": "2016-11-08T12:28:28Z",
+          "pageid": "35911369",
+          "evidence": "move_log:78592736",
+          "research_available": true
+        },
+        {
+          "title": "Midea_Group",
+          "lang": "en",
+          "valid_from": "2016-11-08T12:28:28Z",
+          "valid_to": null,
+          "pageid": "35911369",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "美的集團",
+          "lang": "zh",
+          "valid_from": "2008-02-19T02:36:42Z",
+          "valid_to": null,
+          "pageid": "710765",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0316.HK": {
+      "name": "OOIL",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Orient_Overseas_(International)_Limited",
+          "lang": "en",
+          "valid_from": "2009-03-20T02:34:03Z",
+          "valid_to": "2020-12-14T13:03:54Z",
+          "pageid": "22059101",
+          "evidence": "move_log:113548251",
+          "research_available": true
+        },
+        {
+          "title": "Orient_Overseas_(International)",
+          "lang": "en",
+          "valid_from": "2020-12-14T13:03:54Z",
+          "valid_to": "2021-01-24T02:59:09Z",
+          "pageid": "22059101",
+          "evidence": "move_log:114737169",
+          "research_available": true
+        },
+        {
+          "title": "Orient_Overseas_(International)_Limited",
+          "lang": "en",
+          "valid_from": "2021-01-24T02:59:09Z",
+          "valid_to": null,
+          "pageid": "22059101",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "東方海外",
+          "lang": "zh",
+          "valid_from": "2005-05-08T05:58:32Z",
+          "valid_to": null,
+          "pageid": "103960",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0322.HK": {
+      "name": "Tingyi",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Tingyi_(Cayman_Islands)_Holding_Corporation",
+          "lang": "en",
+          "valid_from": "2009-02-22T08:16:41Z",
+          "valid_to": "2020-02-03T08:55:14Z",
+          "pageid": "21651355",
+          "evidence": "move_log:105479331",
+          "research_available": true
+        },
+        {
+          "title": "Master_Kong",
+          "lang": "en",
+          "valid_from": "2020-02-03T08:55:14Z",
+          "valid_to": null,
+          "pageid": "21651355",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "康師傅",
+          "lang": "zh",
+          "valid_from": "2005-05-08T06:00:26Z",
+          "valid_to": null,
+          "pageid": "103962",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0386.HK": {
+      "name": "Sinopec",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Sinopec",
+          "lang": "en",
+          "valid_from": "2004-12-25T10:37:05Z",
+          "valid_to": null,
+          "pageid": "1325529",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中国石化",
+          "lang": "zh",
+          "valid_from": "2005-05-08T06:05:18Z",
+          "valid_to": null,
+          "pageid": "103980",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0388.HK": {
+      "name": "HKEX",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Hong_Kong_Exchanges_and_Clearing",
+          "lang": "en",
+          "valid_from": "2005-10-17T02:06:42Z",
+          "valid_to": null,
+          "pageid": "2924083",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "香港交易所",
+          "lang": "zh",
+          "valid_from": "2005-03-10T03:35:17Z",
+          "valid_to": null,
+          "pageid": "83124",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0669.HK": {
+      "name": "Techtronic Industries",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Techtronic_Industries",
+          "lang": "en",
+          "valid_from": "2008-07-20T14:33:54Z",
+          "valid_to": null,
+          "pageid": "18512864",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "創科實業",
+          "lang": "zh",
+          "valid_from": "2005-05-08T06:21:10Z",
+          "valid_to": null,
+          "pageid": "104010",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0688.HK": {
+      "name": "China Overseas Land",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Overseas_Land_and_Investment_Limited",
+          "lang": "en",
+          "valid_from": "2007-12-11T15:25:43Z",
+          "valid_to": "2016-10-20T20:18:10Z",
+          "pageid": "14659347",
+          "evidence": "move_log:78192406",
+          "research_available": true
+        },
+        {
+          "title": "China_Overseas_Land_and_Investment",
+          "lang": "en",
+          "valid_from": "2016-10-20T20:18:10Z",
+          "valid_to": null,
+          "pageid": "14659347",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中國海外發展",
+          "lang": "zh",
+          "valid_from": "2005-05-08T06:23:24Z",
+          "valid_to": null,
+          "pageid": "104014",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0700.HK": {
+      "name": "Tencent",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Tencent",
+          "lang": "en",
+          "valid_from": "2008-04-01T12:53:06Z",
+          "valid_to": null,
+          "pageid": "16709162",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "腾讯",
+          "lang": "zh",
+          "valid_from": "2004-04-03T06:47:04Z",
+          "valid_to": null,
+          "pageid": "20480",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0728.HK": {
+      "name": "CHINA TELECOM",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Telecom",
+          "lang": "en",
+          "valid_from": "2017-07-25T20:30:14Z",
+          "valid_to": null,
+          "pageid": "54651766",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中國電信股份有限公司",
+          "lang": "zh",
+          "valid_from": "2015-08-16T10:20:09Z",
+          "valid_to": null,
+          "pageid": "4988159",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0762.HK": {
+      "name": "China Unicom",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Unicom",
+          "lang": "en",
+          "valid_from": "2004-02-02T07:25:03Z",
+          "valid_to": null,
+          "pageid": "451805",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中国联通",
+          "lang": "zh",
+          "valid_from": "2005-11-01T08:21:19Z",
+          "valid_to": null,
+          "pageid": "179232",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0823.HK": {
+      "name": "Link REIT",
+      "wikipedia_title_intervals": [
+        {
+          "title": "The_Link_REIT",
+          "lang": "en",
+          "valid_from": "2004-12-16T02:27:16Z",
+          "valid_to": "2015-08-23T11:53:14Z",
+          "pageid": "1283673",
+          "evidence": "move_log:68563552",
+          "research_available": true
+        },
+        {
+          "title": "Link_REIT",
+          "lang": "en",
+          "valid_from": "2015-08-23T11:53:14Z",
+          "valid_to": null,
+          "pageid": "1283673",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "領匯房地產投資信託基金",
+          "lang": "zh",
+          "valid_from": "2005-07-24T05:37:06Z",
+          "valid_to": "2015-08-19T05:51:16Z",
+          "pageid": "135688",
+          "evidence": "move_log:6263201",
+          "research_available": true
+        },
+        {
+          "title": "領展房地產投資信託基金",
+          "lang": "zh",
+          "valid_from": "2015-08-19T05:51:16Z",
+          "valid_to": null,
+          "pageid": "135688",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0836.HK": {
+      "name": "China Resources Power",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Resources_Power",
+          "lang": "en",
+          "valid_from": "2008-03-15T08:16:15Z",
+          "valid_to": null,
+          "pageid": "16305413",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "華潤電力控股",
+          "lang": "zh",
+          "valid_from": "2005-05-08T06:39:42Z",
+          "valid_to": null,
+          "pageid": "104050",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0857.HK": {
+      "name": "PetroChina",
+      "wikipedia_title_intervals": [
+        {
+          "title": "PetroChina",
+          "lang": "en",
+          "valid_from": "2004-12-19T05:33:48Z",
+          "valid_to": null,
+          "pageid": "1298114",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中国石油天然气股份",
+          "lang": "zh",
+          "valid_from": "2005-05-08T06:40:50Z",
+          "valid_to": null,
+          "pageid": "104052",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0868.HK": {
+      "name": "Xinyi Glass",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Xinyi_Glass",
+          "lang": "en",
+          "valid_from": "2008-04-07T13:37:20Z",
+          "valid_to": null,
+          "pageid": "16809022",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "信義玻璃",
+          "lang": "zh",
+          "valid_from": "2008-04-06T13:59:01Z",
+          "valid_to": null,
+          "pageid": "735313",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0883.HK": {
+      "name": "CNOOC",
+      "wikipedia_title_intervals": [
+        {
+          "title": "CNOOC_Limited",
+          "lang": "en",
+          "valid_from": "2005-06-08T14:14:58Z",
+          "valid_to": null,
+          "pageid": "2009533",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中国海洋石油有限公司",
+          "lang": "zh",
+          "valid_from": "2006-01-10T01:06:14Z",
+          "valid_to": null,
+          "pageid": "209781",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0939.HK": {
+      "name": "CCB",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Construction_Bank",
+          "lang": "en",
+          "valid_from": "2003-10-06T16:28:16Z",
+          "valid_to": null,
+          "pageid": "335591",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中国建设银行",
+          "lang": "zh",
+          "valid_from": "2005-07-21T11:46:47Z",
+          "valid_to": null,
+          "pageid": "134701",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0941.HK": {
+      "name": "China Mobile",
+      "wikipedia_title_intervals": [
+        {
+          "title": "中国移动",
+          "lang": "zh",
+          "valid_from": "2003-06-18T09:28:10Z",
+          "valid_to": null,
+          "pageid": "1374",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "China_Mobile",
+          "lang": "en",
+          "valid_from": "2003-11-22T13:12:46Z",
+          "valid_to": null,
+          "pageid": "375479",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0960.HK": {
+      "name": "Longfor",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Longfor_Properties",
+          "lang": "en",
+          "valid_from": "2013-07-10T08:28:49Z",
+          "valid_to": null,
+          "pageid": "39922434",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "龍湖地產",
+          "lang": "zh",
+          "valid_from": "2010-05-21T06:48:01Z",
+          "valid_to": null,
+          "pageid": "1280568",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0968.HK": {
+      "name": "Xinyi Solar",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Xinyi_Solar",
+          "lang": "en",
+          "valid_from": "2023-01-07T15:40:37Z",
+          "valid_to": null,
+          "pageid": "72688574",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "信義光能",
+          "lang": "zh",
+          "valid_from": "2017-11-04T00:04:30Z",
+          "valid_to": null,
+          "pageid": "5944757",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0981.HK": {
+      "name": "SMIC",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Semiconductor_Manufacturing_International_Corporation",
+          "lang": "en",
+          "valid_from": "2005-05-22T11:06:49Z",
+          "valid_to": null,
+          "pageid": "1924047",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中芯国际",
+          "lang": "zh",
+          "valid_from": "2004-04-03T11:21:32Z",
+          "valid_to": null,
+          "pageid": "20531",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "0992.HK": {
+      "name": "Lenovo",
+      "wikipedia_title_intervals": [
+        {
+          "title": "联想集团",
+          "lang": "zh",
+          "valid_from": "2003-12-31T10:19:46Z",
+          "valid_to": null,
+          "pageid": "10183",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Lenovo",
+          "lang": "en",
+          "valid_from": "2004-09-18T23:41:15Z",
+          "valid_to": null,
+          "pageid": "997189",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1024.HK": {
+      "name": "Kuaishou",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Kuaishou",
+          "lang": "en",
+          "valid_from": "2019-08-06T20:13:44Z",
+          "valid_to": null,
+          "pageid": "61456557",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "快手_(軟體)",
+          "lang": "zh",
+          "valid_from": "2018-02-27T15:14:09Z",
+          "valid_to": null,
+          "pageid": "6066289",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1038.HK": {
+      "name": "CK Infrastructure Holdings",
+      "wikipedia_title_intervals": [
+        {
+          "title": "長江基建",
+          "lang": "zh",
+          "valid_from": "2006-03-16T18:54:37Z",
+          "valid_to": null,
+          "pageid": "246202",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Cheung_Kong_Infrastructure_Holdings",
+          "lang": "en",
+          "valid_from": "2008-03-09T12:32:43Z",
+          "valid_to": "2018-06-24T23:48:38Z",
+          "pageid": "16193256",
+          "evidence": "move_log:91400626",
+          "research_available": true
+        },
+        {
+          "title": "CK_Infrastructure_Holdings",
+          "lang": "en",
+          "valid_from": "2018-06-24T23:48:38Z",
+          "valid_to": null,
+          "pageid": "16193256",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1044.HK": {
+      "name": "Hengan",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Hengan_International",
+          "lang": "en",
+          "valid_from": "2009-04-18T09:58:21Z",
+          "valid_to": null,
+          "pageid": "22464126",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "恆安國際",
+          "lang": "zh",
+          "valid_from": "2009-04-18T09:14:42Z",
+          "valid_to": null,
+          "pageid": "1033664",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1088.HK": {
+      "name": "China Shenhua",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Shenhua_Energy_Company",
+          "lang": "en",
+          "valid_from": "2007-09-11T15:29:47Z",
+          "valid_to": "2016-10-20T20:45:35Z",
+          "pageid": "13215065",
+          "evidence": "move_log:78192834",
+          "research_available": true
+        },
+        {
+          "title": "China_Shenhua_Energy",
+          "lang": "en",
+          "valid_from": "2016-10-20T20:45:35Z",
+          "valid_to": null,
+          "pageid": "13215065",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "神华能源",
+          "lang": "zh",
+          "valid_from": "2005-06-15T15:22:58Z",
+          "valid_to": "2018-06-05T11:58:45Z",
+          "pageid": "118189",
+          "evidence": "move_log:7944773",
+          "research_available": true
+        },
+        {
+          "title": "中国神华能源",
+          "lang": "zh",
+          "valid_from": "2018-06-05T11:58:45Z",
+          "valid_to": null,
+          "pageid": "118189",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1093.HK": {
+      "name": "CSPC Pharmaceutical",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Shijiazhuang_Pharma_Group",
+          "lang": "en",
+          "valid_from": "2008-11-14T09:09:09Z",
+          "valid_to": "2024-02-02T12:39:21Z",
+          "pageid": "20206456",
+          "evidence": "move_log:159003678",
+          "research_available": true
+        },
+        {
+          "title": "CSPC_Pharmaceutical_Group",
+          "lang": "en",
+          "valid_from": "2024-02-02T12:39:21Z",
+          "valid_to": null,
+          "pageid": "20206456",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "石藥集團",
+          "lang": "zh",
+          "valid_from": "2008-02-24T02:52:38Z",
+          "valid_to": null,
+          "pageid": "713102",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1099.HK": {
+      "name": "Sinopharm",
+      "wikipedia_title_intervals": [
+        {
+          "title": "國藥控股",
+          "lang": "zh",
+          "valid_from": "2009-09-05T01:58:36Z",
+          "valid_to": null,
+          "pageid": "1123110",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Sinopharm_Group",
+          "lang": "en",
+          "valid_from": "2009-01-27T14:22:26Z",
+          "valid_to": null,
+          "pageid": "21280820",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1109.HK": {
+      "name": "China Resources Land",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Resources_Land",
+          "lang": "en",
+          "valid_from": "2008-05-14T14:20:50Z",
+          "valid_to": null,
+          "pageid": "17422768",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "華潤置地",
+          "lang": "zh",
+          "valid_from": "2007-08-06T03:04:56Z",
+          "valid_to": null,
+          "pageid": "599432",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1113.HK": {
+      "name": "CK Asset Holdings",
+      "wikipedia_title_intervals": [
+        {
+          "title": "長江實業地產",
+          "lang": "zh",
+          "valid_from": "2015-05-26T23:49:15Z",
+          "valid_to": "2017-07-14T15:12:53Z",
+          "pageid": "4790982",
+          "evidence": "move_log:7365188",
+          "research_available": true
+        },
+        {
+          "title": "長江實業集團有限公司",
+          "lang": "zh",
+          "valid_from": "2017-07-14T15:12:53Z",
+          "valid_to": "2017-07-14T15:20:27Z",
+          "pageid": "4790982",
+          "evidence": "move_log:7365191",
+          "research_available": true
+        },
+        {
+          "title": "長江實業集團",
+          "lang": "zh",
+          "valid_from": "2017-07-14T15:20:27Z",
+          "valid_to": "2017-07-14T15:24:18Z",
+          "pageid": "4790982",
+          "evidence": "move_log:7365194",
+          "research_available": true
+        },
+        {
+          "title": "長江實業集團有限公司",
+          "lang": "zh",
+          "valid_from": "2017-07-14T15:24:18Z",
+          "valid_to": "2017-07-14T15:24:53Z",
+          "pageid": "4790982",
+          "evidence": "move_log:7365196",
+          "research_available": true
+        },
+        {
+          "title": "長江實業地產",
+          "lang": "zh",
+          "valid_from": "2017-07-14T15:24:53Z",
+          "valid_to": "2017-09-15T23:38:37Z",
+          "pageid": "4790982",
+          "evidence": "move_log:7552174",
+          "research_available": true
+        },
+        {
+          "title": "長江實業集團",
+          "lang": "zh",
+          "valid_from": "2017-09-15T23:38:37Z",
+          "valid_to": null,
+          "pageid": "4790982",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Cheung_Kong_Property_Holdings",
+          "lang": "en",
+          "valid_from": "2015-08-25T14:26:57Z",
+          "valid_to": "2017-09-19T22:08:38Z",
+          "pageid": "47621458",
+          "evidence": "move_log:85739329",
+          "research_available": true
+        },
+        {
+          "title": "CK_Asset_Holdings",
+          "lang": "en",
+          "valid_from": "2017-09-19T22:08:38Z",
+          "valid_to": null,
+          "pageid": "47621458",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1177.HK": {
+      "name": "Sino Biopharmaceutical",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Sino_Biopharmaceutical_Limited",
+          "lang": "en",
+          "valid_from": "2019-12-30T15:54:38Z",
+          "valid_to": null,
+          "pageid": "62699436",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中國生物製藥",
+          "lang": "zh",
+          "valid_from": "2011-05-30T11:33:48Z",
+          "valid_to": null,
+          "pageid": "1584135",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1209.HK": {
+      "name": "CR Mixc Lifestyle",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Resources_Mixc_Lifestyle_Services",
+          "lang": "en",
+          "valid_from": "2024-12-07T07:38:08Z",
+          "valid_to": "2024-12-07T07:40:44Z",
+          "pageid": "78542384",
+          "evidence": "move_log:166315810",
+          "research_available": true
+        },
+        {
+          "title": "China_Resources_Mixc_Lifestyle",
+          "lang": "en",
+          "valid_from": "2024-12-07T07:40:44Z",
+          "valid_to": null,
+          "pageid": "78542384",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "华润万象生活",
+          "lang": "zh",
+          "valid_from": "2021-10-02T16:25:46Z",
+          "valid_to": null,
+          "pageid": "7670079",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1211.HK": {
+      "name": "BYD",
+      "wikipedia_title_intervals": [
+        {
+          "title": "BYD_Company",
+          "lang": "en",
+          "valid_from": "2008-05-16T13:54:53Z",
+          "valid_to": null,
+          "pageid": "17456242",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "比亚迪",
+          "lang": "zh",
+          "valid_from": "2007-10-14T08:17:18Z",
+          "valid_to": null,
+          "pageid": "641600",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1299.HK": {
+      "name": "AIA",
+      "wikipedia_title_intervals": [
+        {
+          "title": "AIA_Group_Limited",
+          "lang": "en",
+          "valid_from": "2007-05-16T17:31:28Z",
+          "valid_to": "2016-12-25T11:49:11Z",
+          "pageid": "11258671",
+          "evidence": "move_log:79617822",
+          "research_available": true
+        },
+        {
+          "title": "AIA_Group",
+          "lang": "en",
+          "valid_from": "2016-12-25T11:49:11Z",
+          "valid_to": null,
+          "pageid": "11258671",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "友邦保險",
+          "lang": "zh",
+          "valid_from": "2007-12-27T08:38:26Z",
+          "valid_to": null,
+          "pageid": "681696",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1347.HK": {
+      "name": "HUA HONG SEMICONDUCTOR",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Hua_Hong_Semiconductor",
+          "lang": "en",
+          "valid_from": "2022-03-29T20:27:47Z",
+          "valid_to": null,
+          "pageid": "70424623",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "上海华虹",
+          "lang": "zh",
+          "valid_from": "2020-12-17T10:18:11Z",
+          "valid_to": null,
+          "pageid": "7306498",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1378.HK": {
+      "name": "China Hongqiao",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Hongqiao_Group",
+          "lang": "en",
+          "valid_from": "2017-10-06T09:00:06Z",
+          "valid_to": null,
+          "pageid": "55462948",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中國宏橋集團",
+          "lang": "zh",
+          "valid_from": "2011-03-05T15:59:14Z",
+          "valid_to": null,
+          "pageid": "1534627",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1398.HK": {
+      "name": "ICBC",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Industrial_and_Commercial_Bank_of_China",
+          "lang": "en",
+          "valid_from": "2004-09-19T14:50:37Z",
+          "valid_to": null,
+          "pageid": "998821",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中国工商银行",
+          "lang": "zh",
+          "valid_from": "2004-07-11T06:30:21Z",
+          "valid_to": null,
+          "pageid": "36342",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1519.HK": {
+      "name": "J&T EXPRESS",
+      "wikipedia_title_intervals": [
+        {
+          "title": "J&T_Express",
+          "lang": "en",
+          "valid_from": "2020-06-27T12:14:34Z",
+          "valid_to": null,
+          "pageid": "64395022",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "极兔速递",
+          "lang": "zh",
+          "valid_from": "2021-09-02T04:49:13Z",
+          "valid_to": null,
+          "pageid": "7631886",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1801.HK": {
+      "name": "INNOVENT BIO",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Innovent_Biologics",
+          "lang": "en",
+          "valid_from": "2025-11-23T11:46:14Z",
+          "valid_to": null,
+          "pageid": "81669812",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "信達生物",
+          "lang": "zh",
+          "valid_from": "2023-01-16T15:09:15Z",
+          "valid_to": null,
+          "pageid": "8249084",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1810.HK": {
+      "name": "Xiaomi",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Xiaomi",
+          "lang": "en",
+          "valid_from": "2011-09-22T15:50:06Z",
+          "valid_to": null,
+          "pageid": "33454300",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "小米科技",
+          "lang": "zh",
+          "valid_from": "2011-08-18T11:15:23Z",
+          "valid_to": "2018-07-09T00:56:50Z",
+          "pageid": "1639120",
+          "evidence": "move_log:7996853",
+          "research_available": true
+        },
+        {
+          "title": "小米集團",
+          "lang": "zh",
+          "valid_from": "2018-07-09T00:56:50Z",
+          "valid_to": "2023-03-06T08:08:51Z",
+          "pageid": "1639120",
+          "evidence": "move_log:12769572",
+          "research_available": true
+        },
+        {
+          "title": "小米集团",
+          "lang": "zh",
+          "valid_from": "2023-03-06T08:08:51Z",
+          "valid_to": "2023-03-06T08:58:38Z",
+          "pageid": "1639120",
+          "evidence": "move_log:12769720",
+          "research_available": true
+        },
+        {
+          "title": "小米集團",
+          "lang": "zh",
+          "valid_from": "2023-03-06T08:58:38Z",
+          "valid_to": null,
+          "pageid": "1639120",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1876.HK": {
+      "name": "Budweiser APAC",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Budweiser_APAC",
+          "lang": "en",
+          "valid_from": "2026-02-12T18:17:24Z",
+          "valid_to": null,
+          "pageid": "82402601",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "百威亞太",
+          "lang": "zh",
+          "valid_from": "2019-09-17T15:01:23Z",
+          "valid_to": null,
+          "pageid": "6738818",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1928.HK": {
+      "name": "Sands China",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Sands_China",
+          "lang": "en",
+          "valid_from": "2014-03-18T17:46:31Z",
+          "valid_to": null,
+          "pageid": "42238274",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "金沙中國",
+          "lang": "zh",
+          "valid_from": "2010-04-05T19:00:31Z",
+          "valid_to": null,
+          "pageid": "1248339",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1929.HK": {
+      "name": "Chow Tai Fook",
+      "wikipedia_title_intervals": [
+        {
+          "title": "周大福集團",
+          "lang": "zh",
+          "valid_from": "2007-07-09T07:54:54Z",
+          "valid_to": null,
+          "pageid": "581606",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Chow_Tai_Fook_Enterprises",
+          "lang": "en",
+          "valid_from": "2006-07-15T09:15:22Z",
+          "valid_to": "2017-07-16T18:18:01Z",
+          "pageid": "5973988",
+          "evidence": "move_log:84252817",
+          "research_available": true
+        },
+        {
+          "title": "Chow_Tai_Fook",
+          "lang": "en",
+          "valid_from": "2017-07-16T18:18:01Z",
+          "valid_to": null,
+          "pageid": "5973988",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "1997.HK": {
+      "name": "Wharf REIC",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Wharf_Real_Estate_Investment_Company",
+          "lang": "en",
+          "valid_from": "2020-11-13T21:45:33Z",
+          "valid_to": null,
+          "pageid": "65835026",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "九龍倉置業",
+          "lang": "zh",
+          "valid_from": "2017-11-10T00:04:44Z",
+          "valid_to": null,
+          "pageid": "5951694",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2015.HK": {
+      "name": "Li Auto",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Li_Auto",
+          "lang": "en",
+          "valid_from": "2020-08-06T02:47:30Z",
+          "valid_to": null,
+          "pageid": "64765458",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "理想汽车",
+          "lang": "zh",
+          "valid_from": "2020-08-02T23:31:26Z",
+          "valid_to": null,
+          "pageid": "7145656",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2020.HK": {
+      "name": "ANTA Sports",
+      "wikipedia_title_intervals": [
+        {
+          "title": "ANTA_Sports",
+          "lang": "en",
+          "valid_from": "2008-07-19T13:36:06Z",
+          "valid_to": "2016-03-01T12:35:07Z",
+          "pageid": "19607066",
+          "evidence": "move_log:72901095",
+          "research_available": true
+        },
+        {
+          "title": "Anta_Sports",
+          "lang": "en",
+          "valid_from": "2016-03-01T12:35:07Z",
+          "valid_to": null,
+          "pageid": "19607066",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "安踏體育",
+          "lang": "zh",
+          "valid_from": "2008-07-19T12:16:24Z",
+          "valid_to": "2020-11-24T05:33:00Z",
+          "pageid": "804998",
+          "evidence": "move_log:10093073",
+          "research_available": true
+        },
+        {
+          "title": "安踏",
+          "lang": "zh",
+          "valid_from": "2020-11-24T05:33:00Z",
+          "valid_to": "2026-02-13T07:21:26Z",
+          "pageid": "804998",
+          "evidence": "move_log:16078060",
+          "research_available": true
+        },
+        {
+          "title": "安踏體育",
+          "lang": "zh",
+          "valid_from": "2026-02-13T07:21:26Z",
+          "valid_to": null,
+          "pageid": "804998",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2057.HK": {
+      "name": "ZTO EXPRESS",
+      "wikipedia_title_intervals": [
+        {
+          "title": "ZTO_Express",
+          "lang": "en",
+          "valid_from": "2024-06-15T07:09:27Z",
+          "valid_to": null,
+          "pageid": "77156270",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中通快递",
+          "lang": "zh",
+          "valid_from": "2010-07-22T03:02:30Z",
+          "valid_to": null,
+          "pageid": "1346556",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2269.HK": {
+      "name": "WuXi Biologics",
+      "wikipedia_title_intervals": [
+        {
+          "title": "药明生物",
+          "lang": "zh",
+          "valid_from": "2020-04-21T16:05:50Z",
+          "valid_to": null,
+          "pageid": "7018983",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "WuXi_Biologics",
+          "lang": "en",
+          "valid_from": "2019-08-14T19:56:37Z",
+          "valid_to": null,
+          "pageid": "61516243",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2313.HK": {
+      "name": "Shenzhou International",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Shenzhou_International",
+          "lang": "en",
+          "valid_from": "2015-10-22T16:02:42Z",
+          "valid_to": null,
+          "pageid": "48324507",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "申洲國際",
+          "lang": "zh",
+          "valid_from": "2012-08-26T00:45:51Z",
+          "valid_to": null,
+          "pageid": "2980666",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2318.HK": {
+      "name": "Ping An",
+      "wikipedia_title_intervals": [
+        {
+          "title": "平安保险",
+          "lang": "zh",
+          "valid_from": "2005-05-08T06:31:20Z",
+          "valid_to": "2015-02-25T07:44:53Z",
+          "pageid": "104029",
+          "evidence": "move_log:5518369",
+          "research_available": true
+        },
+        {
+          "title": "中国平安",
+          "lang": "zh",
+          "valid_from": "2015-02-25T07:44:53Z",
+          "valid_to": null,
+          "pageid": "104029",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Ping_An_Insurance",
+          "lang": "en",
+          "valid_from": "2004-12-16T02:37:07Z",
+          "valid_to": null,
+          "pageid": "1283692",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2319.HK": {
+      "name": "Mengniu Dairy",
+      "wikipedia_title_intervals": [
+        {
+          "title": "蒙牛集团",
+          "lang": "zh",
+          "valid_from": "2006-01-16T12:45:12Z",
+          "valid_to": null,
+          "pageid": "212426",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Mengniu_Dairy",
+          "lang": "en",
+          "valid_from": "2005-10-17T03:44:56Z",
+          "valid_to": null,
+          "pageid": "2924659",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2331.HK": {
+      "name": "Li Ning",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Li-Ning",
+          "lang": "en",
+          "valid_from": "2007-07-27T15:09:40Z",
+          "valid_to": null,
+          "pageid": "12481374",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "李宁有限公司",
+          "lang": "zh",
+          "valid_from": "2008-05-10T12:50:37Z",
+          "valid_to": "2017-10-14T09:37:31Z",
+          "pageid": "754055",
+          "evidence": "move_log:7597143",
+          "research_available": true
+        },
+        {
+          "title": "李宁公司",
+          "lang": "zh",
+          "valid_from": "2017-10-14T09:37:31Z",
+          "valid_to": "2017-10-14T11:09:23Z",
+          "pageid": "754055",
+          "evidence": "move_log:7597302",
+          "research_available": true
+        },
+        {
+          "title": "李宁有限公司",
+          "lang": "zh",
+          "valid_from": "2017-10-14T11:09:23Z",
+          "valid_to": "2018-01-19T02:39:54Z",
+          "pageid": "754055",
+          "evidence": "move_log:7746920",
+          "research_available": true
+        },
+        {
+          "title": "李宁公司",
+          "lang": "zh",
+          "valid_from": "2018-01-19T02:39:54Z",
+          "valid_to": "2018-01-19T03:56:14Z",
+          "pageid": "754055",
+          "evidence": "move_log:7747029",
+          "research_available": true
+        },
+        {
+          "title": "李宁有限公司",
+          "lang": "zh",
+          "valid_from": "2018-01-19T03:56:14Z",
+          "valid_to": "2018-01-19T09:04:22Z",
+          "pageid": "754055",
+          "evidence": "move_log:7747521",
+          "research_available": true
+        },
+        {
+          "title": "李宁公司",
+          "lang": "zh",
+          "valid_from": "2018-01-19T09:04:22Z",
+          "valid_to": "2018-01-19T09:18:08Z",
+          "pageid": "754055",
+          "evidence": "move_log:7747544",
+          "research_available": true
+        },
+        {
+          "title": "李宁有限公司",
+          "lang": "zh",
+          "valid_from": "2018-01-19T09:18:08Z",
+          "valid_to": "2018-01-19T10:09:49Z",
+          "pageid": "754055",
+          "evidence": "move_log:7747622",
+          "research_available": true
+        },
+        {
+          "title": "李宁_(公司)",
+          "lang": "zh",
+          "valid_from": "2018-01-19T10:09:49Z",
+          "valid_to": "2018-01-24T02:05:27Z",
+          "pageid": "754055",
+          "evidence": "move_log:7756709",
+          "research_available": true
+        },
+        {
+          "title": "李宁有限公司",
+          "lang": "zh",
+          "valid_from": "2018-01-24T02:05:27Z",
+          "valid_to": null,
+          "pageid": "754055",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2338.HK": {
+      "name": "WEICHAI POWER",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Weichai_Power",
+          "lang": "en",
+          "valid_from": "2008-04-28T13:48:03Z",
+          "valid_to": "2015-07-09T01:38:36Z",
+          "pageid": "17159668",
+          "evidence": "move_log:67634973",
+          "research_available": true
+        },
+        {
+          "title": "Weichai_Power_Co.,_Ltd.",
+          "lang": "en",
+          "valid_from": "2015-07-09T01:38:36Z",
+          "valid_to": "2016-11-08T14:43:05Z",
+          "pageid": "17159668",
+          "evidence": "move_log:78594886",
+          "research_available": true
+        },
+        {
+          "title": "Weichai_Power",
+          "lang": "en",
+          "valid_from": "2016-11-08T14:43:05Z",
+          "valid_to": null,
+          "pageid": "17159668",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "濰柴動力",
+          "lang": "zh",
+          "valid_from": "2008-03-28T16:23:46Z",
+          "valid_to": null,
+          "pageid": "730433",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2359.HK": {
+      "name": "WuXi AppTec",
+      "wikipedia_title_intervals": [
+        {
+          "title": "WuXi_PharmaTech",
+          "lang": "en",
+          "valid_from": "2008-11-11T03:54:06Z",
+          "valid_to": "2017-07-19T13:38:29Z",
+          "pageid": "20160294",
+          "evidence": "move_log:84321609",
+          "research_available": true
+        },
+        {
+          "title": "WuXi_AppTec",
+          "lang": "en",
+          "valid_from": "2017-07-19T13:38:29Z",
+          "valid_to": null,
+          "pageid": "20160294",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "药明康德",
+          "lang": "zh",
+          "valid_from": "2017-06-15T02:15:09Z",
+          "valid_to": null,
+          "pageid": "5712597",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2382.HK": {
+      "name": "Sunny Optical",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Sunny_Optical_Technology",
+          "lang": "en",
+          "valid_from": "2019-12-31T09:27:43Z",
+          "valid_to": "2020-02-03T21:41:56Z",
+          "pageid": "62705020",
+          "evidence": "move_log:105494066",
+          "research_available": true
+        },
+        {
+          "title": "Sunny_Optical",
+          "lang": "en",
+          "valid_from": "2020-02-03T21:41:56Z",
+          "valid_to": null,
+          "pageid": "62705020",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "舜宇光學科技",
+          "lang": "zh",
+          "valid_from": "2012-07-24T01:11:01Z",
+          "valid_to": "2020-02-03T22:01:06Z",
+          "pageid": "2928077",
+          "evidence": "move_log:9378561",
+          "research_available": true
+        },
+        {
+          "title": "舜宇光學",
+          "lang": "zh",
+          "valid_from": "2020-02-03T22:01:06Z",
+          "valid_to": null,
+          "pageid": "2928077",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2388.HK": {
+      "name": "BOC Hong Kong",
+      "wikipedia_title_intervals": [
+        {
+          "title": "中國銀行（香港）",
+          "lang": "zh",
+          "valid_from": "2005-04-04T04:01:16Z",
+          "valid_to": null,
+          "pageid": "90596",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Bank_of_China_(Hong_Kong)",
+          "lang": "en",
+          "valid_from": "2004-11-08T19:12:18Z",
+          "valid_to": null,
+          "pageid": "1145762",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2600.HK": {
+      "name": "CHALCO",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Aluminum_Corporation_of_China_Limited",
+          "lang": "en",
+          "valid_from": "2006-05-26T23:21:27Z",
+          "valid_to": null,
+          "pageid": "5305881",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中國鋁業",
+          "lang": "zh",
+          "valid_from": "2006-07-15T08:44:34Z",
+          "valid_to": "2016-10-09T16:43:02Z",
+          "pageid": "329161",
+          "evidence": "move_log:6906170",
+          "research_available": true
+        },
+        {
+          "title": "中国铝业股份",
+          "lang": "zh",
+          "valid_from": "2016-10-09T16:43:02Z",
+          "valid_to": "2016-10-09T23:32:00Z",
+          "pageid": "329161",
+          "evidence": "move_log:6906362",
+          "research_available": true
+        },
+        {
+          "title": "中國鋁業",
+          "lang": "zh",
+          "valid_from": "2016-10-09T23:32:00Z",
+          "valid_to": null,
+          "pageid": "329161",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2618.HK": {
+      "name": "JD LOGISTICS",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Jingdong_Logistics",
+          "lang": "en",
+          "valid_from": "2024-03-08T01:47:24Z",
+          "valid_to": "2024-06-08T14:17:52Z",
+          "pageid": "76292662",
+          "evidence": "move_log:162554643",
+          "research_available": true
+        },
+        {
+          "title": "JD_Logistics",
+          "lang": "en",
+          "valid_from": "2024-06-08T14:17:52Z",
+          "valid_to": null,
+          "pageid": "76292662",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "京东物流",
+          "lang": "zh",
+          "valid_from": "2019-09-15T10:02:48Z",
+          "valid_to": null,
+          "pageid": "6736273",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2628.HK": {
+      "name": "China Life",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Life_Insurance_Company",
+          "lang": "en",
+          "valid_from": "2005-10-01T03:21:48Z",
+          "valid_to": null,
+          "pageid": "2805385",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "中国人寿保险",
+          "lang": "zh",
+          "valid_from": "2005-12-27T04:06:31Z",
+          "valid_to": null,
+          "pageid": "203392",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2688.HK": {
+      "name": "ENN Energy",
+      "wikipedia_title_intervals": [
+        {
+          "title": "新奧能源",
+          "lang": "zh",
+          "valid_from": "2011-02-13T09:55:43Z",
+          "valid_to": null,
+          "pageid": "1520723",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "ENN_Energy_Holdings_Limited",
+          "lang": "en",
+          "valid_from": "2018-06-01T11:59:25Z",
+          "valid_to": "2018-06-08T17:56:45Z",
+          "pageid": "57565010",
+          "evidence": "move_log:91159103",
+          "research_available": true
+        },
+        {
+          "title": "ENN_Energy",
+          "lang": "en",
+          "valid_from": "2018-06-08T17:56:45Z",
+          "valid_to": null,
+          "pageid": "57565010",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "2899.HK": {
+      "name": "Zijin Mining",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Zijin_Mining",
+          "lang": "en",
+          "valid_from": "2008-02-08T13:24:10Z",
+          "valid_to": null,
+          "pageid": "15654280",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "紫金礦業",
+          "lang": "zh",
+          "valid_from": "2007-10-25T02:51:08Z",
+          "valid_to": null,
+          "pageid": "648681",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "3690.HK": {
+      "name": "Meituan",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Meituan.com",
+          "lang": "en",
+          "valid_from": "2015-02-16T20:37:25Z",
+          "valid_to": "2018-04-06T15:25:13Z",
+          "pageid": "45420713",
+          "evidence": "move_log:90110123",
+          "research_available": true
+        },
+        {
+          "title": "Meituan-Dianping",
+          "lang": "en",
+          "valid_from": "2018-04-06T15:25:13Z",
+          "valid_to": "2020-12-10T15:23:25Z",
+          "pageid": "45420713",
+          "evidence": "move_log:113453501",
+          "research_available": true
+        },
+        {
+          "title": "Meituan",
+          "lang": "en",
+          "valid_from": "2020-12-10T15:23:25Z",
+          "valid_to": null,
+          "pageid": "45420713",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "美团网",
+          "lang": "zh",
+          "valid_from": "2010-04-21T05:28:43Z",
+          "valid_to": "2020-01-23T12:18:24Z",
+          "pageid": "1259027",
+          "evidence": "move_log:9352650",
+          "research_available": true
+        },
+        {
+          "title": "美团点評",
+          "lang": "zh",
+          "valid_from": "2020-01-23T12:18:24Z",
+          "valid_to": "2020-01-23T12:31:56Z",
+          "pageid": "1259027",
+          "evidence": "move_log:9352744",
+          "research_available": true
+        },
+        {
+          "title": "美團點評",
+          "lang": "zh",
+          "valid_from": "2020-01-23T12:31:56Z",
+          "valid_to": "2020-10-12T08:35:41Z",
+          "pageid": "1259027",
+          "evidence": "move_log:10009069",
+          "research_available": true
+        },
+        {
+          "title": "美团",
+          "lang": "zh",
+          "valid_from": "2020-10-12T08:35:41Z",
+          "valid_to": null,
+          "pageid": "1259027",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "3692.HK": {
+      "name": "Hansoh Pharma",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Hansoh_Pharmaceutical",
+          "lang": "en",
+          "valid_from": "2023-01-06T05:31:15Z",
+          "valid_to": null,
+          "pageid": "72677676",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "翰森製藥",
+          "lang": "zh",
+          "valid_from": "2020-03-29T04:35:34Z",
+          "valid_to": null,
+          "pageid": "6986981",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "3750.HK": {
+      "name": "CATL",
+      "wikipedia_title_intervals": [
+        {
+          "title": "宁德时代新能源科技股份有限公司",
+          "lang": "zh",
+          "valid_from": "2018-06-29T05:16:36Z",
+          "valid_to": "2021-07-09T16:07:12Z",
+          "pageid": "6202274",
+          "evidence": "move_log:10613628",
+          "research_available": true
+        },
+        {
+          "title": "宁德时代",
+          "lang": "zh",
+          "valid_from": "2021-07-09T16:07:12Z",
+          "valid_to": null,
+          "pageid": "6202274",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Contemporary_Amperex_Technology_Co._Limited_(CATL)",
+          "lang": "en",
+          "valid_from": "2017-03-29T09:33:17Z",
+          "valid_to": "2017-12-02T02:51:38Z",
+          "pageid": "53629545",
+          "evidence": "move_log:87370874",
+          "research_available": true
+        },
+        {
+          "title": "Contemporary_Amperex_Technology",
+          "lang": "en",
+          "valid_from": "2017-12-02T02:51:38Z",
+          "valid_to": "2022-03-25T02:54:53Z",
+          "pageid": "53629545",
+          "evidence": "move_log:129324308",
+          "research_available": true
+        },
+        {
+          "title": "CATL",
+          "lang": "en",
+          "valid_from": "2022-03-25T02:54:53Z",
+          "valid_to": null,
+          "pageid": "53629545",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "3968.HK": {
+      "name": "China Merchants Bank",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Merchants_Bank",
+          "lang": "en",
+          "valid_from": "2007-07-15T15:31:10Z",
+          "valid_to": null,
+          "pageid": "12263191",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "招商银行",
+          "lang": "zh",
+          "valid_from": "2005-06-05T05:21:53Z",
+          "valid_to": null,
+          "pageid": "114295",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "3988.HK": {
+      "name": "Bank of China",
+      "wikipedia_title_intervals": [
+        {
+          "title": "中国银行",
+          "lang": "zh",
+          "valid_from": "2004-04-12T07:29:05Z",
+          "valid_to": null,
+          "pageid": "21864",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Bank_of_China",
+          "lang": "en",
+          "valid_from": "2003-08-24T17:50:59Z",
+          "valid_to": null,
+          "pageid": "303789",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "3993.HK": {
+      "name": "CMOC",
+      "wikipedia_title_intervals": [
+        {
+          "title": "China_Molybdenum",
+          "lang": "en",
+          "valid_from": "2007-08-13T16:46:07Z",
+          "valid_to": "2022-09-21T12:52:58Z",
+          "pageid": "12752789",
+          "evidence": "move_log:136827432",
+          "research_available": true
+        },
+        {
+          "title": "CMOC_Group_Limited",
+          "lang": "en",
+          "valid_from": "2022-09-21T12:52:58Z",
+          "valid_to": null,
+          "pageid": "12752789",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "洛陽欒川鉬業",
+          "lang": "zh",
+          "valid_from": "2007-08-13T15:34:41Z",
+          "valid_to": "2021-08-01T14:55:29Z",
+          "pageid": "604375",
+          "evidence": "move_log:10672564",
+          "research_available": true
+        },
+        {
+          "title": "洛陽鉬業",
+          "lang": "zh",
+          "valid_from": "2021-08-01T14:55:29Z",
+          "valid_to": null,
+          "pageid": "604375",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "6160.HK": {
+      "name": "BEONE MEDICINES",
+      "wikipedia_title_intervals": [
+        {
+          "title": "BeiGene",
+          "lang": "en",
+          "valid_from": "2020-08-04T20:14:12Z",
+          "valid_to": "2023-06-25T07:46:17Z",
+          "pageid": "64754591",
+          "evidence": "move_log:148595340",
+          "research_available": true
+        },
+        {
+          "title": "Beigene",
+          "lang": "en",
+          "valid_from": "2023-06-25T07:46:17Z",
+          "valid_to": "2023-08-05T04:15:14Z",
+          "pageid": "64754591",
+          "evidence": "move_log:150387386",
+          "research_available": true
+        },
+        {
+          "title": "BeiGene",
+          "lang": "en",
+          "valid_from": "2023-08-05T04:15:14Z",
+          "valid_to": "2025-05-09T12:32:28Z",
+          "pageid": "64754591",
+          "evidence": "move_log:169663798",
+          "research_available": true
+        },
+        {
+          "title": "BeOne",
+          "lang": "en",
+          "valid_from": "2025-05-09T12:32:28Z",
+          "valid_to": "2025-05-26T21:59:51Z",
+          "pageid": "64754591",
+          "evidence": "move_log:170027433",
+          "research_available": true
+        },
+        {
+          "title": "BeOne_Medicines",
+          "lang": "en",
+          "valid_from": "2025-05-26T21:59:51Z",
+          "valid_to": null,
+          "pageid": "64754591",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "百济神州",
+          "lang": "zh",
+          "valid_from": "2019-07-19T08:52:13Z",
+          "valid_to": null,
+          "pageid": "6660603",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "6181.HK": {
+      "name": "LAOPU GOLD",
+      "wikipedia_title_intervals": [
+        {
+          "title": "老鋪黃金",
+          "lang": "zh",
+          "valid_from": "2026-05-17T04:10:14Z",
+          "valid_to": null,
+          "pageid": "9503003",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "6618.HK": {
+      "name": "JD Health",
+      "wikipedia_title_intervals": [
+        {
+          "title": "JD_Health",
+          "lang": "en",
+          "valid_from": "2024-06-01T13:07:03Z",
+          "valid_to": null,
+          "pageid": "77059349",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "京東健康",
+          "lang": "zh",
+          "valid_from": "2020-12-15T09:00:53Z",
+          "valid_to": null,
+          "pageid": "7303919",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "6690.HK": {
+      "name": "Haier Smart Home",
+      "wikipedia_title_intervals": [
+        {
+          "title": "海尔",
+          "lang": "zh",
+          "valid_from": "2004-10-01T15:26:51Z",
+          "valid_to": "2017-07-07T07:40:49Z",
+          "pageid": "45702",
+          "evidence": "move_log:7353714",
+          "research_available": true
+        },
+        {
+          "title": "海爾集團",
+          "lang": "zh",
+          "valid_from": "2017-07-07T07:40:49Z",
+          "valid_to": null,
+          "pageid": "45702",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Haier",
+          "lang": "en",
+          "valid_from": "2004-03-20T01:37:43Z",
+          "valid_to": null,
+          "pageid": "538452",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "6862.HK": {
+      "name": "Haidilao",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Hai_Di_Lao_hot_pot",
+          "lang": "en",
+          "valid_from": "2011-10-21T10:05:51Z",
+          "valid_to": "2017-08-25T12:30:18Z",
+          "pageid": "33483876",
+          "evidence": "move_log:85192580",
+          "research_available": true
+        },
+        {
+          "title": "Haidilao_Hot_Pot",
+          "lang": "en",
+          "valid_from": "2017-08-25T12:30:18Z",
+          "valid_to": "2018-09-12T17:08:22Z",
+          "pageid": "33483876",
+          "evidence": "move_log:93202474",
+          "research_available": true
+        },
+        {
+          "title": "Haidilao_International_Holding_Ltd",
+          "lang": "en",
+          "valid_from": "2018-09-12T17:08:22Z",
+          "valid_to": "2018-10-02T00:10:43Z",
+          "pageid": "33483876",
+          "evidence": "move_log:93641543",
+          "research_available": true
+        },
+        {
+          "title": "Haidilao",
+          "lang": "en",
+          "valid_from": "2018-10-02T00:10:43Z",
+          "valid_to": null,
+          "pageid": "33483876",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "海底捞",
+          "lang": "zh",
+          "valid_from": "2016-11-24T21:48:04Z",
+          "valid_to": null,
+          "pageid": "5518092",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "9618.HK": {
+      "name": "JD.com",
+      "wikipedia_title_intervals": [
+        {
+          "title": "京東商城",
+          "lang": "zh",
+          "valid_from": "2011-10-15T03:48:55Z",
+          "valid_to": "2017-10-14T09:41:39Z",
+          "pageid": "1697105",
+          "evidence": "move_log:7597160",
+          "research_available": true
+        },
+        {
+          "title": "京東_(網站)",
+          "lang": "zh",
+          "valid_from": "2017-10-14T09:41:39Z",
+          "valid_to": "2022-05-07T15:06:07Z",
+          "pageid": "1697105",
+          "evidence": "move_log:11467099",
+          "research_available": true
+        },
+        {
+          "title": "京东集团",
+          "lang": "zh",
+          "valid_from": "2022-05-07T15:06:07Z",
+          "valid_to": null,
+          "pageid": "1697105",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "JD.com",
+          "lang": "en",
+          "valid_from": "2012-08-03T10:09:44Z",
+          "valid_to": null,
+          "pageid": "36622455",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "9633.HK": {
+      "name": "Nongfu Spring",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Nongfu_Spring",
+          "lang": "en",
+          "valid_from": "2014-04-10T06:38:36Z",
+          "valid_to": null,
+          "pageid": "42453534",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "农夫山泉",
+          "lang": "zh",
+          "valid_from": "2008-04-02T05:31:02Z",
+          "valid_to": null,
+          "pageid": "732527",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "9888.HK": {
+      "name": "Baidu",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Baidu",
+          "lang": "en",
+          "valid_from": "2005-03-31T21:54:04Z",
+          "valid_to": null,
+          "pageid": "1676048",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "百度",
+          "lang": "zh",
+          "valid_from": "2003-12-09T09:49:28Z",
+          "valid_to": null,
+          "pageid": "9240",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "9901.HK": {
+      "name": "New Oriental",
+      "wikipedia_title_intervals": [
+        {
+          "title": "New_Oriental",
+          "lang": "en",
+          "valid_from": "2006-09-07T13:44:12Z",
+          "valid_to": null,
+          "pageid": "6883568",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "新东方学校",
+          "lang": "zh",
+          "valid_from": "2005-05-04T17:01:18Z",
+          "valid_to": "2026-02-07T01:28:19Z",
+          "pageid": "102553",
+          "evidence": "move_log:16057412",
+          "research_available": true
+        },
+        {
+          "title": "新东方教育科技集团",
+          "lang": "zh",
+          "valid_from": "2026-02-07T01:28:19Z",
+          "valid_to": null,
+          "pageid": "102553",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "9961.HK": {
+      "name": "Trip.com",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Ctrip",
+          "lang": "en",
+          "valid_from": "2010-12-06T08:52:51Z",
+          "valid_to": "2019-11-07T16:57:22Z",
+          "pageid": "29920769",
+          "evidence": "move_log:103344745",
+          "research_available": true
+        },
+        {
+          "title": "Trip.com_Group",
+          "lang": "en",
+          "valid_from": "2019-11-07T16:57:22Z",
+          "valid_to": null,
+          "pageid": "29920769",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "携程旅行网",
+          "lang": "zh",
+          "valid_from": "2011-08-23T09:47:26Z",
+          "valid_to": "2023-06-20T02:36:57Z",
+          "pageid": "1643760",
+          "evidence": "move_log:13266114",
+          "research_available": true
+        },
+        {
+          "title": "携程集团",
+          "lang": "zh",
+          "valid_from": "2023-06-20T02:36:57Z",
+          "valid_to": null,
+          "pageid": "1643760",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "9988.HK": {
+      "name": "Alibaba",
+      "wikipedia_title_intervals": [
+        {
+          "title": "Alibaba_Group",
+          "lang": "en",
+          "valid_from": "2005-08-11T15:51:54Z",
+          "valid_to": null,
+          "pageid": "2430273",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "阿里巴巴集团",
+          "lang": "zh",
+          "valid_from": "2005-08-13T06:14:27Z",
+          "valid_to": null,
+          "pageid": "144794",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "9992.HK": {
+      "name": "POP MART",
+      "wikipedia_title_intervals": [
+        {
+          "title": "泡泡玛特",
+          "lang": "zh",
+          "valid_from": "2020-06-06T15:27:41Z",
+          "valid_to": null,
+          "pageid": "7072984",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "Pop_Mart",
+          "lang": "en",
+          "valid_from": "2006-05-15T18:19:39Z",
+          "valid_to": "2025-11-13T03:44:10Z",
+          "pageid": "5155793",
+          "evidence": "move_log:174107196",
+          "research_available": true
+        },
+        {
+          "title": "Nigerian_Food_Restaurant",
+          "lang": "en",
+          "valid_from": "2025-11-13T03:44:10Z",
+          "valid_to": "2025-11-13T03:48:24Z",
+          "pageid": "5155793",
+          "evidence": "move_log:174107279",
+          "research_available": true
+        },
+        {
+          "title": "Pop_Mart",
+          "lang": "en",
+          "valid_from": "2025-11-13T03:48:24Z",
+          "valid_to": null,
+          "pageid": "5155793",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    },
+    "9999.HK": {
+      "name": "NetEase",
+      "wikipedia_title_intervals": [
+        {
+          "title": "网易",
+          "lang": "zh",
+          "valid_from": "2004-08-27T05:02:38Z",
+          "valid_to": null,
+          "pageid": "41383",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        },
+        {
+          "title": "NetEase",
+          "lang": "en",
+          "valid_from": "2005-09-15T07:09:06Z",
+          "valid_to": null,
+          "pageid": "2681810",
+          "evidence": "creation_revision_and_observed_move_chain",
+          "research_available": true
+        }
+      ],
+      "reddit": {
+        "product": [],
+        "stock": []
+      }
+    }
+  },
+  "handoff_sent": false,
+  "limits": [
+    "Full roster is current snapshot; not historical index membership",
+    "Unknown valid_from is unavailable for research, not inferred from retrieval date",
+    "Corporate-group articles may cover more than one entity; preserve source scope"
+  ]
+}

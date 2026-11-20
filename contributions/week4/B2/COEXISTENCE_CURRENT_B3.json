@@ -1,0 +1,29 @@
+{
+  "b3_commit": "bec5fc6c5928b8b587585b47595b6fe4ac4a9127",
+  "b3_patch_sha256": "b8c43e481843b993a05a30249dd7562c8c502a63f4980ef3b666f70a1830aee1",
+  "combined_checkout": "/private/tmp/hk-week4-b2-b3-check",
+  "result": "181 passed",
+  "socket_calls": 0,
+  "dns_calls": 0,
+  "b3_source_hashes_verified": {
+    "agent/backtest/HK_MARKET_LAYER.md": "87fd8d632f309d1818f89ce0ddcf9e6a622f70d63eb63f7ee5a9c6d6156dd3e4",
+    "agent/backtest/data/hk_board_lots_20261112.csv": "06277c9c2d1ed30d4c03790f6382c1bad15b3fb29b6501bee9b01efe318566fc",
+    "agent/backtest/engines/composite.py": "6a3de513874b7a702b52f2edef84dcc5945563f3e2900ae9089bf903b35e74fe",
+    "agent/backtest/engines/global_equity.py": "242d355e194fc4504e0f60d30360d26f797465bbcfb0b15ad2cbb051ad4eaf88",
+    "agent/backtest/market_layer.py": "a6ae08811f0ae2036a68071dbd02376adc2ca6c33c69014115628df15a32c3f2",
+    "agent/src/data_gateway/calendars.py": "360b4e23e461386aef3969194931342a1835b0aa2645f819d820adbbd5917f6b",
+    "agent/src/data_gateway/hk_sessions.py": "9b157127a415a3ac7ee816b0f3ed902edc6e30cfaae0e5b478b76eb7d728d9c4",
+    "agent/tests/test_hk_market_layer.py": "e75211e7cd970c0cc58d8149aa58617aa5f7fa537ae5e0f400486f46f5d3b2e2"
+  },
+  "readme_exception": "Both B2 and B3 usage append sections retained; README differs intentionally.",
+  "changed_b3_files_for_refresh": [
+    "agent/backtest/HK_MARKET_LAYER.md",
+    "agent/src/data_gateway/hk_sessions.py",
+    "agent/tests/test_hk_market_layer.py"
+  ],
+  "warning": "Selected focused suite overlaps other suites; not full upstream CI. Existing Python3.14/Pydantic-v1 warning.",
+  "command": "PYTHONPATH=/private/tmp/hk-week4-review /Users/jackgui/Desktop/hk/indicatorlab-clean/.venv/bin/python -B -m pytest -p b2_offline_guard -q tests/test_hk_market_layer.py tests/test_alpha_bench_hsi.py tests/test_hsi_benchmark_validation.py tests/test_alpha_bench_nifty100.py tests/test_nifty100_api_cli.py tests/test_composite_market_rules.py -p no:cacheprovider",
+  "b2_source_hashes_verified_except_readme": 26,
+  "b3_readme_usage_append_preserved": true,
+  "original_b2_package_artifacts_unchanged": 11
+}

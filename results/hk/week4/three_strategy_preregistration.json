@@ -1,0 +1,254 @@
+{
+  "frozen_at_utc": "2026-11-16T05:05:23.008336+00:00",
+  "authorization": "User requested local Week 4 tasks including mandated extended evaluation; AWS and publishing excluded",
+  "prior_test_exposure": "Earlier test interval 2022-01-01 through 2025-09-30 has already been observed. This is a mandated extension, not a new untouched holdout. No strategy formulas or thresholds were selected from extended-test results.",
+  "shared_sheet_preregistration": false,
+  "specification": {
+    "version": "week4-three-unchanged-v1",
+    "price_start": "2015-01-01",
+    "attention_start": "2015-07-01",
+    "end": "2026-10-31",
+    "train": [
+      "2016-06-01",
+      "2021-12-31"
+    ],
+    "test": [
+      "2022-01-01",
+      "2026-10-31"
+    ],
+    "markets": {
+      "HK": {
+        "symbols": [
+          "0700.HK",
+          "0005.HK",
+          "9988.HK",
+          "3690.HK",
+          "1810.HK"
+        ],
+        "benchmark": "^HSI",
+        "initial_cash": 7800000
+      },
+      "US": {
+        "symbols": [
+          "AAPL",
+          "MSFT",
+          "NVDA",
+          "TSLA",
+          "AMZN",
+          "META",
+          "GOOGL",
+          "AMD",
+          "NFLX",
+          "JPM"
+        ],
+        "benchmark": "SPY",
+        "initial_cash": 1000000
+      }
+    },
+    "sentiment_model": "ProsusAI/finbert",
+    "sentiment_definition": "FinBERT net positive-minus-negative probabilities on English net text added between successive completed Monday-to-Sunday UTC snapshots, first 512 tokens; a four-week mean over observed additions only; no additions stay missing",
+    "attention_definition": "Daily user pageviews of the article title effective on that day, aggregated to Monday-labelled UTC weeks. Baseline is the past config.spike.baseline_weeks median with +1 offset. Edits count dated revision IDs. Price features use the completed week's last close; attention through Sunday 23:59 UTC enters only the following week's first tradable open.",
+    "holding_rule": "First exit: close-based loss threshold or next weekly rebalance or five market sessions. A close trigger executes at the next tradable open. No intrabar stop-fill assumption. No new position if its planned exit is outside the split.",
+    "sizing": "Inverse trailing 63-session volatility among selected stocks, capped at 10 percent per name at entry; unused capital stays cash. No leverage, no shorts. At most ten names. All positions close by the next weekly rebalance, so attention gates scale the entire new week's book.",
+    "costs": "US Vibe GlobalEquityEngine: 10 bps execution slippage per side and zero extra commission. HK: Vibe HK slippage/commission/levy/settlement, date-dependent 0.1/0.13 percent duty plus whole-HKD ceiling. Current official lot snapshot is a disclosed historical-lot assumption. Cash return and risk-free rate are zero.",
+    "train_only_selection": "Try these variants in listed order and stop at the first with at least 30 completed train entries. Select using entry count only, never Sharpe or test data. If none qualifies, retain the last variant and DROP for insufficient train entries. Log every attempted variant. Freeze the selected variant before opening test results.",
+    "random_runs": 200,
+    "seed": 20261111,
+    "strategies": [
+      {
+        "id": "liquidity_repair",
+        "description": "Buy contrarian weekly sell-offs when trading activity and independently observed Wikipedia information support a temporary liquidity-shock interpretation.",
+        "indicators": [
+          "index_volatility_regime",
+          "negative_volatility_scaled_return",
+          "turnover_ratio",
+          "wiki_views_ratio",
+          "wiki_added_text_sentiment"
+        ],
+        "stop": 0.05,
+        "variants": [
+          {
+            "shock": 2.0,
+            "volume": 1.5,
+            "views": 1.2,
+            "sentiment": 0.1
+          },
+          {
+            "shock": 1.0,
+            "volume": 1.0,
+            "views": 1.0,
+            "sentiment": 0.0
+          },
+          {
+            "shock": 0.5,
+            "volume": 0.8,
+            "views": 0.8,
+            "sentiment": -0.1
+          },
+          {
+            "shock": 0.0,
+            "volume": 0.5,
+            "views": 0.5,
+            "sentiment": -0.1
+          }
+        ]
+      },
+      {
+        "id": "defensive_attention_gate",
+        "description": "Hold liquid low-volatility stocks with nonnegative observed information sentiment, and halve the entire book after unusually high market-wide Wikipedia attention.",
+        "indicators": [
+          "index_volatility_target",
+          "stock_volatility_rank",
+          "turnover_rank",
+          "wiki_added_text_sentiment",
+          "market_attention_risk_gate"
+        ],
+        "stop": 0.08,
+        "variants": [
+          {
+            "liquidity_quantile": 0.5,
+            "sentiment": 0.0
+          },
+          {
+            "liquidity_quantile": 0.25,
+            "sentiment": -0.05
+          },
+          {
+            "liquidity_quantile": 0.0,
+            "sentiment": -0.1
+          }
+        ]
+      },
+      {
+        "id": "residual_repair",
+        "description": "Buy stock-specific negative residual-return dislocations when volume, edit activity and text sentiment support a reversal rather than negative information.",
+        "indicators": [
+          "index_downside_regime",
+          "residual_return_dislocation",
+          "volume_ratio",
+          "wiki_edit_ratio",
+          "wiki_added_text_sentiment"
+        ],
+        "stop": 0.06,
+        "variants": [
+          {
+            "shock": 2.0,
+            "volume": 1.5,
+            "edits": 1.5,
+            "sentiment": 0.1
+          },
+          {
+            "shock": 1.0,
+            "volume": 1.0,
+            "edits": 1.0,
+            "sentiment": 0.0
+          },
+          {
+            "shock": 0.5,
+            "volume": 0.8,
+            "edits": 0.8,
+            "sentiment": -0.1
+          },
+          {
+            "shock": 0.0,
+            "volume": 0.5,
+            "edits": 0.5,
+            "sentiment": -0.1
+          }
+        ]
+      }
+    ],
+    "prior_recorded_trials": 268,
+    "previous_test_end": "2025-09-30",
+    "selection_policy": "Retain first three previously registered hypotheses in original list order, unchanged formulas and threshold variants; train entry-count selection only.",
+    "fx_max_age_days": 7,
+    "candidate_selection": "Complete both markets TRAIN base/random/ablations first. Unchanged training indicator => fixed-formula case ineligible; do not tune or drop after test. Prefer eligible in both markets; choose highest mean train Sharpe, lexical tie break. If none eligible, label best train candidate INELIGIBLE."
+  },
+  "source_hashes": {
+    "src/hk/calendar.py": "f49763d930e0a8b12cda0900001404ccae1ab97295a1df63491bab0ff2f384b1",
+    "src/hk/ic_diagnostic.py": "35aefdd504bbd7d6a524f275931c7922f95fcda237dd52c294cb1a7840077a3c",
+    "config/hk_week4_research.json": "0dd2e8e23f6da3fe162e7f867971d4c80dfca425b232ba95badf804f837e493a",
+    "config/hk_week3_research.json": "f13ddb14f463bbd3f13bf49ace973ba1dcdd591e80a3ac4c90ad1584ccdbfeb9",
+    "results/hk/week3/FIVE_STRATEGY_REPORT.md": "823bd98e77c70031c6363b08f424ce63a8fda796c24869ad73e9740936ab9fce",
+    "results/hk/week4/STRATEGY_RULES_BEFORE_TEST.md": "50d7545ef0eb1bd8594586097937307b2bd93f7a1be3b1ac7346cb6d256d600f",
+    "config.yaml": "72d57a6c07fd63b57a0153f55ca4510a28a7be1ad3e24de38183ddd254b7cdb0",
+    "src/config.py": "fe3452fcafaea2bc83f6efd76089a13978e9ff09dcda3617a8ee7a366f808980",
+    "src/sentiment/__init__.py": "b3cc717f22bf6d449e4b3ea69298d04723aa68765fa8e422a9ed68111aafbbd3",
+    "src/sentiment/finbert_scorer.py": "8663385349511360891a2a4524aa7ca98a4cce61e197284c5b532bc86b5d373b",
+    "src/storage.py": "1c2eb7895bcab4d13672457d85b6cf999170c930f7b83c00e4a208161cc79aaf",
+    "src/hk/week4/__init__.py": "ed840500c4a795207a14cb3d197112b9076df7cf95da5ebd71cc499b63a2afe5",
+    "src/hk/week4/engine_adapter.py": "3c7e870bce16ed393eaf8de2ff343815b989d22dbd1657ee5b00ce8f522a6e3e",
+    "src/hk/week4/features.py": "92f3abddb75ef081ff79adaab2ac0ec35df1ba4a20e20f5a5ed8baabd549c621",
+    "src/hk/week4/market_calendar.py": "80ee8079cc7ac99241aae9bafcc45c0c2fb332565053c238c5bbbea4fc4fac90",
+    "src/hk/week4/native_candidate.py": "783d29bc243939e9b856d57ec446622a334cecf1b090f96dee204aef6b6c4115",
+    "src/hk/week4/prepare.py": "d201f29cbd581270110b2d3c984e29e8348a3ea485662e20b39eb6bdb3c34d74",
+    "src/hk/week4/public_data.py": "77779ffdbcefee2323c761471524c727600bc140e47d3d84e6348263e4b93ea0",
+    "src/hk/week4/run.py": "1faa0032e1db8b8de02091abaffdc9637a13d17f330c3459f1215bcff2704120",
+    "src/hk/week4/score_text.py": "6aeda19fa0ec1cc3335dbb3624df06ae2980c274fb0a51d96029936906367bfd",
+    "src/hk/week4/statistics_worker.py": "c09937501974bfb734c3ba3d863ab9161ec3d8c94edfc27cfaaf99b103f00d24",
+    "src/hk/week4/vibe_worker.py": "778b050ab541a8e30e7e8810fce6d9b510d9c57a97e0024a3a607dfe63dd478b"
+  },
+  "policy": "Count-only train threshold selection; finish both markets train nulls/ablations, freeze train-only nominee; then one unchanged extended test; no post-test tuning",
+  "upstream_commit": "1dbe5d515519565a47f0127b4e6d6fc4fbb5e4d2",
+  "upstream_source_hashes": {
+    "agent/backtest/engines/base.py": "9818b3f8a287c7c1e7d9c4281540139237f0fb017339b673cc576be6cfc23149",
+    "agent/backtest/engines/global_equity.py": "64f9dad7f3127c8af435884c61fb55e9fdac56a3b2552292f33dc1b28a1dc724",
+    "agent/backtest/runner.py": "03516a76e4dd0f570eb6d59c4ac5d6e6a250400bef0829a523f75fca8ba83d7f",
+    "agent/src/quantlib/multipletesting.py": "49967ce6f9666e9bfe5c9485677b6cdc43165bffa4fc24bcd7121cf61ebe5a24"
+  },
+  "input_hashes": {
+    "data/hk_week4/prices/0005.HK.parquet": "0c221aef551c9e5967f618703f7ac0c303d557ef92dad9994271e1eacd0b9de4",
+    "data/hk_week4/prices/0700.HK.parquet": "814ead56481707b7f67301e0114831e1ee8d83977c52addf1a90d3549b8a6224",
+    "data/hk_week4/prices/1810.HK.parquet": "80b6ed2a3dd7e8c46a37bb6b7280c29b05037775f240d8ef3e4e287f6419d831",
+    "data/hk_week4/prices/3690.HK.parquet": "8bd0272288df39432dba718771efeb4407558d74cdd6576dbfb3bc141043b070",
+    "data/hk_week4/prices/9988.HK.parquet": "c0278fec05780f86d30bc2d4a7944056483b83d9f42d6bc223a5b0663df5257c",
+    "data/hk_week4/prices/AAPL.parquet": "133e93b146db979a2beb99cea47a00ca23b2234ecf85afa82244092483aff716",
+    "data/hk_week4/prices/AMD.parquet": "39e8f2ef6905c1fb30f22a4c12ad14b711a40508e383657fc3ca1b2ef4ce11da",
+    "data/hk_week4/prices/AMZN.parquet": "a85006475037310da992958c4418115dd483b5c65db28b8958b9d94da23b2bfd",
+    "data/hk_week4/prices/GOOGL.parquet": "6ec51f83dc171af220a0dfd07d7aafcca5380e419f960c06d3eace88ef56d758",
+    "data/hk_week4/prices/HKD=X.parquet": "5f4f7aaf5192ce6f41431b3e2461ae8aa40d84cd3859296937793dd8783ce612",
+    "data/hk_week4/prices/INDEX_HSI.parquet": "d3ace4aaec549420c9213ff49cac27a2b807f2aa2934d6165518d70dca1f2e9d",
+    "data/hk_week4/prices/JPM.parquet": "06f2384c72827377e0b66fc83bc85577e2e9177d1d0143466baaccd9dada234e",
+    "data/hk_week4/prices/META.parquet": "e9fa3d9d973a35bb6b794fd1d50cb55a5507cd5eedc27b73e683358bba3ec338",
+    "data/hk_week4/prices/MSFT.parquet": "7e8eaedb146c932be71df4800320e16a71b9ce48512d460e76f63819b3e7f911",
+    "data/hk_week4/prices/NFLX.parquet": "382c7913fdbb206ed1d1480e5a1b253f41802a2824180ad99eccd3adf443aae9",
+    "data/hk_week4/prices/NVDA.parquet": "c2de5897940116a7de0b33f99de189dada3c314a9cf3282ca1863b2885feb71e",
+    "data/hk_week4/prices/SPY.parquet": "4af70108748c45771975e0b7b299cb019a820ce425b2d0f362ffdc43d7b5da44",
+    "data/hk_week4/prices/TSLA.parquet": "400ef1432de16a6ad6d342fd5b3d0a3f775207cfbb54a4bcb64de9a8d5d5dc4a",
+    "data/hk_week4/wiki_sentiment.parquet": "0ddebe690d0b413f0c2b30be1570c0baa338e9d1f3bf4eecca6141eee77b2221",
+    "data/hk_week4/wiki_sentiment_method.json": "9306f1aa42a40f9528161ff58cbd81c28c8527e04f39f56f257b61733f8f5e40",
+    "data/hk_week4/attention/0005.HK.parquet": "961d67bc6ff335a050a9700f29bf27fa2ee4832c65236f6819432e0a4d8248b9",
+    "data/hk_week4/attention/0700.HK.parquet": "c70fe43cd50e17159b4514205be8e34781afaa98020f678b15fa79a6f7bad5e0",
+    "data/hk_week4/attention/1810.HK.parquet": "92284f57ef7ebc13d9c00e57d7b98d2a3208078183a5fe82ba0b1afd378e32a6",
+    "data/hk_week4/attention/3690.HK.parquet": "fe183560f6a7e45f318ede7c8db8f13dc94f9f84c7bcb4341582ad6c0fe917f2",
+    "data/hk_week4/attention/9988.HK.parquet": "05f1251c46ef6c30a9fe7750fd06d95b43f4c7e7800ebdc16aa579e9c8e2c9a2",
+    "data/hk_week4/attention/AAPL.parquet": "82728c1633feadf593087fe3c22f6ed5cb0b452736c0b829a29933dbc0374eeb",
+    "data/hk_week4/attention/AMD.parquet": "f4e51013711e91ed38d5c30342de1b05b0e57e5690a6051709a082f60d02770b",
+    "data/hk_week4/attention/AMZN.parquet": "7346bbe32a5ffdcd8a65ad458695095621090f496e74eba649f21120d7bd29f0",
+    "data/hk_week4/attention/GOOGL.parquet": "868f012e3ae0281db5129a10cdf0a60e8b2b271c2e7ce1fb297d8db54c099bc0",
+    "data/hk_week4/attention/JPM.parquet": "f6b7a309cd20224562d62a38de315a456d0597ee4070822d0d7adf429689c490",
+    "data/hk_week4/attention/META.parquet": "a715fc4cb350655742dd594fbfd7c811d097751c3c70749bdf3030a566e1fa43",
+    "data/hk_week4/attention/MSFT.parquet": "f89fbea0992ceff7000401e1af6b45fe28742cc59f922d3eaaff636329ce6878",
+    "data/hk_week4/attention/NFLX.parquet": "33e90ad49a0d0c61871de3d3601c6dd2ff897772aae6b659271c9bca90295e48",
+    "data/hk_week4/attention/NVDA.parquet": "f5419157560c493480d007a007698b03e17c05d7bd50c3323f88a4ceb88767c0",
+    "data/hk_week4/attention/TSLA.parquet": "387e620b1793571123f33fce81490bca8efbfb7e5a51a127a12e99bca25696ab",
+    "data/hk_week4/wikipedia/0005.HK.json": "92305cb28634204ba52be5d60d38b666d6e1973420fc5550fea2e1e26d8d2844",
+    "data/hk_week4/wikipedia/0700.HK.json": "5185d54c07468e2b77efa08fdaadb83beae0997211704900b41dba0d5118973f",
+    "data/hk_week4/wikipedia/1810.HK.json": "6e6a2a7de0101876c43752cb06ee5d43fbfe6857067c9008fd193c4573281015",
+    "data/hk_week4/wikipedia/3690.HK.json": "b72bafc0e95b22878250b1dd9239180814dc802eaa6e7c49554faab4705d7e8c",
+    "data/hk_week4/wikipedia/9988.HK.json": "140e3b8ffa1ca34c12ebda23df48a825e94d9afae3de96ee546dbe65e1505895",
+    "data/hk_week4/wikipedia/AAPL.json": "7b28e4cdbb082a9a385a4c928dd0cec94f33baaf4085272d5f70044e27946c23",
+    "data/hk_week4/wikipedia/AMD.json": "0b88fe73021b16b73b87b22fa62c7ca0ce0f53006702248701b260e65610573d",
+    "data/hk_week4/wikipedia/AMZN.json": "9e26b0cfb16616c724e4a86813c937ecee5eac4a6f5a37675bc343767bc86add",
+    "data/hk_week4/wikipedia/GOOGL.json": "2a336c4ff39d57f4b8af19e01cc8c9a0569ae1ef18d5be01aa9dc5a71972f625",
+    "data/hk_week4/wikipedia/JPM.json": "ff7749cb53d7e27a06355aac2ce0918c9e65bd45552939d094adedc3c94a2277",
+    "data/hk_week4/wikipedia/META.json": "30403a116da03d7ff3ac26c666c25fdcacd47650deddd9754794e66450b37654",
+    "data/hk_week4/wikipedia/MSFT.json": "1567e9fdd70780f4bb924e7fb5b483221b7726fc34ee16d5a0e268bb69e5dcb5",
+    "data/hk_week4/wikipedia/NFLX.json": "1e27f624d2cc0dc6f2daebb75cd9055839bd40af7dcababaad39834ccac938cd",
+    "data/hk_week4/wikipedia/NVDA.json": "9efa13b2094556359a8110b0789dfb8522507984ad2e9f1f16fb992e5be3ede9",
+    "data/hk_week4/wikipedia/TSLA.json": "feb0e4695e6305cca0d3ed254e4d909eda0aed82d2beff219e52ae89fe50c180",
+    "config/hk_wiki_title_intervals.csv": "ee59bcb0184b363543818c1d7736dd52580a7eb5d18213b3d8b3a18702ffcc95",
+    "config/us_wiki_title_intervals.csv": "a2d780af8a861631658da5f3ee7a464852f5847e9ece9292ac4b94be8dd3f336",
+    "config/hk_board_lots_2026-11-12.csv": "b85bc89b3a2eec1337d1f392dfc9aa6860b069e9766b3a1ba0dee525b670868d"
+  }
+}

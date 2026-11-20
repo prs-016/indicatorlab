@@ -11,8 +11,8 @@ def test_three_markets_with_benchmarks():
     assert [config.benchmark(m) for m in config.markets()] == ["SPY", "^NSEI", "^HSI"]
 
 
-def test_holdout_is_oct_1_2025():
-    assert config.holdout_start() == date(2025, 10, 1)
+def test_research_cutoff_is_nov_1_2026():
+    assert config.holdout_start() == date(2026, 11, 1)
 
 
 def test_us_stocks_have_name_match_rules_and_wikipedia_title():

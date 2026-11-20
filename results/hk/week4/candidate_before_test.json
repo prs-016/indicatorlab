@@ -1,0 +1,60 @@
+{
+  "frozen_at_utc": "2026-11-16T05:06:16.367745+00:00",
+  "strategy": "defensive_attention_gate",
+  "rule": "Prefer candidates eligible in both train markets (entries >=30, timing percentile >=90, no unchanged train ablation). Within that group, highest mean selected-variant TRAIN daily net Sharpe, lexical ID tie break. If none eligible, report highest mean as INELIGIBLE research nominee. No test metrics used",
+  "train_eligible": false,
+  "ranked_train_candidates": [
+    {
+      "strategy": "defensive_attention_gate",
+      "mean_train_sharpe": 0.3778918307637912,
+      "market_train": [
+        {
+          "market": "HK",
+          "sharpe": -0.36193247798298495,
+          "entries": 202
+        },
+        {
+          "market": "US",
+          "sharpe": 1.1177161395105673,
+          "entries": 263
+        }
+      ],
+      "eligible_in_both_train_markets": false
+    },
+    {
+      "strategy": "residual_repair",
+      "mean_train_sharpe": 0.21668731569630026,
+      "market_train": [
+        {
+          "market": "HK",
+          "sharpe": -0.20111312820260013,
+          "entries": 60
+        },
+        {
+          "market": "US",
+          "sharpe": 0.6344877595952007,
+          "entries": 51
+        }
+      ],
+      "eligible_in_both_train_markets": false
+    },
+    {
+      "strategy": "liquidity_repair",
+      "mean_train_sharpe": 0.01403522764652021,
+      "market_train": [
+        {
+          "market": "HK",
+          "sharpe": -0.41816228259817856,
+          "entries": 108
+        },
+        {
+          "market": "US",
+          "sharpe": 0.446232737891219,
+          "entries": 43
+        }
+      ],
+      "eligible_in_both_train_markets": false
+    }
+  ],
+  "nomination_is_keep": false
+}

@@ -1,0 +1,128 @@
+{
+  "package_version": 3,
+  "prepared_local_date": "2026-11-15",
+  "files": [
+    {
+      "path": "B2/01_hsi_universe_week4.patch",
+      "sha256": "038da451fc7d0dac66fba29970c59ca6c88720e99af7dbad08743fa4a006ec83"
+    },
+    {
+      "path": "B2/B2_ON_NIFTY.patch",
+      "sha256": "07d76b0f1817f637fd5d7b95b657685a44fabb724a6c1ecf3305f693996fb741"
+    },
+    {
+      "path": "B2/B2_ON_NIFTY_MANIFEST.json",
+      "sha256": "0e6a0937c109c95bcd0f42c4df43279afe42287ce2639674c4b16f4515f5d4f3"
+    },
+    {
+      "path": "B2/COEXISTENCE_CURRENT_B3.json",
+      "sha256": "adb16eb369f9c5eddfb9a4d4ae2a66ed7213f2542ec2d21c0430782338f0b225"
+    },
+    {
+      "path": "B2/LOCAL_BRANCH.json",
+      "sha256": "7051fd953ac4894965dee1f0ab1adaf037508452040e3b043dfdbc1668ae0b55"
+    },
+    {
+      "path": "B2/MANIFEST.json",
+      "sha256": "87ba3d359847ed2a50995cc737c86f4ce2ffc2221ee118dd7fe6badec2a542a1"
+    },
+    {
+      "path": "B2/PR_DESCRIPTION.md",
+      "sha256": "bc174e5fc1599d8f35066b2140342b2189061dc4f51bfab867f760106d5bd06d"
+    },
+    {
+      "path": "B2/README.md",
+      "sha256": "73d52cee1a51d9b665c8c64badd460ed92dc90241a04be143eba9f971f1f878f"
+    },
+    {
+      "path": "B2/READY_REVIEW.md",
+      "sha256": "88a3aea0d189823b76ec2d756dc6c83b1b442d612a70cb857fae8d182774232b"
+    },
+    {
+      "path": "B2/VALIDATION.json",
+      "sha256": "8f7ce2b07bb664c3b07a8702d35c0279c86781d3bb7bbceca63333225667365c"
+    },
+    {
+      "path": "B2/benchmark_attempt.json",
+      "sha256": "09a8793285bb74a6c211121265b38b430dfa7c7538073b8644bf7f228c67bc08"
+    },
+    {
+      "path": "B2/commit-message.txt",
+      "sha256": "b1566aa47221489191000e6e287a01bef28b14444d689f68ffa025de5115ccf5"
+    },
+    {
+      "path": "B2/nifty_function_preservation.json",
+      "sha256": "efe1d73dd593fc484f6dadc7f844c984e97fd3ef6f5f2845de5b480d47019019"
+    },
+    {
+      "path": "B2/offline_network_counts.json",
+      "sha256": "9c957841b872f040df63544b6050d8afbca7d9742164bd9a4ddc55e33cf661b9"
+    },
+    {
+      "path": "B2/run_hsi_benchmark.py",
+      "sha256": "7d3aec25bf745c7a07150253fbbd5af2518216a69022e68de7d662bf91f81075"
+    },
+    {
+      "path": "B3/B3_HK_MARKET_LAYER.patch",
+      "sha256": "b8c43e481843b993a05a30249dd7562c8c502a63f4980ef3b666f70a1830aee1"
+    },
+    {
+      "path": "B3/HK_MARKET_LAYER.md",
+      "sha256": "87fd8d632f309d1818f89ce0ddcf9e6a622f70d63eb63f7ee5a9c6d6156dd3e4"
+    },
+    {
+      "path": "B3/MANIFEST.json",
+      "sha256": "29af1d6de2558ee2f240726f76cbfe8e9ddfe3eba0751f171ba3f16d3c6b01ea"
+    },
+    {
+      "path": "B3/PR_DESCRIPTION.md",
+      "sha256": "34be1c490235942d479ae2bb2e1529840f634fc673c06ad6bf803f133c544aba"
+    },
+    {
+      "path": "B3/VALIDATION.json",
+      "sha256": "13891d8ba6f92273a68dcd2b96cf8be5ce9f98bad3a6f436546c7e512365a3b8"
+    },
+    {
+      "path": "B3/commit-message.txt",
+      "sha256": "9ca08c5db601b5d88a6df1e496e23f739241f5ab87539fa5bd710f8bd2599b8c"
+    },
+    {
+      "path": "B3/offline_network_counts.json",
+      "sha256": "9c957841b872f040df63544b6050d8afbca7d9742164bd9a4ddc55e33cf661b9"
+    },
+    {
+      "path": "B6/B6_PORTFOLIO_DESIGN.patch",
+      "sha256": "447430eb37cc88cc245dc58c4c378b616c24d3bf9fdce6cf122a2ac15de92ee0"
+    },
+    {
+      "path": "B6/CROSS_MARKET_PORTFOLIO_DESIGN.md",
+      "sha256": "c8d6ad8e171cb06085a95b32c8c6a988c9b3750b75aa3d03220650105247bc4e"
+    },
+    {
+      "path": "B6/MANIFEST.json",
+      "sha256": "c93a3c2226d3d3e1cd4c13af841c2f4accf555b7f992568b68ff27bde94bcba9"
+    },
+    {
+      "path": "B6/commit-message.txt",
+      "sha256": "960d5ae7a8cf96795939bb11b9be7d3cab807781058ce183463dfb87c44f3d53"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "b155549b8bc4e43a9b96b2288dbf4eb1bc0c697f14b3f5ec6b36bf64d5a18679"
+    },
+    {
+      "path": "LOCAL_BRANCHES.json",
+      "sha256": "194fb116afffa212f01fa2215d2180c7847738b2fa06a89b9f3ed561ee7a43b7"
+    },
+    {
+      "path": "README.md",
+      "sha256": "22ecf86fecdf437d5a2042bef4de1a8f69bd9ae63687c200cd1a82b5ab12215c"
+    },
+    {
+      "path": "TEAM_UPDATE_DRAFT.md",
+      "sha256": "da01f155840aaf6ea0848f211574564bf46c12f4492b4d0502ebdca91de17682"
+    }
+  ],
+  "empirical_hsi_benchmark_complete": false,
+  "aws_deferred": true
+}

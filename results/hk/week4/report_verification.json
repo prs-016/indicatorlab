@@ -1,0 +1,14 @@
+{
+  "frozen_source_input_engine_hashes_verified": 79,
+  "hash_mismatches": [],
+  "completed_cases": 6,
+  "all_drop": true,
+  "random_nulls": 2400,
+  "random_nulls_per_case_period": 200,
+  "drop_one_evaluations": 60,
+  "candidate_frozen_before_test": true,
+  "candidate_train_eligible": false,
+  "native_cli_runs": 2,
+  "native_cash_bridges_match_to_abs_1e_minus_6": true,
+  "no_portfolio_rerun_for_reports_or_dsr_supplement": true
+}
