@@ -77,11 +77,31 @@ least 90% of random runs in train.
 S7 is the only one that qualifies with at least 30 train entries: train Sharpe 1.32, beating 93.5% of
 random runs. S3 loosen 1 also beat 91%, but it had 6 entries and a lower Sharpe (0.88).
 
-**Vibe-Trading check.** Run dir `~/.vibe-trading/runs/indicatorlab_wiki_s7_us`, run with
-`python -m backtest.runner`:
-- Vibe gives a Sharpe of 1.29 in train and 0.81 in test, against our 1.32 and 0.82.
-- Daily returns correlate at 0.94 in both periods.
-- That is well within the 0.1 tolerance.
+**Vibe-Trading check** (guide format, 2026-11-19). `python -m src.wiki_complex --vibe` writes
+`~/.vibe-trading/runs/indicatorlab_wiki_s7_us`:
+- `config.json` has `position_adjustment: "rebalance"`, `benchmark: "SPY"` and 10 bps slippage;
+- the target weights are embedded in `code/signal_engine.py` as a CSV string, with no file reads.
+
+It was run with `python -m backtest.runner <run dir>` from Vibe's `agent/` directory.
+
+| Sharpe | Ours | Vibe | Ours, entries one day later |
+|---|---|---|---|
+| Train | 1.32 | 1.18 | 1.22 |
+| Test | 0.82 | 0.89 | 0.88 |
+| Full period | 1.11 | 1.06 | 1.07 |
+
+- Daily returns correlate at 0.99, up from 0.94 in the earlier `hold`-mode run, which is kept as
+  `indicatorlab_wiki_s7_us_hold_20261118`.
+- The train gap (0.13) is just over the guide's ~0.1, so I checked why:
+  - **Not costs.** Both engines lose about 1.5–1.9% a year to costs, and the gap is already there
+    without costs: in a zero-cost Vibe run (`indicatorlab_wiki_s7_us_zerocost_check`), train is 1.32
+    against our 1.44.
+  - **Timing.** Our simulator enters at the close of the signal day, the first trading day after the
+    week. Vibe shifts one bar and fills at the next open. With our entries moved one day later, our
+    numbers match Vibe within 0.04 in every period. The gap changes sign between train and test, so it's
+    noise from the overnight move on rebalance days, not a bias.
+- **What this means for the pick:** S7's train Sharpe falls from 1.32 to about 1.2 with a one-day
+  entry delay. Both conventions use only published data, and the rules were not changed.
 
 What the team should know before the Nov 21 pick:
 - **Its edge is trend-following, not Wikipedia.** In the train drop-one runs, removing the attention or

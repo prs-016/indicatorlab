@@ -183,7 +183,10 @@ cp .env.example .env   # then fill in your own local values — never commit .en
 - Wikipedia-only strategy (team train/test split, 200 random portfolios): `python -m src.wiki_strategy`
 - Complex strategies S1-S7 (rules fixed before the first run: `docs/wikipedia/week3_strategies.md` for S1-S4,
   `docs/wikipedia/week4_strategies.md` for S5-S7): `python -m src.wiki_complex`, writing
-  `results/wikipedia/week4_*.csv`; add `--vibe` to also write Vibe-Trading run dirs to `~/.vibe-trading/runs/`.
+  `results/wikipedia/week4_*.csv`; add `--vibe` to also write Vibe-Trading run dirs to `~/.vibe-trading/runs/`
+  (Week 4 format: `position_adjustment: "rebalance"`, the market's benchmark, target weights embedded in
+  `code/signal_engine.py` as a CSV string). Run one from Vibe's `agent/` folder with
+  `python -m backtest.runner ~/.vibe-trading/runs/<name>`; results are in `artifacts/metrics.csv`.
   - Needs `VIBE_TRADING_ROOT` in `.env` (a Vibe-Trading checkout): the deflated Sharpe is Vibe's
     `deflated_sharpe_ratio` (`agent/src/quantlib/multipletesting.py`), loaded by file path because both repos
     have a `src` package. Its two tests skip when the variable is unset.

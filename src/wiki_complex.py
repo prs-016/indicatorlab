@@ -702,40 +702,64 @@ def run(market: str = "US") -> list[dict]:
     return results
 
 
-VIBE_ENGINE = '''"""{name} ({market}), exported from indicatorlab src/wiki_complex.py.
+VIBE_ENGINE = '''"""__NAME__ (__MARKET__), exported from indicatorlab src/wiki_complex.py.
 
-Target weights were computed by the pre-registered rules in docs/wikipedia/week3_strategies.md (S1-S4) or
-week4_strategies.md (S5-S7) and are
-read from code/weights.csv (run the runner from this directory). Vibe shifts them one bar.
+Target weights come from the pre-registered rules in docs/wikipedia/week3_strategies.md (S1-S4) or
+week4_strategies.md (S5-S7). They are embedded below, one row per day the targets change, and held
+until the next row. Vibe shifts the signal one bar itself, so they are not shifted here.
 """
+import io
+from typing import Dict
+
 import pandas as pd
+
+WEIGHTS_CSV = """__WEIGHTS__"""
 
 
 class SignalEngine:
-    def generate(self, data_map):
-        w = pd.read_csv("code/weights.csv", index_col=0, parse_dates=True)
-        return {{c: w[c].reindex(df.index).ffill().fillna(0.0) for c, df in data_map.items() if c in w}}
+    def generate(self, data_map) -> Dict[str, pd.Series]:
+        w = pd.read_csv(io.StringIO(WEIGHTS_CSV), index_col=0, parse_dates=True)
+        out = {}
+        for code, df in data_map.items():
+            if code in w:
+                s = w[code].reindex(w.index.union(df.index)).ffill()
+                out[code] = s.reindex(df.index).fillna(0.0)
+        return out
 '''
 
 
 def export_vibe(res: dict, market: str, split: dict, runs_root: Path, cost: float) -> Path:
-    """Write a Vibe-Trading run dir (config.json, code/signal_engine.py, code/weights.csv) for one strategy.
+    """Write a Vibe-Trading run dir (config.json, code/signal_engine.py) for one strategy, in the Week 4 format.
 
-    Vibe trades each signal at the next bar's open and, with position_adjustment "hold", applies entries and
-    exits but not resizes, so its numbers are a cross-check of ours, not a replay.
+    The target weights are embedded in the engine as a CSV string (only the days they change), and the run
+    uses position_adjustment "rebalance" so Vibe resizes to every new target, as our simulator does, with the
+    market's benchmark from config. Vibe fills at the next bar's open, so its numbers are a cross-check of
+    ours, not a replay.
+
+    Args:
+        res: one strategy result from `run()` (needs "name", "loosen" and sim["weights"]).
+        market: market code from config.yaml, e.g. "US".
+        split: the wikipedia train/test split; the run covers train start to test end.
+        runs_root: Vibe's runs folder, normally ~/.vibe-trading/runs.
+        cost: one-way cost per unit of turnover (Vibe's slippage).
+
+    Returns:
+        The run directory.
     """
     w = res["sim"]["weights"]
-    w = w.loc[:, (w != 0).any()]
+    w = w.loc[:, (w != 0).any()].round(6)
+    w = w[w.ne(w.shift()).any(axis=1)]   # first row, then only the days a target changes
     if market == "US":   # Vibe reads bare BRK-B as a China B share; TICKER.US is its US form
         w = w.rename(columns=lambda t: f"{t}.US")
     tag = res["name"].split()[0].lower() + (f"_loosen{res['loosen']}" if res["loosen"] else "")
     run_dir = runs_root / f"indicatorlab_wiki_{tag}_{market.lower()}"
     (run_dir / "code").mkdir(parents=True, exist_ok=True)
-    w.round(6).to_csv(run_dir / "code" / "weights.csv")
-    (run_dir / "code" / "signal_engine.py").write_text(VIBE_ENGINE.format(name=res["name"], market=market))
+    engine = (VIBE_ENGINE.replace("__NAME__", res["name"]).replace("__MARKET__", market)
+              .replace("__WEIGHTS__", w.to_csv(date_format="%Y-%m-%d")))
+    (run_dir / "code" / "signal_engine.py").write_text(engine)
     cfg = {"codes": list(w.columns), "start_date": str(split["train"][0]), "end_date": str(split["test"][1]),
-           "source": "yfinance", "interval": "1D", "engine": "daily", "position_adjustment": "hold",
-           "slippage_us": cost}
+           "source": "yfinance", "interval": "1D", "engine": "daily", "position_adjustment": "rebalance",
+           "benchmark": config.benchmark(market), "slippage_us": cost}
     (run_dir / "config.json").write_text(json.dumps(cfg, indent=2))
     return run_dir
 

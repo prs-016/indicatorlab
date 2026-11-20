@@ -1,4 +1,6 @@
 """Synthetic checks of the complex-strategy (S1-S7) simulator and evaluation (no network)."""
+import importlib.util
+import json
 import os
 
 import numpy as np
@@ -256,3 +258,29 @@ def test_s7_quarters_exposure_on_both_market_filters_and_blocks_a_flagged_stock_
     assert s.rebalance(m, *at(m, 71), {}, False) == set(TICKERS)
     m.weekly["sent_net"].iloc[wi - 3, 0] = np.nan       # an unscored week never flags
     assert s.rebalance(m, week, fri, {}, False) == set(TICKERS)
+
+
+def test_vibe_export_uses_rebalance_benchmark_and_embedded_weights(tmp_path):
+    days = pd.bdate_range("2020-01-01", periods=6)
+    w = pd.DataFrame({"AAA": [0.0, 0.5, 0.5, 0.5, 0.0, 0.0], "BBB": [0.0, 0.5, 0.5, 0.25, 0.25, 0.25],
+                      "ZZZ": 0.0}, index=days)
+    res = {"name": "S7 test", "loosen": 0, "sim": {"weights": w}}
+    split = {"train": ["2020-01-01", "2020-01-31"], "test": ["2020-02-01", "2020-02-28"]}
+    run_dir = wc.export_vibe(res, "US", split, tmp_path, 0.001)
+
+    cfg = json.loads((run_dir / "config.json").read_text())
+    assert cfg["position_adjustment"] == "rebalance" and cfg["benchmark"] == "SPY"
+    assert cfg["codes"] == ["AAA.US", "BBB.US"]                      # never-held ZZZ is left out
+    assert not (run_dir / "code" / "weights.csv").exists()          # weights live in the engine itself
+    src = (run_dir / "code" / "signal_engine.py").read_text()
+    assert "open(" not in src and "to_csv" not in src
+    assert src.count("\n2020-") == 4                                # only the rows where targets change
+
+    spec = importlib.util.spec_from_file_location("signal_engine", run_dir / "code" / "signal_engine.py")
+    engine = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(engine)                                 # loaded from the file, as Vibe does
+    bars = pd.bdate_range("2019-12-30", periods=9)                  # starts before the first weight row
+    out = engine.SignalEngine().generate({c: pd.DataFrame({"close": 1.0}, index=bars) for c in cfg["codes"]})
+    expected = w.rename(columns=lambda t: f"{t}.US").reindex(bars).ffill().fillna(0.0)
+    for c in cfg["codes"]:
+        pd.testing.assert_series_equal(out[c], expected[c], check_names=False)
