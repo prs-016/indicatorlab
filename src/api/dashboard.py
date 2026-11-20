@@ -56,7 +56,7 @@ class AttentionRecord(BaseModel):
     sentiment_pos: float | None = None
     sentiment_neg: float | None = None
     sentiment_neu: float | None = None
-    n_scored: int = 0
+    n_scored: int | None = 0          # empty in Reddit weeks that were not scored
     edits: float | None = None
     edits_ratio: float | None = None
     edits_spike: bool | None = None

@@ -5,7 +5,8 @@
 FROM public.ecr.aws/docker/library/python:3.12-slim
 COPY --from=public.ecr.aws/awsguru/aws-lambda-adapter:0.9.1 /lambda-adapter /opt/extensions/lambda-adapter
 
-ENV PIP_NO_CACHE_DIR=1 PORT=8080
+# Lambda's filesystem is read-only except /tmp: Joshua's Reddit modules create their log folder on import.
+ENV PIP_NO_CACHE_DIR=1 PORT=8080 REDDIT_LOG_DIR=/tmp/logs HOME=/tmp
 WORKDIR /app
 COPY requirements-api.txt .
 RUN pip install -r requirements-api.txt

@@ -27,8 +27,9 @@ class FakeS3:
         objects = self.objects
 
         class Pages:
-            def paginate(self, Bucket, Prefix):
-                keys = [k for k in objects if k.startswith(Prefix)]
+            def paginate(self, Bucket, Prefix, Delimiter=None):
+                keys = [k for k in objects if k.startswith(Prefix)
+                        and not (Delimiter and Delimiter in k[len(Prefix):])]   # S3 leaves subfolders out
                 return [{"Contents": [{"Key": k} for k in keys[:1]]}, {"Contents": [{"Key": k} for k in keys[1:]]}]
         return Pages()
 
@@ -85,6 +86,7 @@ def _parquet(df):
 def test_s3_keys_tables_and_freshness_under_a_prefix(aws):
     aws["objects"]["v1/processed/wiki_weekly.parquet"] = _parquet(pd.DataFrame({"ticker": ["AAPL"]}))
     aws["objects"]["v1/processed/wiki_current.parquet"] = _parquet(pd.DataFrame({"ticker": ["MSFT"]}))
+    aws["objects"]["v1/processed/reddit_hourly/date=2026-11-19/0100.parquet"] = b"x"   # a folder, not a table
     s = Storage("s3://indicatorlab-data/v1/", ttl=600)
     assert s.keys("processed/") == ["processed/wiki_current.parquet", "processed/wiki_weekly.parquet"]
     assert s.table("processed/wiki_weekly.parquet")["ticker"].tolist() == ["AAPL"]

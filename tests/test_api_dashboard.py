@@ -177,3 +177,9 @@ def test_edits_lists_a_weeks_summaries_with_tags_oldest_first(client):
     assert rows[0]["tags"] == ["earnings"] and rows[1]["revert"] is True
     assert client.get("/edits/AAPL", params={"week": "2025-09-08"}).json() == []
     assert client.get("/edits/AAPL", params={"week": "2025-09-29"}).status_code == 422
+
+
+def test_attention_record_accepts_an_unscored_reddit_week():
+    row = {"ticker": "AAPL", "market": "us", "source": "reddit", "week": "2016-01-04", "value": 3.0,
+           "baseline": None, "ratio": None, "spike": False, "n_scored": None}
+    assert dashboard.AttentionRecord(**row).n_scored is None     # S3's reddit_weekly leaves it empty

@@ -46,10 +46,14 @@ class Storage:
         return boto3.client("s3", region_name=os.getenv("AWS_REGION", "us-west-2"))
 
     def keys(self, prefix: str) -> list[str]:
-        """Table keys under a prefix, e.g. keys("processed/") -> ["processed/wiki_weekly.parquet", ...]."""
+        """Table keys directly under a prefix, e.g. keys("processed/") -> ["processed/wiki_weekly.parquet", ...].
+
+        Subfolders are not listed, locally or on S3: the bucket's processed/ also holds folders of hundreds of
+        state and cache files (Reddit's hourly rows, sentiment cache) that are not tables.
+        """
         if self.is_s3:
             bucket, full = self._bucket_key(prefix)
-            pages = self._s3().get_paginator("list_objects_v2").paginate(Bucket=bucket, Prefix=full)
+            pages = self._s3().get_paginator("list_objects_v2").paginate(Bucket=bucket, Prefix=full, Delimiter="/")
             base = full[: len(full) - len(prefix)]
             return sorted(o["Key"][len(base):] for p in pages for o in p.get("Contents", []))
         root = Path(self.root)
