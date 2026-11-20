@@ -18,6 +18,7 @@ holdout start; /hot and /live are display of the current week, which the holdout
 """
 from __future__ import annotations
 
+import logging
 import math
 import os
 from datetime import UTC, date, datetime, time
@@ -34,6 +35,7 @@ from src import config
 from src.api.storage import Storage, from_env
 
 router = APIRouter(tags=["dashboard"])
+log = logging.getLogger("api.dashboard")
 
 SOURCES = ("reddit", "wikipedia")
 TABLE_PREFIX = {"reddit": "reddit", "wikipedia": "wiki"}   # processed/reddit_weekly.parquet, wiki_weekly.parquet
@@ -366,11 +368,30 @@ def live(market: Literal["india", "hk"], storage: StorageDep) -> dict:
     return {"market": market, "open": is_open, "local_time": local, "quotes": quotes}
 
 
+@lru_cache(maxsize=1)
+def _ssm_vibe_key() -> str:
+    """The Vibe-Trading key from SSM (config `api.vibe_key_param`), read once per process; '' if unreadable."""
+    import boto3
+    from botocore.exceptions import BotoCoreError, ClientError
+    try:
+        return boto3.client("ssm", region_name=os.getenv("AWS_REGION")).get_parameter(
+            Name=_api()["vibe_key_param"], WithDecryption=True)["Parameter"]["Value"]
+    except (BotoCoreError, ClientError) as e:   # no parameter or no access: call without a key
+        log.warning("Vibe key not readable from SSM: %s", type(e).__name__)
+        return ""
+
+
+def vibe_key() -> str:
+    """VIBE_API_KEY from the environment (.env locally), else the SSM SecureString on AWS."""
+    return os.getenv("VIBE_API_KEY") or _ssm_vibe_key()
+
+
 def _vibe(path: str) -> object:
     """GET a Vibe-Trading API path with the server-side key; the key never reaches the browser."""
-    url, key = os.getenv("VIBE_API_URL"), os.getenv("VIBE_API_KEY")
+    url = os.getenv("VIBE_API_URL")
     if not url:
         raise HTTPException(503, "the Vibe-Trading server is not configured (VIBE_API_URL)")
+    key = vibe_key()
     headers = {"Authorization": f"Bearer {key}"} if key else {}
     try:
         r = requests.get(url.rstrip("/") + path, headers=headers, timeout=VIBE_TIMEOUT_S)

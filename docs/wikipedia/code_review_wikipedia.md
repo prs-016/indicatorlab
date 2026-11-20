@@ -216,9 +216,32 @@ The response models (`SentimentWeek`, `Spike`, `PriceWeek`, `EditSummary`, `HotR
 would document the API for the dashboard and for Joshua's routes.
 
 ## Checklist for the student
-- [ ] Mount Joshua's Reddit router under `/reddit` (merge `main`, which has PR #4) so `/spikes` reaches
-      the dashboard handler; add a test through `src.api.main.app`.
-- [ ] Update `export_vibe` to the Week 4 Vibe format (`rebalance`, `benchmark`, weights embedded as a
-      CSV string), add a test for it, and rerun the S7 Vibe confirmation.
+- [x] Mount Joshua's Reddit router under `/reddit` (merge `main`, which has PR #4) so `/spikes` reaches
+      the dashboard handler; add a test through `src.api.main.app`. (Done by the merge `f7ad23c`.)
+- [x] Update `export_vibe` to the Week 4 Vibe format (`rebalance`, `benchmark`, weights embedded as a
+      CSV string), add a test for it, and rerun the S7 Vibe confirmation. (Done in `5f2b6d4`.)
 - [ ] Name the S1–S3 thresholds as constants (values unchanged), including the duplicated 0.7.
 - [ ] Add docstrings to `sharpe`, `cut`, `build_market` and one-liners to the strategy classes.
+
+## Follow-up review, 2026-11-19: AWS pieces
+Files: `src/wiki_daily.py` (new), `src/api/dashboard.py` (`/runs` key from SSM), `tests/test_wiki_daily.py`
+(new, 6 tests), `tests/test_api_dashboard.py` (+1), `infra/api/` and `infra/wikipedia/` (Dockerfiles),
+`requirements-api.txt`, `config.yaml` (`wikipedia.title_maps`, `api.vibe_key_param`),
+`config/hk_wiki_titles.csv` (Jack's, copied from `origin/Jack` unchanged), `infra/README.md`, `docs/AGENTS.md`.
+
+- ruff is clean on the changed Python files. The full suite: 568 passed, 0 failed.
+- A real run against Wikimedia (written to a scratch folder, not S3) pulled 146 stocks (51 US, 95 HK) in
+  about 4 minutes with no failures and no 429s.
+- **Fixed during review:**
+  - Pulling every redirect took over 10 minutes (Apple_Inc. has 103), so the job reads each article's own
+    title.
+  - The "published" check accepted a half-filled day (66 of 146 stocks had Nov 19 views at 03:40 UTC). It
+    now needs the day's market total to be at least half its 7-day median (`PUBLISHED_MIN_SHARE`).
+  - A blind `except Exception` was narrowed (ruff BLE001).
+- **Not verified here:** the two Docker images were not built, since Docker Desktop wasn't running. Their
+  dependencies were checked by importing both entry points in a clean Python 3.12 venv with only
+  `requirements-api.txt`.
+- **Known limit (documented in the module):** without redirects, an article renamed inside the 36-week
+  window shows low views before the rename.
+
+- [ ] Build both images and test-invoke the Lambdas (infra/README.md steps 3–8).

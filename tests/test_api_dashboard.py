@@ -3,6 +3,7 @@
 The router is tested on its own app: in the merged API, Joshua's Week 2 Reddit router still owns
 GET /spikes?ticker= until his routes move under /reddit/ (see src/api/main.py).
 """
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -137,6 +138,30 @@ def test_runs_proxy_sends_the_key_server_side_only(client, monkeypatch):
     assert seen == {"url": "http://vibe.local:8899/runs", "headers": {"Authorization": "Bearer secret"}}
     client.get("/runs/a b")
     assert seen["url"].endswith("/runs/a%20b")
+
+
+def test_vibe_key_comes_from_ssm_when_the_env_has_none(monkeypatch):
+    calls = []
+
+    class FakeSSM:
+        def get_parameter(self, Name, WithDecryption):
+            calls.append((Name, WithDecryption))
+            return {"Parameter": {"Value": "from-ssm"}}
+
+    fake_boto3 = type(sys)("boto3")
+    fake_boto3.client = lambda service, region_name=None: FakeSSM()
+    monkeypatch.setitem(sys.modules, "boto3", fake_boto3)
+    errors = type(sys)("botocore.exceptions")
+    errors.BotoCoreError = errors.ClientError = type("AWSError", (Exception,), {})
+    monkeypatch.setitem(sys.modules, "botocore", type(sys)("botocore"))
+    monkeypatch.setitem(sys.modules, "botocore.exceptions", errors)
+    dashboard._ssm_vibe_key.cache_clear()
+    monkeypatch.setenv("VIBE_API_KEY", "from-env")
+    assert dashboard.vibe_key() == "from-env" and calls == []        # .env wins; SSM is never called
+    monkeypatch.delenv("VIBE_API_KEY")
+    assert dashboard.vibe_key() == dashboard.vibe_key() == "from-ssm"
+    assert calls == [("/indicatorlab/vibe_api_key", True)]              # read once, decrypted
+    dashboard._ssm_vibe_key.cache_clear()
 
 
 def test_prices_are_research_weeks_only_and_unknown_ticker_is_404(client):

@@ -125,6 +125,9 @@ Indian and Hong Kong stocks can be added as a config change. For the DS3 team an
 .
 ├── README.md
 ├── config.yaml        # markets, stocks, subreddits, Wikipedia titles, spike rule, holdout, splits
+├── config/            # title maps: us_sp500_wiki_titles.csv, hk_wiki_titles.csv (Jack), india_wiki_titles.csv (Jamal, pending)
+├── requirements-api.txt  # slim deps for the two AWS images below (no torch)
+├── infra/             # AWS: shared/ + reddit/ + dashboard/ (Joshua); api/ + wikipedia/ Dockerfiles (James)
 ├── .env.example
 ├── requirements.txt
 ├── pytest.ini         # puts the repo root on sys.path for `pytest`
@@ -142,6 +145,7 @@ Indian and Hong Kong stocks can be added as a config change. For the DS3 team an
 │   ├── wiki_strategy.py   # Wikipedia-only strategy with random-portfolio baseline
 │   ├── wiki_complex.py    # complex strategies S1-S7, full evaluation, Vibe-Trading export
 │   ├── wiki_export.py     # attention records (wiki_weekly / wiki_current / prices_weekly / wiki_edit_summaries parquet) for the API
+│   ├── wiki_daily.py      # daily AWS job (Lambda): views + revisions for US/India/HK, rewrites wiki_current
 │   ├── sentiment/finbert_scorer.py  # Joshua's FinbertScorer, shared by Reddit and Wikipedia (+ ScoreCache)
 │   ├── trends_compare.py  # Google Trends alternatives (GDELT, trendspy) vs Wikipedia views
 │   └── api/               # FastAPI app: main.py, one router per source, dashboard.py (Week 3 routes),
@@ -205,6 +209,12 @@ cp .env.example .env   # then fill in your own local values — never commit .en
   `/edits/{ticker}`, `/sentiment/{ticker}`, `/spikes`, `/hot`, `/live/{market}`, `/runs`). It reads `data/` unless `INDICATORLAB_DATA` is set
   (e.g. `s3://indicatorlab-data`, which needs `boto3` and AWS credentials); see `.env.example`.
   Joshua's Reddit routes are under `/reddit/` (`src/api/reddit_routes.py`) and read `INDICATORLAB_DATA_URI` instead.
+- Daily Wikipedia job (what the AWS Lambda runs at 06:00 UTC): `python -m src.wiki_daily [--day YYYY-MM-DD]`.
+  It writes `raw/wikipedia/date=.../` and `processed/wiki_current.parquet` under `INDICATORLAB_DATA` (data/
+  when unset); about 4 minutes for ~150 stocks. Views are each article's own title, without redirects.
+- AWS (us-east-2, by hand in the console): images `infra/api/Dockerfile` (API on Lambda + Function URL via
+  the Lambda Web Adapter; App Runner takes no new customers) and `infra/wikipedia/Dockerfile`. Steps:
+  `infra/README.md`. `/runs` reads the Vibe key from `VIBE_API_KEY`, else SSM `api.vibe_key_param`.
 - Dashboard v1: start the API with `CORS_ORIGINS=http://localhost:5173`, then
   `python -m http.server 5173 -d frontend/dashboard` and open http://localhost:5173.
   Details, `?api=` override and deploy steps: `frontend/dashboard/README.md`.

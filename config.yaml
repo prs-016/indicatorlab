@@ -180,6 +180,9 @@ wikipedia:
   # An article's views = its current title plus every redirect to it, so renamed articles keep their
   # history (Meta_Platforms was Facebook,_Inc. until Oct 2021; Tesla,_Inc. was Tesla_Motors until 2017).
   include_redirects: true
+  # Title maps of the other markets (symbol,title,lang,valid_from: one row per title an article has had),
+  # from Jamal (India) and Jack (HK). The daily AWS job (src/wiki_daily.py) skips a map not in the repo yet.
+  title_maps: {IN: config/india_wiki_titles.csv, HK: config/hk_wiki_titles.csv}
   # A title counts from the first full week after its first revision of this size. Redirects are under
   # ~200 bytes and a new stub ~400 (Alphabet_Inc., Aug 2015); later blanking by vandals is ignored.
   min_article_bytes: 400
@@ -294,3 +297,4 @@ api:
     india: {tz: Asia/Kolkata, hours: [["09:15", "15:30"]]}
     hk: {tz: Asia/Hong_Kong, hours: [["09:30", "12:00"], ["13:00", "16:00"]]}
   live_tables: {india: indicatorlab-live-india, hk: indicatorlab-live-hk}
+  vibe_key_param: /indicatorlab/vibe_api_key   # SSM SecureString read by /runs when VIBE_API_KEY is unset

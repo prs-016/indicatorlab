@@ -1,0 +1,8 @@
+# Build context is the repo root, which holds gigabytes of data and the venv: send only what the image needs.
+*
+!src/
+!config/
+!config.yaml
+!requirements-api.txt
+**/__pycache__
+**/*.pyc
