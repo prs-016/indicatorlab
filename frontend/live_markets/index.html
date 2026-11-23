@@ -87,7 +87,34 @@
       </main>
     </div>
   </div>
-  <dialog id="stock-dialog" aria-labelledby="dialog-title"><div class="dialog-heading"><span class="eyebrow" id="dialog-symbol"></span><button class="icon-button" id="close-dialog" aria-label="Close stock details">×</button></div><h2 id="dialog-title"></h2><div id="dialog-price" class="dialog-price"></div><div id="dialog-change" class="change-pill"></div><dl id="dialog-details"></dl><p class="dialog-note">A recent receipt doesn’t necessarily mean a recent trade. Both times are shown so you can check freshness.</p></dialog>
+  <dialog id="stock-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-heading"><span class="eyebrow" id="dialog-symbol"></span><button class="icon-button" id="close-dialog" aria-label="Close stock details">×</button></div>
+    <h2 id="dialog-title"></h2><div id="dialog-price" class="dialog-price"></div><div id="dialog-change" class="change-pill"></div>
+    <dl id="dialog-details"></dl>
+    <p class="dialog-note">A recent receipt doesn’t necessarily mean a recent trade. Both times are shown so you can check freshness.</p>
+    <section class="cost-panel" id="cost-panel" aria-labelledby="cost-heading" hidden>
+      <div class="cost-heading"><div><span class="eyebrow">PLAN A PURCHASE</span><h3 id="cost-heading">What would I need in USD?</h3></div><span class="cost-currency">HKD / USD</span></div>
+      <p class="cost-intro">Estimate the share value, Hong Kong transaction charges and currency-conversion costs. This calculator does not place an order.</p>
+      <form id="cost-form" aria-describedby="cost-fee-help">
+        <div class="cost-fields">
+          <label class="cost-field" for="cost-shares"><span>Requested shares</span><input id="cost-shares" name="shares" type="number" min="1" max="1000000000" step="1" value="100" required inputmode="numeric"></label>
+          <label class="cost-field" for="cost-fx-rate"><span>HKD for 1 USD</span><input id="cost-fx-rate" name="hkd_per_usd" type="number" min="0" step="any" inputmode="decimal" placeholder="Automatic reference rate" aria-describedby="cost-fx-help"></label>
+          <label class="cost-field" for="cost-commission"><span>Broker commission · HKD</span><input id="cost-commission" name="commission_hkd" type="number" min="0" step="any" inputmode="decimal" placeholder="Not supplied"></label>
+          <label class="cost-field" for="cost-platform-fee"><span>Platform fee · HKD</span><input id="cost-platform-fee" name="platform_fee_hkd" type="number" min="0" step="any" inputmode="decimal" placeholder="Not supplied"></label>
+          <label class="cost-field" for="cost-fx-spread"><span>FX spread · basis points</span><input id="cost-fx-spread" name="fx_spread_bps" type="number" min="0" max="9999" step="any" inputmode="decimal" placeholder="Not supplied"></label>
+          <label class="cost-field" for="cost-fx-fee"><span>Fixed conversion fee · USD</span><input id="cost-fx-fee" name="fx_fee_usd" type="number" min="0" step="any" inputmode="decimal" placeholder="Not supplied"></label>
+          <label class="cost-field" for="cost-transfer-fee"><span>Transfer fee · USD</span><input id="cost-transfer-fee" name="transfer_fee_usd" type="number" min="0" step="any" inputmode="decimal" placeholder="Not supplied"></label>
+          <label class="cost-field cost-wide" for="cost-settlement"><span>Does your broker pass through the settlement fee?</span><select id="cost-settlement" name="settlement_pass_through"><option value="">Not supplied</option><option value="true">Yes, use the exchange settlement schedule</option><option value="false">No, already included or not charged</option></select></label>
+        </div>
+        <p class="cost-help" id="cost-fee-help">Blank broker fees remain unknown. Enter 0 only when a charge does not apply. 100 basis points = 1%.</p>
+        <p class="cost-help" id="cost-fx-help">Leave blank for a dated HKMA reference or recent Yahoo HKD=X fallback, or enter your broker's rate. If that rate already includes FX markup, enter 0 for the separate spread. Reference rates are indicative.</p>
+        <div class="cost-actions"><button type="submit" id="cost-submit" class="button primary-button">Estimate USD cost</button><p id="cost-status" role="status" aria-live="polite">Calculate when you are ready.</p></div>
+      </form>
+      <p id="cost-error" class="cost-error" role="alert" hidden></p>
+      <div id="cost-result" class="cost-result" aria-live="polite" aria-atomic="true" hidden></div>
+      <p class="cost-tax-note">Personal U.S. income, dividend and capital-gains taxes depend on your account and circumstances and are excluded.</p>
+    </section>
+  </dialog>
   <template id="stock-template"><article class="stock-card"><div class="card-heading"><button class="stock-open" data-action="details"><span class="company-name"></span><span class="stock-symbol"></span></button><button class="watch-button" data-action="watch" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-2.9-5.6 2.9 1.1-6.2L3 9.6l6.2-.9Z"/></svg></button></div><div class="card-price-row"><strong class="stock-price">—</strong><span class="change-pill"><span class="change-arrow" aria-hidden="true"></span><span class="stock-change">—</span></span></div><div class="card-meta"><span>Volume <strong class="stock-volume">—</strong></span><span class="attention-badge" hidden>Attention ↑</span></div><div class="card-bottom"><span class="stock-exchange"></span><span class="stock-time"></span></div></article></template>
   <noscript><p class="noscript">Enable JavaScript to display and refresh stock quotes.</p></noscript>
 </body>

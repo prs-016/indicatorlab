@@ -1,3 +1,37 @@
+# Final-week K0-K3 context
+
+- User authorized only Jack K0-K3 plus an editable USD purchase-cost estimate.
+  Start at `docs/HK_FINAL_K0_K3_STATUS.md`. Keep AWS deployment and remote
+  publication deferred; user handles GitHub. Do not start K4-K7 or rerun frozen
+  empirical strategies. Current cutoff stays 2026-11-01.
+- `src/markets/hk_symbols.py` provides normalization, validated Yahoo history,
+  95-name metadata, ADR aliases and evidence-qualified 2026 subreddit lists.
+  Share `src.markets.errors.UnknownTicker` with the future resolver. Laopu Gold
+  has no verified English Wikipedia article; keep its wiki_en null, not invented.
+- `src/live/quote.py` implements the HK branch of get_quote(symbol, market).
+  Default HSI store is DynamoDB GetItem. Local operation is explicit; non-HSI
+  requests use Tencent. Cache observations five seconds and recompute labels.
+  Compose the India/US branches with their owners; do not fabricate providers.
+- Existing `/live/hk` accepts optional symbol and cost queries without changing
+  its list response. `src/hk/trade_costs.py` adds dated ordinary-share charges,
+  board lots, explicit unknown broker/platform/FX fees, and dated display FX.
+  HKMA is primary; recent paired Yahoo metadata is a fallback via existing
+  yfinance. Reject stale FX after wall-clock jumps; no peg fallback or backfill.
+- The stock-details dialog estimates USD required. Blank fees stay unknown;
+  personal taxes are excluded. This module never places an order and never
+  feeds display data into research. Source documents are recorded in
+  `config/hk_order_cost_sources.json`.
+- K3's nine-file HK update belongs in the existing Forked VT checkout. The
+  incremental patch/review draft is under `contributions/final_week/K3/`.
+  Preserve the original app, US/India behavior, lot CSV and historical studies.
+  Joint India integration, PR base conflicts/CI, source FX timing evidence and
+  the existing table's redistribution rights remain explicit acceptance steps.
+- Validate: `python -B -m pytest tests/test_config.py tests/test_hk_*.py
+  tests/test_api_reddit.py -q -p no:cacheprovider`; frontend Node checks remain
+  in `frontend/live_markets/`. Run the scoped DS3 review before publication.
+
+---
+
 # HK dashboard connection repair (2026-11-19)
 
 - `Start HK Dashboard.command` now runs `src.hk.dashboard start --with-feed

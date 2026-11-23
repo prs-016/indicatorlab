@@ -1,3 +1,18 @@
+# Final-week K0-K3 and USD costs
+
+Open [the current task status](docs/HK_FINAL_K0_K3_STATUS.md). Launch the local
+dashboard, search `0700`, click Tencent, and use **What would I need in USD?**.
+Broker/platform, FX and transfer fees are editable; blanks remain unknown.
+[API/CLI usage](docs/HK_FINAL_QUOTES_AND_COSTS.md).
+
+K1: `src/markets/hk_symbols.py`. K2: `src/live/quote.py`.
+USD estimate: `src/hk/trade_costs.py`. K3: the actual Forked VT checkout,
+with an incremental handoff under `contributions/final_week/K3/`.
+The task status distinguishes completed local code from missing source data,
+deferred AWS, teammate receipt and upstream PR/CI acceptance.
+
+---
+
 # Open the Hong Kong live dashboard
 
 Double-click **`Start HK Dashboard.command`** here, then open

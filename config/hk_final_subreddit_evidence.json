@@ -1,0 +1,98 @@
+{
+  "checked_at_utc": "2026-11-23T08:20:58.785888+00:00",
+  "client": "src.reddit.arctic_client.ArcticShiftClient",
+  "policy": "exact subreddit identity plus at least one archived 2026 post; unavailable checks are not treated as zero",
+  "timeout_seconds": 10,
+  "max_attempts": 2,
+  "candidates": [
+    {
+      "candidate": "HongKong",
+      "exists": true,
+      "has_2026_posts": true,
+      "qualified": true,
+      "requests": [
+        {
+          "url": "https://arctic-shift.photon-reddit.com/api/subreddits/search?subreddit=HongKong&limit=1",
+          "retrieved_at_utc": "2026-11-23T08:20:49.950124Z",
+          "http_status": 200,
+          "matches": 1
+        },
+        {
+          "url": "https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=HongKong&after=2026-01-01&before=2027-01-01&limit=1&sort=desc&fields=id%2Ccreated_utc%2Csubreddit",
+          "retrieved_at_utc": "2026-11-23T08:20:51.153591Z",
+          "http_status": 200,
+          "post_ids": [
+            "1y3c8xf"
+          ],
+          "created_utc": [
+            1795419312
+          ]
+        }
+      ]
+    },
+    {
+      "candidate": "HKStockMarket",
+      "exists": false,
+      "has_2026_posts": null,
+      "qualified": false,
+      "requests": [
+        {
+          "url": "https://arctic-shift.photon-reddit.com/api/subreddits/search?subreddit=HKStockMarket&limit=1",
+          "retrieved_at_utc": "2026-11-23T08:20:52.313468Z",
+          "http_status": 200,
+          "matches": 0
+        }
+      ]
+    },
+    {
+      "candidate": "ChinaStocks",
+      "exists": true,
+      "has_2026_posts": true,
+      "qualified": true,
+      "requests": [
+        {
+          "url": "https://arctic-shift.photon-reddit.com/api/subreddits/search?subreddit=ChinaStocks&limit=1",
+          "retrieved_at_utc": "2026-11-23T08:20:53.317001Z",
+          "http_status": 200,
+          "matches": 1
+        },
+        {
+          "url": "https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=ChinaStocks&after=2026-01-01&before=2027-01-01&limit=1&sort=desc&fields=id%2Ccreated_utc%2Csubreddit",
+          "retrieved_at_utc": "2026-11-23T08:20:54.430734Z",
+          "http_status": 200,
+          "post_ids": [
+            "1y36rsq"
+          ],
+          "created_utc": [
+            1795400938
+          ]
+        }
+      ]
+    },
+    {
+      "candidate": "Chinesestocks",
+      "exists": true,
+      "has_2026_posts": false,
+      "qualified": false,
+      "requests": [
+        {
+          "url": "https://arctic-shift.photon-reddit.com/api/subreddits/search?subreddit=Chinesestocks&limit=1",
+          "retrieved_at_utc": "2026-11-23T08:20:55.905938Z",
+          "http_status": 200,
+          "matches": 1
+        },
+        {
+          "url": "https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=Chinesestocks&after=2026-01-01&before=2027-01-01&limit=1&sort=desc&fields=id%2Ccreated_utc%2Csubreddit",
+          "retrieved_at_utc": "2026-11-23T08:20:57.452868Z",
+          "http_status": 200,
+          "post_ids": [],
+          "created_utc": []
+        }
+      ]
+    }
+  ],
+  "selected": [
+    "HongKong",
+    "ChinaStocks"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "checked_at_utc": "2026-11-23T08:41:13.185152+00:00",
+  "indicatorlab_hk_config_api_tests": "250 passed in 3.15s",
+  "k1_tests_subset": "42 passed",
+  "vibe_hk_adjacent_tests": "260 passed, 1 inherited warning in 5.44s",
+  "node_tests": "21 passed",
+  "scoped_ruff": "passed",
+  "js_syntax": "passed",
+  "static_build": "passed, five public assets",
+  "ui_fixture": {
+    "fixture_only": true,
+    "automatic_fx_only_on_submit": true,
+    "unknown_fees_not_zero": true,
+    "platform_fee_supported": true,
+    "complete_estimate": true,
+    "lot_rounding_display": true,
+    "auto_refresh_preserves_input_and_focus": true,
+    "estimate_error_is_local": true,
+    "invalid_response_is_local": true,
+    "old_symbol_response_discarded": true,
+    "mobile_overflow": false,
+    "page_errors": []
+  },
+  "real_api_browser": {
+    "actual_quotes": 95,
+    "automatic_fx": {
+      "hkd_per_usd": 7.8399,
+      "observed_date": "2026-11-23",
+      "source": "https://query1.finance.yahoo.com/v8/finance/chart/HKD%3DX",
+      "retrieved_at": "2026-11-23T08:35:09.636284+00:00",
+      "kind": "market_reference",
+      "observed_at": "2026-11-23T08:35:08+00:00",
+      "display_only": true,
+      "evaluated_at": "2026-11-23T08:35:11.518989+00:00",
+      "calendar_age_days": 0
+    },
+    "automatic_estimate_label": "Known-cost USD subtotal",
+    "manual_fees_complete": true,
+    "lot_rounding_250_to_200": true,
+    "mobile_overflow": false,
+    "page_errors": []
+  },
+  "frozen_source_input_hashes_matched": 75,
+  "new_strategy_evaluations": 0,
+  "aws_acceptance_tested": false,
+  "remote_ci_claimed": false,
+  "counts_overlap": "K1 is a subset of IndicatorLab; selections are not summed or presented as full upstream CI.",
+  "historical_hsi_calendar_audit": {
+    "path": "docs/HK_FINAL_HSI_CALENDAR_AUDIT.json",
+    "coverage_verified": true,
+    "period": {
+      "start": "2016-01-01",
+      "end": "2026-10-31"
+    },
+    "source_sha256": "d6bfaee360b493fdb52d5fd71e51eb09f713f365ce72dfb8a801310356bd3b45"
+  }
+}

@@ -1,0 +1,1418 @@
+diff --git a/agent/backtest/market_layer.py b/agent/backtest/market_layer.py
+--- a/agent/backtest/market_layer.py
++++ b/agent/backtest/market_layer.py
+@@ -1,21 +1,153 @@
+-"""Historical FX valuation and dated HK board-lot input, without network calls.
++"""Historical FX valuation, explicit loader acquisition and dated HK lot input.
+ 
+ FX observations are local currency units per USD. `close_at` and `available_at`
+ are separate UTC instants: a previous close cannot be used before publication.
+-Callers acquire daily USD/HKD (e.g. HKD=X) through the shared market-data layer
+-and retain its provenance; this module never treats today's display FX as history.
++Daily USD/HKD acquisition delegates to the shared market-data layer and retains
++its provenance; this module never treats today's display FX as history.
+ """
+ 
+ from __future__ import annotations
+ 
+ import csv
+-from collections.abc import Iterable
++from collections.abc import Callable, Iterable
+ from datetime import date, datetime
+ from decimal import Decimal, ROUND_CEILING
+ from pathlib import Path
+ 
+ import numpy as np
+ import pandas as pd
++
++
++def load_hkd_fx_observations(
++    start_date: str,
++    end_date: str,
++    *,
++    availability_policy: Callable[[pd.Timestamp, dict], tuple],
++    fetcher: Callable | None = None,
++) -> pd.DataFrame:
++    """Acquire daily HKD=X through Vibe's loader with an explicit timing policy.
++
++    Args:
++        start_date: First requested daily FX label, inclusive.
++        end_date: Last requested daily FX label, inclusive.
++        availability_policy: Given a source daily label and its provenance,
++            return timezone-aware ``(close_at, available_at)`` instants. The
++            caller must document this policy; date labels alone do not certify
++            historical publication times. No implicit policy is supplied.
++        fetcher: Optional shared market-data callable for offline integration.
++
++    Returns:
++        Positive HKD-per-USD observations with the strict historical FX schema.
++        ``attrs`` retains the loader's provenance and the policy's name.
++
++    Raises:
++        ValueError: The provider is unavailable, timestamps/rates are invalid,
++            or no explicit availability policy was provided.
++    """
++    if not callable(availability_policy):
++        raise ValueError("Daily FX requires an explicit publication-time policy")
++    if pd.Timestamp(start_date) > pd.Timestamp(end_date):
++        raise ValueError("FX start date must not follow its end date")
++    if fetcher is None:
++        from src.market_data import fetch_market_data
++
++        fetcher = fetch_market_data
++    payload = fetcher(
++        codes=["HKD=X"],
++        start_date=start_date,
++        end_date=end_date,
++        source="yfinance",
++        interval="1D",
++        max_rows=0,
++        include_provenance=True,
++        as_frames=True,
++    )
++    if not isinstance(payload, dict):
++        raise ValueError("HKD=X loader response must be an object")
++    frame = payload.get("HKD=X")
++    if not isinstance(frame, pd.DataFrame) or frame.empty or "close" not in frame:
++        raise ValueError("HKD=X daily FX observations are unavailable")
++    labels = pd.DatetimeIndex(frame.index)
++    if labels.hasnans or labels.has_duplicates:
++        raise ValueError("FX daily labels must be valid and unique")
++    source_metadata = payload.get("_provenance", {})
++    if not isinstance(source_metadata, dict):
++        raise ValueError("FX loader provenance must be an object")
++    provenance = source_metadata.get("HKD=X", {})
++    if not isinstance(provenance, dict):
++        raise ValueError("FX loader provenance must be an object")
++    values = pd.to_numeric(frame["close"], errors="raise")
++    if not np.isfinite(values).all() or (values <= 0).any():
++        raise ValueError("FX rates must be finite and positive")
++    rows = []
++    for label, rate in zip(labels, values):
++        close, available = availability_policy(label, dict(provenance))
++        close, available = pd.Timestamp(close), pd.Timestamp(available)
++        if (
++            pd.isna(close)
++            or pd.isna(available)
++            or close.tzinfo is None
++            or available.tzinfo is None
++        ):
++            raise ValueError("FX timing policy must return timezone-aware instants")
++        if available < close:
++            raise ValueError("FX cannot be available before its close")
++        rows.append(
++            {
++                "close_at": close.tz_convert("UTC"),
++                "available_at": available.tz_convert("UTC"),
++                "rate": float(rate),
++            }
++        )
++    observations = pd.DataFrame(rows).sort_values("close_at").reset_index(drop=True)
++    if observations["close_at"].duplicated().any():
++        raise ValueError("FX policy must yield unique close instants")
++    observations.attrs.update(
++        symbol="HKD=X",
++        units="HKD_per_USD",
++        provenance=provenance,
++        availability_policy=getattr(availability_policy, "__name__", "caller_supplied"),
++        publication_times_certified=False,
++    )
++    return observations
++
++
++def hk_equity_to_usd(
++    local_values: pd.Series,
++    *,
++    availability_policy: Callable[[pd.Timestamp, dict], tuple],
++    fetcher: Callable | None = None,
++    max_age: str | pd.Timedelta = "7D",
++) -> pd.DataFrame:
++    """Load daily FX and value an HK-session equity curve without backfilling.
++
++    Local values must use actual, timezone-aware HK session valuation instants.
++    Prior available closes carry forward over holidays/weekends within max_age;
++    missing initial FX is an error. The returned provenance describes the
++    caller's publication-time assumption rather than certifying the dataset.
++    """
++    from src.data_gateway.calendars import schedule
++
++    instants = pd.DatetimeIndex(local_values.index)
++    if instants.empty or instants.tz is None or instants.hasnans:
++        raise ValueError("HK equity valuations must be timezone-aware and nonempty")
++    days = instants.tz_convert("Asia/Hong_Kong").tz_localize(None).normalize()
++    first, last = days.min(), days.max()
++    sessions = schedule("hk_equity", str(first.date()), str(last.date()))[2].index
++    if not days.isin(sessions).all():
++        raise ValueError("HK equity valuations must fall on HK trading sessions")
++    age = pd.Timedelta(max_age)
++    if pd.isna(age) or age <= pd.Timedelta(0):
++        raise ValueError("FX maximum age must be positive")
++    observations = load_hkd_fx_observations(
++        str((first - age).date()),
++        str(last.date()),
++        availability_policy=availability_policy,
++        fetcher=fetcher,
++    )
++    result = local_and_usd_returns(local_values, observations, max_age=age)
++    result.attrs.update(observations.attrs)
++    return result
+ 
+ 
+ # IRD historical rates, then the 2023-11-17 restoration of 0.1% on EACH note:
+@@ -76,7 +208,7 @@
+ 
+ 
+ def load_hk_board_lots(path: str | Path) -> tuple[dict[str, int], dict]:
+-    """Read an explicitly supplied dated HKEX CSV; reject aliases/conflicts/gaps.
++    """Read an explicit dated HKEX CSV; reject alias conflicts or missing metadata.
+ 
+     This input is a current snapshot unless separately evidenced historical
+     validity is supplied. Retrieval time is not an effective-from date.
+diff --git a/agent/backtest/engines/global_equity.py b/agent/backtest/engines/global_equity.py
+--- a/agent/backtest/engines/global_equity.py
++++ b/agent/backtest/engines/global_equity.py
+@@ -9,7 +9,7 @@
+   HK:
+     - T+0, long/short allowed
+     - Stamp tax 0.1% bilateral + levies
+-    - Board-lot rounding per symbol from ``hk_lot_sizes``; 100 shares otherwise
++    - Board-lot rounding per symbol from ``hk_lot_sizes``; 1 share with a warning otherwise
+     - Higher slippage than US
+   Canada (TSX / TSX Venture):
+     - Same-session round trips and long/short orders supported
+@@ -40,7 +40,7 @@
+ logger = logging.getLogger(__name__)
+ 
+ #: Board lot used for an HK symbol the run has no lot size for.
+-_DEFAULT_HK_BOARD_LOT = 100
++_DEFAULT_HK_BOARD_LOT = 1
+ 
+ 
+ def _hk_lot_key(symbol: Any) -> str:
+@@ -65,14 +65,14 @@
+       - slippage_hk: default 0.001
+       - hk_stamp_tax: optional explicit override; otherwise dated statutory duty, whole-HKD ceiling
+       - hk_commission: default 0.00015 (万1.5)
+-      - hk_levy: default 0.0000565 (SFC + FRC)
+-      - hk_settlement: default 0.00002 (CCASS)
++      - hk_levy: legacy flat charge, default 0.0000565; not a certified regulatory total
++      - hk_settlement: legacy flat charge, default 0.00002; not a dated CCASS schedule
+       - hk_lot_sizes: ``{symbol: board lot}``. HK board lots are set per
+         issuer, so a flat 100 mis-sizes most names. Any HK symbol missing
+-        from the table falls back to 100 and is reported in the run metrics
++        from the table falls back to 1 and is reported in the run metrics
+         under ``lot_assumptions``, including runs with no table.
+       - hk_lot_sizes_file: dated HKEX CSV; mutually exclusive with hk_lot_sizes.
+-        File-backed sizing requires every traded symbol; missing lots fail closed.
++        Missing lots warn and use one share unless hk_require_lot_sizes is true.
+         Snapshot retrieval time does not prove historical lot validity.
+       - hk_require_lot_sizes: require complete coverage for an in-memory lot map.
+       - slippage_ca: defaults to slippage_us
+@@ -86,8 +86,13 @@
+     def __init__(self, config: dict, market: str = "us"):
+         from backtest.engines._market_hooks import _detect_market
+ 
+-        if (market == "us" and config.get("commission", 0)
+-                and all(_detect_market(code) == "us_equity" for code in config.get("codes", []))):
++        if (
++            market == "us"
++            and config.get("commission", 0)
++            and all(
++                _detect_market(code) == "us_equity" for code in config.get("codes", [])
++            )
++        ):
+             raise ValueError(
+                 "US equities do not apply the generic 'commission' setting. "
+                 "Remove it; use 'slippage_us' for per-side execution slippage "
+@@ -112,14 +117,17 @@
+             for k, v in (config.get("hk_lot_sizes") or {}).items()
+         }
+         self.hk_lot_snapshot = None
++        self._run_interval = str(config.get("interval", "1D"))
++        self._hk_session_months: dict[str, pd.DataFrame] = {}
+         self.hk_require_lot_sizes = bool(config.get("hk_require_lot_sizes", False))
+         if config.get("hk_lot_sizes_file"):
+             from backtest.market_layer import load_hk_board_lots
+ 
+             if config.get("hk_lot_sizes"):
+                 raise ValueError("Use hk_lot_sizes or hk_lot_sizes_file, not both")
+-            self.hk_lot_sizes, self.hk_lot_snapshot = load_hk_board_lots(config["hk_lot_sizes_file"])
+-            self.hk_require_lot_sizes = True
++            self.hk_lot_sizes, self.hk_lot_snapshot = load_hk_board_lots(
++                config["hk_lot_sizes_file"]
++            )
+         self.lot_assumptions: dict[str, int] = {}
+         # Canada defaults. Commission varies by broker, so the model exposes a
+         # rate instead of inventing an exchange-wide charge.
+@@ -133,9 +141,72 @@
+         self.slippage_uk: float = config.get("slippage_uk", self.slippage_us)
+         self.uk_stamp_tax: float = config.get("uk_stamp_tax", 0.005)
+ 
++    def run_backtest(self, config: dict, *args, **kwargs):
++        """Use the actual run interval for HK daily versus intraday timestamps."""
++        self._run_interval = str(config.get("interval", "1D"))
++        self._hk_session_months.clear()
++        return super().run_backtest(config, *args, **kwargs)
++
++    def _hk_execution_allowed(self, timestamp) -> bool:
++        """Check session dates or HK-local intraday opens using a bounded cache.
++
++        Daily/weekly/monthly bars use a session-date label. Intraday timestamps
++        must denote bar opens; naive values are the loader's HK local clock.
++        Aware timestamps are converted to Hong Kong before testing the grid.
++        """
++        from src.data_gateway.calendars import schedule
++
++        if timestamp is None:
++            return False
++        stamp = pd.Timestamp(timestamp)
++        if pd.isna(stamp):
++            return False
++        daily = self._run_interval in {"1D", "1W", "1M"}
++        local = (
++            stamp
++            if daily
++            else (
++                stamp.tz_localize("Asia/Hong_Kong")
++                if stamp.tzinfo is None
++                else stamp.tz_convert("Asia/Hong_Kong")
++            )
++        )
++        day = pd.Timestamp(local.date())
++        month = day.strftime("%Y-%m")
++        if month not in self._hk_session_months:
++            # Keep two months, owned by this engine; do not grow a global
++            # calendar/minute cache during repeated or long backtests.
++            if len(self._hk_session_months) >= 2:
++                self._hk_session_months.pop(next(iter(self._hk_session_months)))
++            first = day.replace(day=1)
++            last = first + pd.offsets.MonthEnd()
++            self._hk_session_months[month] = schedule(
++                "hk_equity", str(first.date()), str(last.date())
++            )[2]
++        frame = self._hk_session_months[month]
++        if day not in frame.index:
++            return False
++        if daily:
++            return True
++        row = frame.loc[day]
++        at = local.tz_convert("UTC")
++        if not row["open"] <= at < row["close"]:
++            return False
++        return bool(
++            pd.isna(row["break_start"])
++            or not (row["break_start"] <= at < row["break_end"])
++        )
++
+     def can_execute(self, symbol: str, direction: int, bar: pd.Series) -> bool:
+-        """Allow same-session trading in both directions for every market."""
+-        return True
++        """Gate HK fills to its session grid; preserve other markets' rules."""
++        if self.market != "hk":
++            return True
++        stamp = self._bar_ts if self._bar_ts is not None else bar.name
++        return self._hk_execution_allowed(stamp)
++
++    def can_liquidate_at_end(self, symbol: str, timestamp: pd.Timestamp) -> bool:
++        """Keep terminal HK liquidation subject to the same session boundaries."""
++        return self.market != "hk" or self._hk_execution_allowed(timestamp)
+ 
+     def _hk_board_lot(self, symbol: str) -> int:
+         """Return the board lot for one HK symbol.
+@@ -169,21 +240,27 @@
+     def _engine_diagnostics(self) -> dict[str, Any]:
+         """Report effective US costs and HK board-lot assumptions."""
+         if self.market == "us":
+-            return {"execution_costs": {
+-                "market": "us_equity",
+-                "slippage_config_key": "slippage_us",
+-                "slippage_buy_rate": self._execution_price(1.0, 1) - 1.0,
+-                "slippage_sell_rate": 1.0 - self._execution_price(1.0, -1),
+-                "commission_rate": self._execution_commission(1.0, 1.0, 1, True),
+-            }}
++            return {
++                "execution_costs": {
++                    "market": "us_equity",
++                    "slippage_config_key": "slippage_us",
++                    "slippage_buy_rate": self._execution_price(1.0, 1) - 1.0,
++                    "slippage_sell_rate": 1.0 - self._execution_price(1.0, -1),
++                    "commission_rate": self._execution_commission(1.0, 1.0, 1, True),
++                }
++            }
+         if not self.lot_assumptions and not self.hk_lot_snapshot:
+             return {}
+         return {
+-            **({"hk_board_lot_snapshot": self.hk_lot_snapshot} if self.hk_lot_snapshot else {}),
++            **(
++                {"hk_board_lot_snapshot": self.hk_lot_snapshot}
++                if self.hk_lot_snapshot
++                else {}
++            ),
+             "lot_assumptions": [
+                 {"symbol": symbol, "field": "board_lot", "value": lot}
+                 for symbol, lot in sorted(self.lot_assumptions.items())
+-            ]
++            ],
+         }
+ 
+     def round_size(self, raw_size: float, price: float) -> float:
+@@ -205,8 +282,10 @@
+             return float(math.floor(max(raw_size, 0.0)))
+         return round(max(raw_size, 0.0), 2)
+ 
+-    def calc_commission(self, size: float, price: float, direction: int, is_open: bool) -> float:
+-        """US: zero; HK: stamp tax + levies; Canada: configured broker rate;
++    def calc_commission(
++        self, size: float, price: float, direction: int, is_open: bool
++    ) -> float:
++        """US: zero; HK: dated duty + configured flat fees; Canada: broker rate;
+         UK: SDRT on the buyer only.
+ 
+         ``direction`` is the order/position side (1=buy-long/short-cover,
+@@ -218,12 +297,17 @@
+             from backtest.market_layer import hk_stamp_duty
+ 
+             notional = size * price
+-            comm = notional * self.hk_commission       # broker commission
++            comm = notional * self.hk_commission  # broker commission
+             comm += hk_stamp_duty(
+-                size, price, self._bar_ts, rate_override=self._hk_stamp_tax_override,
+-            )
+-            comm += notional * self.hk_levy            # SFC + FRC levies
+-            comm += notional * self.hk_settlement      # CCASS settlement
++                size,
++                price,
++                self._bar_ts,
++                rate_override=self._hk_stamp_tax_override,
++            )
++            # Legacy configured flat rates are retained. They are not a
++            # verified dated HKEX/SFC/AFRC or settlement fee schedule.
++            comm += notional * self.hk_levy
++            comm += notional * self.hk_settlement
+             return comm
+         if self.market == "ca":
+             return size * price * self.ca_commission
+diff --git a/agent/backtest/engines/composite.py b/agent/backtest/engines/composite.py
+--- a/agent/backtest/engines/composite.py
++++ b/agent/backtest/engines/composite.py
+@@ -32,55 +32,72 @@
+     engines: Dict[str, BaseEngine] = {}
+ 
+     if "jp_equity" in markets:
+-        raise ValueError("Japanese backtest execution rules are not implemented; market data is available")
++        raise ValueError(
++            "Japanese backtest execution rules are not implemented; market data is available"
++        )
+ 
+     for market in markets:
+         if market == "a_share":
+             from backtest.engines.china_a import ChinaAEngine
++
+             engines["a_share"] = ChinaAEngine(config)
+         elif market == "us_equity":
+             from backtest.engines.global_equity import GlobalEquityEngine
++
+             engines["us_equity"] = GlobalEquityEngine(config, market="us")
+         elif market == "hk_equity":
+             from backtest.engines.global_equity import GlobalEquityEngine
++
+             engines["hk_equity"] = GlobalEquityEngine(config, market="hk")
+         elif market == "india_equity":
+             from backtest.engines.india_equity import IndiaEquityEngine
++
+             engines["india_equity"] = IndiaEquityEngine(config)
+         elif market == "kr_equity":
+             from backtest.engines.korea_equity import KoreaEquityEngine
++
+             engines["kr_equity"] = KoreaEquityEngine(config)
+         elif market == "vietnam_equity":
+             from backtest.engines.vietnam_equity import VietnamEquityEngine
++
+             engines["vietnam_equity"] = VietnamEquityEngine(config)
+         elif market == "ar_equity":
+             from backtest.engines.argentina_equity import ArgentinaEquityEngine
++
+             engines["ar_equity"] = ArgentinaEquityEngine(config)
+         elif market == "br_equity":
+             from backtest.engines.brazil_equity import BrazilEquityEngine
++
+             engines["br_equity"] = BrazilEquityEngine(config)
+         elif market == "ca_equity":
+             from backtest.engines.global_equity import GlobalEquityEngine
++
+             engines["ca_equity"] = GlobalEquityEngine(config, market="ca")
+         elif market == "uk_equity":
+             from backtest.engines.global_equity import GlobalEquityEngine
++
+             engines["uk_equity"] = GlobalEquityEngine(config, market="uk")
+         elif market == "crypto":
+             from backtest.engines.crypto import CryptoEngine
++
+             engines["crypto"] = CryptoEngine(config)
+         elif market == "index":
+             from backtest.engines.global_equity import GlobalEquityEngine
++
+             engines["index"] = GlobalEquityEngine(config, market="us")
+         elif market == "forex":
+             from backtest.engines.forex import ForexEngine
++
+             engines["forex"] = ForexEngine(config)
+         elif market == "futures":
+             futures_codes = [c for c in codes if _detect_market(c) == "futures"]
+             if any(_is_china_futures(c) for c in futures_codes):
+                 from backtest.engines.china_futures import ChinaFuturesEngine
++
+                 engines["china_futures"] = ChinaFuturesEngine(config)
+             if any(not _is_china_futures(c) for c in futures_codes):
+                 from backtest.engines.global_futures import GlobalFuturesEngine
++
+                 engines["global_futures"] = GlobalFuturesEngine(config)
+ 
+     return engines
+@@ -193,7 +210,8 @@
+             using the same keys as a single-market run.
+         """
+         by_market = {
+-            market: details for market, engine in self._rule_engines.items()
++            market: details
++            for market, engine in self._rule_engines.items()
+             if market != "ar_equity" and (details := engine._engine_diagnostics())
+         }
+         if self._ar_rules is not None:
+@@ -248,6 +266,10 @@
+         return argentina_available_cash(self, self._ar_rules, timestamp)
+ 
+     def can_liquidate_at_end(self, symbol: str, timestamp: pd.Timestamp) -> bool:
++        if self._symbol_market.get(symbol) == "hk_equity":
++            sub = self._rule_for(symbol)
++            sub._run_interval = self._run_interval
++            return sub.can_liquidate_at_end(symbol, timestamp)
+         if self._symbol_market.get(symbol) != "ar_equity" or self._ar_rules is None:
+             return super().can_liquidate_at_end(symbol, timestamp)
+         from backtest.engines.argentina_equity import argentina_sell_allowed
+@@ -291,8 +313,14 @@
+ 
+             return argentina_can_execute(self, self._ar_rules, symbol, direction, bar)
+ 
++        # The HK calendar must see this pool's current fill clock rather than
++        # the rule provider's previous bar (or an absent timestamp).
++        sub = self._rule_for(symbol)
++        if market == "hk_equity":
++            sub._bar_ts = self._bar_ts
++            sub._run_interval = self._run_interval
+         # Delegate remaining checks (price limits, short-sell block, etc.)
+-        return self._rule_for(symbol).can_execute(symbol, direction, bar)
++        return sub.can_execute(symbol, direction, bar)
+ 
+     def round_size(self, raw_size: float, price: float) -> float:
+         """Delegate to active symbol's sub-engine."""
+@@ -306,7 +334,11 @@
+         return sub.round_size(raw_size, price)
+ 
+     def calc_commission(
+-        self, size: float, price: float, direction: int, is_open: bool,
++        self,
++        size: float,
++        price: float,
++        direction: int,
++        is_open: bool,
+     ) -> float:
+         """Delegate to active symbol's sub-engine."""
+         sub = self._rule_for(self._active_symbol)
+@@ -324,20 +356,35 @@
+     # ── PnL / margin dispatch (route by symbol, not _active_symbol) ──
+ 
+     def _calc_pnl(
+-        self, symbol: str, direction: int, size: float,
+-        entry_price: float, exit_price: float,
++        self,
++        symbol: str,
++        direction: int,
++        size: float,
++        entry_price: float,
++        exit_price: float,
+     ) -> float:
+         return self._rule_for(symbol)._calc_pnl(
+-            symbol, direction, size, entry_price, exit_price,
++            symbol,
++            direction,
++            size,
++            entry_price,
++            exit_price,
+         )
+ 
+     def _calc_margin(
+-        self, symbol: str, size: float, price: float, leverage: float,
++        self,
++        symbol: str,
++        size: float,
++        price: float,
++        leverage: float,
+     ) -> float:
+         return self._rule_for(symbol)._calc_margin(symbol, size, price, leverage)
+ 
+     def _calc_raw_size(
+-        self, symbol: str, target_notional: float, price: float,
++        self,
++        symbol: str,
++        target_notional: float,
++        price: float,
+     ) -> float:
+         return self._rule_for(symbol)._calc_raw_size(symbol, target_notional, price)
+ 
+@@ -352,12 +399,20 @@
+ 
+         if market == "crypto":
+             crypto_sub = self._rule_engines["crypto"]
+-            fee = calc_crypto_funding_fee(
+-                symbol, bar, timestamp, self.positions,
+-                crypto_sub.funding_rate,
+-                self._funding_applied, self._funding_daily_done,
+-                _interval_span_hours(self._run_interval),
+-            ) if crypto_sub.funding_enabled(symbol) else 0.0
++            fee = (
++                calc_crypto_funding_fee(
++                    symbol,
++                    bar,
++                    timestamp,
++                    self.positions,
++                    crypto_sub.funding_rate,
++                    self._funding_applied,
++                    self._funding_daily_done,
++                    _interval_span_hours(self._run_interval),
++                )
++                if crypto_sub.funding_enabled(symbol)
++                else 0.0
++            )
+             self.capital -= fee
+             self._crypto_funding_pnl -= fee
+ 
+@@ -366,7 +421,9 @@
+                 if pos is not None:
+                     # Fill at the same adverse mark the hook used for the check so
+                     # a wick trigger never exits at a better price than the venue.
+-                    liq_price = crypto_sub.apply_slippage(_liquidation_mark(bar, pos), -pos.direction)
++                    liq_price = crypto_sub.apply_slippage(
++                        _liquidation_mark(bar, pos), -pos.direction
++                    )
+                     self._close_position(symbol, liq_price, timestamp, "liquidation")
+ 
+         elif market == "forex":
+@@ -375,7 +432,9 @@
+             forex_sub = self._rule_engines["forex"]
+             if forex_sub.swap_enabled:
+                 swap = calc_forex_swap(
+-                    symbol, timestamp, self.positions,
++                    symbol,
++                    timestamp,
++                    self.positions,
+                     _lot_units(_normalize_symbol(symbol), forex_sub.lot_size),
+                     self._last_swap_dates,
+                 )
+diff --git a/agent/src/data_gateway/hk_sessions.py b/agent/src/data_gateway/hk_sessions.py
+--- a/agent/src/data_gateway/hk_sessions.py
++++ b/agent/src/data_gateway/hk_sessions.py
+@@ -6,6 +6,8 @@
+ """
+ 
+ import pandas as pd
++
++WEATHER_REFORM = pd.Timestamp("2024-09-23")
+ 
+ # HKEX explicitly cancelled every securities session on these dates.
+ FULL_CLOSURES = {
+@@ -27,12 +29,84 @@
+ 
+ def apply_weather_overrides(frame: pd.DataFrame) -> pd.DataFrame:
+     """Correct known pre-reform dates without inferring closures from weather."""
+-    frame = frame.drop(index=pd.DatetimeIndex(FULL_CLOSURES), errors="ignore").copy()
++    historical = [day for day in FULL_CLOSURES if pd.Timestamp(day) < WEATHER_REFORM]
++    frame = frame.drop(index=pd.DatetimeIndex(historical), errors="ignore").copy()
+     for day, (opening, _source) in LATE_OPENS.items():
+         stamp = pd.Timestamp(day)
+-        if stamp in frame.index:
++        if stamp < WEATHER_REFORM and stamp in frame.index:
+             frame.loc[stamp, "open"] = pd.Timestamp(
+                 f"{day} {opening}", tz="Asia/Hong_Kong"
+             ).tz_convert("UTC")
+             frame.loc[stamp, ["break_start", "break_end"]] = pd.NaT
+     return frame
++
++
++def weather_closure_inventory() -> list[dict]:
++    """Return the small sourced historical date/session exception table."""
++    records = [
++        {"date": day, "session": "full", "source": source}
++        for day, source in FULL_CLOSURES.items()
++        if pd.Timestamp(day) < WEATHER_REFORM
++    ]
++    records.extend(
++        {
++            "date": day,
++            "session": "morning",
++            "reopens_hkt": opening,
++            "detail": "Morning suspended; afternoon resumes at the stated time",
++            "source": source,
++        }
++        for day, (opening, source) in LATE_OPENS.items()
++        if pd.Timestamp(day) < WEATHER_REFORM
++    )
++    return sorted(records, key=lambda value: value["date"])
++
++
++def audit_hsi_session_coverage(
++    hsi_daily: pd.DataFrame,
++    start: str,
++    end: str,
++    *,
++    provenance: dict,
++) -> dict:
++    """Reconcile daily ^HSI bars with sourced sessions without hiding data gaps.
++
++    A missing pre-reform benchmark bar is a closure candidate, not proof that
++    the exchange closed: it can also mean a failed provider request. Known
++    sourced exceptions are excluded by the calendar. Additional candidates
++    remain explicitly unverified until a dated closure source is supplied.
++    Post-reform missing bars are data gaps, never automatic weather closures.
++    """
++    from src.data_gateway.calendars import schedule
++
++    if not isinstance(provenance, dict) or not provenance:
++        raise ValueError("HSI coverage requires the daily loader's provenance")
++    if "close" not in hsi_daily:
++        raise ValueError("HSI daily observations require close prices")
++    days = pd.DatetimeIndex(hsi_daily.index)
++    if days.hasnans or days.has_duplicates:
++        raise ValueError("HSI daily labels must be valid and unique")
++    if days.tz is not None:
++        days = days.tz_convert("Asia/Hong_Kong").tz_localize(None)
++    days = days.normalize()
++    if days.has_duplicates:
++        raise ValueError("HSI daily labels must identify unique sessions")
++    valid = pd.to_numeric(hsi_daily["close"], errors="coerce")
++    observed = days[(valid.gt(0) & valid.lt(float("inf"))).to_numpy()]
++    observed = observed[
++        (observed >= pd.Timestamp(start)) & (observed <= pd.Timestamp(end))
++    ]
++    expected = schedule("hk_equity", start, end)[2].index
++    missing = expected.difference(observed)
++    pre = missing[missing < WEATHER_REFORM]
++    post = missing[missing >= WEATHER_REFORM]
++    extra = observed.difference(expected)
++    return {
++        "symbol": "^HSI",
++        "source": dict(provenance),
++        "coverage_verified": len(missing) == 0 and len(extra) == 0,
++        "unverified_pre_reform_closure_candidates": list(pre.strftime("%Y-%m-%d")),
++        "post_reform_data_gaps": list(post.strftime("%Y-%m-%d")),
++        "unexpected_benchmark_sessions": list(extra.strftime("%Y-%m-%d")),
++        "sourced_weather_exceptions": weather_closure_inventory(),
++    }
+diff --git a/agent/tests/test_hk_market_layer.py b/agent/tests/test_hk_market_layer.py
+--- a/agent/tests/test_hk_market_layer.py
++++ b/agent/tests/test_hk_market_layer.py
+@@ -8,8 +8,10 @@
+ from backtest.engines.composite import CompositeEngine
+ from backtest.engines.global_equity import GlobalEquityEngine
+ from backtest.market_layer import (
++    hk_equity_to_usd,
+     hk_stamp_duty,
+     load_hk_board_lots,
++    load_hkd_fx_observations,
+     local_and_usd_returns,
+     previous_close_fx,
+ )
+@@ -166,6 +168,7 @@
+     }
+     engine = GlobalEquityEngine(config, market="hk")
+     engine._active_symbol = "700.HK"
++    assert engine.round_size(250, 100.01) == 200
+     assert engine.round_size(255, 100.01) == 200  # Tencent's dated board lot is 100.
+     engine._bar_ts = pd.Timestamp("2023-11-16")
+     assert (
+@@ -178,11 +181,21 @@
+     assert not engine.hk_lot_snapshot["historical_lots_verified"]
+ 
+ 
+-def test_lot_file_is_dated_95_name_source_and_missing_lot_fails_closed():
++def test_lot_file_is_dated_95_name_source_and_unknown_lot_warns(caplog):
+     lots, meta = load_hk_board_lots(LOTS)
+     assert len(lots) == 95 and lots["0005.HK"] == 400
+     assert meta["retrieved_at"].startswith("2026-11-12")
+     engine = GlobalEquityEngine({"hk_lot_sizes_file": str(LOTS)}, market="hk")
++    engine._active_symbol = "1234.HK"
++    assert engine.round_size(255, 1) == 255
++    assert engine.lot_assumptions == {"1234.HK": 1}
++    assert "default 1-share lot" in caplog.text
++
++
++def test_explicit_strict_lot_policy_still_fails_closed():
++    engine = GlobalEquityEngine(
++        {"hk_lot_sizes_file": str(LOTS), "hk_require_lot_sizes": True}, market="hk"
++    )
+     engine._active_symbol = "1234.HK"
+     with pytest.raises(ValueError, match="board lot missing"):
+         engine.round_size(1000, 1)
+@@ -233,3 +246,189 @@
+     with pytest.raises(ValueError, match="before 2001"):
+         hk_stamp_duty(100, 100.01, "2000-01-05")
+     assert hk_stamp_duty(100, 100.01, "2000-01-05", rate_override=0.001125) == 12
++
++
++@pytest.mark.parametrize("composite", [False, True])
++def test_actual_hk_execution_rejects_lunch_and_terminal_lunch_liquidation(composite):
++    config = {"codes": ["0700.HK"], "interval": "1m"}
++    engine = (
++        CompositeEngine(config, config["codes"])
++        if composite
++        else GlobalEquityEngine(config, market="hk")
++    )
++    bar = pd.Series({"open": 100, "close": 100})
++    for stamp, allowed in [
++        ("2026-11-12T03:59:00Z", True),
++        ("2026-11-12T04:00:00Z", False),
++        ("2026-11-12T04:30:00Z", False),
++        ("2026-11-12T05:00:00Z", True),
++        ("2026-11-12T08:00:00Z", False),
++    ]:
++        engine._bar_ts = pd.Timestamp(stamp)
++        assert engine.can_execute("0700.HK", 1, bar) is allowed
++        assert engine.can_liquidate_at_end("0700.HK", pd.Timestamp(stamp)) is allowed
++
++
++@pytest.mark.parametrize(
++    "day,allowed",
++    [
++        ("2026-10-01", False),
++        ("2023-09-08", False),
++        ("2025-09-24", True),
++    ],
++)
++def test_daily_execution_uses_holidays_and_historical_weather(day, allowed):
++    engine = GlobalEquityEngine({}, market="hk")
++    engine._bar_ts = pd.Timestamp(day)
++    assert engine.can_execute("0700.HK", 1, pd.Series(dtype=float)) is allowed
++
++
++@pytest.mark.parametrize("day", ["2026-12-24", "2026-12-31", "2026-02-16"])
++def test_hk_halfday_afternoon_fills_rejected_and_naive_intraday_is_local(day):
++    engine = GlobalEquityEngine({"interval": "1m"}, market="hk")
++    for stamp, allowed in [(f"{day} 11:59", True), (f"{day} 13:01", False)]:
++        engine._bar_ts = pd.Timestamp(stamp)
++        assert engine.can_execute("0700.HK", 1, pd.Series(dtype=float)) is allowed
++
++
++def test_actual_fill_ledger_contains_no_lunch_fills():
++    dates = pd.to_datetime(
++        [
++            "2026-11-12T03:30Z",
++            "2026-11-12T04:30Z",
++            "2026-11-12T05:00Z",
++            "2026-11-12T05:30Z",
++        ]
++    )
++    config = {
++        "initial_cash": 100000,
++        "interval": "1m",
++        "hk_lot_sizes": {"0700.HK": 100},
++    }
++    engine = GlobalEquityEngine(config, market="hk")
++    frame = pd.DataFrame({"open": 100.0, "close": 100.0}, index=dates)
++    targets = pd.DataFrame({"0700.HK": [0.0, 0.5, 0.5, 0.5]}, index=dates)
++    engine._execute_bars(
++        dates,
++        {"0700.HK": frame},
++        frame[["close"]].rename(columns={"close": "0700.HK"}),
++        targets,
++        ["0700.HK"],
++    )
++    assert engine.fill_records
++    assert not any(fill.timestamp == dates[1] for fill in engine.fill_records)
++    assert any(
++        fill.action == "open" and fill.timestamp == dates[2]
++        for fill in engine.fill_records
++    )
++
++
++def fx_daily_policy(label, provenance):
++    """Synthetic fixture: daily close/publication instants known from its source."""
++    assert provenance["source"] == "synthetic"
++    day = pd.Timestamp(label).tz_localize("UTC")
++    return day + pd.Timedelta(hours=22), day + pd.Timedelta(hours=22, minutes=5)
++
++
++def fx_daily_fetcher(**kwargs):
++    assert kwargs["codes"] == ["HKD=X"]
++    assert kwargs["source"] == "yfinance" and kwargs["interval"] == "1D"
++    assert (
++        kwargs["as_frames"] and kwargs["include_provenance"] and kwargs["max_rows"] == 0
++    )
++    return {
++        "HKD=X": pd.DataFrame(
++            {"close": [7.8, 7.9, 8.0]},
++            index=pd.to_datetime(["2026-10-29", "2026-10-30", "2026-11-02"]),
++        ),
++        "_provenance": {
++            "HKD=X": {"source": "synthetic", "timestamp_basis": "session_date"}
++        },
++    }
++
++
++def test_loader_to_hk_session_usd_curve_carries_prior_fx_without_lookahead():
++    values = pd.Series(
++        [780.0, 790.0], index=pd.to_datetime(["2026-10-30T08:00Z", "2026-11-02T08:00Z"])
++    )
++    result = hk_equity_to_usd(
++        values, availability_policy=fx_daily_policy, fetcher=fx_daily_fetcher
++    )
++    assert result["rate"].tolist() == [7.8, 7.9]
++    assert result["value_usd"].tolist() == pytest.approx([100.0, 100.0])
++    assert result["return_usd"].iloc[1] == pytest.approx(0.0)
++    assert result.attrs["units"] == "HKD_per_USD"
++    assert result.attrs["availability_policy"] == "fx_daily_policy"
++    assert result.attrs["publication_times_certified"] is False
++
++
++def test_loader_fx_requires_policy_and_never_backfills_first_missing_rate():
++    with pytest.raises(ValueError, match="explicit publication-time"):
++        load_hkd_fx_observations(
++            "2026-10-29",
++            "2026-11-02",
++            availability_policy=None,
++            fetcher=fx_daily_fetcher,
++        )
++    values = pd.Series([780.0], index=pd.to_datetime(["2026-10-29T08:00Z"]))
++    with pytest.raises(ValueError, match="Missing or stale"):
++        hk_equity_to_usd(
++            values, availability_policy=fx_daily_policy, fetcher=fx_daily_fetcher
++        )
++
++
++def test_fx_loader_cannot_fabricate_a_timestamp_or_accept_missing_data():
++    with pytest.raises(ValueError, match="timezone-aware"):
++        load_hkd_fx_observations(
++            "2026-10-29",
++            "2026-11-02",
++            availability_policy=lambda label, _: (label, label),
++            fetcher=fx_daily_fetcher,
++        )
++    with pytest.raises(ValueError, match="unavailable"):
++        load_hkd_fx_observations(
++            "2026-10-29",
++            "2026-11-02",
++            availability_policy=fx_daily_policy,
++            fetcher=lambda **_: {},
++        )
++
++
++def test_hk_usd_curve_requires_actual_trading_sessions():
++    values = pd.Series([780.0], index=pd.to_datetime(["2026-10-31T08:00Z"]))
++    with pytest.raises(ValueError, match="HK trading sessions"):
++        hk_equity_to_usd(
++            values, availability_policy=fx_daily_policy, fetcher=fx_daily_fetcher
++        )
++
++
++def test_hsi_absence_audit_distinguishes_weather_candidates_from_provider_gaps():
++    from src.data_gateway.hk_sessions import audit_hsi_session_coverage
++
++    frame = pd.DataFrame({"close": [100.0]}, index=pd.to_datetime(["2023-09-04"]))
++    report = audit_hsi_session_coverage(
++        frame, "2023-09-01", "2023-09-05", provenance={"source": "synthetic"}
++    )
++    assert report["unverified_pre_reform_closure_candidates"] == ["2023-09-05"]
++    assert not report["coverage_verified"]
++    # Sep 1 is already a sourced full closure, not a silently inferred data gap.
++    assert "2023-09-01" not in report["unverified_pre_reform_closure_candidates"]
++    report = audit_hsi_session_coverage(
++        frame.iloc[:0], "2025-09-24", "2025-09-24", provenance={"source": "synthetic"}
++    )
++    assert report["post_reform_data_gaps"] == ["2025-09-24"]
++    assert not report["unverified_pre_reform_closure_candidates"]
++
++
++def test_weather_inventory_is_sourced_and_reform_ignores_new_weather_overrides(
++    monkeypatch,
++):
++    from src.data_gateway import hk_sessions
++
++    inventory = hk_sessions.weather_closure_inventory()
++    assert all(row["source"].startswith("https://") for row in inventory)
++    assert {row["session"] for row in inventory} == {"morning", "full"}
++    monkeypatch.setitem(
++        hk_sessions.FULL_CLOSURES, "2025-09-24", "https://example.test/weather"
++    )
++    assert len(schedule("hk_equity", "2025-09-24", "2025-09-24")[2]) == 1
+diff --git a/agent/tests/test_global_equity_hk_lot_sizes.py b/agent/tests/test_global_equity_hk_lot_sizes.py
+--- a/agent/tests/test_global_equity_hk_lot_sizes.py
++++ b/agent/tests/test_global_equity_hk_lot_sizes.py
+@@ -64,11 +64,11 @@
+     engine = _engine()
+ 
+     with caplog.at_level(logging.WARNING, logger=LOGGER):
+-        assert _sized(engine, "00009.HK", 250) == 200
+-        assert _sized(engine, "00009.HK", 350) == 300
++        assert _sized(engine, "00009.HK", 250) == 250
++        assert _sized(engine, "00009.HK", 350) == 350
+ 
+     assert engine._engine_diagnostics() == {
+-        "lot_assumptions": [{"symbol": "0009.HK", "field": "board_lot", "value": 100}]
++        "lot_assumptions": [{"symbol": "0009.HK", "field": "board_lot", "value": 1}]
+     }
+     assert sum("0009.HK" in r.getMessage() for r in caplog.records) == 1
+ 
+@@ -76,8 +76,8 @@
+ def test_non_positive_lot_is_treated_as_missing() -> None:
+     engine = _engine({"00001.HK": 0})
+ 
+-    assert _sized(engine, "00001.HK", 250) == 200
+-    assert engine.lot_assumptions == {"0001.HK": 100}
++    assert _sized(engine, "00001.HK", 250) == 250
++    assert engine.lot_assumptions == {"0001.HK": 1}
+ 
+ 
+ def test_without_a_table_default_lots_are_still_disclosed(
+@@ -86,10 +86,10 @@
+     engine = _engine(lots=None)
+ 
+     with caplog.at_level(logging.WARNING, logger=LOGGER):
+-        assert _sized(engine, "00001.HK", 99) == 0
+-        assert _sized(engine, "00002.HK", 250) == 200
+-
+-    assert engine.lot_assumptions == {"0001.HK": 100, "0002.HK": 100}
++        assert _sized(engine, "00001.HK", 99) == 99
++        assert _sized(engine, "00002.HK", 250) == 250
++
++    assert engine.lot_assumptions == {"0001.HK": 1, "0002.HK": 1}
+     assert len(engine._engine_diagnostics()["lot_assumptions"]) == 2
+     assert len(caplog.records) == 2
+ 
+@@ -136,17 +136,23 @@
+ 
+     engine = CompositeEngine({"hk_lot_sizes": {"0700.HK": 20}}, ["0700.HK", "0005.HK"])
+     engine._active_symbol = "0005.HK"
+-    assert engine.round_size(250, 10) == 200
++    assert engine.round_size(250, 10) == 250
+     hk = engine._rule_for("0005.HK")
++
+     # Exercise an independent diagnostic provider without inventing a future's
+     # exchange metadata: the composite must retain every sub-engine report.
+     class OtherDiagnostics:
+         def _engine_diagnostics(self):
+-            return {"pricing_assumptions": [{"product": "ZZ", "field": "tick", "value": 1}]}
++            return {
++                "pricing_assumptions": [{"product": "ZZ", "field": "tick", "value": 1}]
++            }
++
+     engine._rule_engines["synthetic"] = OtherDiagnostics()
+     report = engine._engine_diagnostics()
+     assert report["lot_assumptions"] == hk._engine_diagnostics()["lot_assumptions"]
+-    assert report["pricing_assumptions"] == [{"product": "ZZ", "field": "tick", "value": 1}]
++    assert report["pricing_assumptions"] == [
++        {"product": "ZZ", "field": "tick", "value": 1}
++    ]
+     assert "hk_equity" in report["market_diagnostics"]
+ 
+ 
+@@ -163,31 +169,60 @@
+     sources = []
+     for symbol in codes:
+         path = tmp_path / f"{symbol}.csv"
+-        pd.DataFrame({"date": dates, "open": 10, "high": 10, "low": 10,
+-                      "close": 10, "volume": 100_000}).to_csv(path, index=False)
++        pd.DataFrame(
++            {
++                "date": dates,
++                "open": 10,
++                "high": 10,
++                "low": 10,
++                "close": 10,
++                "volume": 100_000,
++            }
++        ).to_csv(path, index=False)
+         sources.append({"symbol": symbol, "type": "csv", "path": str(path)})
+     config_path = tmp_path / "data-bridge.yaml"
+     config_path.write_text(json.dumps({"sources": sources}), encoding="utf-8")
+     monkeypatch.setattr(local_loader, "_CONFIG_PATH", config_path)
+-    config = {"codes": codes, "initial_cash": 100_000, "source": "local",
+-              "start_date": "2026-01-05", "end_date": "2026-01-08",
+-              "hk_lot_sizes": {"00001.HK": 20}}
++    config = {
++        "codes": codes,
++        "initial_cash": 100_000,
++        "source": "local",
++        "start_date": "2026-01-05",
++        "end_date": "2026-01-08",
++        "hk_lot_sizes": {"00001.HK": 20},
++    }
+ 
+     class Signals:
+         def generate(self, frames):
+-            return {symbol: pd.Series(1.0, index=frame.index)
+-                    for symbol, frame in frames.items()}
+-
+-    engine = CompositeEngine(config, codes) if composite else GlobalEquityEngine(config, market="hk")
++            return {
++                symbol: pd.Series(1.0, index=frame.index)
++                for symbol, frame in frames.items()
++            }
++
++    engine = (
++        CompositeEngine(config, codes)
++        if composite
++        else GlobalEquityEngine(config, market="hk")
++    )
+     run_dir = tmp_path / "run"
+     engine.run_backtest(config, local_loader.DataLoader(), Signals(), run_dir)
+-    fills = [json.loads(line) for line in (run_dir / "artifacts/fills.jsonl").read_text().splitlines()]
++    fills = [
++        json.loads(line)
++        for line in (run_dir / "artifacts/fills.jsonl").read_text().splitlines()
++    ]
+     opened = [fill for fill in fills if fill["action"] == "open"]
+     assert {fill["symbol"] for fill in opened} == set(codes)
+-    assert all(abs(fill["signed_quantity"]) % (20 if fill["symbol"] == codes[0] else 100) == 0
+-               for fill in opened)
++    assert all(
++        abs(fill["signed_quantity"]) % (20 if fill["symbol"] == codes[0] else 1) == 0
++        for fill in opened
++    )
+     card = json.loads((run_dir / "run_card.json").read_text())
+-    expected = [{"symbol": "0002.HK", "field": "board_lot", "value": 100}]
++    expected = [{"symbol": "0002.HK", "field": "board_lot", "value": 1}]
+     assert card["structured_metrics"]["lot_assumptions"] == expected
+     if composite:
+-        assert card["structured_metrics"]["market_diagnostics"]["hk_equity"]["lot_assumptions"] == expected
++        assert (
++            card["structured_metrics"]["market_diagnostics"]["hk_equity"][
++                "lot_assumptions"
++            ]
++            == expected
++        )
+diff --git a/agent/tests/test_global_equity_engine.py b/agent/tests/test_global_equity_engine.py
+--- a/agent/tests/test_global_equity_engine.py
++++ b/agent/tests/test_global_equity_engine.py
+@@ -2,7 +2,7 @@
+ 
+ Validates:
+   - US: zero commission, fractional shares, low slippage
+-  - HK: stamp tax bilateral, 100-share lots, levies
++  - HK: bilateral stamp tax, a configured Tencent 100-share lot, flat fees
+   - Canada: whole shares, configurable broker cost, TSX/TSXV tick grid
+   - Same-session trading for all three markets
+   - Both directions allowed
+@@ -15,7 +15,6 @@
+ 
+ from backtest.engines.global_equity import GlobalEquityEngine
+ 
+-
+ # ---------------------------------------------------------------------------
+ # Helpers
+ # ---------------------------------------------------------------------------
+@@ -32,9 +31,12 @@
+ 
+ 
+ def _hk_engine(**overrides) -> GlobalEquityEngine:
+-    config = {"initial_cash": 1_000_000}
++    config = {"initial_cash": 1_000_000, "hk_lot_sizes": {"0700.HK": 100}}
+     config.update(overrides)
+-    return GlobalEquityEngine(config, market="hk")
++    engine = GlobalEquityEngine(config, market="hk")
++    engine._active_symbol = "0700.HK"
++    engine._bar_ts = pd.Timestamp("2026-11-12")
++    return engine
+ 
+ 
+ def _ca_engine(**overrides) -> GlobalEquityEngine:
+@@ -143,10 +145,10 @@
+         comm = engine.calc_commission(size, price, 1, is_open=True)
+         # Expected components:
+         expected = (
+-            notional * engine.hk_commission      # broker ~¥52.5
+-            + notional * engine.hk_stamp_tax     # stamp ~¥350
+-            + notional * engine.hk_levy          # SFC+FRC ~¥19.8
+-            + notional * engine.hk_settlement    # CCASS ~¥7
++            notional * engine.hk_commission  # broker ~¥52.5
++            + notional * engine.hk_stamp_tax  # stamp ~¥350
++            + notional * engine.hk_levy  # legacy configured flat charge
++            + notional * engine.hk_settlement  # legacy configured flat charge
+         )
+         assert comm == pytest.approx(expected, abs=0.01)
+ 
+@@ -179,7 +181,8 @@
+ 
+     def test_custom_slippage(self) -> None:
+         engine = GlobalEquityEngine(
+-            {"initial_cash": 500_000, "slippage_us": 0.002}, market="us",
++            {"initial_cash": 500_000, "slippage_us": 0.002},
++            market="us",
+         )
+         assert engine.apply_slippage(100.0, 1) == pytest.approx(100.2)
+ 
+@@ -193,7 +196,10 @@
+         ],
+     )
+     def test_canada_rounds_against_trader_on_official_tick_grid(
+-        self, price: float, direction: int, expected: float,
++        self,
++        price: float,
++        direction: int,
++        expected: float,
+     ) -> None:
+         engine = _ca_engine(slippage_ca=0.0)
+         assert engine.apply_slippage(price, direction) == expected
+@@ -224,14 +230,15 @@
+ 
+ def test_us_ignored_commission_is_refused_and_explicit_slippage_changes_fills():
+     import pytest
+-    with pytest.raises(ValueError, match='slippage_us'):
+-        _us_engine(codes=['SPY.US'], commission=0.0005)
+-    engine = _us_engine(codes=['SPY.US'], slippage_us=0.0013)
++
++    with pytest.raises(ValueError, match="slippage_us"):
++        _us_engine(codes=["SPY.US"], commission=0.0005)
++    engine = _us_engine(codes=["SPY.US"], slippage_us=0.0013)
+     assert engine._execution_price(100, 1) == pytest.approx(100.13)
+     assert engine._execution_price(100, -1) == pytest.approx(99.87)
+-    costs = engine._engine_diagnostics()['execution_costs']
+-    assert costs['slippage_buy_rate'] == pytest.approx(.0013)
+-    assert costs['slippage_sell_rate'] == pytest.approx(.0013)
+-    assert costs['commission_rate'] == 0
++    costs = engine._engine_diagnostics()["execution_costs"]
++    assert costs["slippage_buy_rate"] == pytest.approx(0.0013)
++    assert costs["slippage_sell_rate"] == pytest.approx(0.0013)
++    assert costs["commission_rate"] == 0
+     # A composite portfolio may apply the generic commission to crypto.
+-    _us_engine(codes=['SPY.US', 'BTC-USDT'], commission=.001)
++    _us_engine(codes=["SPY.US", "BTC-USDT"], commission=0.001)
+diff --git a/agent/backtest/HK_MARKET_LAYER.md b/agent/backtest/HK_MARKET_LAYER.md
+--- a/agent/backtest/HK_MARKET_LAYER.md
++++ b/agent/backtest/HK_MARKET_LAYER.md
+@@ -1,6 +1,4 @@
+ # Hong Kong market layer
+-
+-Authors: @Jampip, @Joshuaamm7, @james-mulyono, @jaz024, @prs-016.
+ 
+ HK calendar, lot-size and fee extensions for the existing backtest interfaces.
+ FX valuation consumes explicitly supplied historical observations; a multicurrency
+@@ -32,8 +30,12 @@
+ took effect September 23, 2024: ordinary typhoon/black-rain signals no longer
+ imply closure. Do not apply the old weather rule to current sessions. Exceptional
+ future closure notices still require an evidenced override. Intraday validation
+-and the portfolio execution clock remain distinct: B6 must use the same schedule
+-for executable orders as well as data checks.
++and executable fills now use the same sourced schedule. `GlobalEquityEngine`
++and HK dispatch in `CompositeEngine` reject lunch, closed sessions and half-day
++afternoons. Terminal liquidation cannot bypass those boundaries. Daily bars
++carry session dates; intraday timestamps carry bar opens, with naive HK bars
++interpreted in HKT. The engine caches at most two session months. US and India
++execution rules are unchanged.
+ 
+ ## Dated board lots and actual engine duty
+ 
+@@ -50,16 +52,25 @@
+ {"hk_lot_sizes_file": "backtest/data/hk_board_lots_20261112.csv"}
+ ```
+ 
+-The file is mutually exclusive with `hk_lot_sizes`. File-backed sizing requires
+-every traded symbol to have a lot and fails on a missing one; it does not assume
+-100. Existing in-memory maps keep their prior default unless
+-`hk_require_lot_sizes: true` is set. Snapshot provenance appears in engine
++The file is mutually exclusive with `hk_lot_sizes`. A symbol missing from either
++kind of table uses **one share**, emits one warning per symbol, and appears in
++`lot_assumptions`. Set `hk_require_lot_sizes: true` to reject missing entries
++instead. Snapshot provenance appears in engine
+ `hk_board_lot_snapshot` diagnostics and sets `historical_lots_verified: false`.
+ 
+ Retrieval date is not an effective-from date. Using this table in 2016–2026
+ research is an explicit current-lot assumption, not verified historical lot
+ sizes. Future reviews and changes need a fresh dated snapshot. This CSV is not
+ an historical constituent-membership database.
++
++The existing workbook-derived CSV has **unverified redistribution permission**.
++The [HKEX website terms](https://www.hkex.com.hk/global/exchange/terms-of-use?sc_lang=en)
++restrict redistribution and automated access without written permission.
++This update preserves the existing local file but does not download, expand,
++re-add or certify its publication rights. Before publishing a new upstream
++revision, the maintainer must clear the existing CSV's rights or omit it and
++use an operator-provided dated table. The runtime CSV reader supports that
++alternative; its source URL and hash are provenance, not a redistribution grant.
+ 
+ `GlobalEquityEngine.calc_commission` now applies whole-HKD ceiling to duty on
+ both bought and sold notes. The default is 0.1% from September 1, 2001, 0.13%
+@@ -78,6 +89,11 @@
+ The other existing engine fees and slippage are retained unchanged. This is not
+ certification of historical levy schedules, stamp-duty exemptions, short-sale
+ eligibility, non-HKD counters or fee aggregation across multiple fills.
++In particular, `hk_levy` and `hk_settlement` are legacy configurable flat rates;
++they are not a certified SFC/AFRC total or dated CCASS fee schedule. HKEX trading
++fees, dated SFC/AFRC schedules and changing settlement minimums/caps are not
++separately modelled by this HK backtest patch. Broker and FX conversion fees
++remain caller assumptions. None of these is a personal income-tax estimate.
+ 
+ Composite commission dispatch now synchronizes its current bar timestamp to
+ the market engine. The existing India T+1/price-band routing is unchanged and
+@@ -112,6 +128,13 @@
+ not implement an FX cash ledger, hedge returns, executable FX trading, or the
+ multicurrency portfolio mode proposed in B6.
+ 
++The final-week adapter `load_hkd_fx_observations` now requests daily `HKD=X`
++through `src.market_data.fetch_market_data` with full frames/provenance.
++An explicit caller `availability_policy` maps daily labels to close/publication
++instants; there is no guessed default. `hk_equity_to_usd` validates actual HK
++valuation sessions, loads those observations and uses the existing strictly
++prior FX selection. See [the final-week contract and example](HK_FINAL_K3.md).
++
+ ## Local verification
+ 
+ Verified against upstream `d4bce9b28205d61a81e5a5346bd659433312069c` on November 19, 2026.
+diff --git a/agent/backtest/HK_FINAL_K3.md b/agent/backtest/HK_FINAL_K3.md
+new file mode 100644
+--- /dev/null
++++ b/agent/backtest/HK_FINAL_K3.md
+@@ -0,0 +1,145 @@
++# Final-week HK market-layer contract
++
++This local K3 revision extends the existing HK implementation. The original
++Vibe application, US rules and India rules remain in place. It implements the
++HK side; it is not evidence that Jamal's India half has been combined or that
++a joint upstream PR, remote CI or team acceptance has completed.
++
++## Actual execution clock
++
++HK fills and forced terminal closes use the sourced XHKG schedule already
++used for data validation. A lunch bar, holiday bar, known historical full
++closure or half-day afternoon cannot execute. Intraday intervals use bar-open
++instants; timezone-aware bars convert to HKT and the normalized loader's naive
++HK bars are interpreted in HKT. Daily, weekly and monthly bars must carry an
++actual session-date label. They are not executed at a fabricated midnight
++clock time. The current run interval is synchronized through composite
++dispatch; the rule provider does not use a stale parent timestamp.
++
++The existing historical correction inventory is exposed as
++`weather_closure_inventory()`: `date`, `session` (`full` or `morning`), source,
++and the restart time for the delayed-open record. It includes the six sourced
++full closures in 2016, 2017 and 2023, plus October 9, 2023's 14:00 restart.
++It is a limited, explicit inventory, not complete historical certification.
++
++The [HKEX severe-weather reform](https://www.hkex.com.hk/services/trading-hours-and-severe-weather-arrangements/severe-weather-arrangements/overview?sc_lang=en)
++started September 23, 2024. Ordinary weather overrides dated on or after that
++date are ignored. The September 24, 2025 session remains a trading session;
++the [HKEX reminder](https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2025/ce_SEHK_CT_132_2025.pdf)
++documents the policy continuing during the 2025 storm season. A separately
++announced exceptional exchange closure is a different policy, not an automatic
++weather rule.
++
++`audit_hsi_session_coverage(hsi_daily, start, end, provenance=...)` accepts
++actual daily `^HSI` close bars and their loader provenance. Known sourced
++closures are already absent from its expected sessions. Other missing
++pre-reform bars are reported as unverified closure candidates; missing
++post-reform bars are data gaps. Unexpected benchmark sessions are also
++reported. A failed provider request is not silently relabelled a market
++closure. Further closure candidates need a dated source before changing the
++calendar.
++
++## Board lots and duty
++
++Explicit per-symbol lots round down and leave the unused notional as cash.
++For Tencent's supplied 100-share lot, a request for 250 shares sizes to 200.
++Missing lots use one share with one warning and a reported `lot_assumptions`
++entry. Strict callers may opt into `hk_require_lot_sizes: true` to reject gaps.
++
++The dated CSV reader retains its required retrieval timestamp, source URL,
++and source hash. A present-day table is not a historical lot-size database.
++The previously supplied 95-row CSV is preserved locally; no new source table
++is downloaded or added by this revision. Its redistribution rights are not
++established: [HKEX terms](https://www.hkex.com.hk/global/exchange/terms-of-use?sc_lang=en)
++restrict copying, automated access and redistribution without permission.
++Before publication, the existing PR's table requires a maintainer/rights
++decision or replacement with an operator-provided file. A source citation
++and hash alone do not grant republication permission.
++
++Ordinary HKD-equity stamp duty is applied separately to each buy and sell
++note, rounding the duty up to a whole HK dollar:
++
++| Trade date | Rate per side |
++|---|---:|
++| September 1, 2001 through July 31, 2021 | 0.10% |
++| August 1, 2021 through November 16, 2023 | 0.13% |
++| November 17, 2023 onward | 0.10% |
++
++Earlier dates require an explicitly researched override. The
++[IRD rate history](https://www.ird.gov.hk/eng/pdf/sd_stock_rates.pdf) and
++[November 2023 commencement notice](https://www.ird.gov.hk/eng/ppr/archives/23111501.htm)
++support the boundaries; the latter specifies commencement on November 17.
++Exempt instruments and non-HKD counters need their own declared treatment.
++
++The engine's existing `hk_commission`, `hk_levy`, `hk_settlement` and slippage
++inputs retain their configured numerical behavior. They are flat assumptions,
++not a certified dated schedule for HKEX, SFC, AFRC, broker or CCASS charges.
++The old SFC/FRC label on `hk_levy` has been removed because its default does not
++represent a validated sum. Those statutory schedules, settlement minimums/caps,
++FX spread and transfer fees are not newly claimed as modelled by this patch.
++The separate dashboard estimate can expose current sourced charges and broker
++inputs; it must not be presented as this backtest's historical cost model.
++
++## Daily FX acquisition and no look-ahead
++
++`load_hkd_fx_observations` uses Vibe's existing shared loader to request
++`HKD=X`, source `yfinance`, interval `1D`, complete frames and provenance.
++The resulting rate is HKD per USD. Each daily label needs an explicit
++`availability_policy(label, provenance)` returning aware `close_at` and
++`available_at` timestamps. There is no default guessed publication time.
++
++`hk_equity_to_usd` accepts an HKD equity series indexed by actual, aware HK
++valuation instants, verifies its session dates, acquires the FX, then uses
++the strictly prior close and publication-time selection. Rates carry forward
++over a weekend or holiday within the configured maximum age; they never
++backfill a missing first valuation. USD equity is HKD equity divided by the
++selected rate; USD returns are computed from that equity path, not by adding
++local returns to an FX rate. The first return remains missing.
++
++Example conservative policy, after the caller has established a table of real
++source completion/publication times (`completion`) and retained its evidence:
++
++```python
++import pandas as pd
++from backtest.market_layer import hk_equity_to_usd
++from src.data_gateway.calendars import schedule
++
++def after_next_hk_open(label, provenance):
++    # completion is caller-supplied, indexed by the provider's daily labels.
++    row = completion.loc[label]
++    close_at = pd.Timestamp(row["close_at"])
++    published_at = pd.Timestamp(row["available_at"])
++    if close_at.tzinfo is None or published_at.tzinfo is None:
++        raise ValueError("Source completion times must be timezone-aware")
++    day = close_at.tz_convert("Asia/Hong_Kong").date()
++    end = (pd.Timestamp(day) + pd.Timedelta(days=14)).date()
++    frame = schedule("hk_equity", str(day), str(end))[2]
++    next_open = frame.loc[frame["open"] > close_at, "open"].iloc[0]
++    return close_at, max(published_at, next_open)
++
++usd_curve = hk_equity_to_usd(
++    equity_hkd, availability_policy=after_next_hk_open
++)
++```
++
++The conservative next-open delay does not invent the source's actual close.
++Values at that exact availability instant still use the previous known rate;
++the selector requires strict prior availability. The output retains source and
++policy provenance and reports `publication_times_certified: false`. Policy
++injection is not independent verification of the supplied dataset. If the
++source's completion/publication semantics are unknown, the USD research result
++must remain unavailable. No strategy or frozen test is rerun by this change.
++
++## Local checks and external acceptance
++
++The tests exercise actual single/composite engine gating and a fill ledger,
++all three half-day types, the 2025 severe-weather session, lot rounding and
++fallback disclosure, duty boundaries, a mocked shared-loader-to-USD-curve
++integration, missing initial FX, invalid timing policy, and HSI coverage gaps.
++Adjacent US/India/UK, routing and existing FX behavior are checked separately.
++The scratch handoff contains the exact test output and patch hashes.
++
++External items remain: Jamal's actual India code and interface agreement,
++the shared signed-off B3 PR, remote CI, team-chat posting, historical FX source
++semantics, and the board-lot CSV publication decision. This local revision
++does not complete those actions or deploy AWS resources.

@@ -1,0 +1,2142 @@
+{
+  "generated_at_utc": "2026-11-23T08:27:54.276494+00:00",
+  "roster_as_of": "2026-11-04",
+  "purpose": "display-only any-stock lookup; not historical index membership or backtest inputs",
+  "roster_source": "config/hsi_constituents_2026-11-04.csv",
+  "names_source": "config/hk_wiki_titles.csv",
+  "adr_policy": "Explicitly verified US ticker aliases; absence means not yet verified, not proof no ADR exists.",
+  "adr_aliases_complete": false,
+  "gaps": [
+    {
+      "symbol": "6181.HK",
+      "field": "wiki_en",
+      "reason": "No English Wikipedia article found; verified page returns404 and Chinese page has no interlanguage link."
+    }
+  ],
+  "stocks": {
+    "0001.HK": {
+      "name": "CK Hutchison Holdings",
+      "short_name": "CK Hutchison",
+      "name_zh": "長江和記實業",
+      "aliases": [
+        "CK Hutchison",
+        "CK Hutchison Holdings",
+        "Cheung Kong",
+        "長江和記實業",
+        "CKHUY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "CK_Hutchison_Holdings",
+      "wiki_zh": "長江和記實業",
+      "adr_aliases": [
+        "CKHUY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0002.HK": {
+      "name": "CLP",
+      "short_name": "CLP",
+      "name_zh": "中電集團",
+      "aliases": [
+        "CLP",
+        "中電集團",
+        "CLPHY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "CLP_Group",
+      "wiki_zh": "中電集團",
+      "adr_aliases": [
+        "CLPHY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://www.clpgroup.com/content/dam/clp-group/channels/investor/document/3-3-financial-reports/2020/e_2020E117.pdf.coredownload.pdf"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0003.HK": {
+      "name": "Hong Kong and China Gas",
+      "short_name": "Hong Kong and China Gas",
+      "name_zh": "香港中華煤氣",
+      "aliases": [
+        "Hong Kong and China Gas",
+        "香港中華煤氣"
+      ],
+      "ambiguous": false,
+      "wiki_en": "The_Hong_Kong_and_China_Gas_Company",
+      "wiki_zh": "香港中華煤氣",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0005.HK": {
+      "name": "HSBC",
+      "short_name": "HSBC",
+      "name_zh": "滙豐",
+      "aliases": [
+        "HSBC",
+        "滙豐"
+      ],
+      "ambiguous": false,
+      "wiki_en": "HSBC",
+      "wiki_zh": "滙豐",
+      "adr_aliases": [
+        "HSBC"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://www.hsbc.com/investors/shareholder-and-dividend-information/investor-faqs"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0006.HK": {
+      "name": "Power Assets",
+      "short_name": "Power Assets",
+      "name_zh": "電能實業",
+      "aliases": [
+        "Power Assets",
+        "電能實業",
+        "HGKGY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Power_Assets_Holdings",
+      "wiki_zh": "電能實業",
+      "adr_aliases": [
+        "HGKGY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://www.powerassets.com/sc/investor-information/stock-information/adr-information"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0012.HK": {
+      "name": "Henderson Land",
+      "short_name": "Henderson Land",
+      "name_zh": "恆基兆業地產",
+      "aliases": [
+        "Henderson Land",
+        "恆基兆業地產",
+        "HLDCY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Henderson_Land_Development",
+      "wiki_zh": "恆基兆業地產",
+      "adr_aliases": [
+        "HLDCY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://www.hld.com/en/investor-information/corporate-information"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0016.HK": {
+      "name": "Sun Hung Kai Properties",
+      "short_name": "Sun Hung Kai Properties",
+      "name_zh": "新鴻基地產",
+      "aliases": [
+        "Sun Hung Kai Properties",
+        "新鴻基地產",
+        "SUHJY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Sun_Hung_Kai_Properties",
+      "wiki_zh": "新鴻基地產",
+      "adr_aliases": [
+        "SUHJY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://www.shkp.com/en-US/investor-relations/stock-information/adr-programme"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0027.HK": {
+      "name": "Galaxy Entertainment",
+      "short_name": "Galaxy",
+      "name_zh": "銀河娛樂",
+      "aliases": [
+        "Galaxy",
+        "Galaxy Entertainment",
+        "銀河娛樂",
+        "GXYYY"
+      ],
+      "ambiguous": true,
+      "wiki_en": "Galaxy_Entertainment_Group",
+      "wiki_zh": "銀河娛樂",
+      "adr_aliases": [
+        "GXYYY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0066.HK": {
+      "name": "MTR",
+      "short_name": "MTR",
+      "name_zh": "港鐵公司",
+      "aliases": [
+        "MTR",
+        "港鐵公司",
+        "MTCPY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "MTR_Corporation",
+      "wiki_zh": "港鐵公司",
+      "adr_aliases": [
+        "MTCPY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0101.HK": {
+      "name": "Hang Lung Properties",
+      "short_name": "Hang Lung Properties",
+      "name_zh": "恆隆地產",
+      "aliases": [
+        "Hang Lung Properties",
+        "恆隆地產",
+        "HLPPY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Hang_Lung_Properties",
+      "wiki_zh": "恆隆地產",
+      "adr_aliases": [
+        "HLPPY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://www.hanglung.com/en-us/investor/stock-information/listing-information"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0175.HK": {
+      "name": "Geely Automobile",
+      "short_name": "Geely Automobile",
+      "name_zh": "吉利汽車",
+      "aliases": [
+        "Geely Automobile",
+        "吉利汽車"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Geely_Auto",
+      "wiki_zh": "吉利汽車",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0241.HK": {
+      "name": "Alibaba Health",
+      "short_name": "Alibaba Health",
+      "name_zh": "阿里健康",
+      "aliases": [
+        "Alibaba Health",
+        "阿里健康",
+        "ALBBY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Alibaba_Health",
+      "wiki_zh": "阿里健康",
+      "adr_aliases": [
+        "ALBBY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0267.HK": {
+      "name": "CITIC Pacific",
+      "short_name": "CITIC Pacific",
+      "name_zh": "中信股份",
+      "aliases": [
+        "CITIC Pacific",
+        "中信股份"
+      ],
+      "ambiguous": false,
+      "wiki_en": "CITIC_Pacific",
+      "wiki_zh": "中信股份",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0285.HK": {
+      "name": "BYD Electronic",
+      "short_name": "BYD Electronic",
+      "name_zh": "比亞迪電子",
+      "aliases": [
+        "BYD Electronic",
+        "比亞迪電子",
+        "BYDIY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "BYD_Company",
+      "wiki_zh": "比亞迪電子",
+      "adr_aliases": [
+        "BYDIY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173",
+        "https://en.wikipedia.org/wiki/BYD_Company"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity",
+      "wiki_scope": "English BYD Electronic redirects to parent BYD Company; pageviews are a shared-company proxy, not isolated subsidiary attention."
+    },
+    "0288.HK": {
+      "name": "WH Group",
+      "short_name": "WH Group",
+      "name_zh": "萬洲國際",
+      "aliases": [
+        "WH Group",
+        "萬洲國際"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Shuanghui",
+      "wiki_zh": "萬洲國際",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0291.HK": {
+      "name": "China Resources Beer",
+      "short_name": "China Resources Beer",
+      "name_zh": "華潤啤酒",
+      "aliases": [
+        "China Resources Beer",
+        "China Resources Enterprise / China Resources Beer",
+        "華潤啤酒"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Resources_Beer",
+      "wiki_zh": "華潤啤酒",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://en.wikipedia.org/wiki/China_Resources_Beer"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0300.HK": {
+      "name": "MIDEA GROUP",
+      "short_name": "MIDEA GROUP",
+      "name_zh": "美的集團",
+      "aliases": [
+        "MIDEA GROUP",
+        "美的集團",
+        "MGCLY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Midea_(company)",
+      "wiki_zh": "美的集團",
+      "adr_aliases": [
+        "MGCLY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0316.HK": {
+      "name": "OOIL",
+      "short_name": "OOIL",
+      "name_zh": "東方海外",
+      "aliases": [
+        "OOIL",
+        "東方海外",
+        "OROVY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Orient_Overseas_(International)_Limited",
+      "wiki_zh": "東方海外",
+      "adr_aliases": [
+        "OROVY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0322.HK": {
+      "name": "Tingyi",
+      "short_name": "Tingyi",
+      "name_zh": "康師傅",
+      "aliases": [
+        "Tingyi",
+        "康師傅",
+        "TYCMY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Tingyi_(Cayman_Islands)_Holding_Corporation",
+      "wiki_zh": "康師傅",
+      "adr_aliases": [
+        "TYCMY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0386.HK": {
+      "name": "Sinopec",
+      "short_name": "Sinopec",
+      "name_zh": "中国石化",
+      "aliases": [
+        "Sinopec",
+        "中国石化"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Sinopec",
+      "wiki_zh": "中国石化",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0388.HK": {
+      "name": "HKEX",
+      "short_name": "HKEX",
+      "name_zh": "香港交易所",
+      "aliases": [
+        "HKEX",
+        "香港交易所",
+        "HKXCY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Hong_Kong_Exchanges_and_Clearing",
+      "wiki_zh": "香港交易所",
+      "adr_aliases": [
+        "HKXCY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0669.HK": {
+      "name": "Techtronic Industries",
+      "short_name": "Techtronic Industries",
+      "name_zh": "創科實業",
+      "aliases": [
+        "Techtronic Industries",
+        "創科實業",
+        "TTNDY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Techtronic_Industries",
+      "wiki_zh": "創科實業",
+      "adr_aliases": [
+        "TTNDY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://www.ttigroup.com/investors/stock"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0688.HK": {
+      "name": "China Overseas Land",
+      "short_name": "China Overseas Land",
+      "name_zh": "中國海外發展",
+      "aliases": [
+        "China Overseas Land",
+        "中國海外發展",
+        "CAOVY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Overseas_Land_and_Investment_Limited",
+      "wiki_zh": "中國海外發展",
+      "adr_aliases": [
+        "CAOVY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0700.HK": {
+      "name": "Tencent",
+      "short_name": "Tencent",
+      "name_zh": "腾讯",
+      "aliases": [
+        "Tencent",
+        "腾讯",
+        "TCEHY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Tencent",
+      "wiki_zh": "腾讯",
+      "adr_aliases": [
+        "TCEHY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/pgm_d.aspx?cusip=88032Q109&pageId=15&subpageid=106"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0728.HK": {
+      "name": "CHINA TELECOM",
+      "short_name": "CHINA TELECOM",
+      "name_zh": "中國電信股份有限公司",
+      "aliases": [
+        "CHINA TELECOM",
+        "中國電信股份有限公司"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Telecom",
+      "wiki_zh": "中國電信股份有限公司",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0762.HK": {
+      "name": "China Unicom",
+      "short_name": "China Unicom",
+      "name_zh": "中国联通",
+      "aliases": [
+        "China Unicom",
+        "中国联通"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Unicom",
+      "wiki_zh": "中国联通",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0823.HK": {
+      "name": "Link REIT",
+      "short_name": "Link",
+      "name_zh": "領展房地產投資信託基金",
+      "aliases": [
+        "Link",
+        "Link REIT",
+        "領展房地產投資信託基金"
+      ],
+      "ambiguous": true,
+      "wiki_en": "The_Link_REIT",
+      "wiki_zh": "領展房地產投資信託基金",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0836.HK": {
+      "name": "China Resources Power",
+      "short_name": "China Resources Power",
+      "name_zh": "華潤電力控股",
+      "aliases": [
+        "China Resources Power",
+        "華潤電力控股",
+        "CRPJY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Resources_Power",
+      "wiki_zh": "華潤電力控股",
+      "adr_aliases": [
+        "CRPJY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0857.HK": {
+      "name": "PetroChina",
+      "short_name": "PetroChina",
+      "name_zh": "中国石油天然气股份",
+      "aliases": [
+        "PetroChina",
+        "中国石油天然气股份"
+      ],
+      "ambiguous": false,
+      "wiki_en": "PetroChina",
+      "wiki_zh": "中国石油天然气股份",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0868.HK": {
+      "name": "Xinyi Glass",
+      "short_name": "Xinyi Glass",
+      "name_zh": "信義玻璃",
+      "aliases": [
+        "Xinyi Glass",
+        "信義玻璃",
+        "XYIGY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Xinyi_Glass",
+      "wiki_zh": "信義玻璃",
+      "adr_aliases": [
+        "XYIGY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0883.HK": {
+      "name": "CNOOC",
+      "short_name": "CNOOC",
+      "name_zh": "中国海洋石油有限公司",
+      "aliases": [
+        "CNOOC",
+        "中国海洋石油有限公司"
+      ],
+      "ambiguous": false,
+      "wiki_en": "CNOOC_Limited",
+      "wiki_zh": "中国海洋石油有限公司",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0939.HK": {
+      "name": "CCB",
+      "short_name": "CCB",
+      "name_zh": "中国建设银行",
+      "aliases": [
+        "CCB",
+        "中国建设银行",
+        "CICHY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Construction_Bank",
+      "wiki_zh": "中国建设银行",
+      "adr_aliases": [
+        "CICHY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0941.HK": {
+      "name": "China Mobile",
+      "short_name": "China Mobile",
+      "name_zh": "中国移动",
+      "aliases": [
+        "China Mobile",
+        "中国移动"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Mobile",
+      "wiki_zh": "中国移动",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0960.HK": {
+      "name": "Longfor",
+      "short_name": "Longfor",
+      "name_zh": "龍湖地產",
+      "aliases": [
+        "Longfor",
+        "龍湖地產",
+        "LGFRY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Longfor_Properties",
+      "wiki_zh": "龍湖地產",
+      "adr_aliases": [
+        "LGFRY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0968.HK": {
+      "name": "Xinyi Solar",
+      "short_name": "Xinyi Solar",
+      "name_zh": "信義光能",
+      "aliases": [
+        "Xinyi Solar",
+        "信義光能",
+        "XISHY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Xinyi_Solar",
+      "wiki_zh": "信義光能",
+      "adr_aliases": [
+        "XISHY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0981.HK": {
+      "name": "SMIC",
+      "short_name": "SMIC",
+      "name_zh": "中芯国际",
+      "aliases": [
+        "SMIC",
+        "中芯国际"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Semiconductor_Manufacturing_International_Corporation",
+      "wiki_zh": "中芯国际",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "0992.HK": {
+      "name": "Lenovo",
+      "short_name": "Lenovo",
+      "name_zh": "联想集团",
+      "aliases": [
+        "Lenovo",
+        "联想集团",
+        "LNVGY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Lenovo",
+      "wiki_zh": "联想集团",
+      "adr_aliases": [
+        "LNVGY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://investor.lenovo.com/en/ir/stockinfo.php"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1024.HK": {
+      "name": "Kuaishou",
+      "short_name": "Kuaishou",
+      "name_zh": "快手",
+      "aliases": [
+        "Kuaishou",
+        "快手",
+        "KSHTY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Kuaishou",
+      "wiki_zh": "快手_(軟體)",
+      "adr_aliases": [
+        "KSHTY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1038.HK": {
+      "name": "CK Infrastructure Holdings",
+      "short_name": "CK Infrastructure Holdings",
+      "name_zh": "長江基建",
+      "aliases": [
+        "CK Infrastructure Holdings",
+        "長江基建",
+        "CKISY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Cheung_Kong_Infrastructure_Holdings",
+      "wiki_zh": "長江基建",
+      "adr_aliases": [
+        "CKISY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1044.HK": {
+      "name": "Hengan",
+      "short_name": "Hengan",
+      "name_zh": "恆安國際",
+      "aliases": [
+        "Hengan",
+        "恆安國際",
+        "HEGIY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Hengan_International",
+      "wiki_zh": "恆安國際",
+      "adr_aliases": [
+        "HEGIY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1088.HK": {
+      "name": "China Shenhua",
+      "short_name": "China Shenhua",
+      "name_zh": "神华能源",
+      "aliases": [
+        "China Shenhua",
+        "神华能源",
+        "CSUAY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Shenhua_Energy_Company",
+      "wiki_zh": "神华能源",
+      "adr_aliases": [
+        "CSUAY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1093.HK": {
+      "name": "CSPC Pharmaceutical",
+      "short_name": "CSPC Pharmaceutical",
+      "name_zh": "石藥集團",
+      "aliases": [
+        "CSPC Pharmaceutical",
+        "石藥集團",
+        "CSPCY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Shijiazhuang_Pharma_Group",
+      "wiki_zh": "石藥集團",
+      "adr_aliases": [
+        "CSPCY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1099.HK": {
+      "name": "Sinopharm",
+      "short_name": "Sinopharm",
+      "name_zh": "國藥控股",
+      "aliases": [
+        "Sinopharm",
+        "國藥控股",
+        "SHTDY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Sinopharm_Group",
+      "wiki_zh": "國藥控股",
+      "adr_aliases": [
+        "SHTDY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1109.HK": {
+      "name": "China Resources Land",
+      "short_name": "China Resources Land",
+      "name_zh": "華潤置地",
+      "aliases": [
+        "China Resources Land",
+        "華潤置地",
+        "CRBJY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Resources_Land",
+      "wiki_zh": "華潤置地",
+      "adr_aliases": [
+        "CRBJY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1113.HK": {
+      "name": "CK Asset Holdings",
+      "short_name": "CK Asset Holdings",
+      "name_zh": "長江實業集團",
+      "aliases": [
+        "CK Asset Holdings",
+        "長江實業集團",
+        "CNGKY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Cheung_Kong_Property_Holdings",
+      "wiki_zh": "長江實業集團",
+      "adr_aliases": [
+        "CNGKY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1177.HK": {
+      "name": "Sino Biopharmaceutical",
+      "short_name": "Sino Biopharmaceutical",
+      "name_zh": "中國生物製藥",
+      "aliases": [
+        "Sino Biopharmaceutical",
+        "中國生物製藥",
+        "SBHMY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Sino_Biopharmaceutical_Limited",
+      "wiki_zh": "中國生物製藥",
+      "adr_aliases": [
+        "SBHMY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1209.HK": {
+      "name": "CR Mixc Lifestyle",
+      "short_name": "CR Mixc Lifestyle",
+      "name_zh": "华润万象生活",
+      "aliases": [
+        "CR Mixc Lifestyle",
+        "华润万象生活",
+        "CRMLY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Resources_Mixc_Lifestyle_Services",
+      "wiki_zh": "华润万象生活",
+      "adr_aliases": [
+        "CRMLY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1211.HK": {
+      "name": "BYD",
+      "short_name": "BYD",
+      "name_zh": "比亚迪",
+      "aliases": [
+        "BYD",
+        "比亚迪",
+        "BYDDY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "BYD_Company",
+      "wiki_zh": "比亚迪",
+      "adr_aliases": [
+        "BYDDY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1299.HK": {
+      "name": "AIA",
+      "short_name": "AIA",
+      "name_zh": "友邦保險",
+      "aliases": [
+        "AIA",
+        "友邦保險",
+        "AAGIY"
+      ],
+      "ambiguous": true,
+      "wiki_en": "AIA_Group_Limited",
+      "wiki_zh": "友邦保險",
+      "adr_aliases": [
+        "AAGIY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://www.aia.com/en/media-centre/press-releases/2026/aia-group-press-release-20260319"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1347.HK": {
+      "name": "HUA HONG SEMICONDUCTOR",
+      "short_name": "HUA HONG SEMICONDUCTOR",
+      "name_zh": "上海华虹",
+      "aliases": [
+        "HUA HONG SEMICONDUCTOR",
+        "上海华虹"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Hua_Hong_Semiconductor",
+      "wiki_zh": "上海华虹",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1378.HK": {
+      "name": "China Hongqiao",
+      "short_name": "China Hongqiao",
+      "name_zh": "中國宏橋集團",
+      "aliases": [
+        "China Hongqiao",
+        "中國宏橋集團",
+        "CHHQY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Hongqiao_Group",
+      "wiki_zh": "中國宏橋集團",
+      "adr_aliases": [
+        "CHHQY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1398.HK": {
+      "name": "ICBC",
+      "short_name": "ICBC",
+      "name_zh": "中国工商银行",
+      "aliases": [
+        "ICBC",
+        "中国工商银行",
+        "IDCBY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Industrial_and_Commercial_Bank_of_China",
+      "wiki_zh": "中国工商银行",
+      "adr_aliases": [
+        "IDCBY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1519.HK": {
+      "name": "J&T EXPRESS",
+      "short_name": "J&T EXPRESS",
+      "name_zh": "极兔速递",
+      "aliases": [
+        "J&T EXPRESS",
+        "极兔速递",
+        "JTGEY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "J&T_Express",
+      "wiki_zh": "极兔速递",
+      "adr_aliases": [
+        "JTGEY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1801.HK": {
+      "name": "INNOVENT BIO",
+      "short_name": "INNOVENT BIO",
+      "name_zh": "信達生物",
+      "aliases": [
+        "INNOVENT BIO",
+        "信達生物",
+        "IVBIY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Innovent_Biologics",
+      "wiki_zh": "信達生物",
+      "adr_aliases": [
+        "IVBIY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1810.HK": {
+      "name": "Xiaomi",
+      "short_name": "Xiaomi",
+      "name_zh": "小米集團",
+      "aliases": [
+        "Xiaomi",
+        "小米集團",
+        "XIACY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Xiaomi",
+      "wiki_zh": "小米集團",
+      "adr_aliases": [
+        "XIACY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1876.HK": {
+      "name": "Budweiser APAC",
+      "short_name": "Budweiser APAC",
+      "name_zh": "百威亞太",
+      "aliases": [
+        "Budweiser APAC",
+        "百威亞太",
+        "BDWBY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Budweiser_APAC",
+      "wiki_zh": "百威亞太",
+      "adr_aliases": [
+        "BDWBY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1928.HK": {
+      "name": "Sands China",
+      "short_name": "Sands",
+      "name_zh": "金沙中國",
+      "aliases": [
+        "Sands",
+        "Sands China",
+        "金沙中國"
+      ],
+      "ambiguous": true,
+      "wiki_en": "Sands_China",
+      "wiki_zh": "金沙中國",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "1929.HK": {
+      "name": "Chow Tai Fook",
+      "short_name": "Chow Tai Fook",
+      "name_zh": "周大福集團",
+      "aliases": [
+        "Chow Tai Fook",
+        "周大福集團",
+        "CJEWY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Chow_Tai_Fook",
+      "wiki_zh": "周大福集團",
+      "adr_aliases": [
+        "CJEWY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173",
+        "https://en.wikipedia.org/wiki/Chow_Tai_Fook"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity",
+      "wiki_scope": "English Chow Tai Fook article covers the broader group and its jewellery subsidiary; pageviews are a shared-company proxy."
+    },
+    "1997.HK": {
+      "name": "Wharf REIC",
+      "short_name": "Wharf REIC",
+      "name_zh": "九龍倉置業",
+      "aliases": [
+        "Wharf REIC",
+        "九龍倉置業",
+        "WHREY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Wharf_Real_Estate_Investment_Company",
+      "wiki_zh": "九龍倉置業",
+      "adr_aliases": [
+        "WHREY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2015.HK": {
+      "name": "Li Auto",
+      "short_name": "Li Auto",
+      "name_zh": "理想汽车",
+      "aliases": [
+        "Li Auto",
+        "理想汽车",
+        "LI"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Li_Auto",
+      "wiki_zh": "理想汽车",
+      "adr_aliases": [
+        "LI"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://ir.lixiang.com/news-releases/news-release-details/li-auto-inc-october-2026-delivery-update"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2020.HK": {
+      "name": "ANTA Sports",
+      "short_name": "ANTA Sports",
+      "name_zh": "安踏體育",
+      "aliases": [
+        "ANTA Sports",
+        "安踏體育",
+        "ANPDY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "ANTA_Sports",
+      "wiki_zh": "安踏體育",
+      "adr_aliases": [
+        "ANPDY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2057.HK": {
+      "name": "ZTO EXPRESS",
+      "short_name": "ZTO EXPRESS",
+      "name_zh": "中通快递",
+      "aliases": [
+        "ZTO EXPRESS",
+        "中通快递",
+        "ZTO"
+      ],
+      "ambiguous": false,
+      "wiki_en": "ZTO_Express",
+      "wiki_zh": "中通快递",
+      "adr_aliases": [
+        "ZTO"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://zto.investorroom.com/2026-08-18-ZTO-Reports-Second-Quarter-2026-Unaudited-Financial-Results"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2269.HK": {
+      "name": "WuXi Biologics",
+      "short_name": "WuXi Biologics",
+      "name_zh": "药明生物",
+      "aliases": [
+        "WuXi Biologics",
+        "药明生物",
+        "WXXWY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "WuXi_Biologics",
+      "wiki_zh": "药明生物",
+      "adr_aliases": [
+        "WXXWY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2313.HK": {
+      "name": "Shenzhou International",
+      "short_name": "Shenzhou International",
+      "name_zh": "申洲國際",
+      "aliases": [
+        "Shenzhou International",
+        "申洲國際",
+        "SHZHY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Shenzhou_International",
+      "wiki_zh": "申洲國際",
+      "adr_aliases": [
+        "SHZHY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2318.HK": {
+      "name": "Ping An",
+      "short_name": "Ping An",
+      "name_zh": "平安保险",
+      "aliases": [
+        "Ping An",
+        "平安保险"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Ping_An_Insurance",
+      "wiki_zh": "平安保险",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2319.HK": {
+      "name": "Mengniu Dairy",
+      "short_name": "Mengniu Dairy",
+      "name_zh": "蒙牛集团",
+      "aliases": [
+        "Mengniu Dairy",
+        "蒙牛集团",
+        "CIADY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Mengniu_Dairy",
+      "wiki_zh": "蒙牛集团",
+      "adr_aliases": [
+        "CIADY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2331.HK": {
+      "name": "Li Ning",
+      "short_name": "Li Ning",
+      "name_zh": "李寧",
+      "aliases": [
+        "Li Ning",
+        "李寧",
+        "LNNGY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Li-Ning",
+      "wiki_zh": "李宁有限公司",
+      "adr_aliases": [
+        "LNNGY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2338.HK": {
+      "name": "WEICHAI POWER",
+      "short_name": "WEICHAI POWER",
+      "name_zh": "濰柴動力",
+      "aliases": [
+        "WEICHAI POWER",
+        "濰柴動力"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Weichai_Power",
+      "wiki_zh": "濰柴動力",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2359.HK": {
+      "name": "WuXi AppTec",
+      "short_name": "WuXi AppTec",
+      "name_zh": "药明康德",
+      "aliases": [
+        "WuXi AppTec",
+        "药明康德",
+        "WUXAY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "WuXi_PharmaTech",
+      "wiki_zh": "药明康德",
+      "adr_aliases": [
+        "WUXAY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2382.HK": {
+      "name": "Sunny Optical",
+      "short_name": "Sunny Optical",
+      "name_zh": "舜宇光學科技",
+      "aliases": [
+        "Sunny Optical",
+        "舜宇光學科技",
+        "SOTGY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Sunny_Optical_Technology",
+      "wiki_zh": "舜宇光學科技",
+      "adr_aliases": [
+        "SOTGY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2388.HK": {
+      "name": "BOC Hong Kong",
+      "short_name": "BOC Hong Kong",
+      "name_zh": "中國銀行（香港）",
+      "aliases": [
+        "BOC Hong Kong",
+        "中國銀行（香港）"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Bank_of_China_(Hong_Kong)",
+      "wiki_zh": "中國銀行（香港）",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2600.HK": {
+      "name": "CHALCO",
+      "short_name": "CHALCO",
+      "name_zh": "中國鋁業",
+      "aliases": [
+        "CHALCO",
+        "中國鋁業"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Aluminum_Corporation_of_China_Limited",
+      "wiki_zh": "中國鋁業",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2618.HK": {
+      "name": "JD LOGISTICS",
+      "short_name": "JD LOGISTICS",
+      "name_zh": "京东物流",
+      "aliases": [
+        "JD LOGISTICS",
+        "京东物流",
+        "JDLGY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Jingdong_Logistics",
+      "wiki_zh": "京东物流",
+      "adr_aliases": [
+        "JDLGY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2628.HK": {
+      "name": "China Life",
+      "short_name": "China Life",
+      "name_zh": "中国人寿保险",
+      "aliases": [
+        "China Life",
+        "中国人寿保险"
+      ],
+      "ambiguous": true,
+      "wiki_en": "China_Life_Insurance_Company",
+      "wiki_zh": "中国人寿保险",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2688.HK": {
+      "name": "ENN Energy",
+      "short_name": "ENN Energy",
+      "name_zh": "新奧能源",
+      "aliases": [
+        "ENN Energy",
+        "新奧能源",
+        "XNGSY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "ENN_Energy_Holdings_Limited",
+      "wiki_zh": "新奧能源",
+      "adr_aliases": [
+        "XNGSY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "2899.HK": {
+      "name": "Zijin Mining",
+      "short_name": "Zijin Mining",
+      "name_zh": "紫金礦業",
+      "aliases": [
+        "Zijin Mining",
+        "紫金礦業",
+        "ZIJMY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Zijin_Mining",
+      "wiki_zh": "紫金礦業",
+      "adr_aliases": [
+        "ZIJMY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "3690.HK": {
+      "name": "Meituan",
+      "short_name": "Meituan",
+      "name_zh": "美團",
+      "aliases": [
+        "Meituan",
+        "美團",
+        "MPNGY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Meituan.com",
+      "wiki_zh": "美团网",
+      "adr_aliases": [
+        "MPNGY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "3692.HK": {
+      "name": "Hansoh Pharma",
+      "short_name": "Hansoh Pharma",
+      "name_zh": "翰森製藥",
+      "aliases": [
+        "Hansoh Pharma",
+        "翰森製藥",
+        "HNPHY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Hansoh_Pharmaceutical",
+      "wiki_zh": "翰森製藥",
+      "adr_aliases": [
+        "HNPHY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "3750.HK": {
+      "name": "CATL",
+      "short_name": "CATL",
+      "name_zh": "寧德時代",
+      "aliases": [
+        "CATL",
+        "寧德時代",
+        "CYATY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Contemporary_Amperex_Technology_Co._Limited_(CATL)",
+      "wiki_zh": "宁德时代新能源科技股份有限公司",
+      "adr_aliases": [
+        "CYATY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "3968.HK": {
+      "name": "China Merchants Bank",
+      "short_name": "China Merchants Bank",
+      "name_zh": "招商银行",
+      "aliases": [
+        "China Merchants Bank",
+        "招商银行",
+        "CIHKY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Merchants_Bank",
+      "wiki_zh": "招商银行",
+      "adr_aliases": [
+        "CIHKY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "3988.HK": {
+      "name": "Bank of China",
+      "short_name": "Bank of China",
+      "name_zh": "中国银行",
+      "aliases": [
+        "Bank of China",
+        "中国银行",
+        "BACHY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Bank_of_China",
+      "wiki_zh": "中国银行",
+      "adr_aliases": [
+        "BACHY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "3993.HK": {
+      "name": "CMOC",
+      "short_name": "CMOC",
+      "name_zh": "洛陽欒川鉬業",
+      "aliases": [
+        "CMOC",
+        "洛陽欒川鉬業",
+        "CMCLY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "China_Molybdenum",
+      "wiki_zh": "洛陽欒川鉬業",
+      "adr_aliases": [
+        "CMCLY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "6160.HK": {
+      "name": "BeOne Medicines",
+      "short_name": "BeOne",
+      "name_zh": "百濟神州",
+      "aliases": [
+        "BeOne",
+        "BeOne Medicines",
+        "BEONE MEDICINES",
+        "百濟神州",
+        "ONC",
+        "BeiGene",
+        "BGNE"
+      ],
+      "ambiguous": false,
+      "wiki_en": "BeOne_Medicines",
+      "wiki_zh": "百济神州",
+      "adr_aliases": [
+        "ONC"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://ir.beonemedicines.com/news/beone-medicines-announces-third-quarter-2026-financial-results-and-business-updates/090a271d-e1d2-4195-b14c-36ffab8c3614",
+        "https://ir.beonemedicines.com/media/document/2af8780d-085a-401f-8269-28f0e470ee62/assets/Annual_Report_2024_beigene.pdf?disposition=inline",
+        "https://en.wikipedia.org/wiki/BeOne_Medicines"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity",
+      "historical_us_aliases": [
+        "BGNE"
+      ]
+    },
+    "6181.HK": {
+      "name": "LAOPU GOLD",
+      "short_name": "LAOPU GOLD",
+      "name_zh": "老鋪黃金",
+      "aliases": [
+        "LAOPU GOLD",
+        "老鋪黃金",
+        "LPGCY"
+      ],
+      "ambiguous": false,
+      "wiki_en": null,
+      "wiki_zh": "老鋪黃金",
+      "adr_aliases": [
+        "LPGCY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173",
+        "https://zh.wikipedia.org/wiki/老鋪黃金"
+      ],
+      "wiki_status": "missing_english_article",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity",
+      "wiki_note": "English Laopu_Gold was checked and returned 404; Chinese article has no English interlanguage link. Keep null rather than fabricate a title."
+    },
+    "6618.HK": {
+      "name": "JD Health",
+      "short_name": "JD Health",
+      "name_zh": "京東健康",
+      "aliases": [
+        "JD Health",
+        "京東健康",
+        "JDHIY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "JD_Health",
+      "wiki_zh": "京東健康",
+      "adr_aliases": [
+        "JDHIY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "6690.HK": {
+      "name": "Haier Smart Home",
+      "short_name": "Haier Smart Home",
+      "name_zh": "海尔",
+      "aliases": [
+        "Haier Smart Home",
+        "海尔",
+        "HSHCY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Haier",
+      "wiki_zh": "海尔",
+      "adr_aliases": [
+        "HSHCY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "6862.HK": {
+      "name": "Haidilao",
+      "short_name": "Haidilao",
+      "name_zh": "海底捞",
+      "aliases": [
+        "Haidilao",
+        "海底捞"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Hai_Di_Lao_hot_pot",
+      "wiki_zh": "海底捞",
+      "adr_aliases": [],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "9618.HK": {
+      "name": "JD.com",
+      "short_name": "JD.com",
+      "name_zh": "京東集團",
+      "aliases": [
+        "JD.com",
+        "京東集團",
+        "JD",
+        "Jingdong"
+      ],
+      "ambiguous": false,
+      "wiki_en": "JD.com",
+      "wiki_zh": "京東商城",
+      "adr_aliases": [
+        "JD"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://ir.jd.com/node/12441"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "9633.HK": {
+      "name": "Nongfu Spring",
+      "short_name": "Nongfu Spring",
+      "name_zh": "农夫山泉",
+      "aliases": [
+        "Nongfu Spring",
+        "农夫山泉",
+        "NOGFY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Nongfu_Spring",
+      "wiki_zh": "农夫山泉",
+      "adr_aliases": [
+        "NOGFY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "9888.HK": {
+      "name": "Baidu",
+      "short_name": "Baidu",
+      "name_zh": "百度",
+      "aliases": [
+        "Baidu",
+        "百度",
+        "BIDU"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Baidu",
+      "wiki_zh": "百度",
+      "adr_aliases": [
+        "BIDU"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://ir.baidu.com/news-releases/news-release-details/baidu-announces-third-quarter-2026-results"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "9901.HK": {
+      "name": "New Oriental",
+      "short_name": "New Oriental",
+      "name_zh": "新东方学校",
+      "aliases": [
+        "New Oriental",
+        "新东方学校",
+        "EDU"
+      ],
+      "ambiguous": false,
+      "wiki_en": "New_Oriental",
+      "wiki_zh": "新东方学校",
+      "adr_aliases": [
+        "EDU"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://investor.neworiental.org/shareholder-services/investor-faqs/"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "9961.HK": {
+      "name": "Trip.com",
+      "short_name": "Trip.com",
+      "name_zh": "攜程集團",
+      "aliases": [
+        "Trip.com",
+        "攜程集團",
+        "TCOM",
+        "Ctrip"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Ctrip",
+      "wiki_zh": "携程旅行网",
+      "adr_aliases": [
+        "TCOM"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://investors.trip.com/investor-overview/"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "9988.HK": {
+      "name": "Alibaba",
+      "short_name": "Alibaba",
+      "name_zh": "阿里巴巴集团",
+      "aliases": [
+        "Alibaba",
+        "阿里巴巴集团",
+        "BABA"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Alibaba_Group",
+      "wiki_zh": "阿里巴巴集团",
+      "adr_aliases": [
+        "BABA"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://www.alibabagroup.com/en-US/faqs-investor-information"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "9992.HK": {
+      "name": "POP MART",
+      "short_name": "POP MART",
+      "name_zh": "泡泡玛特",
+      "aliases": [
+        "POP MART",
+        "泡泡玛特",
+        "PMRTY"
+      ],
+      "ambiguous": false,
+      "wiki_en": "Pop_Mart",
+      "wiki_zh": "泡泡玛特",
+      "adr_aliases": [
+        "PMRTY"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://depositaryreceipts.citi.com/adr/guides/unspresource.aspx?pageId=3&subpageID=173"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    },
+    "9999.HK": {
+      "name": "NetEase",
+      "short_name": "NetEase",
+      "name_zh": "网易",
+      "aliases": [
+        "NetEase",
+        "网易",
+        "NTES"
+      ],
+      "ambiguous": false,
+      "wiki_en": "NetEase",
+      "wiki_zh": "网易",
+      "adr_aliases": [
+        "NTES"
+      ],
+      "metadata_sources": [
+        "https://www.hsi.com.hk/static/uploads/contents/en/news/pressRelease/20260821T174500.pdf",
+        "config/hk_wiki_titles.csv",
+        "https://ir.netease.com/node/5941"
+      ],
+      "wiki_status": "mapped",
+      "name_zh_source": "existing Chinese Wikipedia title; display label curated for current entity"
+    }
+  }
+}

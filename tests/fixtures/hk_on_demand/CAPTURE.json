@@ -1,0 +1,23 @@
+[
+  {
+    "file": "tencent_quotes.txt",
+    "url": "https://qt.gtimg.cn/q=r_hk00700,r_hk00100,r_hk80737",
+    "captured_at_utc": "2026-11-23T08:20:39.624566+00:00",
+    "sha256": "284a31478ca42b30abbf111a8d7929e05f320da8fe997dd8fb185cfd60b3a78c",
+    "http_status": 200
+  },
+  {
+    "file": "tencent_unknown.txt",
+    "url": "https://qt.gtimg.cn/q=r_hk99999",
+    "captured_at_utc": "2026-11-23T08:20:40.339250+00:00",
+    "sha256": "b00bd0cba55ccd1fa5046578ca8f44316cf2efd84eaf18b7b64d68cc110b6158",
+    "http_status": 200
+  },
+  {
+    "file": "hkma_daily.json",
+    "url": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/er-ir/er-eeri-daily?pagesize=5&sortby=end_of_day&sortorder=desc&fields=end_of_day,usd",
+    "captured_at_utc": "2026-11-23T08:20:41.393761+00:00",
+    "sha256": "5a261af2175ddae8cefb054d916b8edb7b86fb8cd8e74b9d9af4128913828d1a",
+    "http_status": 200
+  }
+]

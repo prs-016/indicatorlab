@@ -15,6 +15,7 @@ let market = "hk", filter = "all", sort = "symbol", page = 0, paused = false;
 let loading = false, generation = 0, lastList = "", selectedStock = null, lastAttention = 0;
 let activeController = null;
 let health = null;
+let costController = null, costGeneration = 0, costSymbol = null;
 const PAGE_SIZE = 24;
 
 function selectedMarkets() { return market === "all" ? ["hk", "india", "us"] : [market]; }
@@ -161,6 +162,190 @@ function updateDialog(key) {
     label.textContent = name; content.textContent = value;
     return [label, content];
   }));
+  prepareCostPanel(row);
+}
+
+function cancelCostRequest() {
+  costGeneration += 1;
+  costController?.abort();
+  costController = null;
+  $("cost-submit").disabled = false;
+  $("cost-form").setAttribute("aria-busy", "false");
+}
+
+function clearCostResult(message = "Calculate when you are ready.") {
+  $("cost-result").hidden = true;
+  $("cost-result").replaceChildren();
+  $("cost-error").hidden = true;
+  $("cost-error").textContent = "";
+  $("cost-status").textContent = message;
+}
+
+function prepareCostPanel(row) {
+  const available = row.market === "hk";
+  $("cost-panel").hidden = !available;
+  $("stock-dialog").classList.toggle("has-cost-estimate", available);
+  const symbol = available ? row.symbol : null;
+  // Quote polling updates the details above, while these user-entered values stay put.
+  if (symbol === costSymbol) return;
+  cancelCostRequest();
+  costSymbol = symbol;
+  $("cost-form").reset();
+  clearCostResult();
+}
+
+function costAmount(value) {
+  if ((typeof value !== "number" && typeof value !== "string") || value === "" || !Number.isFinite(Number(value))) return null;
+  return Number(value);
+}
+
+function costMoney(value, currency = "HKD") {
+  const amount = costAmount(value);
+  return amount === null ? "Not supplied" : money(amount, currency);
+}
+
+function costNode(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = String(text);
+  return node;
+}
+
+const costNames = {
+  stamp_duty: "HK stamp duty", sfc_levy: "SFC transaction levy", afrc_levy: "AFRC transaction levy",
+  hkex_trading_fee: "HKEX trading fee", hkex_trading_tariff: "Historical trading tariff",
+  broker_commission: "Broker commission", commission_hkd: "Broker commission",
+  platform_fee: "Platform fee", platform_fee_hkd: "Platform fee",
+  legacy_trading_tariff_pass_through: "Historical trading tariff",
+  settlement_pass_through: "Settlement pass-through", fx_spread_bps: "FX spread",
+  fx_fee_usd: "Fixed conversion fee", transfer_fee_usd: "Transfer fee",
+};
+
+function costName(value) {
+  return costNames[value] || value.replaceAll("_", " ");
+}
+
+function showCostEstimate(payload, parameters) {
+  const estimate = payload?.estimate, quote = payload?.quote;
+  if (!estimate || !quote || quote.symbol !== costSymbol || !estimate.fees_hkd || !estimate.fx ||
+      costAmount(estimate.gross_hkd) === null || !(costAmount(estimate.fx.hkd_per_usd) > 0)) {
+    throw new Error("The service returned an invalid cost estimate. Please try again.");
+  }
+  const fragment = document.createDocumentFragment();
+  const complete = estimate.complete === true;
+  const summary = costNode("div", `cost-summary${complete ? "" : " incomplete"}`);
+  const summaryCopy = costNode("div", "");
+  summaryCopy.append(costNode("p", "cost-total-label", complete ? "Estimated USD needed" : "Known-cost subtotal in USD"));
+  summaryCopy.append(costNode("strong", "cost-total", costMoney(estimate.cash_usd, "USD")));
+  summary.append(summaryCopy, costNode("span", "cost-completeness", complete ? "Fees supplied" : "Incomplete estimate"));
+  fragment.append(summary);
+
+  const unknown = Array.isArray(estimate.unknown_charges) ? estimate.unknown_charges.filter(value => typeof value === "string") : [];
+  if (!complete) fragment.append(costNode("p", "cost-assumptions", unknown.length ?
+    `Still to supply: ${unknown.map(costName).join(", ")}. These charges are not treated as free.` :
+    "Some charges are not supplied. This subtotal is not the final amount you would pay."));
+
+  const shares = costAmount(estimate.executed_shares), requested = costAmount(estimate.requested_shares), lot = costAmount(estimate.board_lot);
+  const omitted = costAmount(estimate.unfilled_requested_shares);
+  if (shares !== null && requested !== null && lot !== null) {
+    fragment.append(costNode("p", "cost-quantity", `${shares.toLocaleString("en")} shares priced from ${requested.toLocaleString("en")} requested · ${lot.toLocaleString("en")}-share board lot.${omitted > 0 ? ` ${omitted.toLocaleString("en")} shares excluded by lot rounding.` : ""}`));
+  }
+  const lines = [["Share value", costMoney(estimate.gross_hkd)]];
+  for (const [key, amount] of Object.entries(estimate.fees_hkd)) {
+    const input = { broker_commission: "commission_hkd", platform_fee: "platform_fee_hkd" }[key];
+    const dutyRate = costAmount(estimate.stamp_duty_rate);
+    const label = key === "stamp_duty" && dutyRate !== null ? `${costName(key)} (${new Intl.NumberFormat("en", { style: "percent", minimumFractionDigits: 2, maximumFractionDigits: 4 }).format(dutyRate)})` : costName(key);
+    lines.push([label, input && unknown.includes(input) ? "Not supplied" : costMoney(amount)]);
+  }
+  if (!("settlement_pass_through" in estimate.fees_hkd)) lines.push(["Settlement pass-through", parameters.has("settlement_pass_through") ? "Not passed through" : "Not supplied"]);
+  lines.push(["HKD funding subtotal", costMoney(estimate.cash_hkd)]);
+  for (const [key, label] of [["fx_fee_usd", "Fixed conversion fee"], ["transfer_fee_usd", "Transfer fee"]]) {
+    const value = parameters.get(key);
+    lines.push([label, value === null ? "Not supplied" : costMoney(value, "USD")]);
+  }
+  const breakdown = costNode("dl", "cost-breakdown");
+  for (const [label, amount] of lines) breakdown.append(costNode("dt", "", label), costNode("dd", "", amount));
+  fragment.append(breakdown);
+
+  const fx = estimate.fx;
+  const rate = new Intl.NumberFormat("en", { maximumFractionDigits: 6 }).format(Number(fx.hkd_per_usd));
+  const mode = fx.kind === "manual" ? "Manual reference" : fx.kind === "market_reference" ? "Market reference" : "Daily reference";
+  const observation = typeof fx.observed_date === "string" ? ` · observed ${fx.observed_date}` : "";
+  const source = fx.kind === "manual" ? "" : typeof fx.source === "string" ? ` · ${fx.source.includes("api.hkma.gov.hk") ? "HKMA" : fx.source.includes("finance.yahoo.com") ? "Yahoo HKD=X" : fx.source.slice(0, 150)}` : "";
+  const spread = parameters.get("fx_spread_bps");
+  const effectiveRate = costAmount(estimate.effective_hkd_per_usd);
+  const spreadCopy = spread === null ? "FX spread is not supplied." : `Entered FX spread: ${Number(spread)} basis points${effectiveRate > 0 ? `; effective reference ${new Intl.NumberFormat("en", { maximumFractionDigits: 6 }).format(effectiveRate)} HKD per USD` : ""}.`;
+  const providerTime = typeof fx.observed_at === "string" ? ` · provider time ${fx.observed_at}` : "";
+  fragment.append(costNode("p", "cost-fx-note", `${mode}: 1 USD = ${rate} HKD${observation}${source}${providerTime}. ${spreadCopy} Reference rates are indicative; the broker supplies the execution rate.`));
+  if (quote.ts_exchange) fragment.append(costNode("p", "cost-quote-note", `Estimate uses the quote at ${marketTime(quote.ts_exchange, "hk", true)}${typeof quote.label === "string" ? ` · ${quote.label}` : ""}. Recalculate to use a newer quote.`));
+  if (typeof estimate.trade_date === "string") fragment.append(costNode("p", "cost-quote-note", `Transaction charges dated ${estimate.trade_date}.`));
+  const lotReference = estimate.lot_reference;
+  if (lotReference?.fallback) fragment.append(costNode("p", "cost-assumptions", "No verified board lot was supplied for this stock; the estimate uses the service's one-share fallback."));
+  else if (typeof lotReference?.as_of === "string") fragment.append(costNode("p", "cost-quote-note", `Board-lot reference as of ${lotReference.as_of.slice(0, 10)}.`));
+  const excluded = Array.isArray(estimate.excluded) ? estimate.excluded.filter(value => typeof value === "string") : [];
+  if (excluded.length) fragment.append(costNode("p", "cost-excluded", `Outside this estimate: ${excluded.join("; ")}.`));
+  $("cost-result").replaceChildren(fragment);
+  $("cost-result").hidden = false;
+  $("cost-status").textContent = complete ? "Estimate calculated using the supplied fees." : "Known costs calculated; add missing fees for a fuller estimate.";
+}
+
+function estimateError(payload, status) {
+  const detail = payload?.detail;
+  if (typeof detail === "string" && detail.trim()) return detail.slice(0, 400);
+  if (detail && typeof detail === "object") {
+    for (const key of ["message", "detail", "error"]) if (typeof detail[key] === "string" && detail[key].trim()) return detail[key].replaceAll("_", " ").slice(0, 400);
+    if (Array.isArray(detail)) return "Please check the shares, exchange rate and fee inputs, then try again.";
+  }
+  return status === 404 ? "A quote could not be found for this stock." : status === 503 ?
+    "Quote or exchange-rate data is unavailable. Try again; you can enter a manual exchange rate when the daily rate is unavailable." :
+    "The cost service could not calculate this estimate. Please try again.";
+}
+
+async function calculateCost(event) {
+  event.preventDefault();
+  if (!costSymbol || !$("cost-form").reportValidity()) return;
+  cancelCostRequest();
+  clearCostResult("Calculating quote, fees and currency conversion…");
+  const current = costGeneration, symbol = costSymbol;
+  const parameters = new URLSearchParams({ symbol, side: "buy" });
+  const values = new FormData($("cost-form"));
+  for (const [key, raw] of values) {
+    const value = String(raw).trim();
+    if (value) parameters.set(key, value);
+  }
+  if (!(Number(parameters.get("hkd_per_usd") ?? 1) > 0)) {
+    $("cost-error").textContent = "Enter a positive HKD-per-USD rate, or leave it blank for the daily reference.";
+    $("cost-error").hidden = false;
+    $("cost-status").textContent = "Check the exchange rate.";
+    return;
+  }
+  const controller = new AbortController();
+  costController = controller;
+  let timedOut = false;
+  const timer = setTimeout(() => { timedOut = true; controller.abort(); }, 15000);
+  $("cost-submit").disabled = true;
+  $("cost-form").setAttribute("aria-busy", "true");
+  try {
+    const response = await fetch(endpoint(`/live/hk?${parameters}`), { cache: "no-store", signal: controller.signal, headers: { Accept: "application/json" } });
+    if (!/\bapplication\/(?:[a-z0-9.+-]+\+)?json\b/i.test(response.headers.get("content-type") || "")) throw new Error("The cost service returned an invalid response. Please try again.");
+    let payload;
+    try { payload = await response.json(); } catch { throw new Error("The cost service returned an invalid response. Please try again."); }
+    if (!response.ok) throw new Error(estimateError(payload, response.status));
+    if (current === costGeneration && symbol === costSymbol && $("stock-dialog").open) showCostEstimate(payload, parameters);
+  } catch (error) {
+    if (current !== costGeneration || symbol !== costSymbol || !$("stock-dialog").open) return;
+    $("cost-error").textContent = timedOut ? "The estimate timed out. Try again or supply a manual exchange rate." :
+      error instanceof TypeError ? "The cost service could not be reached. Check the local dashboard connection and try again." : error.message;
+    $("cost-error").hidden = false;
+    $("cost-status").textContent = "Estimate unavailable; stock quotes remain visible.";
+  } finally {
+    clearTimeout(timer);
+    if (current === costGeneration) {
+      costController = null;
+      $("cost-submit").disabled = false;
+      $("cost-form").setAttribute("aria-busy", "false");
+    }
+  }
 }
 
 async function attention(signal, selected) {
@@ -263,11 +448,14 @@ $("stock-grid").addEventListener("click", event => {
   } else { selectedStock = key; updateDialog(key); $("stock-dialog").showModal(); }
 });
 $("close-dialog").addEventListener("click", () => $("stock-dialog").close());
+$("stock-dialog").addEventListener("close", () => { if (!$("stock-dialog").open) { cancelCostRequest(); costSymbol = null; selectedStock = null; } });
+$("cost-form").addEventListener("submit", calculateCost);
+for (const type of ["input", "change"]) $("cost-form").addEventListener(type, () => { cancelCostRequest(); clearCostResult("Inputs changed. Calculate to update the estimate."); });
 $("stock-dialog").addEventListener("click", event => { if (event.target === $("stock-dialog")) { const box = event.target.getBoundingClientRect(); if (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom) event.target.close(); } });
 document.addEventListener("keydown", event => { if (event.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName) && !$("stock-dialog").open) { event.preventDefault(); $("search").focus(); } });
 document.addEventListener("visibilitychange", () => { if (!document.hidden && !paused) refresh(); });
 window.addEventListener("hashchange", route);
-window.addEventListener("pagehide", () => activeController?.abort());
+window.addEventListener("pagehide", () => { activeController?.abort(); cancelCostRequest(); });
 setInterval(() => { if (!paused && !document.hidden && !$("live-page").hidden) refresh(); }, interval);
 function clock() { $("market-clock").textContent = marketTime(new Date().toISOString(), market === "all" ? "hk" : market, true); }
 clock(); setInterval(clock, 1000);

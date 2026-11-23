@@ -1,3 +1,19 @@
+# USD purchase estimate
+
+Open an HK stock's details and use **What would I need in USD?**. Enter shares,
+commission, platform fees, FX spread, fixed conversion/transfer fees and the
+settlement pass-through choice. Blank fees stay unknown. Leave the FX input
+blank for a recent dated reference, or enter a manual rate. If the entered rate
+already includes markup, set the separate spread to zero.
+
+The server returns a known-cost subtotal until every broker input is explicit.
+Personal US taxes and custody/slippage remain outside this purchase estimate.
+Sources, dates, fee arithmetic, CLI and the existing live endpoint's optional
+queries are in [the quote/cost guide](../../docs/HK_FINAL_QUOTES_AND_COSTS.md).
+No frontend dependency, secret, trade/order endpoint or hosting service is added.
+
+---
+
 # Hong Kong live markets
 
 A plain HTML/CSS/JavaScript panel for the existing HK collector. Prices, daily

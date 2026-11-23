@@ -1,0 +1,1021 @@
+{
+  "reviewed_client_date": "2026-11-23",
+  "actual_repository": "/Users/jackgui/Desktop/hk/indicatorlab-Jack",
+  "branch": "Jack",
+  "worktree_at_audit": "clean",
+  "holdout_start": "2026-11-01",
+  "frozen_week4_price_inputs_checked": 18,
+  "all_checked_last_dates": "2026-10-30",
+  "interpretation": "October 31, 2026 is Saturday; October 30 is the last session before the cutoff. Verified inputs cover five HK names, HSI, HKD/USD and US cohort, not a full 95-stock historical research panel.",
+  "random_baseline": {
+    "existing": true,
+    "controls_per_case_split": 200,
+    "week4_total_null_portfolios": 2400,
+    "result": "All six market cases DROP; no eligible final candidate was created"
+  },
+  "upstream": {
+    "url": "https://github.com/HKUDS/Vibe-Trading/pull/2287",
+    "head_repo": "jaz024/Vibe-Trading",
+    "head_branch": "feat/hk-market-support",
+    "head_sha": "8adb7e2fef4e98e9229861171b6800ee6e52226a",
+    "state": "open",
+    "draft": false,
+    "merged": false,
+    "mergeable": false,
+    "scope": "Combined HSI universe, quotes, HK market layer and portfolio design; not a standalone B2 or joint India/HK B3 PR",
+    "combined_commit_status_entries": 0,
+    "head_check_runs": 0,
+    "ci_green_verified": false,
+    "benchmark_status": "Existing recorded 2016-01-01/2026-10-31 attempt stops at strict constituent validation: Wikipedia85 vs dated95; zero alphas evaluated",
+    "own_commits_audited_vs_local_origin_main": 7,
+    "own_commits_missing_signoff": 0,
+    "own_commits_with_coauthor_trailer": 0
+  },
+  "aws": {
+    "deployed": false,
+    "reason": "Deferred by standing user instruction; no team AWS acceptance evidence",
+    "lunch_alarm_acceptance": false
+  },
+  "feed_delay": {
+    "existing_evidence": "results/hk/week3/live_delay_summary.json",
+    "audit_date_hkt": "2026-11-12",
+    "duration_seconds": 600.0107550829416,
+    "polls": 120,
+    "observations": 11400,
+    "median_last_trade_age_seconds": 10.633913499999998,
+    "p95_last_trade_age_seconds": 86.5807303,
+    "max_last_trade_age_seconds": 545.578924,
+    "interpretation": "Provider last-trade age at receipt, not certified publication latency or a subminute guarantee",
+    "posted_to_team_verified": false
+  },
+  "team_handoff": {
+    "existing_title_map": "config/hk_week4_handoff.json",
+    "roster_symbols": 95,
+    "dated_wiki_title_intervals": 270,
+    "existing_draft": "docs/HK_WEEK4_HANDOFF.md",
+    "sent_to_joshua_james_verified": false,
+    "old_subreddit_survey": "2024 qualifying-activity rule; not evidence of K1 2026 existence/posts checks"
+  },
+  "completion": "Local previous-week prerequisites largely present, but K0 Done when is not satisfied: real HSI benchmark, split/merged upstream scope, CI, deferred AWS and actual team posting remain external or unresolved.",
+  "audited_at_utc": "2026-11-23T08:29:51.957804+00:00",
+  "full_operational_roster_history": {
+    "stocks": 95,
+    "files_present": 95,
+    "all_last_before_holdout": "2026-10-30",
+    "latest_raw_date": "2026-11-04",
+    "raw_rows_after_cutoff_policy": "Display-only; excluded from research. No strategy rerun performed.",
+    "membership_caveat": "Dated operational roster coverage; not historical point-in-time index membership.",
+    "records": [
+      {
+        "symbol": "0001.HK",
+        "file": "research/hk_market_history/prices/0001.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "fd70ead628c4b3e8b69863b013fb44d10760e470e785ce4f6a1a4b953321159f",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0002.HK",
+        "file": "research/hk_market_history/prices/0002.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "08f529c4a7a3877ea2751324dade74b0b2ada5e3b7cd2b9778c9da9af0031390",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0003.HK",
+        "file": "research/hk_market_history/prices/0003.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "5cef91c802eafb76d33106d3c868873ce3c243a73b0f07b9d6e00da613c06cf4",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0005.HK",
+        "file": "research/hk_market_history/prices/0005.HK__daily__2000-01-03_to_2026-11-04.csv",
+        "sha256": "7f6a6862d291248c9455f89a17c4ae51207f5c066304692de07bd53f43334e18",
+        "first_available": "2000-01-03",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6687,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0006.HK",
+        "file": "research/hk_market_history/prices/0006.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "b0166bcf3fc6f5012253bc553ad080463bbf22e9cae70daf84b50f5fc5d40063",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0012.HK",
+        "file": "research/hk_market_history/prices/0012.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "e6aff078a7678f25d4b7b3dc289a7bf62e1646eba9b068e1541aa6728ecd38dd",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0016.HK",
+        "file": "research/hk_market_history/prices/0016.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "a7bd84f54a6736ebb3e5bca76dc7bbc2fd6e58ae184548047a116e7ca3fdb9b5",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0027.HK",
+        "file": "research/hk_market_history/prices/0027.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "fd695e13150836a4a434e0ca25cc18546341e23247950f9e0a6054e0cfd0b3b6",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0066.HK",
+        "file": "research/hk_market_history/prices/0066.HK__daily__2000-10-09_to_2026-11-04.csv",
+        "sha256": "4961543bbd52322f2707faf7c984c447aee69d52dd37776a7452200717f18a24",
+        "first_available": "2000-10-09",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6487,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0101.HK",
+        "file": "research/hk_market_history/prices/0101.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "623538643298890cc58d42b4f0ca11babf4841fae5ae7d733bac403e02f9fd7b",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0175.HK",
+        "file": "research/hk_market_history/prices/0175.HK__daily__2005-09-29_to_2026-11-04.csv",
+        "sha256": "b892e320c692722e4f47170ef4d8f303dd729a8717b6e4ad5ba31d3c306ada2a",
+        "first_available": "2005-09-29",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5199,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0241.HK",
+        "file": "research/hk_market_history/prices/0241.HK__daily__2004-03-22_to_2026-11-04.csv",
+        "sha256": "5a3de55ebcdeeb34e0722757cdbb8bb2b817611afee56b07a80b789dc0526a47",
+        "first_available": "2004-03-22",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5587,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0267.HK",
+        "file": "research/hk_market_history/prices/0267.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "ed81b1a1c939d63c49244dd6e48372ac07d49ffd325ab01ce280ea612e8deb82",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0285.HK",
+        "file": "research/hk_market_history/prices/0285.HK__daily__2007-12-20_to_2026-11-04.csv",
+        "sha256": "ee7e479e378c3727b56323e29fd56d3ee62298d3a8dbebda584dd27b50b21b88",
+        "first_available": "2007-12-20",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4648,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0288.HK",
+        "file": "research/hk_market_history/prices/0288.HK__daily__2014-08-05_to_2026-11-04.csv",
+        "sha256": "6146540b99cd978735a5db8e626aadf7f2b604123280b8fad64c53957e06bb56",
+        "first_available": "2014-08-05",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 3015,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0291.HK",
+        "file": "research/hk_market_history/prices/0291.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "3faf2c79053dabdbb7c712587a94f585cf8d617b83962b27800d449161509f93",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0300.HK",
+        "file": "research/hk_market_history/prices/0300.HK__daily__2024-07-05_to_2026-11-04.csv",
+        "sha256": "fca95319d6f8989573403b3cbcc468ecff6325fc50b4fb3cb7b53c6aa45a37f9",
+        "first_available": "2024-07-05",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 513,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0316.HK",
+        "file": "research/hk_market_history/prices/0316.HK__daily__2004-04-15_to_2026-11-04.csv",
+        "sha256": "e59b50d4a3a012e18df26425d180624a7db325c1083549b583e111eddc822972",
+        "first_available": "2004-04-15",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5569,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0322.HK",
+        "file": "research/hk_market_history/prices/0322.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "6418fa74833450a4b80b6494fc36d4e677390e6921948509cc12d41ad7818026",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0386.HK",
+        "file": "research/hk_market_history/prices/0386.HK__daily__2000-10-19_to_2026-11-04.csv",
+        "sha256": "043d89009d804e6e62856c4d89d9481e28aeb4f6350a92a07e92120032d3f89a",
+        "first_available": "2000-10-19",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6479,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0388.HK",
+        "file": "research/hk_market_history/prices/0388.HK__daily__2000-06-27_to_2026-11-04.csv",
+        "sha256": "f6c482c50e956aa1d69940c8be3eff2870e98c16d63291f321943271388eeb3e",
+        "first_available": "2000-06-27",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6561,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0669.HK",
+        "file": "research/hk_market_history/prices/0669.HK__daily__2004-06-14_to_2026-11-04.csv",
+        "sha256": "47d914dc9fd3c5523c13890293d9fc0d531cb636ed3c9107795b6b8471e9ecb2",
+        "first_available": "2004-06-14",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5527,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0688.HK",
+        "file": "research/hk_market_history/prices/0688.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "60b58b7627bdd4e19c952a2743be19629fe8f37f5acb3fe01f1ec4267f745ae9",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0700.HK",
+        "file": "research/hk_market_history/prices/0700.HK__daily__2004-06-16_to_2026-11-04.csv",
+        "sha256": "b9e5fa4efb0efcd35e1acbabc9be69cb3ea104c602d1549a0360ac5915c19ca8",
+        "first_available": "2004-06-16",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5525,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0728.HK",
+        "file": "research/hk_market_history/prices/0728.HK__daily__2002-11-15_to_2026-11-04.csv",
+        "sha256": "cade16cb013129959b4ad0a695345c489526f8a33cce8d704d83a3700e9f015b",
+        "first_available": "2002-11-15",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5938,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0762.HK",
+        "file": "research/hk_market_history/prices/0762.HK__daily__2000-06-22_to_2026-11-04.csv",
+        "sha256": "5865c6ef07ade529d6a559d82ae6ea85d4036e41aa163fa324db80f31b4bb38e",
+        "first_available": "2000-06-22",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6564,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0823.HK",
+        "file": "research/hk_market_history/prices/0823.HK__daily__2007-10-31_to_2026-11-04.csv",
+        "sha256": "4f4387498203d8cb8ed53c06fdb23a5df32f004a2ba3edef617f306c00cc8937",
+        "first_available": "2007-10-31",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4684,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0836.HK",
+        "file": "research/hk_market_history/prices/0836.HK__daily__2003-11-12_to_2026-11-04.csv",
+        "sha256": "d58c5fefa3b60fe2100ed52c22a7393cf94d107a73633a313b9cd95b3c58b009",
+        "first_available": "2003-11-12",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5680,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0857.HK",
+        "file": "research/hk_market_history/prices/0857.HK__daily__2000-04-07_to_2026-11-04.csv",
+        "sha256": "662544dae41719bbe84c2d82401b537bc15203150e79dbc91f6bf5d555b18662",
+        "first_available": "2000-04-07",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6618,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0868.HK",
+        "file": "research/hk_market_history/prices/0868.HK__daily__2005-02-03_to_2026-11-04.csv",
+        "sha256": "cfcf4924bf436f5430307bde680f91d0875694fe6210515dfbbeed3cfc2abff6",
+        "first_available": "2005-02-03",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5359,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0883.HK",
+        "file": "research/hk_market_history/prices/0883.HK__daily__2004-03-17_to_2026-11-04.csv",
+        "sha256": "acb30c7113625286b8134ebe9cb76c280979407c7b8bed17281dc9a6af072403",
+        "first_available": "2004-03-17",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5590,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0939.HK",
+        "file": "research/hk_market_history/prices/0939.HK__daily__2005-10-27_to_2026-11-04.csv",
+        "sha256": "ad1053685807604c018085774caa75cb7f8e0eb46c85acc052508ce553af0e76",
+        "first_available": "2005-10-27",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5180,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0941.HK",
+        "file": "research/hk_market_history/prices/0941.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "5074c0435d34d619cd736fb9bb60d5f23a59bb8787472b07048d161336c75569",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0960.HK",
+        "file": "research/hk_market_history/prices/0960.HK__daily__2009-11-19_to_2026-11-04.csv",
+        "sha256": "4a69886e57321c845573314a427ba5ccabea490977e7d33c7b4adb0b675c7ad5",
+        "first_available": "2009-11-19",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4176,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0968.HK",
+        "file": "research/hk_market_history/prices/0968.HK__daily__2013-12-12_to_2026-11-04.csv",
+        "sha256": "6fe0a260c89bf54ebc42ce5082dce41fb430f061156e426f88d37a47d0705616",
+        "first_available": "2013-12-12",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 3172,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0981.HK",
+        "file": "research/hk_market_history/prices/0981.HK__daily__2004-03-18_to_2026-11-04.csv",
+        "sha256": "11620f164a39af0fc0ee4518316671a5b6f8ee9c265297ff7931b900b79b9846",
+        "first_available": "2004-03-18",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5589,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "0992.HK",
+        "file": "research/hk_market_history/prices/0992.HK__daily__2000-03-22_to_2026-11-04.csv",
+        "sha256": "16496571b3e3d2408694140c23bc8c252c3fcd91a61d028a16948f54d12af990",
+        "first_available": "2000-03-22",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6630,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1024.HK",
+        "file": "research/hk_market_history/prices/1024.HK__daily__2021-02-05_to_2026-11-04.csv",
+        "sha256": "3277a3db62580abf46389db727a685a3a97fc6ff8bf7c41707c3ae2cc35496d5",
+        "first_available": "2021-02-05",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1408,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1038.HK",
+        "file": "research/hk_market_history/prices/1038.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "7d638feebf4f34ed3f9e22c06e07841af63383d93b9ff63685fac1c8f796dea5",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1044.HK",
+        "file": "research/hk_market_history/prices/1044.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "a465025fd42b0abaf4ff47db53ee976dc45924007fb79a6c11faaef93a0b232a",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1088.HK",
+        "file": "research/hk_market_history/prices/1088.HK__daily__2005-06-15_to_2026-11-04.csv",
+        "sha256": "8bced0c6670b328ce56ff292a0f5e2aa9b1c6202985025073dd50d809b4a3ecf",
+        "first_available": "2005-06-15",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5273,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1093.HK",
+        "file": "research/hk_market_history/prices/1093.HK__daily__2003-05-13_to_2026-11-04.csv",
+        "sha256": "043871b4c9f1e3b43f011b6c1d1d831ddf41afc9fd5c0c6e5cbe74083193a762",
+        "first_available": "2003-05-13",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5811,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1099.HK",
+        "file": "research/hk_market_history/prices/1099.HK__daily__2009-09-23_to_2026-11-04.csv",
+        "sha256": "5ecd35dfac146cbebf813500b8732e8db68cff1a14086b617ca0de89ae467bb1",
+        "first_available": "2009-09-23",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4215,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1109.HK",
+        "file": "research/hk_market_history/prices/1109.HK__daily__2000-01-04_to_2026-11-04.csv",
+        "sha256": "cb490d77278f0239d8205e3fcbb0123dbfcb55170a1f7a839c015ad419872b7e",
+        "first_available": "2000-01-04",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6686,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1113.HK",
+        "file": "research/hk_market_history/prices/1113.HK__daily__2015-06-03_to_2026-11-04.csv",
+        "sha256": "7b6baccc626633e598ef59a4c4b15f83fd7176c09ae42d28307492e793f1e0ce",
+        "first_available": "2015-06-03",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 2812,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1177.HK",
+        "file": "research/hk_market_history/prices/1177.HK__daily__2004-05-12_to_2026-11-04.csv",
+        "sha256": "a95c79b8e771855c913abe5ba4f1da856e9529e11de457937973c654472a404c",
+        "first_available": "2004-05-12",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5550,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1209.HK",
+        "file": "research/hk_market_history/prices/1209.HK__daily__2020-12-09_to_2026-11-04.csv",
+        "sha256": "a309c88df3d7386a4d1b8433b15fc36b1c3edca970f01179c70fa8567c107319",
+        "first_available": "2020-12-09",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1448,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1211.HK",
+        "file": "research/hk_market_history/prices/1211.HK__daily__2002-07-31_to_2026-11-04.csv",
+        "sha256": "c2072eb0dc37e921adf1a99df478e95c8b6ab7e4235a1a6a23f9bd94010993cf",
+        "first_available": "2002-07-31",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6015,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1299.HK",
+        "file": "research/hk_market_history/prices/1299.HK__daily__2010-10-29_to_2026-11-04.csv",
+        "sha256": "77320e8c6b46176cbb9a791fcb59b2141e0ea4d6525d914cbbe13304992de1b1",
+        "first_available": "2010-10-29",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 3942,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1347.HK",
+        "file": "research/hk_market_history/prices/1347.HK__daily__2014-10-15_to_2026-11-04.csv",
+        "sha256": "dec64c4b62fa418dee35794d4c03e3629eadcd5cce0ddd0f551428c840b154f9",
+        "first_available": "2014-10-15",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 2967,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1378.HK",
+        "file": "research/hk_market_history/prices/1378.HK__daily__2011-03-24_to_2026-11-04.csv",
+        "sha256": "20b7c7349a6a701688cc6f163f1cd008a1307ef3e7e74dc16193ed42870b071a",
+        "first_available": "2011-03-24",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 3841,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1398.HK",
+        "file": "research/hk_market_history/prices/1398.HK__daily__2006-10-27_to_2026-11-04.csv",
+        "sha256": "572ee33f0737addcee5beaf3a7064e3f9fd381b248db8effde33dd3d29d390a9",
+        "first_available": "2006-10-27",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4931,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1519.HK",
+        "file": "research/hk_market_history/prices/1519.HK__daily__2023-10-27_to_2026-11-04.csv",
+        "sha256": "a8b6f27fb9231c73b1a18b2ca6b6aa2c185ee4f6e7b6f97cf9b50a497053990f",
+        "first_available": "2023-10-27",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 740,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1801.HK",
+        "file": "research/hk_market_history/prices/1801.HK__daily__2018-10-31_to_2026-11-04.csv",
+        "sha256": "55b094433a56e36595b0ec3a825d855c7644ad298f38b51be3f6d2b5bd804888",
+        "first_available": "2018-10-31",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1968,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1810.HK",
+        "file": "research/hk_market_history/prices/1810.HK__daily__2018-07-09_to_2026-11-04.csv",
+        "sha256": "06a37addb0c6bd2ee3940287f5ebe8d364e609607546db7b6b456c07e7ab70e9",
+        "first_available": "2018-07-09",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 2047,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1876.HK",
+        "file": "research/hk_market_history/prices/1876.HK__daily__2019-09-30_to_2026-11-04.csv",
+        "sha256": "2fdf017eca44dcbbb9b40489add535394f1377d123d83237f93a45724f8165e6",
+        "first_available": "2019-09-30",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1743,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1928.HK",
+        "file": "research/hk_market_history/prices/1928.HK__daily__2009-11-30_to_2026-11-04.csv",
+        "sha256": "8dbd0f5fbf5ca037b3b13112d4a4596f95927d06b9fa0dab03f02b2e627efc97",
+        "first_available": "2009-11-30",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4169,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1929.HK",
+        "file": "research/hk_market_history/prices/1929.HK__daily__2011-12-15_to_2026-11-04.csv",
+        "sha256": "cc89c13de21174df82cd3a2de78b507b8f8c5b33cefe6a2efec211136170094e",
+        "first_available": "2011-12-15",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 3661,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "1997.HK",
+        "file": "research/hk_market_history/prices/1997.HK__daily__2017-11-15_to_2026-11-04.csv",
+        "sha256": "20cc6ecac5688297d6f81e52e1b8bfe1c5647b5bc8d17efd3366d3b2e1290f4e",
+        "first_available": "2017-11-15",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 2203,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2015.HK",
+        "file": "research/hk_market_history/prices/2015.HK__daily__2021-08-12_to_2026-11-04.csv",
+        "sha256": "730d6cf34486bc924db1f928a9ef6dbcd13293c587636aeed67653ff54db0f90",
+        "first_available": "2021-08-12",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1282,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2020.HK",
+        "file": "research/hk_market_history/prices/2020.HK__daily__2007-07-10_to_2026-11-04.csv",
+        "sha256": "606507ef9291984aa9101413f36d268e49e2428eb05fb9071570507297fc5774",
+        "first_available": "2007-07-10",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4762,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2057.HK",
+        "file": "research/hk_market_history/prices/2057.HK__daily__2020-09-29_to_2026-11-04.csv",
+        "sha256": "08c9784fd27e7f712bd9e7de506094c062072f5cb2089e9e99cd556079653d49",
+        "first_available": "2020-09-29",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1495,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2269.HK",
+        "file": "research/hk_market_history/prices/2269.HK__daily__2017-06-13_to_2026-11-04.csv",
+        "sha256": "5e2bab5dfa279648ff66c1d0310a8356ef12b6711e22e79471251b071f37b178",
+        "first_available": "2017-06-13",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 2312,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2313.HK",
+        "file": "research/hk_market_history/prices/2313.HK__daily__2005-11-24_to_2026-11-04.csv",
+        "sha256": "a84df401d40941b87fc369edd4b276886cd0dd7bdc9bf08627c9479c75b9000f",
+        "first_available": "2005-11-24",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5160,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2318.HK",
+        "file": "research/hk_market_history/prices/2318.HK__daily__2004-06-24_to_2026-11-04.csv",
+        "sha256": "24bb9bd15af50984f7cd949925a845f1f80841b91c358286b6fab89b52cbdd58",
+        "first_available": "2004-06-24",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5519,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2319.HK",
+        "file": "research/hk_market_history/prices/2319.HK__daily__2004-06-10_to_2026-11-04.csv",
+        "sha256": "75dd85d827bebde95763d020dc94531cf28a274187e894f07b9d546cf4dc7e9b",
+        "first_available": "2004-06-10",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5529,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2331.HK",
+        "file": "research/hk_market_history/prices/2331.HK__daily__2004-06-28_to_2026-11-04.csv",
+        "sha256": "5c65f53141f5cc16f76c092479398eed5b1fa89ade95c01054f0f741e98e4f0e",
+        "first_available": "2004-06-28",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5517,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2338.HK",
+        "file": "research/hk_market_history/prices/2338.HK__daily__2004-03-11_to_2026-11-04.csv",
+        "sha256": "b55700f1143b7fdb505c54823ccf3f554dcf0b7f02effaf2483436737661d547",
+        "first_available": "2004-03-11",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5594,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2359.HK",
+        "file": "research/hk_market_history/prices/2359.HK__daily__2018-12-13_to_2026-11-04.csv",
+        "sha256": "9727b311f00e241c0b3d6c2e03e14a4eae76220f8d38fa12e26a46e9d1d8558b",
+        "first_available": "2018-12-13",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1937,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2382.HK",
+        "file": "research/hk_market_history/prices/2382.HK__daily__2007-06-15_to_2026-11-04.csv",
+        "sha256": "94c25e3b7bcc310011e313c62f62a728bbe307d73d01c23b67d4bca1b5d4b370",
+        "first_available": "2007-06-15",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4777,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2388.HK",
+        "file": "research/hk_market_history/prices/2388.HK__daily__2002-07-25_to_2026-11-04.csv",
+        "sha256": "57594ade2994ec4b9c9c4e25aaf790428e82aae7ff183cfb135097d0f4acffef",
+        "first_available": "2002-07-25",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6019,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2600.HK",
+        "file": "research/hk_market_history/prices/2600.HK__daily__2001-12-12_to_2026-11-04.csv",
+        "sha256": "bc9783e6c506299c1e5d5e84941dcbb8ba89aa984badf2ba91c3cc082749e067",
+        "first_available": "2001-12-12",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6180,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2618.HK",
+        "file": "research/hk_market_history/prices/2618.HK__daily__2021-05-28_to_2026-11-04.csv",
+        "sha256": "e9a7c3efb4a22a010fa765494715e4b5367888d0c738a1cb8b50836438372850",
+        "first_available": "2021-05-28",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1334,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2628.HK",
+        "file": "research/hk_market_history/prices/2628.HK__daily__2003-12-18_to_2026-11-04.csv",
+        "sha256": "3b78f5839eefc8e6efef243a9c91ae7c91129883fdbb6f6619fdfb5b4176af89",
+        "first_available": "2003-12-18",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5654,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2688.HK",
+        "file": "research/hk_market_history/prices/2688.HK__daily__2001-05-10_to_2026-11-04.csv",
+        "sha256": "2ebaa751e6f7ff8efe1c7dcbe2a5c19f25131a61bb0632a471c37f27fdf35b3d",
+        "first_available": "2001-05-10",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 6334,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "2899.HK",
+        "file": "research/hk_market_history/prices/2899.HK__daily__2003-12-23_to_2026-11-04.csv",
+        "sha256": "96378369017fcecdab40d35e9c18927c7f046426d956ae448e70d79d0c736dc2",
+        "first_available": "2003-12-23",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5651,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "3690.HK",
+        "file": "research/hk_market_history/prices/3690.HK__daily__2018-09-20_to_2026-11-04.csv",
+        "sha256": "1bb15baf8633cd3a4b3ecb349cee65a1469c75ff67b10e132e122eabcf0093b7",
+        "first_available": "2018-09-20",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1994,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "3692.HK",
+        "file": "research/hk_market_history/prices/3692.HK__daily__2019-06-14_to_2026-11-04.csv",
+        "sha256": "14d53c81a106c3befb8c5ceb499650778fb6636f05b326f1335dcad563000491",
+        "first_available": "2019-06-14",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1818,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "3750.HK",
+        "file": "research/hk_market_history/prices/3750.HK__daily__2025-05-20_to_2026-11-04.csv",
+        "sha256": "03df10f833755a705fd0afdce52c2653b0d856fe0011e9c8160c7cd04267e157",
+        "first_available": "2025-05-20",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 360,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "3968.HK",
+        "file": "research/hk_market_history/prices/3968.HK__daily__2006-09-22_to_2026-11-04.csv",
+        "sha256": "09d2ccbc6aebd872b9e2ce7015cfbf60adaf38a73f05782494e7345b9f78f54c",
+        "first_available": "2006-09-22",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4955,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "3988.HK",
+        "file": "research/hk_market_history/prices/3988.HK__daily__2006-06-01_to_2026-11-04.csv",
+        "sha256": "4d3514aecf35abe4fc4f768d4312c2db8abee15df5fe2fbc909c9a49dd0adaa6",
+        "first_available": "2006-06-01",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 5036,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "3993.HK",
+        "file": "research/hk_market_history/prices/3993.HK__daily__2007-04-26_to_2026-11-04.csv",
+        "sha256": "a7c024f344e37c9126adf949da0c66cbbfc5e717b8b8dbb69664c36e0385978a",
+        "first_available": "2007-04-26",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 4811,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "6160.HK",
+        "file": "research/hk_market_history/prices/6160.HK__daily__2018-08-08_to_2026-11-04.csv",
+        "sha256": "7fdc323f7cd06a4f508576ef8514148bd6213f9a511a0d386d65df1ae7069fbe",
+        "first_available": "2018-08-08",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 2025,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "6181.HK",
+        "file": "research/hk_market_history/prices/6181.HK__daily__2024-06-28_to_2026-11-04.csv",
+        "sha256": "5068ccfb68e2f15d9f3e1fe5d659fc789a3eceefa2197184bd79088c1e2ca063",
+        "first_available": "2024-06-28",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 576,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "6618.HK",
+        "file": "research/hk_market_history/prices/6618.HK__daily__2020-12-08_to_2026-11-04.csv",
+        "sha256": "fe18265f12712864d7a44e2142edb98cdc3c82643afc63d14330667b762d5330",
+        "first_available": "2020-12-08",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1449,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "6690.HK",
+        "file": "research/hk_market_history/prices/6690.HK__daily__2020-12-23_to_2026-11-04.csv",
+        "sha256": "349eca5859f4f2da832d664a805a5c2e0fae456f7237bcc6a4d1cae96f2b2981",
+        "first_available": "2020-12-23",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1438,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "6862.HK",
+        "file": "research/hk_market_history/prices/6862.HK__daily__2018-09-26_to_2026-11-04.csv",
+        "sha256": "67deb5417086ec45d3bf0308979abe833e354ecaa60a1fdcc7c154a03f29d11f",
+        "first_available": "2018-09-26",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1991,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "9618.HK",
+        "file": "research/hk_market_history/prices/9618.HK__daily__2020-06-18_to_2026-11-04.csv",
+        "sha256": "560b7fdd02f3b89ba1aa21debd0af8583058882fd380f0860c03555e9d4f01ad",
+        "first_available": "2020-06-18",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1566,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "9633.HK",
+        "file": "research/hk_market_history/prices/9633.HK__daily__2020-09-08_to_2026-11-04.csv",
+        "sha256": "2128a8255487b18e93206e957d69d88f1b00ff8b418be1653e5f1a6e3effeae6",
+        "first_available": "2020-09-08",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1510,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "9888.HK",
+        "file": "research/hk_market_history/prices/9888.HK__daily__2021-03-23_to_2026-11-04.csv",
+        "sha256": "cb95f1b58d2132d60eb4289c5aeec8f1b95f4c47769454c8a4e0afc94837349a",
+        "first_available": "2021-03-23",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1378,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "9901.HK",
+        "file": "research/hk_market_history/prices/9901.HK__daily__2020-11-09_to_2026-11-04.csv",
+        "sha256": "46ac58a970fe6af4704e973e9f199e3427a205fa13f6a9bbab9f19e1e05448af",
+        "first_available": "2020-11-09",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1470,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "9961.HK",
+        "file": "research/hk_market_history/prices/9961.HK__daily__2021-04-19_to_2026-11-04.csv",
+        "sha256": "62c3e49a5e11df1c80d0b3f66af18ca9d6cdfb07871595cbae489a7652fc16f0",
+        "first_available": "2021-04-19",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1362,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "9988.HK",
+        "file": "research/hk_market_history/prices/9988.HK__daily__2019-11-26_to_2026-11-04.csv",
+        "sha256": "59d0aed052c52fe86c58b0157b5070ca65727d8061e766a921ecbcd9a16f35af",
+        "first_available": "2019-11-26",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1704,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "9992.HK",
+        "file": "research/hk_market_history/prices/9992.HK__daily__2020-12-11_to_2026-11-04.csv",
+        "sha256": "f310d895c6fceca54b192710c3bb94d9fa2859d19e7123e1233e43a9e50ce240",
+        "first_available": "2020-12-11",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1446,
+        "display_only_rows_after_cutoff": 3
+      },
+      {
+        "symbol": "9999.HK",
+        "file": "research/hk_market_history/prices/9999.HK__daily__2020-06-11_to_2026-11-04.csv",
+        "sha256": "07f7c3af694538cf03c2c36252f50f33e0f73aea6e0665aaadcee0e0eff69c77",
+        "first_available": "2020-06-11",
+        "latest_available": "2026-11-04",
+        "last_before_holdout": "2026-10-30",
+        "bars_before_holdout": 1571,
+        "display_only_rows_after_cutoff": 3
+      }
+    ]
+  }
+}

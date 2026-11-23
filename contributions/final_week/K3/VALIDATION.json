@@ -1,0 +1,78 @@
+{
+  "base_checkout": "/Users/jackgui/Desktop/hk/Forked VT/Vibe-Trading",
+  "base_commit": "8adb7e2fef4e98e9229861171b6800ee6e52226a",
+  "scratch": "/private/tmp/hk-final-week-20261122/vibe",
+  "scope": "incremental HK half of K3; not a joint India/HK PR",
+  "files": {
+    "agent/backtest/market_layer.py": {
+      "before": "5251162eb3ba2678f328df491a1e506d3d40001e61cd398192659e3ecb46e98d",
+      "after": "d728cfbe7d097b35d84c9cc0d70e6ed7eaa17a8adec689b51b1df97b0f6f2e33"
+    },
+    "agent/backtest/engines/global_equity.py": {
+      "before": "242d355e194fc4504e0f60d30360d26f797465bbcfb0b15ad2cbb051ad4eaf88",
+      "after": "224442fe3716016681cf325bdc26ecb8c8aa1737322c13eb0fe5d8a7584d78a9"
+    },
+    "agent/backtest/engines/composite.py": {
+      "before": "6a3de513874b7a702b52f2edef84dcc5945563f3e2900ae9089bf903b35e74fe",
+      "after": "4487770b43898a8fbb968ada3458a3c85f314ac8648c91ac5711da1b9efacac7"
+    },
+    "agent/src/data_gateway/hk_sessions.py": {
+      "before": "9b157127a415a3ac7ee816b0f3ed902edc6e30cfaae0e5b478b76eb7d728d9c4",
+      "after": "f1816df9e3b9a6e9563781d51f6d27db7d7eea732d389913d744f773867dc83b"
+    },
+    "agent/tests/test_hk_market_layer.py": {
+      "before": "e75211e7cd970c0cc58d8149aa58617aa5f7fa537ae5e0f400486f46f5d3b2e2",
+      "after": "3e89eafb7e0192b69dce1379c49c5bef03a0074d5ac5d08af68dccdd49a2a81d"
+    },
+    "agent/tests/test_global_equity_hk_lot_sizes.py": {
+      "before": "9413c2b4cd7dfbf7a8150826708dbd785628bbe7fdf56c241557b1aee0ccb15c",
+      "after": "9cf4a3132f8abaa55f72489fc24fa87d925f72631c45a8bb7ac9445ea52d20f0"
+    },
+    "agent/tests/test_global_equity_engine.py": {
+      "before": "88df198312ce2fd6923a03ea0dbc4448a771c0836a6f0e496f6e7eb29f50b436",
+      "after": "79ac3dda3c297e2fe13191eab4e80f51d6acb494e674f606f9e8c1b2a3da12d9"
+    },
+    "agent/backtest/HK_MARKET_LAYER.md": {
+      "before": "a41001f184d93872606f191ee8f76db9e399a230001d1efe527f9641efcd2c9b",
+      "after": "c7689ff3f8552239fdce9098e2f78debb0d3fff96f27af13ff9d3fdb1c83119a"
+    },
+    "agent/backtest/HK_FINAL_K3.md": {
+      "before": null,
+      "after": "22050abd3dc59545fac4206bafab6b98454e954fcd1fd0fd36adc48fa81bd639"
+    }
+  },
+  "patch_sha256": "04b76e575c3a811b06b1349e027e4eec925be83ed01e2e265e822e67029ce1d8",
+  "git_apply_check": "passed on original checkout without changing it",
+  "lot_csv_preserved_sha256": "06277c9c2d1ed30d4c03790f6382c1bad15b3fb29b6501bee9b01efe318566fc",
+  "tests": {
+    "result": "260 passed, 1 warning in 5.44s",
+    "warning": "Inherited langchain_core/Pydantic v1 compatibility warning under Python 3.14",
+    "files": [
+      "test_hk_market_layer.py",
+      "test_global_equity_hk_lot_sizes.py",
+      "test_global_equity_engine.py",
+      "test_composite_market_rules.py",
+      "test_portfolio_fx.py",
+      "test_market_hooks_liquidation.py",
+      "test_crossmarket_dates_regressions.py",
+      "test_gateway_calendars.py",
+      "test_india_backtest_smoke.py",
+      "test_uk_equity_support.py",
+      "test_uk_backtest_smoke.py",
+      "test_execution_causality.py",
+      "test_hk_counter_currency.py",
+      "test_alpha_bench_hsi.py"
+    ],
+    "command_prefix": "/Users/jackgui/Desktop/hk/indicatorlab-clean/.venv/bin/python -B -m pytest",
+    "command_suffix": "-q -p no:cacheprovider"
+  },
+  "ruff": "All checks passed for all seven touched Python files",
+  "black": "All seven touched Python files conform via Black format_file_in_place(fast=False) and format_str equivalence",
+  "unresolved_external": [
+    "Jamal actual India implementation and joint B3 interface acceptance",
+    "Signed-off shared upstream PR, remote CI and team chat posting",
+    "Historical daily FX completion/publication provenance supplied by operator",
+    "Existing HKEX-derived board-lot CSV republication rights or operator-provided replacement",
+    "Additional uncorroborated historical HSI missing-bar closure candidates"
+  ]
+}

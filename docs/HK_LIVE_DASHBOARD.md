@@ -1,3 +1,14 @@
+# Final-week quote and USD-cost addition
+
+The stock dialog now estimates ordinary HKD share-purchase costs in USD with
+dated reference FX and editable broker fees. `/live/hk` keeps its list response
+and adds optional symbol/estimate queries. K1 metadata and K2 quote dispatch
+are reusable without the frontend. See [current status](HK_FINAL_K0_K3_STATUS.md)
+and [quote/cost usage](HK_FINAL_QUOTES_AND_COSTS.md). Historical scope below is
+retained; AWS and upstream/team acceptance are not newly claimed complete.
+
+---
+
 # HK live display
 
 November 19 connection repair: the API and existing collector were stopped.

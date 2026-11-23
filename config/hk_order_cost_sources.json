@@ -1,0 +1,265 @@
+{
+  "reviewed_client_date": "2026-11-23",
+  "scope": "Estimated cash required for ordinary HKD secondary-market share trades, separate from personal income/capital-gains taxation and historical engine fees",
+  "sources": {
+    "hkex_transaction": {
+      "title": "HKEX securities transaction fees",
+      "url": "https://www.hkex.com.hk/Services/Rules-and-Forms-and-Fees/Fees/Securities-%28Hong-Kong%29/Trading/Transaction?sc_lang=en",
+      "verified": true
+    },
+    "ird_stock_history": {
+      "title": "IRD historical rates of stamp duty on Hong Kong stock",
+      "url": "https://www.ird.gov.hk/eng/pdf/sd_stock_rates.pdf",
+      "verified": true
+    },
+    "ird_2021": {
+      "title": "IRD increase effective 1 August 2021",
+      "url": "https://www.ird.gov.hk/eng/tax/budget2021_sd.htm",
+      "verified": true
+    },
+    "ird_2023": {
+      "title": "IRD reduction effective 17 November 2023",
+      "url": "https://www.ird.gov.hk/eng/ppr/archives/23111501.htm",
+      "verified": true
+    },
+    "hkex_2023_fee_change": {
+      "title": "HKEX cash-market trading fee restructuring circular CT/141/22",
+      "url": "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/SEHK/2022/CT14122E.pdf",
+      "verified": true
+    },
+    "hkscc_2025_settlement": {
+      "title": "HKSCC settlement fee restructuring effective 30 June 2025",
+      "url": "https://www.hkex.com.hk/-/media/HKEX-Market/Services/Circulars-and-Notices/Participant-and-Members-Circulars/HKSCC/2025/ce_HKSCC_SET_022_2025.pdf",
+      "verified": true
+    },
+    "hkma_daily_fx_docs": {
+      "title": "HKMA daily exchange-rate API documentation",
+      "url": "https://apidocs.hkma.gov.hk/documentation/market-data-and-statistics/monthly-statistical-bulletin/er-ir/er-eeri-daily/",
+      "verified": true
+    },
+    "hkma_daily_fx_schema": {
+      "title": "HKMA daily exchange-rate OpenAPI schema",
+      "url": "https://apidocs.hkma.gov.hk/wp-content/uploads/swagger/T060103-swagger.json",
+      "verified": true
+    },
+    "hkma_lers": {
+      "title": "HKMA Linked Exchange Rate System",
+      "url": "https://www.hkma.gov.hk/eng/key-functions/money/linked-exchange-rate-system/",
+      "verified": true
+    },
+    "irs_residents": {
+      "title": "IRS taxation of U.S. residents",
+      "url": "https://www.irs.gov/individuals/international-taxpayers/us-residents",
+      "verified": true
+    },
+    "irs_capital_gains": {
+      "title": "IRS Topic 409 capital gains and losses",
+      "url": "https://www.irs.gov/taxtopics/tc409",
+      "verified": true
+    },
+    "irs_investment_income": {
+      "title": "IRS Publication 550 investment income and expenses",
+      "url": "https://www.irs.gov/publications/p550",
+      "verified": true
+    },
+    "ibkr_manual_fx_example": {
+      "title": "IBKR spot-currency conversion commission FAQ",
+      "url": "https://www.interactivebrokers.com/support/faq/content/43893342",
+      "verified": true,
+      "use": "Example of broker-specific pricing, not a universal default"
+    },
+    "hkex_terms": {
+      "title": "HKEX website terms, section 5",
+      "url": "https://www.hkex.com.hk/global/exchange/terms-of-use?sc_lang=en",
+      "verified": true
+    }
+  },
+  "fee_policy": {
+    "rate_unit": "fraction of HKD consideration per side unless specified",
+    "minimum_supported_trade_date": "2016-01-01",
+    "stamp_duty": {
+      "sources": [
+        "ird_stock_history",
+        "ird_2021",
+        "ird_2023",
+        "hkex_transaction"
+      ],
+      "rounding": "ceil to whole HKD on each bought/sold note",
+      "periods": [
+        {
+          "from": "2016-01-01",
+          "through": "2021-07-31",
+          "rate_fraction": 0.001
+        },
+        {
+          "from": "2021-08-01",
+          "through": "2023-11-16",
+          "rate_fraction": 0.0013
+        },
+        {
+          "from": "2023-11-17",
+          "through": null,
+          "rate_fraction": 0.001
+        }
+      ],
+      "eligibility": "Apply only to stamp-duty-subject ordinary shares; exempt products require a separate classification"
+    },
+    "sfc_levy": {
+      "source": "hkex_transaction",
+      "from": "2014-11-01",
+      "rate_fraction": 2.7e-05,
+      "rounding": "nearest HKD cent"
+    },
+    "afrc_levy": {
+      "source": "hkex_transaction",
+      "before_2022_rate_fraction": 0,
+      "from": "2022-01-01",
+      "rate_fraction": 1.5e-06,
+      "rounding": "nearest HKD cent"
+    },
+    "hkex_trading": {
+      "sources": [
+        "hkex_transaction",
+        "hkex_2023_fee_change"
+      ],
+      "before_2023_rate_fraction": 5e-05,
+      "from": "2023-01-01",
+      "rate_fraction": 5.65e-05,
+      "rounding": "nearest HKD cent"
+    },
+    "historical_trading_tariff": {
+      "source": "hkex_2023_fee_change",
+      "before_2023_fixed_hkd_per_side_per_trade": 0.5,
+      "from_2023_fixed_hkd": 0,
+      "retail_pass_through": "broker-dependent; legacy issuer disclosure documents discretion",
+      "issuer_source": "https://www.sec.gov/Archives/edgar/data/1499543/000110465922075483/tm2218258d5_ex99x1.htm"
+    },
+    "hkscc_settlement_pass_through": {
+      "sources": [
+        "hkscc_2025_settlement",
+        "hkex_transaction"
+      ],
+      "before_2025_06_30": {
+        "rate_fraction": 2e-05,
+        "minimum_hkd": 2,
+        "maximum_hkd": 100
+      },
+      "from_2025_06_30": {
+        "rate_fraction": 4.2e-05,
+        "minimum_hkd": null,
+        "maximum_hkd": null
+      },
+      "retail_pass_through": "at broker/custodian discretion; keep unknown or explicitly chosen, not universally assumed",
+      "rounding": "use documented broker pass-through rounding; cent-rounded estimate must be labelled an assumption"
+    },
+    "investor_compensation_levy": {
+      "source": "hkex_transaction",
+      "suspended_from": "2005-12-19",
+      "model_rate_fraction": 0
+    },
+    "excluded_by_default": [
+      "IPO application brokerage",
+      "physical transfer-deed charges",
+      "USM registration/dematerialisation fees",
+      "foreign-issuer-specific financial transaction taxes",
+      "custody/dividend/ADR conversion fees",
+      "short-borrow/margin interest",
+      "personal income/capital-gains/dividend taxes"
+    ]
+  },
+  "broker_inputs": {
+    "required_for_complete_estimate": [
+      "broker_commission_hkd",
+      "platform_fee_hkd",
+      "fx_spread_bps",
+      "fx_fixed_fee_usd",
+      "wire_fee_usd",
+      "settlement_pass_through_choice"
+    ],
+    "unset_semantics": "unknown, not zero and not a complete all-in estimate",
+    "explicit_zero_semantics": "user declares this component does not apply",
+    "manual_fx_example": {
+      "broker": "IBKR",
+      "starting_rate_fraction": 2e-05,
+      "minimum_usd": 2,
+      "scope": "manual spot FX; account/method-specific, no automatic-conversion surcharge added on top"
+    }
+  },
+  "fx": {
+    "quote_unit": "HKD per USD",
+    "usd_principal_formula": "hkd_principal / hkd_per_usd",
+    "buy_effective_rate_formula": "hkd_per_usd * (1 - fx_spread_bps / 10000)",
+    "buy_funding_formula": "(hkd_principal + hkd_trade_fees + broker_commission_hkd + platform_fee_hkd) / buy_effective_rate + fx_fixed_fee_usd + wire_fee_usd",
+    "historical_usd_return_formula": "(local_equity_t / fx_t) / (local_equity_previous / fx_previous) - 1",
+    "historical_contract": "K3 uses Vibe loader HKD=X observations, aligned causally to HK valuation times; forward fill prior available rates only, never backfill",
+    "display_contract": "actual retrieved HKMA daily observation or explicit manual rate; retain observation date, fetched-at time, provider and freshness; daily reference is not executable broker FX",
+    "hkma_endpoint": "https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/er-ir/er-eeri-daily",
+    "hkma_query": {
+      "pagesize": 1,
+      "sortby": "end_of_day",
+      "sortorder": "desc",
+      "fields": "end_of_day,usd"
+    },
+    "hkma_response_fields": {
+      "observed_date": "result.records[0].end_of_day",
+      "hkd_per_usd": "result.records[0].usd"
+    },
+    "current_observed_rate_verified_in_this_research": false,
+    "peg": "7.75-7.85 is a policy band, not a substitute for a dated observed rate",
+    "display_fallback": {
+      "provider": "Yahoo Finance via existing yfinance client",
+      "instrument": "HKD=X",
+      "fields": [
+        "regularMarketPrice",
+        "regularMarketTime",
+        "symbol",
+        "currency"
+      ],
+      "source_url": "https://finance.yahoo.com/quote/HKD=X/",
+      "max_reference_age_days": 7,
+      "cache_seconds": 3600,
+      "cache_rule": "Recheck wall-clock age/future timestamp on hits; retain observation and retrieval instants separately.",
+      "freshness_failure": "No fixed peg fallback. Request an explicit manual reference when both providers are stale/unavailable.",
+      "purpose": "display_only"
+    }
+  },
+  "tax_boundary": {
+    "sources": [
+      "irs_residents",
+      "irs_capital_gains",
+      "irs_investment_income"
+    ],
+    "personal_us_tax_rate": null,
+    "reason": "U.S. tax residents generally report worldwide investment income. Tax on gains/dividends depends on residency, account, holding period, income and other circumstances; purchase transaction duty is separate.",
+    "output_label": "Estimated trade/funding cash cost; personal taxes are not calculated"
+  },
+  "illustrative_example": {
+    "not_a_current_quote_or_broker_offer": true,
+    "trade_date": "2026-11-23",
+    "shares": 100,
+    "unit_price_hkd": 400,
+    "hkd_per_usd": 7.8,
+    "principal_hkd": 40000,
+    "stamp_duty_hkd": 40,
+    "sfc_hkd": 1.08,
+    "afrc_hkd": 0.06,
+    "hkex_trading_hkd": 2.26,
+    "assumed_settlement_pass_through_hkd": 1.68,
+    "known_cost_subtotal_hkd_with_assumed_settlement": 40045.08,
+    "usd_at_reference_rate_before_broker_extras": 5133.98,
+    "editable_broker_example": {
+      "commission_hkd": 50,
+      "platform_fee_hkd": 0,
+      "fx_spread_bps": 10,
+      "fx_fixed_fee_usd": 2,
+      "wire_fee_usd": 5,
+      "estimated_total_usd": 5152.54
+    }
+  },
+  "board_lot_redistribution": {
+    "source": "hkex_terms",
+    "permission_verified": false,
+    "assessment": "General HKEX terms permit limited personal use and restrict redistribution, derivative compilations and programmatic access without written permission. Existing provenance does not establish a redistribution licence.",
+    "safe_local_work": "Keep existing locally supplied table; do not newly scrape the workbook or claim distribution rights. Support user-provided tables and synthetic test fixtures; identify existing upstream CSV as a rights-review item."
+  }
+}

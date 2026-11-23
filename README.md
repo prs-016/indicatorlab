@@ -1,3 +1,14 @@
+# Jack: final-week HK tasks K0-K3
+
+Start with [the current status and remaining acceptance steps](docs/HK_FINAL_K0_K3_STATUS.md).
+The HK stock-details dialog now includes **What would I need in USD?**, with
+dated FX, Hong Kong transaction charges and editable broker/conversion fees.
+[Quote and calculator usage](docs/HK_FINAL_QUOTES_AND_COSTS.md),
+[ticker/name handoff](docs/HK_FINAL_K1_HANDOFF.md), and
+[K3 upstream patch](contributions/final_week/README.md).
+
+---
+
 # Jack: Hong Kong live dashboard
 
 Double-click **`Start HK Dashboard.command`** in this folder. It opens the

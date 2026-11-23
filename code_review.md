@@ -1,3 +1,73 @@
+# Final continuation audit
+
+The installed 45-file delivery is unchanged from its saved verification except
+for this documented audit evidence. A read-only reconciliation of the stored
+^HSI daily bars for 2016-01-01 through 2026-10-31 reports no missing or unexpected
+HK daily sessions. The evidence retains the source hash in
+`docs/HK_FINAL_HSI_CALENDAR_AUDIT.json`. This does not certify every intraday
+weather event, historical FX publication times, AWS or upstream CI. No strategy
+or frozen source/input/result was changed or evaluated.
+
+---
+
+# Code Review — Jack final-week K0-K3 and USD cost estimate
+Reviewed: November 23, 2026
+Files reviewed: scoped IndicatorLab implementation/tests/metadata/navigation and nine Vibe HK update files; exact paths are in the publication manifest and K3 validation record. Historical reports below remain retained.
+
+## Summary
+The new symbols, on-demand quotes and USD purchase calculator follow the source/test layout and keep live display inputs separate from frozen research. The HK market-layer follow-up now gates real fills and liquidation, uses warned one-share lot fallback, and exposes causal daily FX loading without inventing publication times. Two independent-review code findings (wall-clock FX cache age and local alias lookup) were resolved with regressions before this review. No remaining code-correctness blocker was found in the reviewed local scope. K0-K3 external/source acceptance is still incomplete and must not be represented as fully done.
+
+## Repo Structure
+
+| Expected item | Present / assessment |
+|---|---|
+| README / navigation / AGENTS | Current K0-K3 status, quote/cost guide, local commands and explicit acceptance boundaries |
+| Reusable source | `src/markets/`, `src/live/quote.py`, `src/hk/trade_costs.py`; browser UI remains plain HTML/JS |
+| Tests | Mocked HK symbol/provider/API/financial tests, actual captured-provider parser checks, existing regression suites |
+| Dependencies | Existing requests/pandas/yfinance/calendar/boto3 stack; no new package or frontend dependency |
+| Data / results | Frozen empirical results and 75 preregistered source/input hashes preserved; no raw Yahoo history CSV or new HKEX workbook added |
+| Vibe contribution | Nine-file incremental HK patch, local fork changes, source hashes/test record and review-ready PR text |
+| Deployment | Local read-only app only; no AWS, remote push or teammate message claimed |
+
+## Test Coverage
+
+- **250 IndicatorLab HK/config/API cases passed**, including the legacy external-engine dependency, without skips. K1's 42 cases are a subset, not another independent suite to add.
+- **260 Vibe HK/adjacent cases passed** across 14 files, with one inherited Python 3.14/Pydantic-v1 warning. US/India/UK/routing and original HSI behavior are included in this selection; full upstream CI is not claimed.
+- **21 Node cases passed**; JavaScript syntax, scoped Ruff/format and five-asset static build passed.
+- Browser fixture checks cover incomplete fees, explicit zero platform charges, lot rounding, retained input/focus during polling, estimate error isolation and stale-response cancellation.
+- Real Chrome/API checks used 95 quotes plus an actual paired Yahoo HKD=X price/timestamp after the observed stale HKMA reference was rejected. Manual fees/FX, 250-to-200 share rounding, desktop/mobile layout and page errors were checked. No page errors or horizontal overflow were observed.
+- The corrected FX-cache sleep/clock-jump and raw-symbol alias/newest-row cases have focused regressions. Default DynamoDB GetItem is mocked; no AWS acceptance is implied. No instrumented coverage percentage is claimed and no strategy cohort was evaluated.
+
+## Findings
+
+### `config/hk_final_symbol_metadata.json` (lines 1865-1888)
+**Issue:** Required source completeness — one English Wikipedia article is unavailable.
+**Severity:** Should fix before claiming complete K1 acceptance.
+
+```json
+"wiki_en": null,
+"wiki_zh": "老鋪黃金",
+```
+
+Laopu Gold's English article was checked and returned 404; the Chinese article has no English interlanguage link. Keeping null and a source-gap marker is correct, but the guide's all-95 English-title acceptance remains unmet. Obtain a real source or agree an explicit Chinese-language fallback with the team; do not invent a title or turn unavailable views into zero.
+
+### `agent/backtest/HK_FINAL_K3.md` (Board lots and duty; source-rights boundary)
+**Issue:** Source acceptance — publication rights for the already-present board-lot CSV are unverified.
+**Severity:** Should fix before certifying the combined upstream submission ready.
+
+The new patch preserves rather than republishes that file, supports operator-supplied data, and documents the HKEX terms. Source citation and a hash do not establish redistribution permission. The existing PR needs a maintainer/rights decision or an operator-provided table; no new workbook was obtained during this task.
+
+## Checklist for the student
+
+- [ ] Resolve the missing English article or agree the explicit fallback before describing K1 as fully accepted.
+- [ ] Establish the existing lot-table publication basis or use operator-provided data before certifying the upstream package ready.
+
+Local code can be reviewed on Jack independently of these explicit source gaps. AWS acceptance, teammate delivery/schema agreement, the joint India/HK PR, current PR base conflicts/remote CI and historical FX timing evidence remain separately tracked in the status file. This read-only review itself writes only this report; implementation fixes were performed under the user's separate task authorization.
+
+---
+
+# Previous review retained
+
 # Code Review — Jack HK dashboard connection repair
 Reviewed: 2026-11-19 local PT
 Files reviewed: 19 changed source/test/launcher/documentation files; existing collector controls, API integration and frozen-input manifest inspected as dependencies. Scoped repair review; earlier reports are retained below.
