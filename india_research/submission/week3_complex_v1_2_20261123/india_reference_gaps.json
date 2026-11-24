@@ -1,0 +1,105 @@
+{
+  "source_quality_sha256": "db40f45713a54ba71e7ea15ffdb9d94d6c4c000373bcb6bafee23997a429fb6e",
+  "source_session_ledger_sha256": "e26973078086e4188f78460e7b191049a43f2d7bc9f122ff587474e048dc0b5f",
+  "benchmark_reference_missing_ohlcv_flags": [
+    "2016-01-01",
+    "2016-08-12",
+    "2018-01-01",
+    "2019-01-01",
+    "2019-10-27",
+    "2020-11-14"
+  ],
+  "known_session_candidates_missing": [
+    {
+      "symbol": "RELIANCE.NS",
+      "date": "2016-10-30",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "RELIANCE.NS",
+      "date": "2020-02-01",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "TCS.NS",
+      "date": "2016-10-30",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "TCS.NS",
+      "date": "2020-02-01",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "INFY.NS",
+      "date": "2016-10-30",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "INFY.NS",
+      "date": "2020-02-01",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "HDFCBANK.NS",
+      "date": "2016-10-30",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "HDFCBANK.NS",
+      "date": "2020-02-01",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "ICICIBANK.NS",
+      "date": "2016-10-30",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "ICICIBANK.NS",
+      "date": "2020-02-01",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "SBIN.NS",
+      "date": "2016-10-30",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "SBIN.NS",
+      "date": "2020-02-01",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "KOTAKBANK.NS",
+      "date": "2016-10-30",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "KOTAKBANK.NS",
+      "date": "2020-02-01",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "AXISBANK.NS",
+      "date": "2016-10-30",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "AXISBANK.NS",
+      "date": "2020-02-01",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "^NSEI",
+      "date": "2016-10-30",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    },
+    {
+      "symbol": "^NSEI",
+      "date": "2020-02-01",
+      "issue": "previously_documented_special_session_candidate_missing_instrument_record"
+    }
+  ],
+  "scope": "Preserved flags, not an exhaustive exchange calendar or permission to fill/drop rows. Benchmarks need valid close, not fabricated volume."
+}

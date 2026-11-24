@@ -104,7 +104,8 @@ causal availability. v4 ends in 2024 and supplies no independent 2025 anchors.
 The eight fixed stocks require a validated 2025-01-01–2025-09-30 extension;
 `^NSEI` requires validated benchmark/session coverage through the same cutoff.
 The earlier coverage report also identifies six unverified/missing benchmark
-closes before 2025. Retained official 2025 corporate-action events do not alone
+close/OHLC flags before 2025; [exact dates and special-session candidates](india_reference_gaps.json)
+are preserved without claiming an exhaustive calendar. Retained official 2025 corporate-action events do not alone
 reconstruct vendor normalization or missing observations. Existing rejection
 criteria were not weakened and exhausted providers were not retried. US results
 must not be presented as US-versus-India evidence; India remains N/A.

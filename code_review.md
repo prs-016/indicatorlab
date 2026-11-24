@@ -18,7 +18,8 @@ configuration, earlier studies, AGENTS.md and teammate work are excluded.
 
 ## Test Coverage
 
-161 evaluation/framework/adapter tests passed; one private-input join explicitly
+171 combined tests passed from an independent committed checkout in 147.38
+seconds; one private-input join explicitly
 skipped because licensed datasets are absent. Ten additional packaging tests
 pass, independently checking the four original frozen rule hashes, source hashes,
 legacy metadata dependencies, 1,200 actual null metric rows, their percentiles,
@@ -79,4 +80,4 @@ an unsupported global trial count. Shared-sheet updates are not claimed.
 - [x] Include required metadata and independently verify frozen artifacts.
 - [x] Publish reviewer-accessible derived evidence and honest missing results.
 - [x] Run focused tests, Ruff, Black and whitespace/security review.
-- [ ] Complete independent committed-checkout verification before push.
+- [x] Complete independent committed-checkout verification before push.

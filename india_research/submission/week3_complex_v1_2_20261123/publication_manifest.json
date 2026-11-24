@@ -15,7 +15,7 @@
   "frozen_parameters_sha256": "b8050ee0f1411cb8bc5b54d04ed20b6c938c364eec5e18d071be0164d8eec72e",
   "frozen_legacy_specification_sha256": "06566b5358862c74de45116bf6045f17fa24677e1f5d12ae7ed2b150731ca0b3",
   "files_sha256": {
-    "README.md": "c1f8efab4650a0ff06fe19c00616a98a20b72d730dce6a3bf3e9d9f5b3166e3f",
+    "README.md": "cb3235928e287f4b991e48696bfd2ea5fd84fcfe7b09fa2b4ce750e880ba40ba",
     "WATM_v1_2/ablation_comparison.csv": "64214a95a756cae8474b8afd5fdaa5a69dc3bbb5d6d715e5ba1385860a3eada3",
     "WATM_v1_2/baseline_original.json": "e989e0fb48a6c846e29a69087aa162fd65ff19c48e8423c181bb92bea0d9311d",
     "WATM_v1_2/random_protocol.json": "b13a6121662cea797dff031fa1f6eff76a055e0c07f3318b8879564533fe0cdb",
@@ -33,6 +33,7 @@
     "WVB_v1_2/train_random_metrics.csv": "010fffa7084a295e7afa29f99f88c6699b3bfdf7ffded0a98a57a534111502f0",
     "india_2025_decision.json": "18ea098fac4b40ff1c03d94bfd79fb562b8d89875ec2b02025a59cc42c2c0d83",
     "india_2025_per_symbol.csv": "6d915a995df15aa00ff9645c410cc41e23fd3f792d9a4edf637cb532eb0408e7",
+    "india_reference_gaps.json": "42810072b8951337ae821aacc7712711598a0683c312b066eddf53a50fcc9b2d",
     "input_provenance.json": "2a702c2ca53bbfaf7485459e49b89401348d373cf5d1ea2cc3d1ec93277bd3aa",
     "market_results.csv": "80805e63ec2fa192bb642994e8c294923443a4e006d4de68532796247d1e5207",
     "registration_status.json": "e02f77cf7202150646e13ecbcf49137e290a6080d9fc23fb2349373cc9bd9406",
