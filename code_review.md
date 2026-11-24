@@ -60,4 +60,7 @@ precision and recall are not established by passing synthetic tests.
 - [x] Reuse existing pipeline and preserve source/match provenance.
 - [x] Include test dependencies and compact evidence only.
 - [x] Run focused tests, Ruff, Black and whitespace checks.
-- [ ] Verify committed clean checkout before push.
+- [x] Verify committed clean checkout before push (174 passed).
+
+The two evidence CSV review copies use LF line endings; every parsed CSV field
+was verified unchanged. Original local survey files remain unchanged.
