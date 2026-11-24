@@ -140,3 +140,20 @@ current titles by row order.
 
 - CSV SHA-256: `0de6ae1e3a069dc9113cb9c8dc41e7c18e43f59c7f8257c141c24c1ac69edaf0`
 - Ledger SHA-256: `f4f91451ff8192f3ad67270c6f99893c64a4dc94e33d83a7d1f8d98a0df2a16f`
+
+## All-constituent disposition review — 2026-11-23
+
+[Coverage](../config/india_wiki_coverage.csv) records all 100 frozen official
+constituent identities, including 12 explicit unresolved English and 33 Hindi
+gaps. A bounded [identity metadata recheck](../config/india_wiki_identity_review.json)
+queried only the unresolved English companies. Direct-title checks found missing
+pages or redirects to parents/groups; successful searches did not establish
+separate listed-company identities. TATACAP and VAML search requests returned
+HTTP 429 and were not retried. These are unresolved mappings, not claims that
+articles cannot exist. Parent/group pages are not substituted for listed entities.
+
+All 88 English, 67 Hindi and 12 historical mappings remain unchanged. Unknown
+valid_from dates stay blank. This current identity review provides no historical
+pageview/text coverage or eligibility claim. James can inspect the complete
+coverage file alongside the existing current_titles()/title_history() interface;
+no pipeline hook or historical redirect aggregation is enabled here.
