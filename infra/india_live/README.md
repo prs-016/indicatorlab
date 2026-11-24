@@ -27,14 +27,26 @@ The Yahoo adapter calls the existing Vibe `get_quote_summary(symbol, ["price"])`
 loader. It uses the returned exchange timestamp and daily volume and converts the
 explicit formatted percent into percentage points. A request is gated by the reviewed
 market session. The loader requests one symbol at a time and retains its default
-0.6-second spacing. The loop targets one sweep per minute without overlapping
-sweeps. A 100-symbol sweep can exceed 60 seconds with handshake, latency, or retry
-overhead. Rate limits and access denial stop further requests from that collector
-process. Verify the full-roster cadence, field availability, permitted usage and
-exchange-time delay from Ohio in an authorized open session before activation.
-The watchdog retains the existing 60-second receipt threshold, which can alert
-if a Yahoo sweep runs long. It measures ingestion freshness, not exchange data
-freshness or S3 delivery.
+0.6-second spacing. The loop targets one sweep per minute without overlapping sweeps. The loader
+reuses a session and caches cookies and the crumb, but provides neither a
+multi-symbol quote call nor a quote cache. The shared throttle adds up to
+0.4 seconds of jitter when a request has to wait. A warm sweep needs at least
+59.4 seconds between its first and last request starts, before jitter and the
+last response. With the two cold handshake requests the floor is 60.6 seconds.
+Concurrent callers share that same gate. A compliant full-roster one-minute
+deployment remains blocked pending an authorized bulk route or demonstrated
+provider capacity. The three-stock holiday probe does not establish either.
+
+The collector persists each group of 25 valid Yahoo quotes during the sweep.
+The watchdog allows two polling intervals for Yahoo receipts and opening grace,
+while the Dhan receipt check remains at 60 seconds. The ingestion alarm still
+detects missing or late collector receipts after grace. Separately,
+`MaxExchangeAgeSeconds` reports the age since the oldest actual exchange
+timestamp across a complete roster, even if the receipts arrived recently.
+It is absent during closures, opening grace, incomplete reads or invalid
+timestamps. A high value can reflect delayed data or a stock that has not
+traded recently. It does not trigger the ingestion alarm. Rate limiting and
+access denial still stop further requests from that collector process.
 
 For an optional Dhan deployment, use `provider=dhan` and `QuoteProvider=dhan`,
 provide the reviewed instrument file, and set `DhanClientIdParameterName` and

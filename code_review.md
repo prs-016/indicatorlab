@@ -1,3 +1,69 @@
+# Code Review — IndicatorLab Yahoo full-roster pacing and freshness
+
+Reviewed November 24, 2026 Pacific
+Files reviewed: 7 changed source, tests, infrastructure, and documentation files
+
+## Summary
+
+The India collector now writes groups of 25 successful Yahoo quotes while
+acquisition proceeds, preserving the existing write scope and snapshot schema.
+The watchdog gives Yahoo two polling intervals to deliver receipts and reports
+the age of the oldest exchange timestamp separately. The change follows the
+existing DS3 layout and leaves Dhan's polling and receipt window intact.
+One-minute full-roster Yahoo throughput remains blocked by provider pacing.
+
+## Repo Structure
+
+The changes are limited to India live source, tests, alarm description and
+operating notes. No new provider, dependencies, or shared resources enter the
+diff.
+
+## Test Coverage
+
+205 focused tests passed. The Yahoo bootstrap test verifies writes after
+quotes 25, 50, 75 and 100. Watchdog tests cover opening grace, receipt age
+boundaries and delayed or invalid exchange timestamps. Black, Ruff, Ohio
+cfn-lint and read-only AWS CloudFormation ValidateTemplate passed.
+
+An offline integration used the pinned Vibe loader and throttle, synthetic
+HTTP responses with 50 ms transport latency, the collector, four DynamoDB
+batches and real Parquet serialization into a fake S3 sink. The seeded
+virtual clock measured 80.878 seconds for the 102-request cold sweep and
+79.366 seconds for the 100-request warm sweep. The cold wall-clock run
+took about 81 seconds. Sockets and DNS were disabled in both modes.
+These results measure local pacing and integration behavior.
+
+## Findings
+
+### `src/live/yahoo.py` (lines 8–12)
+
+**Issue:** Full-roster provider capacity
+**Severity:** Must resolve before enabling the one-minute full-roster service
+
+```python
+    name = "yahoo"
+    max_batch_size = 1
+```
+
+At 0.6 seconds per gap, 100 single-symbol requests have a 59.4-second
+start-to-start span even with zero jitter. Cold cookie and crumb requests
+raise the lower bound to 60.6 seconds. Vibe shares one throttle for Yahoo
+transport and can add 0.4 seconds per wait. The inspected Vibe quote route
+exposes neither a supported bulk quote operation nor a quote result cache.
+Cached authentication material does not improve the request count for fresh
+quotes. The existing three-stock holiday probe establishes access only.
+
+## Checklist for the student
+
+- [ ] Confirm provider authorization for the volume and an authorized bulk or
+  otherwise supported retrieval path that can satisfy the full-roster cadence.
+- [ ] Verify that path and the exchange-age metric during an approved NSE open
+  session before enabling the schedules.
+
+---
+
+## Previous review record
+
 # Code Review — IndicatorLab India live Ohio and Yahoo correction
 
 Reviewed November 23, 2026 Pacific

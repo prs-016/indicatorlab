@@ -281,7 +281,7 @@ Resources:
   StaleIngestionAlarm:
     Type: AWS::CloudWatch::Alarm
     Properties:
-      AlarmDescription: Any reviewed India symbol lacks a receipt within 60 seconds during sessions, or watchdog is missing
+      AlarmDescription: Any reviewed India symbol lacks a current collector receipt, or watchdog is missing
       Namespace: IndicatorLab/India
       MetricName: IngestionHealthy
       Dimensions: [{Name: Service, Value: indicatorlab-live-india}]

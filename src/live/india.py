@@ -455,6 +455,17 @@ class IndiaLiveService:
             del self._minutes[minute]
         return True
 
+    def _write_latest(self, quotes) -> bool:
+        try:
+            self.latest_store.write(quotes)
+        except Exception as exc:  # noqa: BLE001
+            self.log.error(
+                "india_live_latest_error",
+                extra={"error_type": type(exc).__name__},
+            )
+            return False
+        return True
+
     def step(self) -> list[dict]:
         """Run one gated poll, isolate bad symbols, write latests and log latency.
 
@@ -463,6 +474,8 @@ class IndiaLiveService:
         """
         started = self.monotonic()
         accepted = []
+        pending = []
+        latest_ok = True
         outcome = "ok"
         try:
             if not self.flush():
@@ -518,17 +531,20 @@ class IndiaLiveService:
                         outcome = "partial"
                         continue
                     accepted.append(quote)
+                    pending.append(quote)
                     minute = received.replace(second=0, microsecond=0)
                     self._minutes.setdefault(minute, {})[symbol] = quote
-            if accepted:
-                try:
-                    self.latest_store.write(accepted)
-                except Exception as exc:  # noqa: BLE001
-                    self.log.error(
-                        "india_live_latest_error",
-                        extra={"error_type": type(exc).__name__},
-                    )
-                    outcome = "latest_write_failed"
+                    # Persist completed Yahoo batches during long single-symbol sweeps.
+                    if (
+                        self.provider.name == "yahoo"
+                        and len(pending) == DYNAMO_BATCH_SIZE
+                    ):
+                        latest_ok = self._write_latest(pending) and latest_ok
+                        pending = []
+            if pending:
+                latest_ok = self._write_latest(pending) and latest_ok
+            if not latest_ok:
+                outcome = "latest_write_failed"
             if not self.flush():
                 outcome = "snapshot_backpressure"
             return accepted

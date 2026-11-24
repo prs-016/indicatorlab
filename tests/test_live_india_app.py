@@ -362,7 +362,16 @@ def test_aws_factory_uses_role_chain_and_bounded_timeouts(monkeypatch):
 def test_yahoo_bootstrap_writes_reviewed_quotes_without_dhan(config, monkeypatch):
     from src.live.yahoo import YahooQuoteProvider
 
+    symbols_loaded = []
+    writes_at = []
+
+    class TimedClient(Client):
+        def batch_write_item(self, **kw):
+            writes_at.append(len(symbols_loaded))
+            return super().batch_write_item(**kw)
+
     def load(symbol, modules):
+        symbols_loaded.append(symbol)
         assert modules == ["price"]
         return {
             "price": {
@@ -378,7 +387,7 @@ def test_yahoo_bootstrap_writes_reviewed_quotes_without_dhan(config, monkeypatch
     update(config, lambda d: (d.update(provider="yahoo"), d.pop("instruments")))
     monkeypatch.setattr(app, "YahooQuoteProvider", lambda: YahooQuoteProvider(load))
     runtime = app.prepare_runtime(config, environ={}, clock=lambda: NOW)
-    clients = {"s3": Client(), "dynamodb": Client()}
+    clients = {"s3": Client(), "dynamodb": TimedClient()}
     service = app.build_service(
         runtime, client_factory=clients.__getitem__, clock=lambda: NOW
     )
@@ -386,7 +395,7 @@ def test_yahoo_bootstrap_writes_reviewed_quotes_without_dhan(config, monkeypatch
     assert runtime.region == "us-east-2" and service.interval == 60
     assert len(quotes) == 100 and quotes[0]["change_pct"] == 1.25
     assert quotes[0]["source"] == "yahoo" and tuple(quotes[0]) == COLUMNS
-    assert len(clients["dynamodb"].writes) == 4
+    assert writes_at == [25, 50, 75, 100]
     assert service.flush(force=True)
     assert (
         clients["s3"].writes[0]["Key"] == "raw/live/india/date=2024-01-02/0345.parquet"

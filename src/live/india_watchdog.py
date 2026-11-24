@@ -13,6 +13,7 @@ from src.live.india import IST, REGION, TABLE, SessionCalendar, load_nifty100_sy
 
 NAMESPACE = "IndicatorLab/India"
 MAX_AGE_SECONDS = 60
+YAHOO_RECEIPT_WINDOW_SECONDS = 2 * MAX_AGE_SECONDS
 LOGGER = logging.getLogger(__name__)
 
 
@@ -42,19 +43,29 @@ def _inputs(path, now):
         if hashlib.sha256(local.read_bytes()).hexdigest() != config[key]["sha256"]:
             raise ValueError("Operational checksum mismatch")
         files[key] = local
-    return load_nifty100_symbols(files["roster"]), SessionCalendar.from_file(
-        files["calendar"]
+    provider = config.get("provider", "dhan")
+    if provider not in ("dhan", "yahoo"):
+        raise ValueError("Unsupported India live provider")
+    return (
+        load_nifty100_symbols(files["roster"]),
+        SessionCalendar.from_file(files["calendar"]),
+        provider,
     )
 
 
 def evaluate_health(
-    now: datetime, calendar: SessionCalendar, symbols, receipts
+    now: datetime,
+    calendar: SessionCalendar,
+    symbols,
+    receipts,
+    *,
+    receipt_window=MAX_AGE_SECONDS,
 ) -> bool:
     """Return receipt health for every required symbol during explicit sessions.
 
     now must be timezone-aware; receipts maps names to provider-independent UTC
-    receipt strings. Closures return healthy, unknown dates raise, opening 60s
-    allow acquisition grace. Old, missing, invalid or future receipts fail health.
+    receipt strings. Closures return healthy, unknown dates raise, and the
+    opening receipt window allows acquisition grace. Old, missing, invalid or future receipts fail health.
     This checks ingestion, not freshness of a stock's last exchange trade.
     """
     if now.tzinfo is None or now.utcoffset() is None:
@@ -65,19 +76,35 @@ def evaluate_health(
     for opening, closing in calendar.sessions[local.date()]:
         if opening <= local.time() < closing:
             opened = datetime.combine(local.date(), opening, IST)
-            if (now - opened).total_seconds() < MAX_AGE_SECONDS:
+            if (now - opened).total_seconds() < receipt_window:
                 return True
     for symbol in symbols:
         try:
             stamp = datetime.fromisoformat(receipts[symbol])
             if (
                 stamp.tzinfo is None
-                or not 0 <= (now - stamp).total_seconds() <= MAX_AGE_SECONDS
+                or not 0 <= (now - stamp).total_seconds() <= receipt_window
             ):
                 return False
         except (KeyError, TypeError, ValueError):
             return False
     return True
+
+
+def _exchange_age(now, row, receipt):
+    """Measure exchange age only when both timestamps are valid and ordered."""
+    try:
+        exchange = datetime.fromisoformat(row["ts_exchange"]["S"])
+        received = datetime.fromisoformat(receipt)
+        if (
+            exchange.tzinfo is not None
+            and received.tzinfo is not None
+            and exchange <= received <= now
+        ):
+            return (now - exchange).total_seconds()
+    except (KeyError, TypeError, ValueError):
+        pass
+    return None
 
 
 def check_once(config_path, dynamodb, cloudwatch, *, now: datetime) -> dict:
@@ -88,17 +115,21 @@ def check_once(config_path, dynamodb, cloudwatch, *, now: datetime) -> dict:
     Missing configuration/unprocessed keys fail health; errors log types only.
     """
     healthy = False
+    exchange_age = None
     try:
-        symbols, calendar = _inputs(config_path, now)
+        symbols, calendar, provider = _inputs(config_path, now)
+        window = (
+            YAHOO_RECEIPT_WINDOW_SECONDS if provider == "yahoo" else MAX_AGE_SECONDS
+        )
         # Avoid table calls outside sessions or during the opening grace.
-        if evaluate_health(now, calendar, symbols, {}):
+        if evaluate_health(now, calendar, symbols, {}, receipt_window=window):
             healthy = True
         else:
             response = dynamodb.batch_get_item(
                 RequestItems={
                     TABLE: {
                         "Keys": [{"symbol": {"S": symbol}} for symbol in symbols],
-                        "ProjectionExpression": "#s, ts_received",
+                        "ProjectionExpression": "#s, ts_received, ts_exchange",
                         "ExpressionAttributeNames": {"#s": "symbol"},
                         "ConsistentRead": True,
                     }
@@ -106,28 +137,45 @@ def check_once(config_path, dynamodb, cloudwatch, *, now: datetime) -> dict:
             )
             rows = response.get("Responses", {}).get(TABLE, [])
             receipts = {}
+            exchange_ages = []
             for row in rows:
                 symbol = row["symbol"]["S"]
                 if symbol not in symbols or symbol in receipts:
                     raise ValueError("Unexpected receipt identity")
                 receipts[symbol] = row["ts_received"]["S"]
+                exchange_age_for_quote = _exchange_age(now, row, receipts[symbol])
+                if exchange_age_for_quote is not None:
+                    exchange_ages.append(exchange_age_for_quote)
             healthy = not response.get("UnprocessedKeys") and evaluate_health(
-                now, calendar, symbols, receipts
+                now, calendar, symbols, receipts, receipt_window=window
             )
+            if not response.get("UnprocessedKeys") and len(exchange_ages) == len(
+                symbols
+            ):
+                exchange_age = max(exchange_ages)
     except Exception as exc:  # noqa: BLE001
         LOGGER.error("India watchdog unhealthy: %s", type(exc).__name__)
-    cloudwatch.put_metric_data(
-        Namespace=NAMESPACE,
-        MetricData=[
+    dimensions = [{"Name": "Service", "Value": TABLE}]
+    metrics = [
+        {
+            "MetricName": "IngestionHealthy",
+            "Dimensions": dimensions,
+            "Value": int(healthy),
+            "Unit": "Count",
+            "Timestamp": now,
+        }
+    ]
+    if exchange_age is not None:
+        metrics.append(
             {
-                "MetricName": "IngestionHealthy",
-                "Dimensions": [{"Name": "Service", "Value": TABLE}],
-                "Value": int(healthy),
-                "Unit": "Count",
+                "MetricName": "MaxExchangeAgeSeconds",
+                "Dimensions": dimensions,
+                "Value": exchange_age,
+                "Unit": "Seconds",
                 "Timestamp": now,
             }
-        ],
-    )
+        )
+    cloudwatch.put_metric_data(Namespace=NAMESPACE, MetricData=metrics)
     return {"healthy": bool(healthy)}
 
 

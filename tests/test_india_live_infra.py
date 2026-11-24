@@ -354,3 +354,45 @@ def test_errors_sanitized_and_metric_failure_propagates(config, caplog):
     metrics.put_metric_data = denied
     with pytest.raises(RuntimeError):
         check_once(config, Ddb(), metrics, now=NOW)
+
+
+@pytest.mark.parametrize("receipt_age,healthy", [(95, True), (120, True), (121, False)])
+def test_yahoo_watchdog_distinguishes_receipt_health_and_exchange_age(
+    config, receipt_age, healthy
+):
+    doc = json.loads(config.read_text())
+    doc["provider"] = "yahoo"
+    config.write_text(json.dumps(doc))
+    ddb, metrics = Ddb(), Metrics()
+    for row in ddb.response["Responses"][TABLE]:
+        row["ts_received"]["S"] = (NOW - timedelta(seconds=receipt_age)).isoformat()
+        row["ts_exchange"] = {"S": (NOW - timedelta(minutes=15)).isoformat()}
+    assert check_once(config, ddb, metrics, now=NOW) == {"healthy": healthy}
+    samples = metrics.calls[0]["MetricData"]
+    assert [sample["MetricName"] for sample in samples] == [
+        "IngestionHealthy",
+        "MaxExchangeAgeSeconds",
+    ]
+    assert samples[1]["Value"] == 900
+
+
+def test_yahoo_first_sweep_gets_two_intervals_to_persist(config):
+    doc = json.loads(config.read_text())
+    doc["provider"] = "yahoo"
+    config.write_text(json.dumps(doc))
+    ddb, metrics = Ddb(), Metrics()
+    during_open = datetime(2024, 1, 2, 3, 46, 30, tzinfo=UTC)
+    assert check_once(config, ddb, metrics, now=during_open) == {"healthy": True}
+    assert not ddb.calls
+
+
+def test_partial_or_unordered_quote_data_does_not_publish_exchange_age(config):
+    ddb, metrics = Ddb(), Metrics()
+    rows = ddb.response["Responses"][TABLE]
+    for row in rows[:-1]:
+        row["ts_exchange"] = {"S": NOW.isoformat()}
+    rows[-1]["ts_exchange"] = {"S": (NOW + timedelta(seconds=1)).isoformat()}
+    assert check_once(config, ddb, metrics, now=NOW) == {"healthy": True}
+    assert [m["MetricName"] for m in metrics.calls[0]["MetricData"]] == [
+        "IngestionHealthy"
+    ]

@@ -108,7 +108,7 @@ Choose and authorize a real provider; measure three-ticker delay/rate feasibilit
 during NSE hours; supply reviewed current roster/security-ID/calendar files and
 their review record. The bootstrap is implemented and fixture-tested; authorized
 live validation and deployment remain outstanding. Coordinate with Joshua for AWS resources,
-SSM/IAM/budget and with James for `/live/india`. The inactive image, IST schedules and independent 60-second ingestion alarm
+SSM/IAM/budget and with James for `/live/india`. The inactive image, IST schedules and independent ingestion alarm
 are now defined in `infra/india_live/`. Complete template/image validation and
 deploy only with approval; verify DynamoDB, minute S3 output and the deployed API. Share the service layout with
 Jack without changing his HK implementation. These steps are not claimed complete.
