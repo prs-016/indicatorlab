@@ -22,6 +22,8 @@ in the runtime JSON. The calendar must explicitly cover each date in the review
 window, including holidays and any special sessions. Yahoo needs neither a Dhan
 instrument mapping nor Dhan credentials. `QuoteProvider=yahoo` is the stack
 default. The collector rejects a mismatch between the stack and runtime provider.
+See the [dated input validation](validation/dated_input_review.md) for the
+November 24 roster and the continuous-session window through December 4, 2026.
 
 The Yahoo adapter calls the existing Vibe `get_quote_summary(symbol, ["price"])`
 loader. It uses the returned exchange timestamp and daily volume and converts the
