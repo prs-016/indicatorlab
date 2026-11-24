@@ -47,8 +47,10 @@ These are synthetic/offline tests, not live-provider or deployment evidence.
 Ruff passes on the five service modules and four new test modules. All nine
 Python files pass Black. Offline cfn-lint validation for us-west-2 passes.
 No coverage percentage is claimed; no coverage dependency was installed.
-The same focused suite is a required post-commit check in a clean detached
-checkout before this branch is pushed; the publication handoff records its result.
+A clean detached checkout of implementation commit
+75146045148e7e8b4f50c1fecae42adccfd814a9 passed all 192 focused tests in 1.22
+seconds. Offline cfn-lint also passed again there, and the checkout stayed clean.
+The final review-record update changes no tested service, test or template bytes.
 
 ## Findings
 
@@ -87,5 +89,5 @@ No unrelated repository cleanup was performed.
 - [x] Keep historical studies, AGENTS.md and unrelated working changes out.
 - [x] Run focused offline tests, Ruff, Black and CloudFormation validation.
 - [x] Correct the obsolete cfn-lint documentation.
-- [ ] Complete the post-commit clean-checkout regression gate before push.
+- [x] Complete the post-commit clean-checkout regression gate before push.
 - [ ] Obtain separate authorization and operational evidence before deployment.
