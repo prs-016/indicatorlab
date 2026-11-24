@@ -22,10 +22,12 @@ from src.live.india import (
     TABLE,
     DynamoLatestStore,
     IndiaLiveService,
+    QuoteProvider,
     S3MinuteStore,
     SessionCalendar,
     load_nifty100_symbols,
 )
+from src.live.yahoo import YahooQuoteProvider
 
 LOGGER = logging.getLogger(__name__)
 
@@ -45,7 +47,8 @@ class IndiaRuntime:
     valid_until: date
     interval: int
     fallback_authorized: bool
-    provider: DhanQuoteProvider = field(repr=False)
+    provider: QuoteProvider = field(repr=False)
+    region: str = REGION
 
 
 def _utc_now():
@@ -83,8 +86,18 @@ def prepare_runtime(
     today = now.astimezone(IST).date()
     if not start <= today <= end:
         raise ValueError("Operational review is not valid for current India date")
+    source = config.get("provider", "dhan")
+    if source not in ("dhan", "yahoo"):
+        raise ValueError("Unsupported India live provider")
+    environment = os.environ if environ is None else environ
+    if environment.get("INDIA_LIVE_PROVIDER", source) != source:
+        raise ValueError("Deployment provider must match runtime configuration")
+    region = environment.get("INDIA_LIVE_REGION", REGION)
     files = {}
-    for key in ["roster", "instruments", "calendar"]:
+    inputs = ["roster", "calendar"]
+    if source == "dhan":
+        inputs.append("instruments")
+    for key in inputs:
         spec = config[key]
         local = Path(spec["path"])
         if local.is_absolute() or ".." in local.parts:
@@ -94,11 +107,6 @@ def prepare_runtime(
             raise ValueError("Operational input checksum mismatch")
         files[key] = local
     symbols = load_nifty100_symbols(files["roster"])
-    instruments = json.loads(files["instruments"].read_text())
-    if not isinstance(instruments, Mapping) or set(instruments) != set(symbols):
-        raise ValueError(
-            "Instrument mappings must exactly match the reviewed 100-stock roster"
-        )
     calendar = SessionCalendar.from_file(files["calendar"])
     # Require explicit session/closure entries throughout the approved window.
     # Check again at runtime: unknown or expired dates never contact the broker.
@@ -107,21 +115,32 @@ def prepare_runtime(
         for day in range(start.toordinal(), end.toordinal() + 1)
     ):
         raise ValueError("Reviewed operational calendar has uncovered dates")
-    interval = config.get("poll_interval_seconds", 5)
+    interval = config.get("poll_interval_seconds", 60 if source == "yahoo" else 5)
     fallback = config.get("fallback_authorized", False)
     if (
         type(interval) is not int
         or interval not in (5, 60)
         or type(fallback) is not bool
-        or (interval == 60 and not fallback)
+        or (source == "yahoo" and interval != 60)
+        or (source == "dhan" and interval == 60 and not fallback)
     ):
         raise ValueError("Use five seconds or explicitly approved 60-second fallback")
-    provider = DhanQuoteProvider.from_env(instruments, environ=environ, clock=clock)
+    if source == "yahoo":
+        provider = YahooQuoteProvider()
+    else:
+        instruments = json.loads(files["instruments"].read_text())
+        if not isinstance(instruments, Mapping) or set(instruments) != set(symbols):
+            raise ValueError(
+                "Instrument mappings must exactly match the reviewed roster"
+            )
+        provider = DhanQuoteProvider.from_env(instruments, environ=environ, clock=clock)
     # Detect changed files during parsing as well as before it.
     for key, local in files.items():
         if hashlib.sha256(local.read_bytes()).hexdigest() != config[key]["sha256"]:
             raise ValueError("Operational inputs changed during validation")
-    return IndiaRuntime(symbols, calendar, start, end, interval, fallback, provider)
+    return IndiaRuntime(
+        symbols, calendar, start, end, interval, fallback, provider, region
+    )
 
 
 class _ReviewedCalendar:
@@ -136,7 +155,7 @@ class _ReviewedCalendar:
         return self.runtime.calendar.is_open(now)
 
 
-def aws_client_factory():
+def aws_client_factory(region=REGION):
     """Return a bounded-timeout AWS client factory, only after explicit activation.
 
     Uses boto3's standard credential chain (including ECS task roles). No static
@@ -150,13 +169,13 @@ def aws_client_factory():
         raise RuntimeError(
             "Install declared boto3 dependency before AWS execution"
         ) from None
-    session = boto3.session.Session(region_name=REGION)
+    session = boto3.session.Session(region_name=region)
     config = Config(
         connect_timeout=3,
         read_timeout=5,
         retries={"mode": "standard", "total_max_attempts": 3},
     )
-    return lambda service: session.client(service, region_name=REGION, config=config)
+    return lambda service: session.client(service, region_name=region, config=config)
 
 
 def build_service(
@@ -165,12 +184,16 @@ def build_service(
     """Wire validated runtime to existing AWS sinks without creating resources.
 
     client_factory(service_name) is injectable for offline tests. Otherwise lazy
-    boto3 clients use us-west-2 and task-role authentication. Returns an unstarted
+    boto3 clients use the selected Region and task-role authentication. Returns an unstarted
     service; build_service alone never fetches quotes or writes market records.
     """
-    factory = client_factory if client_factory is not None else aws_client_factory()
-    latest = DynamoLatestStore(factory("dynamodb"), table=TABLE)
-    snapshots = S3MinuteStore(factory("s3"), bucket=BUCKET)
+    factory = (
+        client_factory
+        if client_factory is not None
+        else aws_client_factory(runtime.region)
+    )
+    latest = DynamoLatestStore(factory("dynamodb"), table=TABLE, region=runtime.region)
+    snapshots = S3MinuteStore(factory("s3"), bucket=BUCKET, region=runtime.region)
     return IndiaLiveService(
         runtime.symbols,
         runtime.provider,

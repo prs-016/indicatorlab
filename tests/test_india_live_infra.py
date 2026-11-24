@@ -66,15 +66,27 @@ def test_template_has_no_shared_resources_or_secrets(template):
     forbidden = {
         "AWS::S3::Bucket",
         "AWS::DynamoDB::Table",
-        "AWS::ECS::Cluster",
         "AWS::SSM::Parameter",
         "AWS::EC2::NatGateway",
     }
     assert not any(r["Type"] in forbidden for r in resources.values())
-    assert template["Parameters"]["ClusterName"]["Default"] == "indicatorlab"
+    assert "ClusterName" not in template["Parameters"]
+    assert resources["Cluster"] == {"Type": "AWS::ECS::Cluster"}
+    assert template["Parameters"]["QuoteProvider"]["Default"] == "yahoo"
+    assert [
+        rule["Assert"]["Fn::Equals"]
+        for rule in template["Rules"]["RequiredRegion"]["Assertions"]
+    ] == [
+        [{"Ref": "AWS::Region"}, "us-east-2"],
+        [{"Ref": "AWS::StackName"}, "indicatorlab-india-live"],
+    ]
+    for action in ("Start", "Stop"):
+        target = resources[action]["Properties"]["Target"]["Input"]["Fn::Sub"]
+        assert '"Cluster":"${Cluster}"' in target
+
     assert template["Parameters"]["SchedulesState"]["Default"] == "DISABLED"
     assert resources["Service"]["Properties"]["DesiredCount"] == 0
-    assert resources["Service"]["Properties"]["Cluster"] == {"Ref": "ClusterName"}
+    assert resources["Service"]["Properties"]["Cluster"] == {"Ref": "Cluster"}
 
 
 def test_collector_configuration_and_secret_injection(template):
@@ -85,11 +97,13 @@ def test_collector_configuration_and_secret_injection(template):
     container = task["ContainerDefinitions"][0]
     assert container["EntryPoint"] == ["python", "-B", "-m", "src.live.india_app"]
     assert container["Command"] == ["--run"] and container["StopTimeout"] == 120
-    assert {v["Name"] for v in container["Secrets"]} == {
+    condition, secrets, omitted = container["Secrets"]["Fn::If"]
+    assert condition == "UseDhan" and omitted == {"Ref": "AWS::NoValue"}
+    assert {v["Name"] for v in secrets} == {
         "DHAN_CLIENT_ID",
         "DHAN_ACCESS_TOKEN",
     }
-    assert all(set(v["ValueFrom"]) == {"Ref"} for v in container["Secrets"])
+    assert all(set(v["ValueFrom"]) == {"Ref"} for v in secrets)
     assert not any(v["Name"].startswith("DHAN_") for v in container["Environment"])
     assert r["Service"]["Properties"]["DeploymentConfiguration"] == {
         "MinimumHealthyPercent": 0,
@@ -123,7 +137,10 @@ def test_schedules_monitoring_and_alarm_contract(template):
         and alarm["MetricName"] == "IngestionHealthy"
     )
     assert alarm["Dimensions"] == [{"Name": "Service", "Value": TABLE}]
-    assert r["Watchdog"]["Properties"]["Code"] == {"ImageUri": {"Ref": "ImageUri"}}
+    assert (
+        r["Watchdog"]["Properties"]["Code"]["ImageUri"]
+        == r["Task"]["Properties"]["ContainerDefinitions"][0]["Image"]
+    )
     assert "Secrets" not in r["Watchdog"]["Properties"]
     assert r["Watchdog"]["Properties"]["Role"] != r["Task"]["Properties"]["TaskRoleArn"]
     assert r["SecurityGroup"]["Properties"].get("SecurityGroupIngress", []) == []
@@ -139,6 +156,7 @@ def test_all_template_references_resolve_locally(template):
             "AWS::Partition",
             "AWS::StackName",
             "AWS::NoValue",
+            "AWS::URLSuffix",
         }
     )
 

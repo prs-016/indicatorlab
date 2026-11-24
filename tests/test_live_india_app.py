@@ -97,7 +97,7 @@ def prepare(config, **kwargs):
 
 
 class Client:
-    meta = SimpleNamespace(region_name="us-west-2")
+    meta = SimpleNamespace(region_name="us-east-2")
 
     def __init__(self):
         self.writes = []
@@ -350,10 +350,77 @@ def test_aws_factory_uses_role_chain_and_bounded_timeouts(monkeypatch):
     monkeypatch.setitem(sys.modules, "botocore.config", SimpleNamespace(Config=config))
     factory = app.aws_client_factory()
     assert factory("dynamodb") == "dynamodb"
-    assert seen["session"] == {"region_name": "us-west-2"}
+    assert seen["session"] == {"region_name": "us-east-2"}
     assert seen["config"] == {
         "connect_timeout": 3,
         "read_timeout": 5,
         "retries": {"mode": "standard", "total_max_attempts": 3},
     }
-    assert seen["dynamodb"] == {"region_name": "us-west-2", "config": "bounded-config"}
+    assert seen["dynamodb"] == {"region_name": "us-east-2", "config": "bounded-config"}
+
+
+def test_yahoo_bootstrap_writes_reviewed_quotes_without_dhan(config, monkeypatch):
+    from src.live.yahoo import YahooQuoteProvider
+
+    def load(symbol, modules):
+        assert modules == ["price"]
+        return {
+            "price": {
+                "symbol": symbol,
+                "currency": "INR",
+                "regularMarketPrice": {"raw": 100},
+                "regularMarketChangePercent": {"raw": 0.0125, "fmt": "1.25%"},
+                "regularMarketVolume": {"raw": 1000},
+                "regularMarketTime": {"raw": int(NOW.timestamp())},
+            },
+        }
+
+    update(config, lambda d: (d.update(provider="yahoo"), d.pop("instruments")))
+    monkeypatch.setattr(app, "YahooQuoteProvider", lambda: YahooQuoteProvider(load))
+    runtime = app.prepare_runtime(config, environ={}, clock=lambda: NOW)
+    clients = {"s3": Client(), "dynamodb": Client()}
+    service = app.build_service(
+        runtime, client_factory=clients.__getitem__, clock=lambda: NOW
+    )
+    quotes = service.step()
+    assert runtime.region == "us-east-2" and service.interval == 60
+    assert len(quotes) == 100 and quotes[0]["change_pct"] == 1.25
+    assert quotes[0]["source"] == "yahoo" and tuple(quotes[0]) == COLUMNS
+    assert len(clients["dynamodb"].writes) == 4
+    assert service.flush(force=True)
+    assert (
+        clients["s3"].writes[0]["Key"] == "raw/live/india/date=2024-01-02/0345.parquet"
+    )
+
+
+@pytest.mark.parametrize("status", [401, 403, 429, 503])
+def test_yahoo_http_errors_preserve_retry_contract(status):
+    import requests
+
+    from src.live.yahoo import YahooQuoteProvider
+
+    def fail(*_):
+        response = requests.Response()
+        response.status_code = status
+        raise requests.HTTPError(response=response)
+
+    error = PermissionError if status < 500 else requests.HTTPError
+    with pytest.raises(error):
+        YahooQuoteProvider(fail).fetch(("SYN0.NS",))
+
+
+@pytest.mark.parametrize(
+    "change",
+    [{"provider": "yahoo", "poll_interval_seconds": 5}, {"provider": "unknown"}],
+)
+def test_invalid_provider_configuration_is_rejected(config, change):
+    update(config, lambda document: document.update(change))
+    with pytest.raises(ValueError):
+        app.prepare_runtime(config, environ={}, clock=lambda: NOW)
+
+
+def test_deployment_provider_must_match_reviewed_config(config):
+    with pytest.raises(ValueError, match="Deployment provider"):
+        app.prepare_runtime(
+            config, environ={"INDIA_LIVE_PROVIDER": "yahoo"}, clock=lambda: NOW
+        )

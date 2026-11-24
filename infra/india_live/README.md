@@ -1,200 +1,93 @@
-# India live deployment — prepared, not deployed
+# India live deployment in Ohio
 
-This CloudFormation template reuses the shared infrastructure documented on
-Joshua's `origin/reddit` (`infra/shared/`, `infra/reddit/`) and the independent
-watchdog/start-stop pattern on Jack's `origin/Jack` (`infra/hk_live/`). No HK files
-or tables are copied. Existing India collector, Dhan adapter and bootstrap are
-unchanged. No AWS calls, images, secrets or resources were created by this work.
+The India collector and independent receipt watchdog share a reviewed ARM64 image.
+The deployment uses the existing Ohio table `indicatorlab-live-india` and writes
+versioned snapshots under `s3://indicatorlab-data/raw/live/india/`. It references
+the existing public VPC and subnets. Deploy only as `indicatorlab-india-live` in
+`us-east-2` with the `Jamaal-IndicatorLab` profile and explicit activation approval.
 
-## Resources and defaults
+The stack owns a separate ECS cluster. Joshua's `indicatorlab-reddit-weekly-failed`
+rule filters on the shared `indicatorlab` cluster ARN, so India task failures do
+not match that rule. The template derives the image URI and pull policy from this
+project's dedicated `indicatorlab-india-live` ECR repository and the supplied
+digest. Its write permissions cover only the India table and prefix. The stack
+does not manage the shared bucket, table, VPC, repositories, or teammate workloads.
 
-- **References only:** existing ECS cluster `indicatorlab`, DynamoDB table
-  `indicatorlab-live-india` and S3 bucket `indicatorlab-data` in `us-west-2`.
-  Confirm existence/ownership with Joshua; local templates do not prove deployment.
-  If shared names differ, stop: the current bootstrap also targets these names.
-- **Creates on a future approved deployment:** a 0.25-vCPU/1-GB ARM64 Fargate task
-  and service, outbound HTTPS security group, four scoped IAM roles, two log groups
-  (14-day retention), two Scheduler schedules, Lambda watchdog/minute timer and alarm.
-  No bucket, table, cluster, VPC, subnet, NAT gateway, SSM parameter or SNS topic
-  is created. No public inbound endpoint or load balancer is required.
-- **Inactive by default:** service desired count is zero; `SchedulesState=DISABLED`
-  disables both collector schedules, watchdog timer and alarm actions. No dummy
-  credentials, fabricated prices or mock-provider production option exist.
-- **Schedule:** daily 09:05–15:40 **Asia/Kolkata**, covering regular NSE hours with
-  startup/shutdown margin. Weekends are included so daytime special sessions are
-  not automatically missed; the reviewed NSE calendar prevents holiday polling.
-  Closed-day compute still incurs cost within that window. Evening/Muhurat or
-  sessions outside this window require preapproved adjusted schedules or dated
-  start/stop operations. The template does not discover special sessions.
-- **Single writer:** rolling deployment percentages 0/100 favor replacement gaps
-  over overlapping scheduled writers. Do not run a second local/manual collector
-  against these targets. ECS is not a distributed lock/exactly-once guarantee.
-- **Secrets:** inject existing SSM SecureString ARNs as `DHAN_CLIENT_ID` and
-  `DHAN_ACCESS_TOKEN`; never pass their values in template parameters. Only the
-  execution role reads those two parameters. An optional customer-managed KMS key
-  allows decryption through SSM. Task role only writes the India table/prefix.
-  Execution image-pull rights are scoped to the supplied ECR repository ARN;
-  authorization-token retrieval necessarily uses `Resource: '*'`.
+## Reviewed runtime input
 
-## Independent receipt watchdog
+Use the existing dated approval and SHA-256 checks. Stage flat, relative files in
+`runtime/`: `india-live.json`, the reviewed NIFTY 100 roster CSV, and the reviewed
+NSE session calendar. Set `"provider": "yahoo"` and `"poll_interval_seconds": 60`
+in the runtime JSON. The calendar must explicitly cover each date in the review
+window, including holidays and any special sessions. Yahoo needs neither a Dhan
+instrument mapping nor Dhan credentials. `QuoteProvider=yahoo` is the stack
+default. The collector rejects a mismatch between the stack and runtime provider.
 
-The same digest-pinned image runs `src.live.india_watchdog.handler` in Lambda,
-with **no Dhan credentials**. Every minute it reads the reviewed roster/calendar
-and up to 100 DynamoDB receipt timestamps with `BatchGetItem`. All reviewed names
-must have timezone-aware, non-future receipts aged **at most 60 seconds**. Missing
-rows, unprocessed keys, expired review, unknown calendar dates or malformed inputs
-publish unhealthy. Declared closures publish healthy without table reads; the first
-60 seconds of each declared session is an acquisition grace period.
+The Yahoo adapter calls the existing Vibe `get_quote_summary(symbol, ["price"])`
+loader. It uses the returned exchange timestamp and daily volume and converts the
+explicit formatted percent into percentage points. A request is gated by the reviewed
+market session. The loader requests one symbol at a time and retains its default
+0.6-second spacing. The loop targets one sweep per minute without overlapping
+sweeps. A 100-symbol sweep can exceed 60 seconds with handshake, latency, or retry
+overhead. Rate limits and access denial stop further requests from that collector
+process. Verify the full-roster cadence, field availability, permitted usage and
+exchange-time delay from Ohio in an authorized open session before activation.
+The watchdog retains the existing 60-second receipt threshold, which can alert
+if a Yahoo sweep runs long. It measures ingestion freshness, not exchange data
+freshness or S3 delivery.
 
-The `IndicatorLab/India` metric `IngestionHealthy` (dimension
-`Service=indicatorlab-live-india`) alarms on a value below one in one 60-second
-period. Missing watchdog metrics also breach; the collector cannot suppress an
-alarm by crashing. Minute sampling and CloudWatch evaluation mean notification is
-**not guaranteed exactly at second 61**. This checks receipt freshness, not last
-exchange-trade freshness or successful S3 delivery. Inspect minute objects and
-collector storage-error logs separately. With an authorized 60-second polling
-fallback, jitter can cause strict 60-second alerts; do not silently relax the limit.
+For an optional Dhan deployment, use `provider=dhan` and `QuoteProvider=dhan`,
+provide the reviewed instrument file, and set `DhanClientIdParameterName` and
+`DhanAccessTokenParameterName` to Ohio SecureStrings under `/indicatorlab/india/`.
+The template injects the two secrets and includes their read policy only in Dhan
+mode. Supply `SecretKmsKeyArn` only if a customer-managed key is used. Dhan still
+defaults to five seconds and requires explicit fallback authorization for 60 seconds.
 
-## Preconditions before deployment
+## Build and validation
 
-1. User/PM approval, Joshua's AWS account/resource/access confirmation, budget and
-   service ownership. Existing public subnets need an Internet Gateway route, DNS
-   and appropriate network ACLs. Collector gets a billed public IPv4 address;
-   HTTPS egress is not restricted to specific hostnames. No private credentials
-   or network configuration are discovered by this template.
-2. Authorized Dhan Data API entitlement, valid token and verified current NSE_EQ
-   security IDs. Confirm any provider geographic/IP/storage/display restrictions.
-   Complete the separately authorized three-stock live test; offline tests are
-   not broker validation.
-3. Reviewed non-secret runtime files under `runtime/`, including
-   `india-live.json`, roster CSV, instruments JSON and session calendar. Follow
-   [bootstrap configuration](../../docs/india_live_service.md#executable-india-bootstrap-inactive-until-explicitly-run).
-   Use flat relative filenames for this Docker build context. The approved,
-   dated review binds actual file hashes; test fixtures are not operational inputs.
-   Update the image and both workloads before review expiry or index changes.
-4. Existing ECR repository and ARM64 image-build tooling; image digest and matching
-   repository ARN. Ensure the repository permits Lambda image retrieval (including
-   cross-account policy if applicable). No registry is provisioned here.
-5. Existing Dhan SecureStrings and optional KMS key with appropriate key policy.
-   The collector execution role needs access; no secrets are baked into images.
-   Rotating SSM values does **not** update running tasks: replace/restart the
-   collector after rotation. The watchdog never needs these secrets.
-6. Existing SNS topic ARN and confirmed recipient subscription for notifications;
-   topic/key policies must permit CloudWatch alarm delivery. An empty ARN creates
-   an alarm with **no notification action**. Do not call that operational alerting.
-
-## Build and deployment procedure — instructions only
-
-Never send the entire working tree or private runtime files to an unreviewed
-build service. Assemble a temporary context containing only the Dockerfile,
-Dockerfile-specific ignore file, deployment requirements, the explicitly listed
-`src` files from Dockerfile, and reviewed **non-secret** `runtime/*.json,*.csv`.
-Preserve directory paths. Inspect the context before building; exclude `.env`,
-credentials, snapshots, notebooks and test fixtures. Docker's sibling
-`Dockerfile.dockerignore` is deny-by-default as a second boundary.
-
-After authorization and with placeholders replaced:
+Use a dedicated build context with the existing Dockerfile, Dockerfile-specific
+ignore file, requirements, the explicitly copied `src` files, and the reviewed
+non-secret runtime files. Stage the pinned upstream Vibe loader, its two
+dependencies, and upstream license into the context using:
 
 ```bash
-# Build locally; do not run a collector merely to build its image.
+bash infra/india_live/stage_vibe_loader.sh /path/to/vibe-Trading /path/to/context
 docker buildx build --platform linux/arm64 --provenance=false --load \
   -f /path/to/context/infra/india_live/Dockerfile \
   -t india-live:reviewed /path/to/context
-# Review image contents, record base/dependency versions, then use the team's
-# authorized ECR login/tag/push workflow. Obtain the resulting image digest.
 ```
 
-Prepare a CloudFormation parameter file containing `ImageUri` (ECR digest URI),
-`ImageRepositoryArn`, `ClusterName`, `VpcId`, `PublicSubnets` (comma-separated),
-`DhanClientIdParameterArn`, `DhanAccessTokenParameterArn`, optional `SecretKmsKeyArn`,
-`AlertTopicArn` and `SchedulesState=DISABLED`. These are identifiers, not secrets.
-Do not create replacement shared resources when an identifier is missing.
+Use network-disabled synthetic inputs for startup validation. Run the collector
+without `--run` to validate a reviewed configuration without creating AWS
+clients or starting requests. The production ECS entry point supplies `--run`;
+Lambda uses the image's watchdog handler. Never put secret values or operational
+test credentials in the build context.
 
-```bash
-# These commands contact AWS: only a separately authorized operator runs them.
-aws cloudformation deploy --region us-west-2 \
-  --stack-name indicatorlab-india-live \
-  --template-file infra/india_live/template.yaml --capabilities CAPABILITY_IAM \
-  --parameter-overrides file:///path/to/approved-parameters.json
-```
+## Deployment and activation prerequisites
 
-Inspect the change set/outputs before enabling. Once permissions, runtime inputs,
-secret injection and notification routing are validated, explicitly update
-`SchedulesState=ENABLED`. Enabling schedules during a trading day does not itself
-start a task until the next start trigger; an approved manual desired-count change
-may be needed. Creating the disabled stack still creates billable supporting
-resources and is **not authorized by this implementation task**.
+- With approval, create the dedicated Ohio ECR repository and push the reviewed
+  image. Allow Lambda image retrieval and supply the resulting `ImageDigest`.
+- Set `VpcId` to `vpc-0296a8f62662230d9` and select the verified public subnets
+  `subnet-048c660a61c790a4a`, `subnet-080ce02880de051ae`, and
+  `subnet-08eece60495cf9d2e`. Confirm the network inputs at deployment time.
+- Review a CloudFormation change set for `indicatorlab-india-live` with
+  `CAPABILITY_IAM`. Keep the default `SchedulesState=DISABLED` and desired count
+  zero. Use an approved India SNS topic and confirmed subscriber for notifications.
+- During an approved trading-session check, verify one writer, the seven-field
+  schema, DynamoDB receipts, Parquet snapshots, James's reader, and alarm delivery.
+  Resolve any measured cadence issue before enabling schedules. Confirm special
+  session coverage outside the default 09:05–15:40 IST window.
+- To stop after activation, disable all schedules and explicitly set desired count
+  to zero. Verify the task has stopped before starting another writer.
 
-## Verification, costs and rollback
+At 30 scheduled days, 22 regular sessions, and 100 rows per successful minute,
+budget approximately **$5–7/month before credits**. That includes about $3.29 in
+Fargate and public IPv4, $0.62 for DynamoDB, and a usage allowance for ECR,
+S3, Lambda, CloudWatch and notifications. The estimate assumes modest log and
+snapshot volume and no NAT gateway. Confirm usage against the existing
+`indicatorlab-monthly` budget. No Dhan subscription is required for Yahoo.
 
-- Validate the built image offline, then prove in an authorized NSE session:
-  exactly one task, 100 expected table keys updating around five seconds,
-  seven-field schema, timezone/receipt semantics, actual Parquet minute keys,
-  closures suppressing polls and James's `/live/india` reader compatibility.
-- Exercise the independent alarm with an approved collector stop; confirm recovery,
-  opening/closure suppression, unknown-date failure and actual SNS delivery.
-  Check SSM/KMS failures do not print secrets. Capture logs and deployment outputs.
-- Budget compute as 0.25 vCPU + 1 GB for each scheduled hour/day, plus public IPv4,
-  ECR storage, DynamoDB writes, S3 puts, logs, Lambda/minute table reads, metrics,
-  alarms, Scheduler and any provider subscription. Watchdog runs all day when
-  enabled. Do not assume free-tier eligibility or quote an unverified monthly price.
-  Coordinate with Joshua's existing `indicatorlab-monthly` budget; no duplicate
-  budget is created. [Fargate pricing](https://aws.amazon.com/fargate/pricing/).
-- **Stop:** disable both start/stop schedules and the watchdog timer (update
-  `SchedulesState=DISABLED`), explicitly set service desired count to zero and
-  verify no task remains. Disabling schedules alone does not stop a running task.
-  Keep the existing bucket/table, secrets and team cluster intact.
-- **Rollback image:** keep schedules disabled, select a prior reviewed digest and
-  still-valid runtime review, update the stack, then reactivate only with approval.
-  Preserve logs/evidence. Deleting this stack does not delete the shared storage
-  because it never owns it; do not delete shared resources as a rollback.
-
-## Offline validation and limits
-
-```bash
-.venv/bin/python -B -m pytest tests/test_india_live_infra.py tests/test_live_india_app.py tests/test_live_dhan.py tests/test_live_india.py tests/test_config.py -q -p no:cacheprovider
-```
-
-Tests parse CloudFormation intrinsics, check resource/reference/IAM/schedule/image
-contracts, and exercise watchdog closures, special sessions, 60-second boundaries,
-partial reads and failures without sockets. These tests do not prove deployment.
-
-Offline CloudFormation schema validation with
-`cfn-lint -t infra/india_live/template.yaml -r us-west-2` passes. Container image
-build/runtime validation and authorized live-provider/AWS verification remain
-separate deployment prerequisites. No image build is repeated by this publication
-step, and no AWS `validate-template` or deployment command was called.
-
-Upstream pattern references: [ECS service](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-ecs-service.html),
-[Lambda Python images](https://docs.aws.amazon.com/lambda/latest/dg/python-image.html).
-
-## Verified local validation — 2026-11-23 Pacific
-
-The existing image built successfully for **linux/arm64**, using the ten-file
-allowlisted context and deliberately unapproved non-secret configuration.
-[Container evidence](validation/container_validation.json) records the image
-hash, dependency imports, entry-point help and fail-closed default startup under
-`--network none`. This is a local test image, not reviewed operational runtime.
-Docker Desktop had to be started; no AWS deployment or registry push occurred.
-Offline cfn-lint for the existing us-west-2 template passes.
-
-A public, unauthenticated HeadBucket request returned HTTP 403 with
-`x-amz-bucket-region: us-east-2` for `indicatorlab-data`:
-[region evidence](validation/shared_bucket_region.json). This corroborates
-Joshua's published deployment report but does not verify ownership or IAM.
-The guide/service/template target us-west-2. Do not deploy a duplicate stack or
-silently move regional resources: obtain the team's explicit region/account
-alignment and credentials first. No AWS credentials/profile were configured in
-WSL or its .env, nor in the checked Windows/WSL AWS configuration locations.
-No authenticated AWS resource, ECS, IAM, ECR, SSM or alarm operation was possible.
-
-The explicitly authorized Yahoo/Vibe one-minute source probe made 11 polls for
-RELIANCE, TCS and INFY over ten minutes (33 successful responses). All exchange
-timestamps remained at the prior close; however, **2026-11-24 is an NSE holiday**
-([official circular](https://nsearchives.nseindia.com/content/circulars/CMTR71775.pdf)).
-[Probe summary](validation/source_probe_summary.json) therefore establishes
-access, not an open-session delay/freshness failure or successful live cadence.
-An actual NSE trading-session test remains required. No production Yahoo adapter,
-DynamoDB writes, S3 uploads or mock quote activation is claimed. Dhan remains
-available through the existing adapter once valid credentials/entitlement and
-reviewed IDs/calendar are supplied.
+Previous local ARM64 and three-stock closure probe results remain in
+`validation/`. The probe observed the prior-close exchange timestamps and
+establishes access only. It does not establish production latency or open-session
+coverage.

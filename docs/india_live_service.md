@@ -45,7 +45,7 @@ must verify those units. Zero volume is retained. Old last-trade timestamps rema
 visible; a successful request does not prove a fresh exchange trade.
 
 `DynamoLatestStore(client)` requires an explicitly supplied low-level DynamoDB client
-in `us-west-2`. It writes `indicatorlab-live-india` with symbol as the key, using
+in `us-east-2`. It writes `indicatorlab-live-india` with symbol as the key, using
 low-level DynamoDB number/string attributes and batches of at most 25. Only
 unprocessed items are retried, with bounded exponential backoff.
 
@@ -213,6 +213,14 @@ historical research and do not change holdout rules.
 
 ## Executable India bootstrap (inactive until explicitly run)
 
+For the Ohio deployment, set `"provider": "yahoo"` and
+`"poll_interval_seconds": 60` in the reviewed runtime JSON. The Yahoo path uses
+the existing Vibe Yahoo quoteSummary loader and requires the reviewed roster
+and calendar only. The instrument mapping and Dhan credentials described below
+apply to the optional Dhan configuration. See the
+[Ohio deployment instructions](../infra/india_live/README.md) for packaging,
+isolation, and open-session cadence verification.
+
 `python -m src.live.india_app` validates local inputs and environment credentials
 only. `--run` additionally creates clients for existing DynamoDB/S3 resources
 and enters the service loop. This task did not execute either against live data
@@ -221,7 +229,7 @@ or AWS. No shared template is copied, imported, deployed or reprovisioned.
 The bootstrap follows the explicit AWS activation/graceful-stop pattern inspected
 on `origin/Jack:src/hk/live.py`, and the shared resource contract on
 `origin/reddit:infra/shared/template.yaml`. It does not copy or modify HK code.
-The fixed resource targets are `us-west-2`, table `indicatorlab-live-india` and
+The fixed resource targets are `us-east-2`, table `indicatorlab-live-india` and
 bucket `indicatorlab-data`. Confirm these with Joshua before activation; a different
 actual bucket name needs a separately reviewed configuration change.
 

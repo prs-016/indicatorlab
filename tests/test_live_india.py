@@ -334,7 +334,7 @@ def test_poll_latency_includes_work_and_avoids_overlapping_catchup(setup, caplog
 
 
 class FakeDynamo:
-    meta = SimpleNamespace(region_name="us-west-2")
+    meta = SimpleNamespace(region_name="us-east-2")
 
     def __init__(self, responses=()):
         self.calls, self.responses = [], list(responses)
@@ -345,7 +345,7 @@ class FakeDynamo:
 
 
 class FakeS3:
-    meta = SimpleNamespace(region_name="us-west-2")
+    meta = SimpleNamespace(region_name="us-east-2")
 
     def __init__(self, failures=0):
         self.calls, self.failures = [], failures

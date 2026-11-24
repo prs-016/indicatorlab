@@ -141,7 +141,9 @@ def handler(_event, _context):
     import boto3
     from botocore.config import Config
 
-    session = boto3.session.Session(region_name=REGION)
+    session = boto3.session.Session(
+        region_name=os.environ.get("INDIA_LIVE_REGION", REGION)
+    )
     config = Config(
         connect_timeout=3,
         read_timeout=5,

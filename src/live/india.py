@@ -26,7 +26,7 @@ import pandas as pd
 
 LOGGER = logging.getLogger(__name__)
 IST = ZoneInfo("Asia/Kolkata")
-REGION = "us-west-2"
+REGION = "us-east-2"
 TABLE = "indicatorlab-live-india"
 BUCKET = "indicatorlab-data"
 COLUMNS = (
@@ -276,22 +276,28 @@ def normalize_quote(row: Mapping, symbol: str, received: datetime, source: str) 
     }
 
 
-def _region(client):
-    if getattr(getattr(client, "meta", None), "region_name", None) != REGION:
-        raise ValueError("Explicit us-west-2 storage client required")
+def _region(client, region):
+    if getattr(getattr(client, "meta", None), "region_name", None) != region:
+        raise ValueError(f"Explicit {region} storage client required")
 
 
 class DynamoLatestStore:
     """Latest-record sink using an injected low-level DynamoDB client.
 
-    Parameters: client must target us-west-2; table defaults to the official name.
+    Parameters: client must target the selected Region; table defaults to the official name.
     Bounded retries resend only unprocessed items. No boto3 session is created.
     """
 
     def __init__(
-        self, client, *, table=TABLE, retry=DEFAULT_RETRY_POLICY, sleep=time.sleep
+        self,
+        client,
+        *,
+        table=TABLE,
+        region=REGION,
+        retry=DEFAULT_RETRY_POLICY,
+        sleep=time.sleep,
     ):
-        _region(client)
+        _region(client, region)
         self.client, self.table, self.retry, self.sleep = client, table, retry, sleep
 
     def write(self, quotes: Sequence[Mapping]) -> None:
@@ -334,16 +340,22 @@ class DynamoLatestStore:
 
 
 class S3MinuteStore:
-    """Parquet snapshot sink with an injected us-west-2 S3 client.
+    """Parquet snapshot sink with an injected regional S3 client.
 
     Parameters: bucket defaults to indicatorlab-data; retry/sleep bound write
     retries. Minute partitions use UTC receipt time. No client/resources are created.
     """
 
     def __init__(
-        self, client, *, bucket=BUCKET, retry=DEFAULT_RETRY_POLICY, sleep=time.sleep
+        self,
+        client,
+        *,
+        bucket=BUCKET,
+        region=REGION,
+        retry=DEFAULT_RETRY_POLICY,
+        sleep=time.sleep,
     ):
-        _region(client)
+        _region(client, region)
         self.client, self.bucket, self.retry, self.sleep = client, bucket, retry, sleep
 
     def write(self, minute: datetime, quotes: Sequence[Mapping]) -> None:
@@ -396,7 +408,8 @@ class IndiaLiveService:
     ):
         self.symbols = _symbols(symbols)
         if poll_interval_seconds not in (5, 60) or (
-            poll_interval_seconds == 60 and not fallback_authorized
+            poll_interval_seconds == 60
+            and not (fallback_authorized or provider.name == "yahoo")
         ):
             raise ValueError(
                 "Use five seconds or an explicitly authorized 60-second fallback"

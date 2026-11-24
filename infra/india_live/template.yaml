@@ -1,36 +1,34 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: India live collector and receipt watchdog; references shared resources. Inactive by default.
 Parameters:
-  ImageUri:
+  ImageDigest:
     Type: String
-    Description: Reviewed ARM64 ECR image digest containing approved runtime/india-live.json
-    AllowedPattern: '.+\.dkr\.ecr\.us-west-2\.amazonaws\.com/.+@sha256:[a-f0-9]{64}'
-  ImageRepositoryArn:
+    Description: Reviewed ARM64 digest in this project's indicatorlab-india-live ECR repository
+    AllowedPattern: 'sha256:[a-f0-9]{64}'
+  QuoteProvider:
     Type: String
-    Description: Existing ECR repository ARN matching ImageUri; scopes collector image-pull permissions
-    AllowedPattern: 'arn:aws:ecr:us-west-2:[0-9]{12}:repository/.+'
-  ClusterName:
-    Type: String
-    Default: indicatorlab
-    Description: Existing ECS cluster name; this template never creates a cluster
+    Default: yahoo
+    AllowedValues: [yahoo, dhan]
   VpcId:
     Type: AWS::EC2::VPC::Id
   PublicSubnets:
     Type: List<AWS::EC2::Subnet::Id>
     Description: Existing public subnets with an Internet Gateway route
-  DhanClientIdParameterArn:
+  DhanClientIdParameterName:
     Type: String
-    Description: Existing SSM SecureString ARN, not a credential value
-    AllowedPattern: 'arn:aws:ssm:us-west-2:[0-9]{12}:parameter/indicatorlab/.+'
-  DhanAccessTokenParameterArn:
+    Description: Existing India SSM SecureString name, not a credential value
+    Default: ''
+    AllowedPattern: '(^$|/indicatorlab/india/[A-Za-z0-9_./-]+)'
+  DhanAccessTokenParameterName:
     Type: String
-    Description: Existing SSM SecureString ARN, not a credential value
-    AllowedPattern: 'arn:aws:ssm:us-west-2:[0-9]{12}:parameter/indicatorlab/.+'
+    Description: Existing India SSM SecureString name, not a credential value
+    Default: ''
+    AllowedPattern: '(^$|/indicatorlab/india/[A-Za-z0-9_./-]+)'
   SecretKmsKeyArn:
     Type: String
     Default: ''
     Description: Optional customer-managed key for the two SSM parameters
-    AllowedPattern: '(^$|arn:aws:kms:us-west-2:[0-9]{12}:key/.+)'
+    AllowedPattern: '(^$|arn:aws:kms:us-east-2:[0-9]{12}:key/.+)'
   AlertTopicArn:
     Type: String
     Default: ''
@@ -50,13 +48,25 @@ Parameters:
 Rules:
   RequiredRegion:
     Assertions:
-      - Assert: !Equals [!Ref 'AWS::Region', us-west-2]
-        AssertDescription: Existing service and resource targets require us-west-2
+      - Assert: !Equals [!Ref 'AWS::Region', us-east-2]
+        AssertDescription: Existing service and resource targets require us-east-2
+      - Assert: !Equals [!Ref 'AWS::StackName', indicatorlab-india-live]
+        AssertDescription: Use the dedicated indicatorlab-india-live stack
+  DhanParameters:
+    RuleCondition: !Equals [!Ref QuoteProvider, dhan]
+    Assertions:
+      - Assert: !And
+          - !Not [!Equals [!Ref DhanClientIdParameterName, '']]
+          - !Not [!Equals [!Ref DhanAccessTokenParameterName, '']]
+        AssertDescription: Dhan requires both India SecureString names
 Conditions:
+  UseDhan: !Equals [!Ref QuoteProvider, dhan]
   HasKmsKey: !Not [!Equals [!Ref SecretKmsKeyArn, '']]
   HasAlertTopic: !Not [!Equals [!Ref AlertTopicArn, '']]
   Active: !Equals [!Ref SchedulesState, ENABLED]
 Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
   CollectorLogs:
     Type: AWS::Logs::LogGroup
     Properties:
@@ -89,26 +99,31 @@ Resources:
               - {Effect: Allow, Action: 'ecr:GetAuthorizationToken', Resource: '*'}
               - Effect: Allow
                 Action: [ecr:BatchCheckLayerAvailability, ecr:GetDownloadUrlForLayer, ecr:BatchGetImage]
-                Resource: !Ref ImageRepositoryArn
+                Resource: !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/indicatorlab-india-live
               - Effect: Allow
                 Action: [logs:CreateLogStream, logs:PutLogEvents]
                 Resource: !GetAtt CollectorLogs.Arn
-        - PolicyName: InjectOnlyDhanSecrets
-          PolicyDocument:
-            Version: '2012-10-17'
-            Statement:
-              - Effect: Allow
-                Action: ssm:GetParameters
-                Resource: [!Ref DhanClientIdParameterArn, !Ref DhanAccessTokenParameterArn]
-              - !If
-                - HasKmsKey
+        - !If
+          - UseDhan
+          - PolicyName: InjectOnlyDhanSecrets
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
                 - Effect: Allow
-                  Action: kms:Decrypt
-                  Resource: !Ref SecretKmsKeyArn
-                  Condition:
-                    StringEquals:
-                      kms:ViaService: ssm.us-west-2.amazonaws.com
-                - !Ref AWS::NoValue
+                  Action: ssm:GetParameters
+                  Resource:
+                    - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${DhanClientIdParameterName}
+                    - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${DhanAccessTokenParameterName}
+                - !If
+                  - HasKmsKey
+                  - Effect: Allow
+                    Action: kms:Decrypt
+                    Resource: !Ref SecretKmsKeyArn
+                    Condition:
+                      StringEquals:
+                        kms:ViaService: !Sub ssm.${AWS::Region}.${AWS::URLSuffix}
+                  - !Ref AWS::NoValue
+          - !Ref AWS::NoValue
   TaskRole:
     Type: AWS::IAM::Role
     Properties:
@@ -141,16 +156,19 @@ Resources:
       ContainerDefinitions:
         - Name: india-quotes
           Essential: true
-          Image: !Ref ImageUri
+          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/indicatorlab-india-live@${ImageDigest}
           EntryPoint: [python, '-B', '-m', src.live.india_app]
           Command: ['--run']
           StopTimeout: 120
           Environment:
-            - {Name: AWS_DEFAULT_REGION, Value: us-west-2}
+            - {Name: INDIA_LIVE_REGION, Value: !Ref AWS::Region}
+            - {Name: INDIA_LIVE_PROVIDER, Value: !Ref QuoteProvider}
             - {Name: INDIA_LIVE_CONFIG, Value: /var/task/runtime/india-live.json}
-          Secrets:
-            - {Name: DHAN_CLIENT_ID, ValueFrom: !Ref DhanClientIdParameterArn}
-            - {Name: DHAN_ACCESS_TOKEN, ValueFrom: !Ref DhanAccessTokenParameterArn}
+          Secrets: !If
+            - UseDhan
+            - - {Name: DHAN_CLIENT_ID, ValueFrom: !Ref DhanClientIdParameterName}
+              - {Name: DHAN_ACCESS_TOKEN, ValueFrom: !Ref DhanAccessTokenParameterName}
+            - !Ref AWS::NoValue
           LogConfiguration:
             LogDriver: awslogs
             Options:
@@ -160,7 +178,7 @@ Resources:
   Service:
     Type: AWS::ECS::Service
     Properties:
-      Cluster: !Ref ClusterName
+      Cluster: !Ref Cluster
       TaskDefinition: !Ref Task
       DesiredCount: 0
       LaunchType: FARGATE
@@ -195,7 +213,7 @@ Resources:
       Target:
         Arn: !Sub arn:${AWS::Partition}:scheduler:::aws-sdk:ecs:updateService
         RoleArn: !GetAtt SchedulerRole.Arn
-        Input: !Sub '{"Cluster":"${ClusterName}","Service":"${Service.Name}","DesiredCount":1}'
+        Input: !Sub '{"Cluster":"${Cluster}","Service":"${Service.Name}","DesiredCount":1}'
         RetryPolicy: {MaximumRetryAttempts: 0, MaximumEventAgeInSeconds: 60}
   Stop:
     Type: AWS::Scheduler::Schedule
@@ -207,7 +225,7 @@ Resources:
       Target:
         Arn: !Sub arn:${AWS::Partition}:scheduler:::aws-sdk:ecs:updateService
         RoleArn: !GetAtt SchedulerRole.Arn
-        Input: !Sub '{"Cluster":"${ClusterName}","Service":"${Service.Name}","DesiredCount":0}'
+        Input: !Sub '{"Cluster":"${Cluster}","Service":"${Service.Name}","DesiredCount":0}'
         RetryPolicy: {MaximumRetryAttempts: 3, MaximumEventAgeInSeconds: 300}
   WatchdogRole:
     Type: AWS::IAM::Role
@@ -237,10 +255,13 @@ Resources:
       FunctionName: !Sub ${AWS::StackName}-watchdog
       PackageType: Image
       Architectures: [arm64]
-      Code: {ImageUri: !Ref ImageUri}
+      Code:
+        ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/indicatorlab-india-live@${ImageDigest}
       ImageConfig: {Command: [src.live.india_watchdog.handler]}
       Environment:
-        Variables: {INDIA_LIVE_CONFIG: /var/task/runtime/india-live.json}
+        Variables:
+          INDIA_LIVE_CONFIG: /var/task/runtime/india-live.json
+          INDIA_LIVE_REGION: !Ref AWS::Region
       MemorySize: 1024
       Timeout: 30
       Role: !GetAtt WatchdogRole.Arn
@@ -274,7 +295,7 @@ Resources:
       AlarmActions: !If [HasAlertTopic, [!Ref AlertTopicArn], !Ref AWS::NoValue]
 Outputs:
   ServiceArn: {Value: !Ref Service}
-  ClusterName: {Value: !Ref ClusterName}
+  ClusterName: {Value: !Ref Cluster}
   StartScheduleName: {Value: !Ref Start}
   StopScheduleName: {Value: !Ref Stop}
   WatchdogRuleName: {Value: !Ref WatchdogTimer}
