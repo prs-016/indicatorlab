@@ -5,12 +5,13 @@ import json
 import logging
 import socket
 from datetime import UTC, datetime, timedelta
+from itertools import pairwise
 from pathlib import Path
 
 import pytest
 import yaml
 
-from src.live.india import TABLE, SessionCalendar
+from src.live.india import TABLE, CalendarCoverageError, SessionCalendar
 from src.live.india_watchdog import check_once, evaluate_health
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -396,3 +397,27 @@ def test_partial_or_unordered_quote_data_does_not_publish_exchange_age(config):
     assert [m["MetricName"] for m in metrics.calls[0]["MetricData"]] == [
         "IngestionHealthy"
     ]
+
+
+def test_year_end_candidate_tracks_nse_effective_dates_and_closures():
+    calendar = SessionCalendar.from_file(
+        INFRA / "validation/nse-sessions-2026-year-end.json"
+    )
+
+    def at(local):
+        return datetime.fromisoformat(local + "+05:30")
+
+    days = sorted(calendar.sessions)
+    assert len(days) == 38
+    assert all(right - left == timedelta(days=1) for left, right in pairwise(days))
+    assert sum(bool(windows) for windows in calendar.sessions.values()) == 26
+    assert calendar.is_open(at("2026-12-04T15:14"))
+    assert not calendar.is_open(at("2026-12-04T15:15"))
+    assert not calendar.is_open(at("2026-12-07T09:14"))
+    assert calendar.is_open(at("2026-12-07T09:15"))
+    assert calendar.is_open(at("2026-12-07T15:29"))
+    assert not calendar.is_open(at("2026-12-07T15:30"))
+    for closure in ("2026-11-24", "2026-12-05", "2026-12-25", "2026-12-27"):
+        assert not calendar.is_open(at(f"{closure}T10:00"))
+    with pytest.raises(CalendarCoverageError):
+        calendar.is_open(at("2027-01-01T10:00"))

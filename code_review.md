@@ -1,3 +1,43 @@
+# Code Review — NSE year-end deployment calendar
+
+Reviewed November 24, 2026 Pacific
+Scope: India live calendar data, maintenance instructions, and the calendar regression test.
+
+## Summary
+
+The December 7 effective date is applied in the input data. The existing
+session interface, collector, and watchdog are unchanged. The candidate is
+appropriate for offline validation and remains pending operational approval.
+
+## Repo structure
+
+Calendar data and its evidence are under `infra/india_live/validation/`.
+The existing focused test module covers the new dated input.
+
+## Verification
+
+206 focused tests passed. India-scoped Black and Ruff passed. The existing
+ARM64 image accepted the 100-symbol roster and revised calendar without Dhan
+credentials or networking. The check covered both session cutoffs, Christmas,
+weekend closure, and rejection of an uncovered date. Existing tests cover
+special-session intervals.
+
+## Findings
+
+The date-based interface applies one continuous window to the full roster.
+Before December 7 that deliberately excludes the last 15 minutes for securities
+ineligible for the closing auction. From December 7 both groups end continuous
+trading at 15:30. The limited 2026 horizon stops the collector before an
+unverified 2027 date.
+
+## Checklist
+
+- [ ] Recheck current NSE live-session amendments and obtain operational input approval.
+- [ ] Use the official 2027 Capital Market holiday circular before extending past year-end.
+- [ ] Resolve provider capacity before activating full-roster minute polling.
+
+---
+
 # Code Review — IndicatorLab Yahoo full-roster pacing and freshness
 
 Reviewed November 24, 2026 Pacific

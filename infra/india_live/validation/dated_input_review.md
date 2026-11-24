@@ -1,5 +1,7 @@
 # November 24, 2026 deployment-input validation
 
+See the [year-end calendar review](nse_calendar_maintenance.md) for the later rollout window.
+
 The candidate separates input validation from operational approval. The runtime
 manifest remains unapproved. The raw exchange download and the dated runtime
 files are local inputs for a dedicated build context.
