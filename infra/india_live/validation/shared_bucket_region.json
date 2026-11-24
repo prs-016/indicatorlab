@@ -1,0 +1,7 @@
+{
+  "operation": "Unauthenticated HeadBucket metadata only; no objects read",
+  "bucket": "indicatorlab-data",
+  "http_status": 403,
+  "region_header": "us-east-2",
+  "ownership_and_team_IAM_verified": false
+}

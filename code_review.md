@@ -91,3 +91,14 @@ No unrelated repository cleanup was performed.
 - [x] Correct the obsolete cfn-lint documentation.
 - [x] Complete the post-commit clean-checkout regression gate before push.
 - [ ] Obtain separate authorization and operational evidence before deployment.
+
+## Additional operational verification — 2026-11-23 Pacific
+
+The existing ARM64 image now builds and passes network-disabled dependency,
+entrypoint and inactive-default validation. Offline cfn-lint passes again. No
+service/test/template source changed, so the prior 192-test clean-checkout result
+remains applicable; these documentation/evidence additions do not claim a rerun.
+Public S3 response metadata confirms us-east-2, while the guide/template remain
+us-west-2. Authentication and region alignment block deployment; no resources
+were created. The bounded Yahoo source check ran on an official NSE holiday,
+so open-session freshness and operational acceptance remain unverified.

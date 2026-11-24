@@ -167,3 +167,34 @@ step, and no AWS `validate-template` or deployment command was called.
 
 Upstream pattern references: [ECS service](https://docs.aws.amazon.com/AWSCloudFormation/latest/TemplateReference/aws-resource-ecs-service.html),
 [Lambda Python images](https://docs.aws.amazon.com/lambda/latest/dg/python-image.html).
+
+## Verified local validation — 2026-11-23 Pacific
+
+The existing image built successfully for **linux/arm64**, using the ten-file
+allowlisted context and deliberately unapproved non-secret configuration.
+[Container evidence](validation/container_validation.json) records the image
+hash, dependency imports, entry-point help and fail-closed default startup under
+`--network none`. This is a local test image, not reviewed operational runtime.
+Docker Desktop had to be started; no AWS deployment or registry push occurred.
+Offline cfn-lint for the existing us-west-2 template passes.
+
+A public, unauthenticated HeadBucket request returned HTTP 403 with
+`x-amz-bucket-region: us-east-2` for `indicatorlab-data`:
+[region evidence](validation/shared_bucket_region.json). This corroborates
+Joshua's published deployment report but does not verify ownership or IAM.
+The guide/service/template target us-west-2. Do not deploy a duplicate stack or
+silently move regional resources: obtain the team's explicit region/account
+alignment and credentials first. No AWS credentials/profile were configured in
+WSL or its .env, nor in the checked Windows/WSL AWS configuration locations.
+No authenticated AWS resource, ECS, IAM, ECR, SSM or alarm operation was possible.
+
+The explicitly authorized Yahoo/Vibe one-minute source probe made 11 polls for
+RELIANCE, TCS and INFY over ten minutes (33 successful responses). All exchange
+timestamps remained at the prior close; however, **2026-11-24 is an NSE holiday**
+([official circular](https://nsearchives.nseindia.com/content/circulars/CMTR71775.pdf)).
+[Probe summary](validation/source_probe_summary.json) therefore establishes
+access, not an open-session delay/freshness failure or successful live cadence.
+An actual NSE trading-session test remains required. No production Yahoo adapter,
+DynamoDB writes, S3 uploads or mock quote activation is claimed. Dhan remains
+available through the existing adapter once valid credentials/entitlement and
+reviewed IDs/calendar are supplied.
