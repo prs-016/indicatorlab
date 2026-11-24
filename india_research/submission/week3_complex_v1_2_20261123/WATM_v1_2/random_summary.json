@@ -1,0 +1,76 @@
+{
+  "train": {
+    "valid_comparisons": 200,
+    "matched_entries_each": 202,
+    "original_net_sharpe": 1.8172788393386672,
+    "random_baseline_strict_percentile": 98.5,
+    "strictly_beaten": 197,
+    "ties": 0,
+    "random_sharpe_mean": 1.2697507296836537,
+    "random_sharpe_median": 1.2675980415463701,
+    "random_sharpe_min": 0.6195196020329633,
+    "random_sharpe_max": 2.06063784638957,
+    "random_sharpe_sample_std": 0.26413701514311777,
+    "guide_random_90pct_pass": true,
+    "all200_unique": true,
+    "per_trade_counts_durations_weights_paths_verified": true,
+    "all_replays_completed_without_cash_clipping_or_resampling": true
+  },
+  "test": {
+    "valid_comparisons": 200,
+    "matched_entries_each": 119,
+    "original_net_sharpe": 0.36895465040724046,
+    "random_baseline_strict_percentile": 33.5,
+    "strictly_beaten": 67,
+    "ties": 0,
+    "random_sharpe_mean": 0.49613925346026916,
+    "random_sharpe_median": 0.48815205834580566,
+    "random_sharpe_min": -0.30671963375279676,
+    "random_sharpe_max": 1.3700790087046932,
+    "random_sharpe_sample_std": 0.30934960387746063,
+    "guide_random_90pct_pass": false,
+    "all200_unique": true,
+    "per_trade_counts_durations_weights_paths_verified": true,
+    "all_replays_completed_without_cash_clipping_or_resampling": true
+  },
+  "decision": {
+    "research": "DROP",
+    "unchanged": true,
+    "reason": "Original test Sharpe0.36895465040724046 below SPY0.6558671853209596",
+    "random_gate_both_periods": false,
+    "DSR": "Unchanged N/A: complete global prior-trial/dependence assumptions unverified; not part of this randomization correction."
+  },
+  "methodology": {
+    "seeds": [
+      42,
+      241
+    ],
+    "independent_chains": 200,
+    "fixed_sweeps_per_chain": 64,
+    "target": "Uniform invariant distribution on constrained feasible labeled schedules; finite mixing and global connectedness not established",
+    "percentile_definition": "100 * number(null net Sharpe < original net Sharpe) /200; exact ties reported separately",
+    "interpretation": "Empirical percentile of this predeclared64-sweep conditional timing null, not an exact-uniform test or p-value",
+    "conditioning": "Original ex-post matched durations/counts/tickers/weights/resize paths, original weekly/regime/data-eligible dates, independent100000cash per split. These are diagnostic null portfolios, not deployable predictive strategies.",
+    "slot_semantics": "Different ticker exits free slots before replacement entries. Same ticker inclusive execution endpoints remain exclusive.",
+    "no_selection_or_resampling": "All200 predetermined schedules per split replayed once. No rejected cash/performance outcomes or shortened holdings.",
+    "DSR_trial_accounting": "Record400 timing-null trials as diagnostic nulls, not400 new independent predictive strategies."
+  },
+  "preservation": {
+    "unchanged_prior_and_frozen_files": 105,
+    "expected_modified_infrastructure": [
+      "src/india_week3_evaluation.py",
+      "src/india_week3_research.py"
+    ],
+    "AGENTS_unchanged": true,
+    "source_inventories": {
+      "results/week3_tiingo_20261117T195551Z": 94,
+      "data/processed/wikipedia/week3_v2_20261116": 30
+    }
+  },
+  "warnings": {
+    "saved_CSV_round_trip_parser_deprecations": {
+      "Pandas4Warning": 1600
+    },
+    "effect": "No numerical failures; round-trip parsing preserved recorded floats."
+  }
+}

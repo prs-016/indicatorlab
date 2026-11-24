@@ -1,0 +1,57 @@
+{
+  "original_artifact_sha256": "86a42ec914fcf58bc09f5cc31f8a7257a1f702a4fb2d0480c1013c98bd3ba1a9",
+  "provenance": {
+    "tiingo_manifest_sha256": "d1109f28dc136fc55e405ca005e23c50d84f6744467fc1cb2b1de12e1d171bdc",
+    "wiki_manifest_sha256": "dcc46d6f7fa59ca62919f668fdaf093e897440a9c9fde5add0568d807c7bdfa8",
+    "rules_sha256": "c44d9adf372c069a064fdcbec25ee5fce35640b99b390cd03ed58dab9f273c33",
+    "scheduled_closes_are_not_publication_receipts": true,
+    "benchmark_basis": "Existing Tiingo derived adjusted SPY close; raw fields separately preserved",
+    "warmup_excluded_from_metrics": true,
+    "availability": {
+      "policy": {
+        "mode": "completed_session",
+        "reference": "User Task6 integration clarification: daily OHLCV only after the corresponding trading session has closed"
+      },
+      "label": "COMPLETED-SESSION INFORMATION BOUNDARY; NOT TIINGO PUBLICATION",
+      "provider_publication_observed": false,
+      "sha256": "43330c6993f8e325465b5b72810bd3df76c9661fb6aab638acf3f8d59ee9eea7"
+    }
+  },
+  "independent_checks": {
+    "WVB_v1_2:train": {
+      "sessions": 1408,
+      "entries": 15,
+      "IC_defined": 290,
+      "baseline_and_benchmark_reproduced": true,
+      "commission_match": true,
+      "valid_nulls": 200
+    },
+    "WVB_v1_2:test": {
+      "sessions": 939,
+      "entries": 15,
+      "IC_defined": 195,
+      "baseline_and_benchmark_reproduced": true,
+      "commission_match": true,
+      "valid_nulls": 200
+    },
+    "WCR_v1_2:train": {
+      "sessions": 1408,
+      "entries": 3,
+      "IC_defined": 289,
+      "baseline_and_benchmark_reproduced": true,
+      "commission_match": true,
+      "valid_nulls": 200
+    },
+    "WCR_v1_2:test": {
+      "sessions": 939,
+      "entries": 5,
+      "IC_defined": 195,
+      "baseline_and_benchmark_reproduced": true,
+      "commission_match": true,
+      "valid_nulls": 200
+    }
+  },
+  "frozen_rules_sha256": "c44d9adf372c069a064fdcbec25ee5fce35640b99b390cd03ed58dab9f273c33",
+  "prior_WATM_files_verified": 2562,
+  "raw_volume_not_substituted": true
+}

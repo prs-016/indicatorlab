@@ -1,0 +1,10 @@
+{
+  "method": "Independent seeded64-sweep symmetric single relocations and pair swaps, seeds42-241",
+  "same_price_and_accounting_inputs": true,
+  "cash_policy": "Fail closed per predetermined draw, no clipped targets or selective resampling; any failed draw makes aggregate percentile unavailable",
+  "source_strategy_rules_unchanged": true,
+  "WVB_cooldown_decisions": 0,
+  "WCR_cooldown_strict_prior_decisions": 4,
+  "interpretation": "Conditional matched duration/ticker/weight timing control, not deployable trading strategy. Global Markov mixing not certified.",
+  "registration": "User explicitly authorized before shared-sheet entry; outstanding, no verification gate."
+}

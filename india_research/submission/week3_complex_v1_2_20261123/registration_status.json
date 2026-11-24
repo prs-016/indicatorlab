@@ -1,0 +1,17 @@
+{
+  "WATM_v1_2": {
+    "status": "User confirmed official shared registration before the first evaluation",
+    "registered_at": null,
+    "note": "Exact sheet entry time unavailable; do not substitute confirmation/run time.",
+    "receipt_sha256": "0d8fac67a11f503acc44c55f82538e8413d99f7d5516871897c33f427816901d"
+  },
+  "WVB_v1_2": {
+    "status": "NOT VERIFIED REGISTERED; historical execution explicitly authorized before shared-sheet entry",
+    "registered_at": null
+  },
+  "WCR_v1_2": {
+    "status": "NOT VERIFIED REGISTERED; historical execution explicitly authorized before shared-sheet entry",
+    "registered_at": null
+  },
+  "shared_sheet_update": "NOT PERFORMED; no authenticated official sheet interface located. Import-ready update is not a registration claim."
+}

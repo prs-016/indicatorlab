@@ -1,0 +1,27 @@
+{
+  "status": "NOT ACCEPTABLE UNDER EXISTING FROZEN SAFEGUARDS",
+  "observations_2025": 1496,
+  "accepted": 0,
+  "quarantined": 1496,
+  "numerical_pass": 1488,
+  "zero_volume": 8,
+  "shared_rejection_reasons": {
+    "retrieval_boundary_not_certified": 1496,
+    "no_actual_session_close_or_publication_evidence": 1496,
+    "unverified_adjustment_vintage": 1496,
+    "unverified_india_volume_units": 1496,
+    "calendar_completeness_not_certified": 1496
+  },
+  "additional_zero_volume_rejection": 8,
+  "legacy_Reliance_and_Kotak_row_flags_in_2025": 0,
+  "independent_v4_2025_anchors": 0,
+  "precutoff_official_action_ledger_rows": 26,
+  "official_action_ledger_2025_rows": 12,
+  "original_protected_files_verified": 73,
+  "previous_package_files_verified": 42,
+  "v4_files_verified": 11,
+  "new_requests": 0,
+  "code_or_dataset_repairs": 0,
+  "external_evidence_necessary": true,
+  "new_acceptance_criteria": false
+}

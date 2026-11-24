@@ -1,0 +1,79 @@
+{
+  "strategy": "WVB_v1_2",
+  "splits": {
+    "train": {
+      "strategy": "WVB_v1_2",
+      "split": "train",
+      "entries": 15,
+      "net_sharpe": 0.3693118069664896,
+      "net_cumulative_return": 0.07429116831358362,
+      "mean_rank_IC": -0.012638453500522446,
+      "valid_IC_intervals": 290,
+      "benchmark": {
+        "net_sharpe": 0.9976863761841847,
+        "net_cumulative_return": 1.5095728879786918
+      },
+      "commission_cash": 628.1834244937419,
+      "trade_legs": 30,
+      "DSR": null,
+      "DSR_reason": "Complete global prior attempted-trial history and explicit effective-independent/dependence assumptions remain uncertified; no invented probability.",
+      "return_minus_SPY_pp": -143.52817196651083,
+      "max_drawdown_fraction": -0.06889113907054689,
+      "final_NAV": 107429.1168313584,
+      "random": {
+        "completed": 200,
+        "requested": 200,
+        "failed": 0,
+        "strictly_beaten": 124,
+        "strict_percentile": 62.0,
+        "median_sharpe": 0.27532431901448745,
+        "mean_sharpe": 0.296474779720564,
+        "ties": 0,
+        "conditional_descriptive_only": true,
+        "sampler_global_mixing_certified": false
+      }
+    },
+    "test": {
+      "strategy": "WVB_v1_2",
+      "split": "test",
+      "entries": 15,
+      "net_sharpe": -0.15967808702420644,
+      "net_cumulative_return": -0.021071117225966107,
+      "mean_rank_IC": -0.007607947607947622,
+      "valid_IC_intervals": 195,
+      "benchmark": {
+        "net_sharpe": 0.6558671853209596,
+        "net_cumulative_return": 0.4701123783564658
+      },
+      "commission_cash": 534.1248580089224,
+      "trade_legs": 30,
+      "DSR": null,
+      "DSR_reason": "Complete global prior attempted-trial history and explicit effective-independent/dependence assumptions remain uncertified; no invented probability.",
+      "return_minus_SPY_pp": -49.11834955824319,
+      "max_drawdown_fraction": -0.09142309589739572,
+      "final_NAV": 97892.88827740337,
+      "random": {
+        "completed": 200,
+        "requested": 200,
+        "failed": 0,
+        "strictly_beaten": 58,
+        "strict_percentile": 29.0,
+        "median_sharpe": 0.2012994222900848,
+        "mean_sharpe": 0.17173170028602583,
+        "ties": 0,
+        "conditional_descriptive_only": true,
+        "sampler_global_mixing_certified": false
+      }
+    }
+  },
+  "decision": {
+    "status": "INSUFFICIENT TRADES",
+    "guide_function_status": "INSUFFICIENT TRAINING ENTRIES",
+    "minimum_training_entries": 30,
+    "actual_training_entries": 15,
+    "benchmark_test_gate": false,
+    "formal_KEEP_or_DROP_assignable": false,
+    "reason": "Training entries below30; no threshold changes. Test/random diagnostics are descriptive and cannot overcome this gate."
+  },
+  "shared_sheet_registration": "outstanding; user waived executable verification for this study"
+}
