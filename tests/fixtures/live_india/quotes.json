@@ -1,0 +1,8 @@
+{
+  "fixture_label": "SYNTHETIC quotes, not market observations",
+  "quotes": {
+    "RELIANCE.NS": {"symbol": "RELIANCE.NS", "price": 100.5, "change_pct": 1.25, "volume": 1000, "ts_exchange": "2024-01-02T09:14:59+05:30", "source": "mock_fixture"},
+    "TCS.NS": {"symbol": "TCS.NS", "price": 200.5, "change_pct": -0.25, "volume": 2000, "ts_exchange": "2024-01-02T09:14:59+05:30", "source": "mock_fixture"},
+    "INFY.NS": {"symbol": "INFY.NS", "price": 300.5, "change_pct": 0.0, "volume": 0, "ts_exchange": "2024-01-02T09:14:59+05:30", "source": "mock_fixture"}
+  }
+}
