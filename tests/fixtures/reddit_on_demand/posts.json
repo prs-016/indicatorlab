@@ -1,0 +1,167 @@
+{
+ "_note": "Arctic Shift posts/search records (fields=id,subreddit,title,selftext,score,num_comments,created_utc) for tests/test_reddit_on_demand.py; served by a fake client that filters like the API.",
+ "posts": [
+  {
+   "id": "n01",
+   "subreddit": "stocks",
+   "title": "Nvidia earnings preview",
+   "selftext": "",
+   "score": 812,
+   "num_comments": 230,
+   "created_utc": 1795428000
+  },
+  {
+   "id": "n02",
+   "subreddit": "wallstreetbets",
+   "title": "$NVDA calls printing",
+   "selftext": "",
+   "score": 640,
+   "num_comments": 120,
+   "created_utc": 1795534200
+  },
+  {
+   "id": "n03",
+   "subreddit": "nvidia",
+   "title": "Driver update thread",
+   "selftext": "Nvidia pushed a new driver today.",
+   "score": 55,
+   "num_comments": 40,
+   "created_utc": 1795507200
+  },
+  {
+   "id": "n04",
+   "subreddit": "investing",
+   "title": "Semis rally",
+   "selftext": "Holding NVDA and AMD into year end.",
+   "score": 90,
+   "num_comments": 33,
+   "created_utc": 1794916800
+  },
+  {
+   "id": "n05",
+   "subreddit": "stocks",
+   "title": "NVDA vs AMD for 2027",
+   "selftext": "",
+   "score": 300,
+   "num_comments": 150,
+   "created_utc": 1794992400
+  },
+  {
+   "id": "dup1",
+   "subreddit": "stocks",
+   "title": "Nvidia and NVDA options chain",
+   "selftext": "",
+   "score": 120,
+   "num_comments": 60,
+   "created_utc": 1795118400
+  },
+  {
+   "id": "dup1",
+   "subreddit": "investing",
+   "title": "Nvidia and NVDA options chain",
+   "selftext": "",
+   "score": 120,
+   "num_comments": 60,
+   "created_utc": 1795118400
+  },
+  {
+   "id": "n07",
+   "subreddit": "stocks",
+   "title": "Nvidia CES keynote thread",
+   "selftext": "",
+   "score": 500,
+   "num_comments": 400,
+   "created_utc": 1736186400
+  },
+  {
+   "id": "n08",
+   "subreddit": "StockMarket",
+   "title": "NVDA earnings week",
+   "selftext": "",
+   "score": 75,
+   "num_comments": 20,
+   "created_utc": 1732492800
+  },
+  {
+   "id": "n09",
+   "subreddit": "stocks",
+   "title": "NVDA before the window",
+   "selftext": "",
+   "score": 10,
+   "num_comments": 1,
+   "created_utc": 1732492799
+  },
+  {
+   "id": "n10",
+   "subreddit": "stocks",
+   "title": "Market wrap",
+   "selftext": "Indexes flat; nothing on chips.",
+   "score": 5,
+   "num_comments": 1,
+   "created_utc": 1794996000
+  },
+  {
+   "id": "n11",
+   "subreddit": "wallstreetbets",
+   "title": "Why I sold NVDAX",
+   "selftext": "nvda lowercase only",
+   "score": 3,
+   "num_comments": 0,
+   "created_utc": 1795168800
+  },
+  {
+   "id": "a01",
+   "subreddit": "stocks",
+   "title": "Apple earnings beat again",
+   "selftext": "",
+   "score": 400,
+   "num_comments": 100,
+   "created_utc": 1794909600
+  },
+  {
+   "id": "a02",
+   "subreddit": "investing",
+   "title": "AAPL to 300?",
+   "selftext": "",
+   "score": 200,
+   "num_comments": 80,
+   "created_utc": 1794913200
+  },
+  {
+   "id": "a03",
+   "subreddit": "stocks",
+   "title": "Best apple pie recipe for the office party",
+   "selftext": "",
+   "score": 50,
+   "num_comments": 10,
+   "created_utc": 1794996000
+  },
+  {
+   "id": "a04",
+   "subreddit": "wallstreetbets",
+   "title": "I ate an apple at lunch",
+   "selftext": "It was a honeycrisp.",
+   "score": 20,
+   "num_comments": 5,
+   "created_utc": 1795003200
+  },
+  {
+   "id": "a05",
+   "subreddit": "stocks",
+   "title": "Thoughts?",
+   "selftext": "Apple's guidance looked weak to me.",
+   "score": 30,
+   "num_comments": 12,
+   "created_utc": 1795082400
+  },
+  {
+   "id": "a06",
+   "subreddit": "investing",
+   "title": "Orchard visit",
+   "selftext": "Picked an apple from every tree.",
+   "score": 4,
+   "num_comments": 1,
+   "created_utc": 1795086000
+  }
+ ]
+}
