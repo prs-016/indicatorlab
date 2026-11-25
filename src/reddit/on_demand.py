@@ -74,6 +74,9 @@ PAGE_SIZE = 100                # the API's largest explicit limit (limit=auto is
 TOP_SIDE = 5                   # top_positive / top_negative length (J2 step 5)
 SPIKE_BATCH_SIZE = 16          # J2 step 4: CPU, batch size 16
 COUNTS_MAX_AGE_S = 6 * 3600    # analyze/reddit_counts cache: fresh for 6 hours
+# Arctic Shift answers 422 "Timeout. Maybe slow down a bit" once the per-minute budget is spent (keyword
+# searches cost more of it); the client then waits for the reset, so on demand we allow more retries.
+ON_DEMAND_MAX_ATTEMPTS = 8
 FIELDS = "id,subreddit,title,selftext,score,num_comments,created_utc"
 DATA_URI_ENV = "INDICATORLAB_DATA_URI"   # same folder the /reddit API reads (src/api/reddit_data.py)
 WEEK = timedelta(days=7)
@@ -258,7 +261,7 @@ def fetch_posts(stock: dict, start: datetime, end: datetime, budget: _Budget, cl
     Every post the API returns uses up `budget` (shared across calls); `budget.truncated` is set
     when the cap stopped the fetch.
     """
-    client = client or ArcticShiftClient()
+    client = client or ArcticShiftClient(max_attempts=ON_DEMAND_MAX_ATTEMPTS)
     terms = search_terms(stock)
     match = build_matcher(terms)
     after, before = _epoch(start), _epoch(end)
@@ -340,7 +343,7 @@ def reddit_weekly_counts(stock: dict, weeks: int | None = None, *, now: datetime
     missing = [m for m in mondays if m not in stored]
     budget = _Budget(MAX_COUNT_POSTS)
     if missing:
-        client = client or ArcticShiftClient()
+        client = client or ArcticShiftClient(max_attempts=ON_DEMAND_MAX_ATTEMPTS)
         missing_set = set(missing)
         for start, end in reversed(_runs(missing)):          # newest weeks first, so a cap cuts the oldest
             if budget.left <= 0:
