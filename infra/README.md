@@ -27,10 +27,10 @@ raw/reddit/date=YYYY-MM-DD/HHMM.parquet            hourly Reddit posts (Joshua)
 raw/reddit/_state.json                             hourly high-water marks
 raw/reddit/arctic_shift/, raw/reddit/manifest.csv  complete-day archive the weekly job rebuilds from
 raw/wikipedia/                                     James
-processed/reddit_weekly.parquet                    research weeks only (before 2025-10-01)
+processed/reddit_weekly.parquet                    research weeks only (before `holdout_start`, 2026-11-01)
 processed/reddit_weekly_by_type.parquet            same, split investor / product subreddits
 processed/reddit_top_posts.parquet                 top posts per ticker-week
-processed/*_recent.parquet                         weeks from 2025-10-01 on (display only, e.g. baselines)
+processed/*_recent.parquet                         weeks from `holdout_start` (2026-11-01) on (display only, e.g. baselines)
 processed/reddit_current.parquet                   in-progress week + trailing 7 days ("Hot right now")
 processed/reddit_hourly/date=.../                  scored hourly rows
 processed/reddit_state/                            weekly job's corpus state (posts, matches, scores)

@@ -105,7 +105,8 @@ r/wallstreetbets days need 10–17 pages because the API returns ~100 posts per 
 
 ## Week 2: product subreddits, trusted sentiment, cause vs reaction
 
-All Week 2 research uses data **before 2025-10-01** (`holdout_start` in `config.yaml`). Posts carry a
+Week 2 research used data before 2025-10-01; since Week 4 the cutoff is `holdout_start` in `config.yaml`
+(2026-11-01, so research data runs through 2026-10-31). Posts carry a
 `period` column (`research` / `recent`); `build_posts.load_posts()` returns research posts only unless
 asked, and every analysis asserts it saw no holdout week. The last-3-weeks check and the API are the
 only consumers of `recent` rows.
@@ -184,7 +185,7 @@ INDICATORLAB_DATA_URI=data/reddit/processed .venv/bin/uvicorn src.api.main:app -
   report states both caveats. James's 50 blind labels (`sentiment_second_rater.csv`) give the kappa check.
 * **Attention record** (`reddit_weekly.parquet`, `_by_type`, `reddit_top_posts`): the shared columns
   `ticker, market, source, week, value, baseline, ratio, spike, sentiment_pos/neg/neu, n_scored`.
-  Research files stop before 2025-10-01; `*_recent.parquet` hold later weeks for display only.
+  Research files stop before `holdout_start` (2026-11-01); `*_recent.parquet` hold later weeks for display only.
 * The Week 2 routes (`src/api/reddit.py`: `/sentiment`, `/spikes`) were replaced by the `/reddit/*` router.
 
 ## Collection details
