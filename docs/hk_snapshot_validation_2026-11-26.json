@@ -1,0 +1,23 @@
+{
+  "validated_client_date": "2026-11-26",
+  "source_kind": "user_download_from_shared_S3",
+  "source_key": "processed/wiki_current.parquet",
+  "source_sha256": "1168747e0c04ea6cee3be232579c2efc799392bf3107d74fb345957cb32534d7",
+  "total_rows": 146,
+  "hk_rows": 95,
+  "hk_unique_tickers": 95,
+  "hk_roster_matches": true,
+  "source_as_of_min": "2026-11-25 00:00:00",
+  "source_as_of_max": "2026-11-25 00:00:00",
+  "nonmissing_views": 95,
+  "source_spike_count": 5,
+  "value_passthrough_verified": true,
+  "direct_AWS_access_used": false,
+  "raw_parquet_committed": false,
+  "optional_sources_unavailable": {
+    "wiki_weekly.parquet": "not_available",
+    "prices_weekly.parquet": "not_available",
+    "wiki_edit_summaries.parquet": "not_available",
+    "hk_quotes": "not_published"
+  }
+}

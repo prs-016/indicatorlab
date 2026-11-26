@@ -526,3 +526,13 @@ article mappings and the dated 95-stock roster are display universes, not PIT
 historical membership. The tracked `results/hk_dashboard/saved_research.json`
 contains only the three existing HK research summaries/saved curves and source
 hashes. No new research run or promotion to KEEP is authorized by this feature.
+
+HK also supports a static CloudFront build with
+`python -m src.reddit.dashboard_export --hk-root-uri s3://indicatorlab-data`.
+`src/hk_dashboard/snapshot.py` consumes the shared Wiki/price tables and optional
+HK S3 quote snapshot, then writes static JSON. It never discovers Jack's Mac or
+calls localhost. Current Wiki values are trailing-seven-published-day windows;
+do not relabel them as calendar-week observations. Static pages do not poll and
+their local-only cost form is disabled. Preserve the shared `code_review.md`;
+HK review notes belong in the PR description as requested by the team. No AWS
+deployment or activation is authorized by this feature. See docs/hk_static_export.md.

@@ -31,9 +31,12 @@ page. HK requests, charts, filters and quote polling are separate from US state.
 For another computer or AWS, first create a Python virtual environment and
 install `requirements.txt`. The added `exchange-calendars` dependency supplies
 the XHKG session clock, including lunch, holidays and half days. This is a
-running Python service, not a static GitHub Pages export.
-The existing US static export strips the HK-only assets and keeps its original
-US snapshot behavior, with Hong Kong disabled there because no live API exists.
+local mode uses a running Python service. CloudFront uses the build-time
+shared-storage snapshot described below.
+The default US-only export keeps its existing behavior. A build with
+`--hk-root-uri s3://indicatorlab-data` includes all HK static JSON/assets and
+keeps HK enabled without a live API or personal checkout. See
+[the shared-storage static export guide](hk_static_export.md).
 
 | Input | Configuration / location | Behavior |
 | --- | --- | --- |
@@ -46,9 +49,9 @@ US snapshot behavior, with Hong Kong disabled there because no live API exists.
 
 The quote service must remain running for continuously updating prices and
 the USD calculator. A snapshot fallback retains prices with their actual
-timestamps; it cannot replace the service. On AWS configure the backend URL
-to the separately deployed existing HK service and mount/persist the display
-cache. No AWS deployment or infrastructure changes were made here.
+timestamps; it cannot replace the local service. For the hosted static site,
+use `--hk-root-uri` to read shared S3 exports instead of configuring a localhost
+backend or mounting this Mac's files. No AWS deployment was performed.
 
 To refresh only daily display data, run from the repo root:
 

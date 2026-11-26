@@ -11,7 +11,9 @@ buttons that rerun the pipeline only work locally, so the hosted copy shows them
 """
 from __future__ import annotations
 
+import argparse
 import json
+import os
 import shutil
 from datetime import UTC, datetime
 from pathlib import Path
@@ -43,12 +45,6 @@ STATIC_GET = """const get = (u) => {
   return fetch(f + ".json", { cache: "no-store" }).then(r => r.json());
 };"""
 REWRITES = [
-    # The existing hosted US snapshot has no running HK backend. Strip only the
-    # new live-market hooks so it retains its original self-contained behavior.
-    ('<link rel="stylesheet" href="/hk-assets/hk-market.css">', ''),
-    ('<script src="/hk-assets/hk-market.js"></script>', ''),
-    ('<button type="button" id="market-hk" aria-pressed="false">Hong Kong</button>',
-     '<button type="button" disabled title="Hong Kong requires the live dashboard server">Hong Kong</button>'),
     ('const get = (u) => fetch(u, { cache: "no-store" }).then(r => r.json());', STATIC_GET),
     ('"/charts/aapl_chatter_vs_price.png"', '"charts/aapl_chatter_vs_price.png"'),
     ('"/charts/aapl_event_windows.png"', '"charts/aapl_event_windows.png"'),
@@ -61,15 +57,23 @@ REWRITES = [
 ]
 
 
-def static_page(html: str, as_of: str) -> str:
+def static_page(html: str, as_of: str, *, hk_snapshot: bool = False) -> str:
     """The dashboard page rewritten to read static JSON, with a snapshot note under <body>."""
     for old, new in REWRITES:
         if old not in html:
             raise ValueError(f"dashboard page changed; update REWRITES (missing: {old[:60]!r})")
         html = html.replace(old, new)
+    if hk_snapshot:
+        html = html.replace('src="/hk-assets/', 'src="hk-assets/').replace('href="/hk-assets/', 'href="hk-assets/')
+        html = html.replace('<body>', '<body data-hk-snapshot="true">', 1)
+    else:
+        html = html.replace('<link rel="stylesheet" href="/hk-assets/hk-market.css">', '')
+        html = html.replace('<script src="/hk-assets/hk-market.js"></script>', '')
+        html = html.replace('<button type="button" id="market-hk" aria-pressed="false">Hong Kong</button>',
+            '<button type="button" disabled title="Hong Kong requires the live dashboard server">Hong Kong</button>')
     note = ('<div style="padding:6px 16px;font-size:13px;background:var(--surface-2,#eee);'
             f'color:var(--text-secondary,#444)">Hosted snapshot · data as of {as_of}</div>')
-    return html.replace("<body>", "<body>\n" + note, 1)
+    return html.replace("<main>", "<main>\n" + note, 1)
 
 
 def _write(path: Path, obj) -> None:
@@ -77,8 +81,12 @@ def _write(path: Path, obj) -> None:
     path.write_text(json.dumps(obj, default=str))
 
 
-def export(out: Path = OUT) -> list[Path]:
+def export(out: Path = OUT, *, hk_root_uri: str | None = None) -> list[Path]:
     """Write the static site to `out` (replacing it) and return the files written."""
+    hk = None
+    if hk_root_uri:
+        from src.hk_dashboard.snapshot import SnapshotData
+        hk = SnapshotData(hk_root_uri)  # Validate sources before replacing any output.
     if out.exists():
         shutil.rmtree(out)
     api = out / "api"
@@ -99,13 +107,24 @@ def export(out: Path = OUT) -> list[Path]:
     (out / "charts").mkdir(parents=True, exist_ok=True)
     for png in settings.CHARTS.glob("*.png"):
         shutil.copy2(png, out / "charts" / png.name)
+    if hk is not None:
+        metadata = hk.write(out)
+        _write(out / "api/hk/manifest.json", metadata)
+        assets = out / "hk-assets"
+        assets.mkdir()
+        for name in ("hk-market.js", "hk-market.css"):
+            shutil.copy2(settings.DASHBOARD / name, assets / name)
     as_of = datetime.now(UTC).strftime("%Y-%m-%d %H:%M UTC")
-    (out / "index.html").write_text(static_page((settings.DASHBOARD / "index.html").read_text(), as_of))
+    (out / "index.html").write_text(static_page((settings.DASHBOARD / "index.html").read_text(), as_of, hk_snapshot=hk is not None))
     files = sorted(p for p in out.rglob("*") if p.is_file())
     log.info("static dashboard: %d files in %s", len(files), out)
     return files
 
 
 if __name__ == "__main__":
-    export()
-    print(f"wrote {OUT}")
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--hk-root-uri", default=os.getenv("INDICATORLAB_HK_EXPORT_URI"))
+    parser.add_argument("--out", type=Path, default=OUT)
+    args = parser.parse_args()
+    export(args.out, hk_root_uri=args.hk_root_uri)
+    print(f"wrote {args.out}")
