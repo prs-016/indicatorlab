@@ -262,11 +262,13 @@ permalinks. Gemini only ever sees these ids.
 * **Scores are a snapshot.** Arctic Shift stores a post's score and comment count from when it archived
   the post, so they can be lower than on Reddit today, and posts younger than about 36 hours can show 0 or 1.
   The "top posts" ranking uses these archived numbers.
-* **The Nov 1–13 gap.** The hourly job's first run was 2026-11-13 04:24 UTC, so posts from Nov 1 until
-  then are in neither the corpus nor the hourly files, and `coverage.missing_days` lists those days.
-  `python -m src.reddit.backfill_hourly --start 2026-11-01 --end 2026-11-13T05:00` lists them from Arctic
-  Shift (plain listing, saved to `data/reddit/backfill/` first); `--upload` then writes one
-  `backfill.parquet` per day into `raw/reddit/` and `processed/reddit_hourly/`.
+* **The Nov 1–13 gap (filled 2026-11-26).** The hourly job's first run was 2026-11-13 04:24 UTC, so posts
+  from Nov 1 until then were in neither the corpus nor the hourly files. `python -m src.reddit.backfill_hourly
+  --start 2026-11-01 --end 2026-11-13T05:00 --upload` listed them from Arctic Shift (plain listing, saved to
+  `data/reddit/backfill/` first: 20,310 posts in 33 subreddits) and wrote one `backfill.parquet` per day into
+  `raw/reddit/` and `processed/reddit_hourly/` (26 files). That week held NVDA's CEO transition (Nov 12, 368
+  NVDA posts that day), which the counts had missed. If `coverage.missing_days` ever lists days again, the
+  same command with those dates fills them.
 * **No level shift at Oct 31.** Day counts of both collections match Arctic Shift's own listing exactly
   (r/stocks on Oct 15, Oct 28, Nov 17 and Nov 20, checked 2026-11-25). November is busier because of the
   sell-off and NVDA's earnings, not because of the switch to hourly files.

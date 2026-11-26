@@ -96,3 +96,28 @@ top_negative:
   r56 [negative pos=0.01 neg=0.95] r/stocks score=614: Reuters - Nvidia's accounting is a focus of US SEC investigation, sources say
   r62 [negative pos=0.02 neg=0.94] r/investing score=556: Ed Zitron, who called the bubble very vocally with detailed analysis, is now speaking on C
   r97 [negative pos=0.02 neg=0.94] r/nvidia score=201: Nvidia stock extends $2.7 trillion rout as SEC probe reportedly investigates its accountin
+
+=== after the Nov 1-13 backfill (2026-11-26)
+2026-11-26T01:00:46Z INFO on_demand: saved posts NVDA: 32099 match in ['nvidia', 'stocks', 'investing', 'wallstreetbets'], 52.0s
+2026-11-26T01:01:01Z INFO on_demand: keyword backup NVDA: searched [], skipped ['StockMarket', 'options', 'ValueInvesting'], 0 posts, 15.6s, 2 requests
+NVDA matched: 10-05=126, 10-12=115, 10-19=133, 10-26=140, 11-02=218, 11-09=1169, 11-16=681, 11-23=425; missing_days=[]; 67.7s
+NVDA tracked: 10-05=360, 10-12=388, 10-19=384, 10-26=328, 11-02=321, 11-09=1283, 11-16=807, 11-23=440; missing_days=[]; 44.6s
+
+=== J2 NVDA spike posts, week 2026-11-09 (CEO transition; backfilled days)
+2026-11-26T01:04:01Z INFO on_demand: keyword backup NVDA: searched [], skipped ['StockMarket', 'options', 'ValueInvesting'], 0 posts, 10.4s, 2 requests
+2026-11-26T01:04:10Z INFO on_demand: FinBERT scored 100 posts in 8.4s
+n_fetched=1169 n_scored=100 took 50.9s; skipped=['StockMarket', 'options', 'ValueInvesting'] scores_refreshed=True missing_days=[]
+sentiment: {'positive': 0.0574, 'negative': 0.3415, 'neutral': 0.6011, 'net': -0.2841} labels: {'positive': 1, 'negative': 32, 'neutral': 67}
+top 3 by score: [('r1', 83714, 'Jensen Huang entering NVIDIA Office'), ('r2', 47175, 'NVIDIA board meetings'), ('r3', 25096, 'NVIDIA Announces CEO Transition')]
+top_positive:
+  r9 [positive pos=0.59 neg=0.06] r/wallstreetbets score=11407: Nvidia board urged to consider 'potential return of Jensen Huang' by two major investors
+  r31 [neutral pos=0.42 neg=0.02] r/wallstreetbets score=2565: $55,000 gain in 55 seconds flipping $NVDA calls at open
+  r13 [neutral pos=0.39 neg=0.02] r/wallstreetbets score=7201: Instead Of Lowering GPU Prices, Former NVIDIA CEO Jensen Huang Reportedly Financed AI Star
+  r83 [negative pos=0.33 neg=0.53] r/wallstreetbets score=636: Bessent Says Nvidia Needs ‘Dramatic Shakeup’ After Huang Ouster
+  r65 [neutral pos=0.18 neg=0.19] r/wallstreetbets score=1113: It’s been a good year
+top_negative:
+  r79 [negative pos=0.01 neg=0.97] r/stocks score=679: Nvidia Shares Fall 5% on CEO Spy Inquiry
+  r10 [negative pos=0.01 neg=0.97] r/wallstreetbets score=10223: Jensen Huang’s wang caused a 0.25% decrease in the global stock market
+  r62 [negative pos=0.01 neg=0.96] r/investing score=1161: Jensen Huang resigns as Nvidia CEO, effective immediately. CFO Colette Kress named interim
+  r98 [negative pos=0.02 neg=0.94] r/wallstreetbets score=394: Investor sues Nvidia over Huang's ties to suspected spy after 4.27% drop
+  r45 [negative pos=0.01 neg=0.93] r/stocks score=1937: Nvidia stock slides after NYT report alleges Jensen Huang had a second affair with an empl
