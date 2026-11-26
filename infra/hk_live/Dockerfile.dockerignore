@@ -1,0 +1,14 @@
+**
+!src/
+!src/__init__.py
+!src/hk/
+!src/hk/__init__.py
+!src/hk/calendar.py
+!src/hk/live.py
+!src/hk/cloud/
+!src/hk/cloud/**
+!config/
+!config/hsi_constituents_2026-11-04.csv
+!infra/
+!infra/hk_live/
+!infra/hk_live/requirements.txt
