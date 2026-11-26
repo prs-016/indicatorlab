@@ -262,6 +262,14 @@ class Handler(BaseHTTPRequestHandler):
         try:
             if u.path in ("/", "/index.html"):
                 return self._send(200, (DASH / "index.html").read_bytes(), "text/html; charset=utf-8")
+            if u.path in ("/hk-assets/hk-market.js", "/hk-assets/hk-market.css"):
+                asset = DASH / Path(u.path).name
+                ctype = "text/javascript; charset=utf-8" if asset.suffix == ".js" else "text/css; charset=utf-8"
+                return self._send(200, asset.read_bytes(), ctype)
+            if u.path.startswith("/api/") and q.get("market", [""])[0].lower() == "hk":
+                from src.hk_dashboard.api import dispatch
+                payload, code = dispatch(u.path, q)
+                return self._json(payload, code)
             if u.path == "/api/status":
                 return self._json(status())
             if u.path == "/api/coverage":
@@ -299,6 +307,9 @@ class Handler(BaseHTTPRequestHandler):
             self._json({"error": f"{type(e).__name__}: {e}"}, 500)
 
     def do_POST(self):
+        query = parse_qs(urlparse(self.path).query)
+        if query.get("market", [""])[0].lower() == "hk":
+            return self._json({"error": "HK dashboard is read-only; refresh display inputs using the documented CLI."}, 405)
         if urlparse(self.path).path == "/api/run_strategies":
             with _lock:
                 if strategy_state["running"] or rebuild_state["running"]:

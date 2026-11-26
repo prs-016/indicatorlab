@@ -43,6 +43,12 @@ STATIC_GET = """const get = (u) => {
   return fetch(f + ".json", { cache: "no-store" }).then(r => r.json());
 };"""
 REWRITES = [
+    # The existing hosted US snapshot has no running HK backend. Strip only the
+    # new live-market hooks so it retains its original self-contained behavior.
+    ('<link rel="stylesheet" href="/hk-assets/hk-market.css">', ''),
+    ('<script src="/hk-assets/hk-market.js"></script>', ''),
+    ('<button type="button" id="market-hk" aria-pressed="false">Hong Kong</button>',
+     '<button type="button" disabled title="Hong Kong requires the live dashboard server">Hong Kong</button>'),
     ('const get = (u) => fetch(u, { cache: "no-store" }).then(r => r.json());', STATIC_GET),
     ('"/charts/aapl_chatter_vs_price.png"', '"charts/aapl_chatter_vs_price.png"'),
     ('"/charts/aapl_event_windows.png"', '"charts/aapl_event_windows.png"'),

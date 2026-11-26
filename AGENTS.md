@@ -504,3 +504,25 @@ The workspace suite passed 353 tests; the indexed-only export independently
 passed 353 tests with the external Vibe checkout supplied. Bundle verification
 and staged whitespace checks pass; original scientific/history files are intact.
 This is staging approval only, not permission to commit, push, PR or merge.
+
+## HK shared-dashboard integration (November 25, 2026)
+
+`src/hk_dashboard/` adds read-only Hong Kong adapters to the existing
+`src.reddit.dashboard_server` and `frontend/reddit_dashboard/` website. Explicit
+`market=hk` requests use HK data; default US functions and execution routes are
+unchanged. Preserve the existing India control and all India research modules.
+HK POST execution routes return 405. No strategy/backtest is launched here.
+
+`start_hk_dashboard.command` / `python -B -m src.hk_dashboard.launch` serves the
+integrated site on port 8879. It never stops an existing process. See
+`docs/hk_dashboard.md` for quote-service and data-mount environment variables.
+The existing HK quote API remains a separate service, default port 8765. Do not
+start duplicate collectors while it is running.
+
+Display refreshes write only ignored `data/hk_dashboard/display/` inputs.
+Wikipedia views/edits are not Reddit counts; preserve nulls and provenance.
+FinBERT remains limited to saved, exactly revision-matched HK scores. Current
+article mappings and the dated 95-stock roster are display universes, not PIT
+historical membership. The tracked `results/hk_dashboard/saved_research.json`
+contains only the three existing HK research summaries/saved curves and source
+hashes. No new research run or promotion to KEEP is authorized by this feature.

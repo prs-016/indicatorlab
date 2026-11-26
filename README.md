@@ -221,3 +221,12 @@ This template is intentionally simple so students can focus on the science inste
 - frontend UI/UX code in `frontend/`
 - CI checks
 - docs pages
+
+## Hong Kong in the shared website
+
+Run `python -B -m src.hk_dashboard.launch --port 8879` and open
+`http://127.0.0.1:8879/?market=hk#home`. On Jack's Mac,
+`start_hk_dashboard.command` selects the existing Python environment.
+See [HK dashboard setup and source boundaries](docs/hk_dashboard.md) for the
+existing quote-service connection, display refresh commands, data mounts and
+saved strategy results. US behavior and the India control are preserved.
