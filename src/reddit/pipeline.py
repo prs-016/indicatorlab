@@ -7,7 +7,8 @@
           processed/reddit_current.parquet: the in-progress week plus trailing-7-day attention against
           the 8-week baseline, in attention-record columns (+ value_trailing_7d, as_of).
   weekly  (Fargate task, Mondays; feeds the research tables)
-          Mirror the corpus state from S3, collect last week's complete days, then run the same steps
+          Mirror the corpus state from S3, collect last week's complete days (and refetch any failed or
+          partial day from the reddit.weekly_retry_weeks weeks before it), then run the same steps
           as the local pipeline (build_posts, match_tickers, score_posts --scorer finbert, reddit_weekly),
           push back what changed and publish processed/reddit_weekly*.parquet and reddit_top_posts*.parquet.
   seed    (once, from a laptop) upload the local corpus state so the first weekly run has history.
@@ -246,13 +247,17 @@ def weekly(root: str | None = None, today: date | None = None, start: date | Non
     root = root or root_uri()
     log.info("weekly: pulled %d state files from %s", _sync_state(root, down=True), root)
     started = time.time()       # after the download, so only files this run writes are pushed back
-    monday, sunday = last_full_week(today or datetime.now(UTC).date())
+    week_monday, sunday = last_full_week(today or datetime.now(UTC).date())
+    monday = week_monday
     if start is not None:       # catch up weeks a failed run never pushed; days already complete are skipped
         if start > sunday:
             raise ValueError(f"start {start} is after the last full week's Sunday {sunday}")
         monday = start
+    # Arctic Shift sometimes times a day out and the manifest keeps it as failed. Reach back a few weeks so the
+    # next run refetches such days; complete days are skipped, so the wider range costs only manifest lookups.
+    collect_from = min(monday, week_monday - timedelta(weeks=settings.WEEKLY_RETRY_WEEKS))
     collect_reddit.run_collect(argparse.Namespace(
-        start=monday.isoformat(), end=sunday.isoformat(), allow_partial_today=False, subreddits=None,
+        start=collect_from.isoformat(), end=sunday.isoformat(), allow_partial_today=False, subreddits=None,
         market=settings.MARKET, interval=settings.ARCTIC_MIN_INTERVAL_S, sample_days_per_year=0, seed=0,
         force=False, max_pages=collect_reddit.MAX_PAGES))
     build_posts.build()
@@ -262,7 +267,8 @@ def weekly(root: str | None = None, today: date | None = None, start: date | Non
     pushed = _sync_state(root, down=False, newer_than=started)
     published = publish(root)
     emit_metric("WeeklyRunSucceeded", 1, "weekly")
-    summary = {"mode": "weekly", "week": f"{monday}..{sunday}", "state_files_pushed": pushed, "published": published}
+    summary = {"mode": "weekly", "week": f"{monday}..{sunday}", "collected": f"{collect_from}..{sunday}",
+               "state_files_pushed": pushed, "published": published}
     log.info("weekly: %s", summary)
     return summary
 

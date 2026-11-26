@@ -148,7 +148,7 @@ $PY -m src.reddit.strategy_product_buzz --note "why this run"
   checks that changing future weeks never changes past flags.
 * **Retries** (`config.yaml` `reddit.arctic_shift`): about 1 s between requests; on Timeout or Internal
   server error wait 10-30 s and retry up to 3 times, then the day is logged `failed` and retried on the
-  next run. A page under 100 records ends a day (never followed by more posts in 12,059 Week 1 pages).
+  next run (the AWS weekly run reaches back `reddit.weekly_retry_weeks`, 3 weeks, for such days). A page under 100 records ends a day (never followed by more posts in 12,059 Week 1 pages).
 * **Sentiment**: four scorers in `sentiment_scorers.py`; the LLM uses a pinned model
   (`claude-haiku-5-5`), the fixed prompt `src/reddit/prompts/sentiment_v1.txt`, no thinking, JSON output,
   and a response cache. The API no longer accepts `temperature`, so reproducibility comes from the pinned

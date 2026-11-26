@@ -53,6 +53,7 @@ reddit:
     min_interval_s: 1.0         # pause between requests
     retry_wait_s: [10, 30]      # wait drawn uniformly from this range after a Timeout / server error
     max_retries: 3              # then the day is logged as failed (never as zero posts)
+  weekly_retry_weeks: 3         # the AWS weekly run also refetches failed/partial days from this many earlier weeks
   collect_start: 2016-06-01     # Week 4: corpus backfilled from the team train start (logs/reddit/backfill_2016_2022.log)
   min_posts_per_week: 20        # subreddits below this (2024 average) are dropped
   multi_ticker_list_min: 5      # a post text-matching this many tracked stocks is flagged as a list
