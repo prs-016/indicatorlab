@@ -188,6 +188,101 @@ INDICATORLAB_DATA_URI=data/reddit/processed .venv/bin/uvicorn src.api.main:app -
   Research files stop before `holdout_start` (2026-11-01); `*_recent.parquet` hold later weeks for display only.
 * The Week 2 routes (`src/api/reddit.py`: `/sentiment`, `/spikes`) were replaced by the `/reddit/*` router.
 
+## Final week: Reddit for any stock, on demand (`src/reddit/on_demand.py`)
+
+The any-stock dashboard (`POST /analyze`) asks for Reddit data about a ticker we may never have
+collected. Two functions serve it, both taking the `ResolvedStock` dict from `src/resolve.py`:
+
+| Function | Returns | Used for |
+|---|---|---|
+| `reddit_weekly_counts(stock)` | weekly post counts, 104 full weeks + the current partial week (`days_covered`) | Part 1: attention vs the 8-week baseline |
+| `reddit_spike_posts(stock, week_monday)` | the week's top posts with FinBERT sentiment | Part 2: what people said in a spike week |
+
+**Which subreddits.** The stock's company and market subreddits, our investing list `stocks, investing,
+wallstreetbets, StockMarket, options, ValueInvesting`, and the India or HK list.
+
+**How posts are found: saved posts first, keyword search as a backup.**
+1. *Saved posts.* We already store every post of the 33 subreddits in config.yaml's US subreddit map
+   (r/wallstreetbets, r/stocks, r/investing, sector and company subreddits): the research corpus up to
+   Oct 31, 2026 (`data/reddit/processed/posts/<subreddit>.parquet`, or `processed/reddit_state/posts/` on
+   S3), then the hourly job's `raw/reddit/date=YYYY-MM-DD/` files. For those subreddits the posts are
+   matched locally, with no API call: two years of NVDA in r/nvidia, r/stocks, r/investing and
+   r/wallstreetbets takes about a second on a laptop.
+2. *Keyword backup.* The other subreddits (r/StockMarket, r/options, r/ValueInvesting, the India and HK
+   lists) are not saved, so each search term (`$TICKER`, the ticker as a whole word, the short name, each
+   alias) becomes an Arctic Shift `posts/search?subreddit=..&query=..` stream. Arctic Shift rations keyword
+   search: on 2026-11-25 it answered 1 of 3 tries ("Timeout. Maybe slow down a bit") while plain listings
+   always worked. So the backup gets a time limit (45 s for counts, 30 s for a spike week, 3 tries per
+   request). A subreddit counts only if every one of its searches finished; otherwise it is listed in
+   `coverage.skipped` and left out, so a week never mixes complete and half-fetched subreddits. Each
+   search's progress is cached under `analyze/reddit_keyword/{subreddit}/{term}.json` and the next request
+   continues from there, so a pre-warmed stock needs no keyword calls at all.
+
+Arctic Shift requires a subreddit for `query`, refuses `limit=auto` with it, and treats `query` as plain
+keywords (`A OR B` is not a boolean OR). The weekly `posts/search/aggregate` endpoint is not used: with
+`query` it returned 0 in weeks where search found 100+ posts, and its buckets don't start on Monday
+00:00 UTC (checked 2026-11-25).
+
+**`coverage` (extra key on both results).** `saved` (subreddits read from saved posts), `searched`
+(keyword backup finished), `skipped` (keyword backup failed or ran out of time: not in the counts),
+`missing_days` (days after Oct 31 with no saved posts at all, so those weeks are too low), and for spike
+posts `scores_refreshed`.
+
+**Matching.** Saved posts and API hits are both checked locally with the same rules. The ticker must be a whole word in capitals (skipped when
+it has at most 2 letters or is a common word like ON or NOW; `$TICKER` still counts). Names match as
+whole words, any case. Hong Kong numeric codes are never searched as text, because "700" is a price;
+those stocks are found by name and ADR alias. When `ambiguous_name` is true (Apple, Meta, Target,
+Titan, ...), a post counts only if its title has the ticker or `$TICKER`, or the name sits within three
+words of a finance word (stock, shares, earnings, calls, puts, buy, sell, price, market cap, guidance,
+revenue, IPO, dividend). Posts are de-duplicated by Reddit id before counting.
+
+**Tracked stocks** (in our stored US table) read `reddit_weekly.parquet` + `reddit_weekly_recent.parquet`
+(from `INDICATORLAB_DATA_URI`). The weeks those tables lack are counted from the rows the table is built
+from (`post_ticker_matches.parquet` up to Oct 31, the hourly job's `processed/reddit_hourly/` after), so the
+whole series keeps the stored definition, where every post in a company's own subreddit counts. A stock
+marked tracked that the table doesn't have (an India or HK list stock) is matched like any other stock.
+Untracked counts are lower than tracked ones for the same stock because only posts that name it count.
+
+**Caps:** the keyword backup fetches at most 20,000 posts per counts request and 1,000 per spike week;
+hitting a cap sets `truncated: true` and that subreddit is skipped (its progress is kept for next time).
+**Cache:** counts are cached for 6 hours under `analyze/reddit_counts/{market}/{TICKER}.json` with
+`src/analyze/cache.py` (S3, or `INDICATORLAB_CACHE=local` for a laptop), or 30 minutes when a subreddit
+was skipped; Part 2 is cached by the job runner.
+
+**Spike-week posts.** Every matching post in the week (Mon 00:00 to the next Mon 00:00 UTC). Posts read
+within hours of posting (the hourly files, keyword searches) still have a score near 0, so their score
+and comment count are refreshed from Arctic Shift's `posts/ids` lookup (cheap, about 1 s per 100 posts)
+before ranking by score, then comment count. The top `analyze.top_posts` (100) are scored with the shared FinBERT
+scorer (same pinned revision, CPU, batch 16) on title + newline + body, dropping `[removed]` /
+`[deleted]` bodies but keeping the title. The function returns probability means, `net = positive −
+negative`, label counts, the 5 most positive and 5 most negative posts, and local ids `r1…r100` with
+permalinks. Gemini only ever sees these ids.
+
+**Caveats.**
+* **Scores are a snapshot.** Arctic Shift stores a post's score and comment count from when it archived
+  the post, so they can be lower than on Reddit today, and posts younger than about 36 hours can show 0 or 1.
+  The "top posts" ranking uses these archived numbers.
+* **The Nov 1–13 gap.** The hourly job's first run was 2026-11-13 04:24 UTC, so posts from Nov 1 until
+  then are in neither the corpus nor the hourly files, and `coverage.missing_days` lists those days.
+  `python -m src.reddit.backfill_hourly --start 2026-11-01 --end 2026-11-13T05:00` lists them from Arctic
+  Shift (plain listing, saved to `data/reddit/backfill/` first); `--upload` then writes one
+  `backfill.parquet` per day into `raw/reddit/` and `processed/reddit_hourly/`.
+* **No level shift at Oct 31.** Day counts of both collections match Arctic Shift's own listing exactly
+  (r/stocks on Oct 15, Oct 28, Nov 17 and Nov 20, checked 2026-11-25). November is busier because of the
+  sell-off and NVDA's earnings, not because of the switch to hourly files.
+* **Speed.** Reading two years of saved posts takes about 2.5 s per stock once the finished hourly days
+  are in memory (they never change, so the process keeps them); the first cold read from a laptop took
+  ~50 s. Then at most 45 s of keyword backup. Real runs: `logs/reddit/on_demand_real_runs_2026-11-25b.txt`.
+* **Coverage outside the US.** Our saved subreddits are US ones. India and Hong Kong stocks get their
+  mentions in r/wallstreetbets, r/stocks and r/investing from saved posts; their own subreddits depend on
+  the keyword backup, so they appear in `coverage.skipped` whenever Arctic Shift refuses.
+* **Keyword failures are never zeros.** A refused or unfinished keyword search leaves that subreddit
+  out and lists it in `coverage.skipped`; the functions don't raise for it.
+
+Tests: `pytest tests/test_reddit_on_demand.py` (saved posts written to a temp folder from
+`tests/fixtures/reddit_on_demand/posts.json`, Arctic Shift mocked for the unsaved subreddits, FinBERT
+mocked with fixed probabilities).
+
 ## Collection details
 
 * **Endpoint:** `GET /api/posts/search?subreddit=<s>&after=<epoch>&before=<epoch>&limit=auto&sort=asc`.

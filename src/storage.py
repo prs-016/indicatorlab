@@ -36,6 +36,15 @@ def read_parquet(uri: str | Path, columns: list[str] | None = None) -> pd.DataFr
     return pq.read_table(path, filesystem=fs, columns=columns).to_pandas()
 
 
+def read_table(uri: str | Path, columns: list[str] | None = None, filters=None) -> pa.Table:
+    """One parquet file as an Arrow table: only `columns`, and only the rows `filters` keep.
+
+    `filters` uses pyarrow's form, e.g. ``[("created_utc", ">=", 1700000000)]``.
+    """
+    fs, path = _resolve(uri)
+    return pq.read_table(path, filesystem=fs, columns=columns, filters=filters)
+
+
 def read_parquet_dir(uri: str | Path, columns: list[str] | None = None) -> pd.DataFrame | None:
     """All parquet parts under a directory, or None if it does not exist yet."""
     fs, path = _resolve(uri)
