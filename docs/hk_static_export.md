@@ -50,6 +50,14 @@ fabricated. Raw Parquets are not committed; the sanitized validation report
 records their digests and observed coverage. Live S3/IAM validation still needs
 a teammate's AWS access.
 
+The three additional downloads were inspected too: `wiki_weekly.parquet`
+(29,861 rows), `prices_weekly.parquet` (34,119), and
+`wiki_edit_summaries.parquet` (98,676) contain only `market=us` and no HK
+tickers. HK historical charts and edit evidence therefore remain unavailable
+until the source publisher adds HK rows to the shared exports. They are never
+replaced with US records or local research files. This is an input-publication
+gap, not a request to deploy a server or rerun strategies.
+
 ## Publication check (after approval)
 
 Use the existing process to upload the complete build and refresh the CDN.

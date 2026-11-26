@@ -17,7 +17,7 @@
   const note = `<p class="hk-note">Wikipedia views and edits measure article attention. HK Reddit mentions are unavailable. Missing observations and sentiment stay unavailable; no values are filled with zero.</p>`;
   const table = (headers, rows) => `<div class="hk-scroll"><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows.join("") || `<tr><td colspan="${headers.length}" class="hk-empty">No observations available for this selection.</td></tr>`}</tbody></table></div>`;
   const facts = pairs => `<dl class="hk-facts">${pairs.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>`;
-  const stockLink = (code, name, week) => `<a href="#stock/${encodeURIComponent(code)}${week?'/'+encodeURIComponent(week):''}"><b>${esc(name || code)}</b><span class="sub">${esc(code)}</span></a>`;
+  const stockLink = (code, name, week) => !/^[0-9]{4,5}\.HK$/.test(code) ? esc(name || code) : `<a href="#stock/${encodeURIComponent(code)}${week?'/'+encodeURIComponent(week):''}"><b>${esc(name || code)}</b><span class="sub">${esc(code)}</span></a>`;
   const stat = (value, label, attributes="") => `<div class="hk-stat"><strong ${attributes}>${esc(value)}</strong><span>${esc(label)}</span></div>`;
   const metric = m => !m?.available ? `<span class="muted">Unavailable</span>` : `<span class="${m.spike?'hk-flag':''}">${number(m.count)} <span class="sub">${ratio(m.ratio)} baseline${m.partial?' · partial week':''}${m.spike?' · SPIKE':''}</span></span>`;
   async function api(endpoint, params = {}) {
@@ -167,10 +167,10 @@
       <div class="hk-revisions">${table(['Revision (UTC)','ID','Edit summary'],revisions.map(r=>`<tr><td>${esc(r.timestamp)}</td><td>${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer">${esc(r.revid)} ↗</a>`:'Not published'}</td><td>${esc(r.comment || 'No summary')}</td></tr>`))}</div></section>${note}`;
   }
   function spikes(d) {
-    return head("Spikes · Hong Kong","Weeks when Wikipedia attention rose beyond its prior baseline. This is an attention signal, not a price-momentum strategy.")+
+    return head("Spikes · Hong Kong",d.current_only?"Published trailing-seven-day attention spikes. HK historical weekly rows have not been published yet.":"Weeks when Wikipedia attention rose beyond its prior baseline. This is an attention signal, not a price-momentum strategy.")+
       `<section class="panel"><div class="toolbar"><h2>${number(d.rows.length)} recorded source-week spikes</h2><label class="controls">Source <select id="hk-spike-source"><option value="all">All Wikipedia sources</option><option value="views">Wikipedia views</option><option value="edits">Wikipedia edits</option></select></label></div>
       <p class="hk-note">Shared rule: prior ${d.rule.baseline_weeks} weeks, median baseline; ratio and robust-z gates. Incomplete historical weeks are excluded from comparison. Click a stock to inspect that week.</p>
-      ${table(['Company','Week','Source','Observed count','Ratio','Robust z'],d.rows.map(r=>`<tr data-hk-source="${r.source}"><td>${stockLink(r.ticker,r.name,r.week)}</td><td>${r.week}${r.partial?' · partial':''}</td><td>${esc(r.source_label)} · ${esc(r.language)}</td><td>${number(r.count)}</td><td class="hk-flag">${ratio(r.ratio)}</td><td>${number(r.rz,2)}</td></tr>`))}</section>${note}`;
+      ${table(['Company',d.current_only?'Published window':'Week','Source','Observed count','Ratio','Robust z'],d.rows.map(r=>`<tr data-hk-source="${r.source}"><td>${stockLink(r.ticker,r.name,r.week)}</td><td>${esc(r.period_label || r.week)}${r.partial?' · partial':''}</td><td>${esc(r.source_label)} · ${esc(r.language)}</td><td>${number(r.count)}</td><td class="hk-flag">${ratio(r.ratio)}</td><td>${number(r.rz,2)}</td></tr>`))}</section>${note}`;
   }
   function strategies(d) {
     return head("Strategies · Hong Kong","Saved out-of-sample research results, displayed without running or changing any strategy.")+

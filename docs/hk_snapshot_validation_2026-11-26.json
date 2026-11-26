@@ -15,9 +15,39 @@
   "direct_AWS_access_used": false,
   "raw_parquet_committed": false,
   "optional_sources_unavailable": {
-    "wiki_weekly.parquet": "not_available",
-    "prices_weekly.parquet": "not_available",
-    "wiki_edit_summaries.parquet": "not_available",
+    "wiki_weekly.parquet": "no_hk_rows",
+    "prices_weekly.parquet": "no_hk_rows",
+    "wiki_edit_summaries.parquet": "no_hk_rows",
     "hk_quotes": "not_published"
-  }
+  },
+  "history_inputs": {
+    "wiki_weekly.parquet": {
+      "sha256": "ff6eee61f69206808cc351725329f001ca6e696d5755107ea39dcf233574ae3c",
+      "rows": 29861,
+      "market_counts": {
+        "us": 29861
+      },
+      "hk_rows": 0,
+      "hk_tickers": 0
+    },
+    "prices_weekly.parquet": {
+      "sha256": "e3ce04b64f2c5599be7b0e1ba32c5ac9f856a1627d3ffd48f7ac2b716037d6c1",
+      "rows": 34119,
+      "market_counts": {
+        "us": 34119
+      },
+      "hk_rows": 0,
+      "hk_tickers": 0
+    },
+    "wiki_edit_summaries.parquet": {
+      "sha256": "5cae782896ac0d754b0eee039653de39685934d8bc55642aa92354eb031977ec",
+      "rows": 98676,
+      "market_counts": {
+        "us": 98676
+      },
+      "hk_rows": 0,
+      "hk_tickers": 0
+    }
+  },
+  "interpretation": "Current HK attention works for all 95 stocks. Downloaded history/price/edit files contain no HK rows; HK historical charts require an upstream data publication, not a Mac fallback."
 }

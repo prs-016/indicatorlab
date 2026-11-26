@@ -97,6 +97,21 @@ def test_cross_market_rows_never_become_hk():
         source(data)
 
 
+def test_existing_us_only_history_is_reported_as_a_hk_data_gap():
+    data = tables()
+    for key in ["wiki_weekly.parquet", "prices_weekly.parquet"]:
+        data[key] = data[key].assign(market="us", ticker="AAPL")
+    snapshot = source(data)
+    assert snapshot.errors["wiki_weekly.parquet"] == "no_hk_rows"
+    assert snapshot.errors["prices_weekly.parquet"] == "no_hk_rows"
+    assert snapshot.stock("0700.HK")["weeks"] == []
+    assert (
+        snapshot.stock("0700.HK")["current_attention"]["metrics"]["views"]["count"]
+        == 100
+    )
+    assert snapshot.status()["historical_price_stocks"] == 0
+
+
 def test_permission_failures_do_not_become_missing_data():
     def reader(uri):
         if uri.endswith("wiki_current.parquet"):

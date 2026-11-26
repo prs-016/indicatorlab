@@ -59,6 +59,7 @@ class SnapshotData:
             frame["market"].astype(str).str.lower().isin(["hk", "hong_kong"])
         ].copy()
         if frame.empty:
+            self.errors[name] = "no_hk_rows"
             return frame
         frame["ticker"] = frame["ticker"].map(canonical)
         frame = frame[frame["ticker"].isin(self.roster)]
@@ -287,6 +288,9 @@ class SnapshotData:
                             "ticker": row["ticker"],
                             "name": self.roster[row["ticker"]]["short_name"],
                             "week": str(row["week"].date()),
+                            "period_label": f"7 days through {str(row.get('as_of', ''))[:10]}"
+                            if current_only
+                            else str(row["week"].date()),
                             "source": source,
                             "source_label": SOURCES[source]["label"]
                             + (" · trailing 7 days" if current_only else ""),
@@ -301,6 +305,7 @@ class SnapshotData:
             "market": "hk",
             "snapshot": True,
             "rows": rows,
+            "current_only": current_only,
             "rule": config.spike_rule(),
             "sources": SOURCES,
         }
