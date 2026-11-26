@@ -240,13 +240,17 @@ def publish(root: str) -> list[str]:
     return out
 
 
-def weekly(root: str | None = None, today: date | None = None) -> dict:
+def weekly(root: str | None = None, today: date | None = None, start: date | None = None) -> dict:
     """Collect last week, rebuild every weekly table with the local pipeline code, push and publish."""
     from src.reddit import build_posts, collect_reddit, match_tickers, reddit_weekly, score_posts
     root = root or root_uri()
     log.info("weekly: pulled %d state files from %s", _sync_state(root, down=True), root)
     started = time.time()       # after the download, so only files this run writes are pushed back
     monday, sunday = last_full_week(today or datetime.now(UTC).date())
+    if start is not None:       # catch up weeks a failed run never pushed; days already complete are skipped
+        if start > sunday:
+            raise ValueError(f"start {start} is after the last full week's Sunday {sunday}")
+        monday = start
     collect_reddit.run_collect(argparse.Namespace(
         start=monday.isoformat(), end=sunday.isoformat(), allow_partial_today=False, subreddits=None,
         market=settings.MARKET, interval=settings.ARCTIC_MIN_INTERVAL_S, sample_days_per_year=0, seed=0,
@@ -283,5 +287,12 @@ def lambda_handler(event, context):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--mode", choices=list(MODES), default=os.environ.get("PIPELINE_MODE", "hourly"))
+    ap.add_argument("--start", type=date.fromisoformat, default=None,
+                    help="weekly only: collect from this date (YYYY-MM-DD) instead of last Monday")
     a = ap.parse_args()
-    MODES[a.mode]()
+    if a.start is not None and a.mode != "weekly":
+        ap.error("--start only applies to --mode weekly")
+    if a.mode == "weekly":
+        weekly(start=a.start)
+    else:
+        MODES[a.mode]()

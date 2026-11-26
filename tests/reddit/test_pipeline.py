@@ -141,3 +141,21 @@ def test_weekly_pulls_state_runs_steps_pushes_only_changes_and_publishes(tmp_pat
     assert out["published"] == ["reddit_weekly.parquet"]
     assert storage.exists(root / "processed/reddit_weekly.parquet")
     assert out["state_files_pushed"] == 1                                        # only the rewritten file
+
+
+def test_weekly_start_catches_up_from_an_earlier_date(tmp_path, monkeypatch):
+    from src.reddit import build_posts, collect_reddit, match_tickers, reddit_weekly, score_posts
+
+    calls = []
+    monkeypatch.setattr(pl, "_sync_state", lambda *a, **k: 0)
+    monkeypatch.setattr(pl, "publish", lambda root: [])
+    monkeypatch.setattr(pl, "emit_metric", lambda *a, **k: None)
+    monkeypatch.setattr(collect_reddit, "run_collect", lambda args: calls.append((args.start, args.end)))
+    for mod, name in [(build_posts, "build"), (match_tickers, "run"), (reddit_weekly, "run")]:
+        monkeypatch.setattr(mod, name, lambda: None)
+    monkeypatch.setattr(score_posts, "run", lambda *a, **k: None)
+
+    out = pl.weekly(str(tmp_path), today=date(2026, 11, 25), start=date(2026, 11, 9))   # two missed weeks
+    assert calls == [("2026-11-09", "2026-11-22")] and out["week"] == "2026-11-09..2026-11-22"
+    with pytest.raises(ValueError, match="after the last full week"):
+        pl.weekly(str(tmp_path), today=date(2026, 11, 25), start=date(2026, 11, 23))

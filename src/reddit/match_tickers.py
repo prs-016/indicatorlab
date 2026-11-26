@@ -371,6 +371,8 @@ def run() -> pd.DataFrame:
     summary["multi_ticker_list_posts"] = df.groupby(
         ["market", "subreddit_type", "ticker"]
     )["multi_ticker_list"].sum()
+    # results/ is absent in the AWS image, which ships only src/
+    settings.TABLES.mkdir(parents=True, exist_ok=True)
     summary.to_csv(settings.TABLES / "match_method_summary.csv")
     log.info("matched rows=%d unique posts=%d", len(df), df["post_id"].nunique())
     return df
