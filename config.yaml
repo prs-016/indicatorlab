@@ -167,3 +167,14 @@ markets:
       general: []
       sector: []
     stocks: {}
+
+
+# HK worker only; runs locally unless --aws is explicitly supplied.
+live:
+  region: us-east-2
+  bucket: indicatorlab-data
+  hk:
+    interval_seconds: 5
+    symbols_file: config/hsi_constituents_2026-11-04.csv
+    roster_policy: dated_operational_snapshot_not_historical_membership
+    table: indicatorlab-live-hk
