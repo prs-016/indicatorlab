@@ -1,0 +1,46 @@
+/* Scoped HK additions; shared US/India styling remains unchanged. */
+#hk-dashboard { display: grid; gap: var(--s4); }
+#hk-dashboard[hidden] { display: none; }
+body[data-market="hk"] .view { display: none !important; }
+body[data-market="hk"][data-view="home"] .context { display: block; }
+body[data-market="hk"] #ctxWeek, body[data-market="hk"] #ctxAsOf { display: none; }
+#hk-context { font-size: 12px; color: var(--ink-3); }
+#hk-dashboard .hk-stats { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: var(--s3); }
+#hk-dashboard .hk-stat { padding: var(--s4); border: 1px solid var(--line); background: var(--panel); border-radius: var(--radius); }
+#hk-dashboard .hk-stat strong { display: block; font-size: 27px; font-variant-numeric: tabular-nums; }
+#hk-dashboard .hk-stat span, #hk-dashboard .hk-note { color: var(--ink-3); font-size: 12px; line-height: 1.7; }
+#hk-dashboard .hk-banner { border-left: 3px solid var(--orange); padding: var(--s3) var(--s4); background: var(--tint); font-size: 13px; }
+#hk-dashboard .hk-scroll { overflow-x: auto; max-width: 100%; }
+#hk-dashboard table { width: 100%; border-collapse: collapse; font-size: 13px; }
+#hk-dashboard td, #hk-dashboard th { padding: 12px 14px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+#hk-dashboard th { color: var(--ink-3); font-size: 11px; font-weight: 500; }
+#hk-dashboard th.num, #hk-dashboard td.num { text-align: right; font-variant-numeric: tabular-nums; }
+#hk-dashboard td a { color: var(--ink); }
+#hk-dashboard td a:hover { color: var(--orange); }
+#hk-dashboard .hk-flag { color: var(--orange); }
+#hk-dashboard input { font: inherit; color: var(--ink); background: var(--ctrl-bg); border: 1px solid var(--ctrl-line); border-radius: var(--radius-sm); padding: 8px 10px; width: min(100%,340px); }
+#hk-dashboard input:focus-visible { outline: 2px solid var(--orange); outline-offset: 2px; }
+#hk-dashboard .hk-plot { position: relative; height: 260px; margin-top: var(--s4); }
+#hk-dashboard .hk-plot canvas { max-width: 100%; }
+#hk-dashboard .hk-facts { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: var(--s3); }
+#hk-dashboard .hk-facts dt { color: var(--ink-3); font-size: 12px; }
+#hk-dashboard .hk-facts dd { margin: 5px 0 0; overflow-wrap: anywhere; }
+#hk-dashboard .hk-fees { display: grid; grid-template-columns: repeat(auto-fit,minmax(170px,1fr)); gap: var(--s3); margin: var(--s4) 0; }
+#hk-dashboard .hk-fees label { font-size: 12px; color: var(--ink-2); }
+#hk-dashboard .hk-fees input { display: block; margin-top: 6px; width: 100%; box-sizing: border-box; }
+#hk-dashboard .hk-error { color: var(--down); }
+#hk-dashboard .hk-revisions { max-height: 360px; overflow: auto; }
+#hk-dashboard .hk-chip { border: 1px solid var(--line); border-radius: var(--radius-sm); padding: 3px 7px; font-size: 11px; white-space: nowrap; }
+#hk-dashboard .hk-hero { padding: var(--s7) 0 var(--s5); max-width: 800px; }
+#hk-dashboard .hk-hero h1 { font-size: clamp(40px,6vw,72px); line-height: 1.1; letter-spacing: -.03em; }
+#hk-dashboard .hk-hero p { font-size: 17px; color: var(--ink-2); margin: var(--s4) 0 var(--s5); max-width: 650px; }
+#hk-dashboard .hk-hero .controls { gap: var(--s3); }
+#hk-dashboard .hk-method { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--s4); }
+#hk-dashboard .hk-method p { color: var(--ink-2); font-size: 13px; margin-top: var(--s2); }
+#hk-dashboard .hk-empty { padding: var(--s5); color: var(--ink-3); }
+@media(max-width:700px) {
+  #hk-dashboard .hk-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  #hk-dashboard .hk-method { grid-template-columns: 1fr; }
+  #hk-dashboard .hk-facts { grid-template-columns: 1fr; }
+  #hk-dashboard .hk-plot { height: 230px; }
+}

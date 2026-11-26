@@ -23,6 +23,9 @@ data/*
 !data/processed/.gitkeep
 results/*
 !results/.gitkeep
+!results/hk_dashboard/
+results/hk_dashboard/*
+!results/hk_dashboard/saved_research.json
 models/*
 !models/.gitkeep
 

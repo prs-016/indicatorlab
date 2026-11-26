@@ -221,3 +221,18 @@ This template is intentionally simple so students can focus on the science inste
 - frontend UI/UX code in `frontend/`
 - CI checks
 - docs pages
+
+## Hong Kong in the shared website
+
+Run `python -B -m src.hk_dashboard.launch --port 8879` and open
+`http://127.0.0.1:8879/?market=hk#home`. On Jack's Mac,
+`start_hk_dashboard.command` selects the existing Python environment.
+See [HK dashboard setup and source boundaries](docs/hk_dashboard.md) for the
+existing quote-service connection, display refresh commands, data mounts and
+saved strategy results. US behavior and the India control are preserved.
+
+For the shared CloudFront site, install `pip install -r requirements.txt`, then
+build with `python -m src.reddit.dashboard_export --hk-root-uri s3://indicatorlab-data`.
+This uses shared S3 records without a Mac quote API. See
+[static export setup and limits](docs/hk_static_export.md). Building is separate
+from publication; no AWS deployment is performed by the build.

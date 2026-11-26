@@ -395,16 +395,18 @@ pre { font: 12px/1.5 var(--mono); background: var(--bg-deep); border: 1px solid 
   <div class="context-inner">
     <div class="seg" role="group" aria-label="Market">
       <span class="ctx-label">Market</span>
-      <button type="button" aria-pressed="true">US</button>
+      <button type="button" id="market-us" aria-pressed="true">US</button>
       <button type="button" disabled title="No India data in this build yet">India</button>
-      <button type="button" disabled title="No Hong Kong data in this build yet">Hong Kong</button>
+      <button type="button" id="market-hk" aria-pressed="false">Hong Kong</button>
     </div>
     <span id="ctxWeek"></span>
     <span id="ctxAsOf"></span>
+    <span id="hk-context" hidden></span>
   </div>
 </div>
 
 <main>
+  <section id="hk-dashboard" hidden aria-label="Hong Kong market"></section>
   <!-- ============================================================ HOME -->
   <section class="view home" id="view-home" data-view="home">
     <div class="hero">
@@ -614,6 +616,8 @@ pre { font: 12px/1.5 var(--mono); background: var(--bg-deep); border: 1px solid 
   </section>
 </main>
 
+<link rel="stylesheet" href="/hk-assets/hk-market.css">
+<script src="/hk-assets/hk-market.js"></script>
 <script>
 const $ = (id) => document.getElementById(id);
 const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -660,6 +664,7 @@ function segPress(el, attr, value) { el.querySelectorAll("button").forEach(b => 
 const VIEWS = ["home", "now", "stock", "spikes", "strategies", "data"];
 let current = null;
 function route() {
+  if (window.HKDashboard?.active()) return window.HKDashboard.route();
   const [v0, t, w] = location.hash.replace(/^#/, "").split("/");
   const v = VIEWS.includes(v0) ? v0 : "home";
   document.body.dataset.view = v;

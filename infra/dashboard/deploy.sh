@@ -6,7 +6,9 @@ REGION="${AWS_REGION:-$(aws configure get region)}"   # your AWS CLI Region (us-
 STACK="indicatorlab-dashboard"
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 
-(cd "$ROOT" && .venv/bin/python -m src.reddit.dashboard_export)
+# Build HK from shared storage; no collector/deployment is started by the export.
+HK_ROOT="${INDICATORLAB_HK_EXPORT_URI:-s3://${INDICATORLAB_BUCKET:-indicatorlab-data}}"
+(cd "$ROOT" && .venv/bin/python -m src.reddit.dashboard_export --hk-root-uri "$HK_ROOT")
 aws cloudformation deploy --region "$REGION" --stack-name "$STACK" \
   --template-file "$ROOT/infra/dashboard/template.yaml" --no-fail-on-empty-changeset
 out() { aws cloudformation describe-stacks --region "$REGION" --stack-name "$STACK" \
