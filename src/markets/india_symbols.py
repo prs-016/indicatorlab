@@ -57,14 +57,16 @@ def _roster_names() -> dict[str, str]:
     return names
 
 
-def india_names() -> dict[str, dict]:
+def india_names(*, include_parent_proxies: bool = False) -> dict[str, dict]:
     """Return an independent metadata mapping keyed by tracked .NS symbols.
 
-    English and Hindi titles are current, entity-verified mappings. An unresolved
-    title stays None so the resolver can distinguish a missing title from a title
-    pointing to a different company. Untracked stocks have no local entry.
+    By default, titles identify the listed company. Set include_parent_proxies
+    to also return approved English parent titles. Unresolved titles stay None.
+    Untracked stocks have no local entry.
     """
-    titles = load_india_titles().current_titles()
+    titles = load_india_titles().current_titles(
+        include_parent_proxies=include_parent_proxies
+    )
     names = {}
     ambiguous_aliases = {name.casefold() for name in INDIA_AMBIGUOUS}
     for ticker, company in _roster_names().items():

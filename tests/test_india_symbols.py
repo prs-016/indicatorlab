@@ -185,13 +185,23 @@ def test_all_100_have_official_names_exact_contract_and_current_titles():
     assert subject.india_names()["RELIANCE.NS"]["aliases"]
 
 
+def test_proxy_opt_in_preserves_company_identity_and_resolver_fields():
+    exact = subject.india_names()
+    approved = subject.india_names(include_parent_proxies=True)
+    assert set(approved) == set(exact)
+    for ticker, entry in approved.items():
+        assert {**entry, "wiki_en": exact[ticker]["wiki_en"]} == exact[ticker]
+    assert approved["HDFCAMC.NS"]["wiki_en"] == exact["HDFCBANK.NS"]["wiki_en"]
+    assert approved["ENRIN.NS"]["wiki_en"] == approved["SIEMENS.NS"]["wiki_en"]
+
+
 @pytest.mark.xfail(
-    strict=True, reason="N1 acceptance blocked: 12 English identities remain unresolved"
+    strict=True, reason="N1 acceptance blocked: three companies lack a suitable title"
 )
 def test_n1_acceptance_every_company_has_a_verified_english_title():
     missing = [
         ticker
-        for ticker, entry in subject.india_names().items()
+        for ticker, entry in subject.india_names(include_parent_proxies=True).items()
         if not entry["wiki_en"]
     ]
     assert (

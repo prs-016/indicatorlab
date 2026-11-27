@@ -155,14 +155,43 @@ def test_wrong_schema_and_extra_fields_rejected(files):
         load_india_titles(path, ledger)
 
 
-def test_real_registry_all_titles_preserved_and_no_unresolved_fill():
+@pytest.mark.parametrize(
+    ("change", "error"),
+    [
+        ({"lang": "hi"}, "require English"),
+        ({"valid_from": "2020-01-01T00:00:00Z", "start_logid": 1}, "unknown dates"),
+        ({"symbol": "TEST"}, "Conflicting current"),
+    ],
+)
+def test_proxy_rejects_unsupported_language_dates_and_current_collisions(
+    files, change, error
+):
+    rows, ledger, write = files
+    proxy = {"symbol": "OTHER", "title": "Parent", "lang": "en", "valid_from": ""}
+    proxy_evidence = dict(proxy, row_kind="parent_proxy", valid_to=None)
+    proxy_evidence.update(change)
+    proxy.update({k: v for k, v in change.items() if k in proxy})
+    with pytest.raises(ValueError, match=error):
+        load_india_titles(*write(rows + [proxy], ledger + [proxy_evidence]))
+
+
+def test_real_registry_preserves_exact_titles_and_exports_only_opted_in_proxies():
     mapping = load_india_titles()
-    assert len(mapping.records) == 167
+    assert len(mapping.records) == 176
     current = mapping.current_titles()
     assert len(current) == 88
     assert sum("en" in titles for titles in current.values()) == 88
     assert sum("hi" in titles for titles in current.values()) == 67
     assert "ABB.NS" not in current
-    assert sum(row.kind != "current" for row in mapping.records) == 12
-    assert sum(row.valid_from is None for row in mapping.records) == 136
+    approved = mapping.current_titles(include_parent_proxies=True)
+    assert approved["ABB.NS"] == {"en": "ABB"}
+    assert approved["HDFCAMC.NS"] == {"en": current["HDFCBANK.NS"]["en"]}
+    assert approved["ENRIN.NS"] == approved["SIEMENS.NS"] == {"en": "Siemens"}
+    assert len(approved) == 97
+    assert all(approved[ticker] == titles for ticker, titles in current.items())
+    proxies = [row for row in mapping.records if row.kind == "parent_proxy"]
+    assert len(proxies) == 9
+    assert all(row.valid_from is None and row.valid_to is None for row in proxies)
+    assert sum(row.kind == "historical_move_observed" for row in mapping.records) == 12
+    assert sum(row.valid_from is None for row in mapping.records) == 145
     assert len(mapping.title_history()["ADANIENSOL.NS"]["en"]) == 3

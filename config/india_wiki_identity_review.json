@@ -411,5 +411,221 @@
       "search": []
     }
   ],
-  "rate_limit_handling": "Stopped after HTTP 429 for TATACAP/VAML; no retries. Redirects to parents/groups are not listed-entity substitutions."
+  "rate_limit_handling": "Stopped after HTTP 429 for TATACAP/VAML; no retries. Redirects to parents/groups are not listed-entity substitutions.",
+  "parent_proxy_review": {
+    "reviewed_on": "2026-11-27",
+    "authorization": "The requester reported Prakhar’s approval of verified parent-company proxies for unresolved English titles.",
+    "scope": "Current title and retrieval checks. Parent article views and edits measure broader corporate attention. Sample retrieval does not certify historical coverage.",
+    "revision_api": "https://en.wikipedia.org/w/api.php",
+    "decisions": [
+      {
+        "symbol": "ABB",
+        "status": "parent_proxy",
+        "parent": "ABB Ltd",
+        "title": "ABB",
+        "relationship": "ABB Ltd is the ultimate holding company. It holds ABB India through ABB Asea Brown Boveri Ltd, which owns 75%.",
+        "relationship_source": "https://library.e.abb.com/public/10ee0d6daa32400391f32a376917901f/FINANCIAL%20STATEMENTS.pdf",
+        "pageid": 195678,
+        "wikidata_item": "Q52825",
+        "article_url": "https://en.wikipedia.org/wiki/ABB",
+        "public_revision": {
+          "revid": 1388187141,
+          "parentid": 1388009315,
+          "timestamp": "2026-11-26T23:49:50Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/ABB/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "BAJAJHLDNG",
+        "status": "unresolved",
+        "reason": "Bajaj Holdings is itself a holding company. Bajaj Group is a group article and no controlling corporate parent article was verified.",
+        "relationship_source": "https://www.bhil.in/investors.html"
+      },
+      {
+        "symbol": "BOSCHLTD",
+        "status": "parent_proxy",
+        "parent": "Robert Bosch GmbH",
+        "title": "Bosch_(company)",
+        "relationship": "The issuer identifies Robert Bosch GmbH as ultimate holding company with 70.54% indirect equity.",
+        "relationship_source": "https://www.bosch.in/media/our_company/shareholder_information/2026/postal_ballot_notice_13-11-26.pdf",
+        "pageid": 231364,
+        "wikidata_item": "Q234021",
+        "article_url": "https://en.wikipedia.org/wiki/Bosch_(company)",
+        "public_revision": {
+          "revid": 1385629740,
+          "parentid": 1385430843,
+          "timestamp": "2026-11-14T09:35:59Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Bosch_%28company%29/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "CUMMINSIND",
+        "status": "parent_proxy",
+        "parent": "Cummins Inc.",
+        "title": "Cummins",
+        "relationship": "Cummins Inc. owns 51% of Cummins India Limited.",
+        "relationship_source": "https://www.cummins.com/en-in/en/in/company/india-companies",
+        "pageid": 1064863,
+        "wikidata_item": "Q173476",
+        "article_url": "https://en.wikipedia.org/wiki/Cummins",
+        "public_revision": {
+          "revid": 1383994854,
+          "parentid": 1383412545,
+          "timestamp": "2026-11-06T01:37:49Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Cummins/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "HDFCAMC",
+        "status": "parent_proxy",
+        "parent": "HDFC Bank Limited",
+        "title": "HDFC_Bank",
+        "relationship": "HDFC Bank holds 52.3% of HDFC AMC.",
+        "relationship_source": "https://www.hdfcfund.com/about-us/hdfc-mf-at-a-glance",
+        "pageid": 6745280,
+        "wikidata_item": "Q631047",
+        "article_url": "https://en.wikipedia.org/wiki/HDFC_Bank",
+        "public_revision": {
+          "revid": 1388046038,
+          "parentid": 1388007920,
+          "timestamp": "2026-11-26T11:58:20Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/HDFC_Bank/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "POWERINDIA",
+        "status": "parent_proxy",
+        "parent": "Hitachi Energy Ltd",
+        "title": "Hitachi_Energy",
+        "relationship": "Hitachi Energy Ltd is the Swiss holding company of Hitachi Energy India Limited.",
+        "relationship_source": "https://www.hitachienergy.com/news-and-events/press-releases/2021/11/hitachi-energy-goes-live-in-india",
+        "pageid": 73941574,
+        "wikidata_item": "Q107530770",
+        "article_url": "https://en.wikipedia.org/wiki/Hitachi_Energy",
+        "public_revision": {
+          "revid": 1377153355,
+          "parentid": 1367819026,
+          "timestamp": "2026-09-28T02:57:26Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Hitachi_Energy/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SHRIRAMFIN",
+        "status": "unresolved",
+        "reason": "Shriram Group is a conglomerate article. Shriram Capital Private Limited holds 14.27% and the disclosed promoter group holds 20.30%. No controlling parent article was verified.",
+        "relationship_source": "https://cdn.shriramfinance.in/sfl-kalam/files/2026-10/SFL%20Corp%20Presentation%20-%20Q2%20FY27.pdf"
+      },
+      {
+        "symbol": "ENRIN",
+        "status": "parent_proxy",
+        "parent": "Siemens AG",
+        "title": "Siemens",
+        "relationship": "Siemens AG controls 59.00% directly and through Siemens International Holding B.V. in the September 2026 filing. The announced transfer of control to Siemens Energy AG is expected in fiscal 2028. Recheck before reuse after an ownership change.",
+        "relationship_source": "https://www.siemens-energy-india.com/pdf/Shareholding%20pattern_website_30.09.2026.pdf",
+        "control_transfer_source": "https://assets.siemens-energy.com/dam/03cdb4e6-b27a-4272-a911-b4480041e7ca/2026-05-12-Half-year_financial_report-2026-pdf_Original%20file.pdf",
+        "pageid": 168632,
+        "wikidata_item": "Q81230",
+        "article_url": "https://en.wikipedia.org/wiki/Siemens",
+        "public_revision": {
+          "revid": 1387950622,
+          "parentid": 1385671579,
+          "timestamp": "2026-11-26T03:52:41Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Siemens/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SIEMENS",
+        "status": "parent_proxy",
+        "parent": "Siemens AG",
+        "title": "Siemens",
+        "relationship": "Siemens AG controls Siemens Limited, the separately listed Indian company.",
+        "relationship_source": "https://www.siemens.com/en-gb/company/investor-relations-india/shareholding-distribution/",
+        "pageid": 168632,
+        "wikidata_item": "Q81230",
+        "article_url": "https://en.wikipedia.org/wiki/Siemens",
+        "public_revision": {
+          "revid": 1387950622,
+          "parentid": 1385671579,
+          "timestamp": "2026-11-26T03:52:41Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Siemens/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SOLARINDS",
+        "status": "unresolved",
+        "reason": "The disclosed promoters are Nuwal family holders and trusts. No suitable corporate parent article was verified.",
+        "relationship_source": "https://www.solargroup.com/Investor-relation.html"
+      },
+      {
+        "symbol": "TATACAP",
+        "status": "parent_proxy",
+        "parent": "Tata Sons Private Limited",
+        "title": "Tata_Sons",
+        "relationship": "Tata Capital identifies itself as a subsidiary of Tata Sons Private Limited.",
+        "relationship_source": "https://www.tatacapital.com/about-us.html",
+        "pageid": 9221446,
+        "wikidata_item": "Q2377884",
+        "article_url": "https://en.wikipedia.org/wiki/Tata_Sons",
+        "public_revision": {
+          "revid": 1388077968,
+          "parentid": 1386405152,
+          "timestamp": "2026-11-26T14:04:18Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Tata_Sons/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "VAML",
+        "status": "parent_proxy",
+        "parent": "Vedanta Resources Limited",
+        "title": "Vedanta_Resources",
+        "relationship": "The post-demerger listing memorandum identifies Vedanta Resources as holding company, with 56.38% held through the promoter group.",
+        "relationship_source": "https://d1rbiogke1jwo5.cloudfront.net/wp-content/uploads/2026/06/IM_VAML_Filing-Version.pdf",
+        "pageid": 6097908,
+        "wikidata_item": "Q1503753",
+        "article_url": "https://en.wikipedia.org/wiki/Vedanta_Resources",
+        "public_revision": {
+          "revid": 1387766530,
+          "parentid": 1376649610,
+          "timestamp": "2026-11-25T10:00:44Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Vedanta_Resources/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      }
+    ]
+  }
 }

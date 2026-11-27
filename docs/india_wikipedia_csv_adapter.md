@@ -26,6 +26,8 @@ from src.india_wikipedia_mapping import load_india_titles
 mapping = load_india_titles()  # local files only; defaults are repo-relative
 india_titles = mapping.current_titles()
 # 88 tickers: 88 English and 67 Hindi current titles
+approved_titles = mapping.current_titles(include_parent_proxies=True)
+# 97 tickers with an English title: 88 exact and 9 parent proxies
 history = mapping.title_history()
 # history['ADANIENSOL.NS']['en'] contains current and two former records
 ```
@@ -33,10 +35,11 @@ history = mapping.title_history()
 James can connect it at the **India branch of `universe()`**, returning
 `load_india_titles().current_titles()` as the base universe when `market == 'IN'`.
 Keep his existing YAML path for US/HK. This is the proposed connection point;
-no such hook has been installed by this task. If `strategy=True` adds extra
+the hook remains with James. For an approved proxy-enabled run, pass
+`include_parent_proxies=True` in the India-only branch. If `strategy=True` adds extra
 India tickers, retain his existing option semantics but review collisions:
 `out.update(...)` can replace verified titles. Do not silently override a
-registry identity or fabricate titles for the 12 unresolved companies.
+registry identity or fill the three unresolved companies with group aliases.
 
 If he needs a YAML-shaped stock fragment instead, this local conversion yields
 only the expected Wikipedia field (not a replacement for full stock settings):
@@ -48,8 +51,8 @@ fragment = {
 }
 ```
 
-Do not replace the full 100-stock India configuration with this 88-stock
-fragment or automatically add empty title dictionaries for unresolved companies.
+The Wikipedia fragment covers 88 exact or 97 approved tickers, depending on
+opt-in. Retain the full stock configuration and omit empty title dictionaries.
 His current pipeline cannot safely process an empty language dictionary.
 
 ## Historical titles and unknown dates
@@ -60,16 +63,17 @@ on CSV order or the latest nonblank date. `load_india_titles(csv_path,
 ledger_path)` accepts explicit local paths and returns immutable `TitleRecord`s:
 `symbol`, `title`, `lang`, `kind`, `valid_from`, `valid_to`.
 
-- `current_titles()` selects only ledger-labelled current rows, once per
-  ticker/language. Former titles never replace current titles.
+- `current_titles()` selects exact current rows. The optional
+  `include_parent_proxies=True` includes ledger-labelled `parent_proxy` rows.
+  Each ticker/language has at most one exportable title.
 - `title_history()` returns **all** records, grouped by ticker/language, retaining
-  all 12 historical rows. Unknown boundaries remain `None`; this is not an
+  all 12 historical rows. Consumers must check `kind` before using a record. Unknown boundaries remain `None`; this is not an
   implicit interval extending to the start/end of history.
 - Starts must match CSV/ledger evidence exactly; nonblank boundaries require
   recorded event identifiers and UTC timestamps. Duplicates (even identical),
   competing current titles and reversed intervals fail rather than choosing one.
 - These checks validate consistency with the saved evidence, not the authority
-  of arbitrary replacement ledgers. The packaged ledger is a byte-for-byte copy of the verified mapping evidence,
+  of arbitrary replacement ledgers. The packaged ledger preserves the original exact and historical records,
   retaining public Wikipedia page/revision/log IDs, uncertainty and entity-scope
   notes. Its SHA-256 is recorded below; no research dataset is required.
 
@@ -91,8 +95,8 @@ redirects nor issues a date-qualified title selection.
 4. Enforce acquisition bounds before running collection. The reviewed pipeline
    builds both research and recent/holdout windows by default; this task has not
    made that execution safe for India historical research.
-5. Resolve the 12 English/33 Hindi gaps and entity-scope limitations identified by the mapping research. These companies remain absent rather
-   than receiving fabricated titles; missing Hindi titles are simply omitted.
+5. Review the three remaining English gaps and 33 Hindi gaps. Missing
+   language entries remain absent.
 
 ## Standalone checkout and offline verification
 
@@ -112,11 +116,12 @@ python -B - <<'PYTHON'
 from src.india_wikipedia_mapping import load_india_titles
 mapping = load_india_titles()
 current = mapping.current_titles()
-assert len(mapping.records) == 167
+assert len(mapping.records) == 176
 assert len(current) == 88
 assert sum('hi' in titles for titles in current.values()) == 67
-assert sum(row.kind != 'current' for row in mapping.records) == 12
-print('Loaded 88 companies, 155 current titles and 12 historical titles.')
+assert len(mapping.current_titles(include_parent_proxies=True)) == 97
+assert sum(row.kind == 'historical_move_observed' for row in mapping.records) == 12
+print('Loaded 155 exact current, 9 parent proxy and 12 historical titles.')
 PYTHON
 ```
 
@@ -132,14 +137,14 @@ of only these committed files, without the original project present.
 
 ### Evidence checksums
 
-The ledger's complete 167 records retain only company/title identity, public
+The ledger's complete 176 records retain only company/title identity, public
 Wikipedia identifiers and URLs, observed title-event dates, query-completeness
 qualifications and mapping notes. It contains no pageviews or historical article
 text. The shared CSV and ledger must remain paired; do not edit dates or choose
 current titles by row order.
 
-- CSV SHA-256: `0de6ae1e3a069dc9113cb9c8dc41e7c18e43f59c7f8257c141c24c1ac69edaf0`
-- Ledger SHA-256: `f4f91451ff8192f3ad67270c6f99893c64a4dc94e33d83a7d1f8d98a0df2a16f`
+- CSV SHA-256: `8ad99f8a979bf7ccd2f0ff3078195cccbdc9af9075b9c2593537082e39897c32`
+- Ledger SHA-256: `19aeee4190c0735c006da55d71296cda7e390ad9ef4702f412f6ea69f0185138`
 
 ## All-constituent disposition review — 2026-11-23
 
@@ -157,3 +162,29 @@ valid_from dates stay blank. This current identity review provides no historical
 pageview/text coverage or eligibility claim. James can inspect the complete
 coverage file alongside the existing current_titles()/title_history() interface;
 no pipeline hook or historical redirect aggregation is enabled here.
+
+## Approved parent proxies — 2026-11-27
+
+Prakhar's approval, as reported by the requester, applies to verified
+parent-company articles for the unresolved English titles. The
+[review record](../config/india_wiki_identity_review.json) records decisions for
+all 12, issuer evidence, canonical page and Wikidata IDs, revisions and
+pageview retrieval samples. Nine qualified. BAJAJHLDNG, SHRIRAMFIN and SOLARINDS
+remain unmapped because no suitable controlling corporate parent article was
+verified. The original NSE ticker, name and aliases remain attached to each stock.
+
+Parent page views and edits measure broader corporate attention and do not
+establish attention specific to the Indian-listed company. ENRIN and SIEMENS
+share the Siemens page. HDFCAMC shares the HDFC Bank page with the exact
+HDFCBANK entry. Treat each shared page as one underlying signal when
+aggregating across stocks. The review validates current ownership and sample
+retrieval only. Parent proxy dates stay blank and must not be interpreted as
+historical eligibility. Recheck ENRIN on any announced change of control.
+
+The adapter and `india_names(include_parent_proxies=True)` retain James's
+existing dictionary structures. Read `TitleRecord.kind` or the coverage
+registry for `parent_proxy` provenance, outside the pipeline's language/title
+pairs and weekly output columns. James's current weekly schema carries no
+proxy flag. Keep this provenance alongside proxy-enabled output and keep
+historical or exact-identity runs on the default export. This PR does not
+enable a pipeline hook or run collection.

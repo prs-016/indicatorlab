@@ -3979,5 +3979,113 @@
     "valid_to": "2022-03-17T21:23:38Z",
     "end_logid": 129035983,
     "date_scope": "Observed move events only. Unknown start remains blank; never infer it from company incorporation or oldest surviving revision."
+  },
+  {
+    "symbol": "ABB",
+    "lang": "en",
+    "title": "ABB",
+    "row_kind": "parent_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "pageid": 195678,
+    "wikidata_item": "Q52825",
+    "article_url": "https://en.wikipedia.org/wiki/ABB",
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "BOSCHLTD",
+    "lang": "en",
+    "title": "Bosch_(company)",
+    "row_kind": "parent_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "pageid": 231364,
+    "wikidata_item": "Q234021",
+    "article_url": "https://en.wikipedia.org/wiki/Bosch_(company)",
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "CUMMINSIND",
+    "lang": "en",
+    "title": "Cummins",
+    "row_kind": "parent_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "pageid": 1064863,
+    "wikidata_item": "Q173476",
+    "article_url": "https://en.wikipedia.org/wiki/Cummins",
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "HDFCAMC",
+    "lang": "en",
+    "title": "HDFC_Bank",
+    "row_kind": "parent_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "pageid": 6745280,
+    "wikidata_item": "Q631047",
+    "article_url": "https://en.wikipedia.org/wiki/HDFC_Bank",
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "POWERINDIA",
+    "lang": "en",
+    "title": "Hitachi_Energy",
+    "row_kind": "parent_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "pageid": 73941574,
+    "wikidata_item": "Q107530770",
+    "article_url": "https://en.wikipedia.org/wiki/Hitachi_Energy",
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "ENRIN",
+    "lang": "en",
+    "title": "Siemens",
+    "row_kind": "parent_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "pageid": 168632,
+    "wikidata_item": "Q81230",
+    "article_url": "https://en.wikipedia.org/wiki/Siemens",
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "SIEMENS",
+    "lang": "en",
+    "title": "Siemens",
+    "row_kind": "parent_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "pageid": 168632,
+    "wikidata_item": "Q81230",
+    "article_url": "https://en.wikipedia.org/wiki/Siemens",
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "TATACAP",
+    "lang": "en",
+    "title": "Tata_Sons",
+    "row_kind": "parent_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "pageid": 9221446,
+    "wikidata_item": "Q2377884",
+    "article_url": "https://en.wikipedia.org/wiki/Tata_Sons",
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "VAML",
+    "lang": "en",
+    "title": "Vedanta_Resources",
+    "row_kind": "parent_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "pageid": 6097908,
+    "wikidata_item": "Q1503753",
+    "article_url": "https://en.wikipedia.org/wiki/Vedanta_Resources",
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
   }
 ]

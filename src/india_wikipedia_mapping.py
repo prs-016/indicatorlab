@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CSV = ROOT / "config/india_wiki_titles.csv"
 DEFAULT_LEDGER = ROOT / "config/india_wiki_mapping_ledger.json"
 FIELDS = ["symbol", "title", "lang", "valid_from"]
-KINDS = {"current", "historical_move_observed"}
+CURRENT_KINDS = {"current", "parent_proxy"}
+KINDS = CURRENT_KINDS | {"historical_move_observed"}
 
 
 def _timestamp(value: str | None) -> datetime | None:
@@ -34,7 +35,7 @@ class TitleRecord:
         symbol: Bare NSE symbol.
         title: Original canonical or historical title, with no translation.
         lang: Wikipedia language code (en or hi).
-        kind: Current title or observed historical move.
+        kind: Exact current title, parent_proxy, or observed historical move.
         valid_from: Evidenced start event, or None when unknown.
         valid_to: Known end event from the ledger, or None.
     """
@@ -57,23 +58,27 @@ class IndiaTitleMapping:
 
     records: tuple[TitleRecord, ...]
 
-    def current_titles(self) -> dict[str, dict[str, str]]:
+    def current_titles(
+        self, *, include_parent_proxies: bool = False
+    ) -> dict[str, dict[str, str]]:
         """Return ticker -> language -> current title, matching universe() output.
 
-        Takes no arguments. Returns a fresh dictionary using .NS tickers. This
-        export is current identity only, not a date-qualified historical universe.
-        Unmapped companies are omitted; historical rows never overwrite current.
+        Set include_parent_proxies for the approved broader corporate signals.
+        Returns a fresh dictionary using .NS tickers and language/title strings.
+        Unmapped companies are omitted. This export has no historical scope.
         """
         out: dict[str, dict[str, str]] = {}
         for row in self.records:
-            if row.kind == "current":
+            if row.kind == "current" or (
+                include_parent_proxies and row.kind == "parent_proxy"
+            ):
                 out.setdefault(row.symbol + ".NS", {})[row.lang] = row.title
         return out
 
     def title_history(self) -> dict[str, dict[str, tuple[TitleRecord, ...]]]:
         """Return all titles grouped by ticker/language, retaining known boundaries.
 
-        Takes no arguments. Returns current and former records without summing,
+        Takes no arguments. Returns exact, proxy and former records without summing,
         filling dates or treating unknown boundaries as an unbounded interval.
         """
         grouped: dict[str, dict[str, tuple[TitleRecord, ...]]] = {}
@@ -108,6 +113,7 @@ def load_india_titles(
     records = []
     seen = set()
     current = set()
+    exact = set()
     with Path(csv_path).open(encoding="utf-8", newline="") as stream:
         reader = csv.DictReader(stream)
         if reader.fieldnames != FIELDS:
@@ -144,13 +150,22 @@ def load_india_titles(
             if start and end and start >= end:
                 raise ValueError(f"Invalid title interval: {key}")
             pair = (symbol, lang)
+            if kind == "parent_proxy" and (lang != "en" or start or end):
+                raise ValueError(
+                    f"Parent proxies require English and unknown dates: {key}"
+                )
             if kind == "current":
+                exact.add(pair)
+            if kind in CURRENT_KINDS:
                 if pair in current or end is not None:
                     raise ValueError(f"Conflicting current title: {pair}")
                 current.add(pair)
             records.append(TitleRecord(symbol, title, lang, kind, start, end))
     for row in records:
-        if row.kind != "current" and (row.symbol, row.lang) not in current:
+        if (
+            row.kind == "historical_move_observed"
+            and (row.symbol, row.lang) not in exact
+        ):
             raise ValueError(
                 "Historical title lacks a current company/language mapping"
             )
