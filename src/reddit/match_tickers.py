@@ -31,11 +31,13 @@ Ambiguity handling (see also tests/test_matching.py):
 A post contributes at most one row per ticker; `match_method` holds the strongest
 method found, `all_methods` every method that fired.
 """
+
 from __future__ import annotations
 
 import html
 import re
 from dataclasses import dataclass
+from functools import cache
 
 import pandas as pd
 
@@ -45,14 +47,19 @@ from src.reddit.utils import REMOVED_TEXT, get_logger
 
 log = get_logger("match_tickers", "pipeline.log")
 
-B = r"(?<![A-Za-z0-9_$])"   # left boundary that also rejects "$" (cashtags handled separately)
-E = r"(?![A-Za-z0-9_])"     # right boundary
+B = r"(?<![A-Za-z0-9_$])"  # left boundary that also rejects "$" (cashtags handled separately)
+E = r"(?![A-Za-z0-9_])"  # right boundary
 
 # A line that starts (after list/quote/bold markers) with Positions:/Disclosure:/Holdings:.
-SIGNATURE_RE = re.compile(r"^[\s>*_#-]*(?:my |current )?(?:positions?|disclosures?|holdings?)\s*:.*$",
-                          re.I | re.M)
+SIGNATURE_RE = re.compile(
+    r"^[\s>*_#-]*(?:my |current )?(?:positions?|disclosures?|holdings?)\s*:.*$",
+    re.IGNORECASE | re.MULTILINE,
+)
 MULTI_TICKER_LIST_MIN = config.load()["reddit"]["multi_ticker_list_min"]
-URL_RE = re.compile(r"(https?://\S+|www\.\S+|\b[\w.-]+\.(?:com|net|org|io|co)(?:/\S*)?)", re.I)
+URL_RE = re.compile(
+    r"(https?://\S+|www\.\S+|\b[\w.-]+\.(?:com|net|org|io|co)(?:/\S*)?)", re.IGNORECASE
+)
+
 
 @dataclass
 class _Compiled:
@@ -66,20 +73,38 @@ class _Compiled:
     ctx_terms: re.Pattern | None = None
 
 
-def compile_market(market: str) -> dict[str, _Compiled]:
-    """Compile the cashtag, ticker and company-name patterns of every stock in `market` from config.yaml."""
+def compile_market(
+    market: str, *, stock_configs: dict | None = None
+) -> dict[str, _Compiled]:
+    """Compile market rules, optionally from a versioned research mapping overlay.
+
+    stock_configs is a ticker-to-stock-settings dictionary; None retains active
+    config.yaml behavior. Returns compiled rules without changing global caches.
+    """
     out: dict[str, _Compiled] = {}
-    for tk, cfg in config.stocks(market).items():
+    for tk, cfg in (
+        config.stocks(market) if stock_configs is None else stock_configs
+    ).items():
         m = cfg["match"]
         alt = "|".join(m["symbols"])
-        names = [re.compile(B + n["pattern"] + E, re.I if n.get("ignore_case") else 0) for n in m.get("names", [])]
-        c = _Compiled(cashtag=re.compile(r"(?<![A-Za-z0-9_$])\$(?:" + alt + r")" + E, re.I),
-                      ticker=re.compile(B + r"(?:" + alt + r")" + E), names=names,
-                      ambiguous_name=m.get("ambiguous_name"))
+        names = [
+            re.compile(
+                B + n["pattern"] + E, re.IGNORECASE if n.get("ignore_case") else 0
+            )
+            for n in m.get("names", [])
+        ]
+        c = _Compiled(
+            cashtag=re.compile(
+                r"(?<![A-Za-z0-9_$])\$(?:" + alt + r")" + E, re.IGNORECASE
+            ),
+            ticker=re.compile(B + r"(?:" + alt + r")" + E),
+            names=names,
+            ambiguous_name=m.get("ambiguous_name"),
+        )
         ctx = m.get("contextual_name")
         if ctx:
             c.ctx_word = re.compile(B + ctx["word"] + E)
-            c.ctx_strong = re.compile(B + ctx["strong"], re.I)
+            c.ctx_strong = re.compile(B + ctx["strong"], re.IGNORECASE)
             c.ctx_terms = re.compile(r"\b(?:" + "|".join(ctx["context_terms"]) + r")\b")
         out[tk] = c
     return out
@@ -88,6 +113,13 @@ def compile_market(market: str) -> dict[str, _Compiled]:
 COMPILED = compile_market(settings.MARKET)
 
 METHOD_ORDER = ["cashtag", "ticker", "company_name"]
+
+
+@cache
+def _market_compiled(market: str | None) -> dict[str, _Compiled]:
+    if market is None or market == settings.MARKET:
+        return COMPILED
+    return compile_market(market)
 
 
 def clean_text(s) -> str:
@@ -108,14 +140,24 @@ def _contextual_name(c: _Compiled, text: str, context: str) -> re.Match | None:
     return None
 
 
-def match_text(text: str, context: str | None = None) -> dict[str, dict[str, str]]:
+def match_text(
+    text: str,
+    context: str | None = None,
+    *,
+    market: str | None = None,
+    compiled_rules: dict | None = None,
+) -> dict[str, dict[str, str]]:
     """Return {ticker: {method: first matched string}} for one cleaned text.
 
     `context` (default: `text`) is the full post, used only by context rules (META's "Meta").
+    `market` selects configured rules; omitted preserves the existing US default.
+    `compiled_rules` optionally supplies an isolated, precompiled research overlay.
     """
     context = text if context is None else context
     out: dict[str, dict[str, str]] = {}
-    for t, c in COMPILED.items():
+    for t, c in (
+        _market_compiled(market) if compiled_rules is None else compiled_rules
+    ).items():
         hits: dict[str, str] = {}
         m = c.cashtag.search(text)
         if m:
@@ -137,56 +179,158 @@ def match_text(text: str, context: str | None = None) -> dict[str, dict[str, str
     return out
 
 
-def match_post(title: str, selftext: str) -> list[dict]:
-    """One dict per matched ticker for a post (title and body are both searched)."""
+def match_post(
+    title: str,
+    selftext: str,
+    *,
+    market: str | None = None,
+    compiled_rules: dict | None = None,
+) -> list[dict]:
+    """Return one row per matched ticker using configured market rules.
+
+    Args:
+        title: Post title.
+        selftext: Post body.
+        market: Configured market code; None preserves the existing US default.
+        compiled_rules: Optional compiled research overlay; active defaults unchanged.
+
+    Returns:
+        Match dictionaries with the strongest method and title/body provenance.
+    """
     t_clean, b_clean = clean_text(title), clean_text(selftext)
     full = t_clean + "\n" + b_clean
-    in_title, in_body = match_text(t_clean, full), match_text(b_clean, full)
+    in_title, in_body = match_text(
+        t_clean, full, market=market, compiled_rules=compiled_rules
+    ), match_text(b_clean, full, market=market, compiled_rules=compiled_rules)
+    compiled = _market_compiled(market) if compiled_rules is None else compiled_rules
     rows = []
     for tk in sorted(set(in_title) | set(in_body)):
-        methods = {**in_body.get(tk, {}), **in_title.get(tk, {})}   # title text wins for display
+        methods = {
+            **in_body.get(tk, {}),
+            **in_title.get(tk, {}),
+        }  # title text wins for display
         best = next(m for m in METHOD_ORDER if m in methods)
-        where = "both" if tk in in_title and tk in in_body else ("title" if tk in in_title else "body")
-        rows.append({
-            "ticker": tk,
-            "match_method": best,
-            "all_methods": ";".join(m for m in METHOD_ORDER if m in methods),
-            "matched_text": methods[best],
-            "found_in": where,
-            "ambiguous_term": best == "company_name" and COMPILED[tk].ambiguous_name is not None
-                              and methods[best].lower().startswith(COMPILED[tk].ambiguous_name.lower()),
-        })
+        where = (
+            "both"
+            if tk in in_title and tk in in_body
+            else ("title" if tk in in_title else "body")
+        )
+        rows.append(
+            {
+                "ticker": tk,
+                "match_method": best,
+                "all_methods": ";".join(m for m in METHOD_ORDER if m in methods),
+                "matched_text": methods[best],
+                "found_in": where,
+                "ambiguous_term": best == "company_name"
+                and compiled[tk].ambiguous_name is not None
+                and methods[best]
+                .lower()
+                .startswith(compiled[tk].ambiguous_name.lower()),
+            }
+        )
     return rows
 
 
-POST_COLS = ["id", "subreddit", "subreddit_type", "owner_ticker", "market", "created_utc", "created_dt", "date",
-             "title", "selftext", "score", "num_comments", "permalink", "day_status", "removed_by_category",
-             "removed_flag", "period"]
-OUT_COLS = ["post_id", "market", "subreddit", "subreddit_type", "created_utc", "created_utc_iso", "date", "period",
-            "ticker", "match_method", "all_methods", "matched_text", "found_in", "ambiguous_term", "n_tickers_in_post",
-            "multi_ticker_list", "score", "num_comments", "permalink", "day_status", "removed_by_category",
-            "removed_flag"]
+POST_COLS = [
+    "id",
+    "subreddit",
+    "subreddit_type",
+    "owner_ticker",
+    "market",
+    "created_utc",
+    "created_dt",
+    "date",
+    "title",
+    "selftext",
+    "score",
+    "num_comments",
+    "permalink",
+    "day_status",
+    "removed_by_category",
+    "removed_flag",
+    "period",
+]
+OUT_COLS = [
+    "post_id",
+    "market",
+    "subreddit",
+    "subreddit_type",
+    "created_utc",
+    "created_utc_iso",
+    "date",
+    "period",
+    "ticker",
+    "match_method",
+    "all_methods",
+    "matched_text",
+    "found_in",
+    "ambiguous_term",
+    "n_tickers_in_post",
+    "multi_ticker_list",
+    "score",
+    "num_comments",
+    "permalink",
+    "day_status",
+    "removed_by_category",
+    "removed_flag",
+]
 
 
 def match_subreddit(posts: pd.DataFrame) -> pd.DataFrame:
-    """Match rows for the posts of one subreddit (all rows share one subreddit type)."""
+    """Match one subreddit using its explicit market column and existing schema.
+
+    Args:
+        posts: Post rows sharing one subreddit type and one configured market.
+
+    Returns:
+        Existing OUT_COLS match table. Mixed/unknown markets are rejected instead
+        of assigning Indian text to US companies. No collection or scoring runs.
+    """
+    markets = set(posts["market"])
+    if len(markets) != 1:
+        raise ValueError("One explicit market required per subreddit batch")
+    market = next(iter(markets))
+    config.market(market)
     kind = posts["subreddit_type"].iloc[0]
     if kind == "product":
-        m = pd.DataFrame({"post_id": posts["id"].to_numpy(), "ticker": posts["owner_ticker"].to_numpy(),
-                          "match_method": "subreddit", "all_methods": "subreddit", "matched_text": "",
-                          "found_in": "subreddit", "ambiguous_term": False, "n_tickers_in_post": 0})
+        m = pd.DataFrame(
+            {
+                "post_id": posts["id"].to_numpy(),
+                "ticker": posts["owner_ticker"].to_numpy(),
+                "match_method": "subreddit",
+                "all_methods": "subreddit",
+                "matched_text": "",
+                "found_in": "subreddit",
+                "ambiguous_term": False,
+                "n_tickers_in_post": 0,
+            }
+        )
     else:
         out = []
         for r in posts[["id", "title", "selftext"]].itertuples(index=False):
-            hits = match_post(r.title, r.selftext)
+            hits = match_post(r.title, r.selftext, market=market)
             for h in hits:
                 h["post_id"] = r.id
                 h["n_tickers_in_post"] = len(hits)
             out.extend(hits)
-        m = pd.DataFrame(out, columns=["ticker", "match_method", "all_methods", "matched_text", "found_in",
-                                       "ambiguous_term", "post_id", "n_tickers_in_post"])
+        m = pd.DataFrame(
+            out,
+            columns=[
+                "ticker",
+                "match_method",
+                "all_methods",
+                "matched_text",
+                "found_in",
+                "ambiguous_term",
+                "post_id",
+                "n_tickers_in_post",
+            ],
+        )
     m["multi_ticker_list"] = m["n_tickers_in_post"] >= MULTI_TICKER_LIST_MIN
-    meta = posts.drop(columns=["title", "selftext", "owner_ticker"]).rename(columns={"id": "post_id"})
+    meta = posts.drop(columns=["title", "selftext", "owner_ticker"]).rename(
+        columns={"id": "post_id"}
+    )
     df = m.merge(meta, on="post_id", how="left")
     df["created_utc_iso"] = df["created_dt"].dt.strftime("%Y-%m-%dT%H:%M:%SZ")
     return df[OUT_COLS]
@@ -200,18 +344,33 @@ def run() -> pd.DataFrame:
         if posts.empty:
             continue
         parts.append(match_subreddit(posts))
-        log.info("r/%s (%s): %d posts -> %d match rows", posts["subreddit"].iloc[0], posts["subreddit_type"].iloc[0],
-                 len(posts), len(parts[-1]))
-    df = pd.concat(parts, ignore_index=True).sort_values(["created_utc", "post_id", "ticker"])
+        log.info(
+            "r/%s (%s): %d posts -> %d match rows",
+            posts["subreddit"].iloc[0],
+            posts["subreddit_type"].iloc[0],
+            len(posts),
+            len(parts[-1]),
+        )
+    df = pd.concat(parts, ignore_index=True).sort_values(
+        ["created_utc", "post_id", "ticker"]
+    )
     dup = df.duplicated(["post_id", "ticker"]).sum()
     assert dup == 0, f"{dup} duplicate post/ticker rows"
     df.to_parquet(settings.PROCESSED / "post_ticker_matches.parquet", index=False)
     methods = ["subreddit", *METHOD_ORDER]
-    summary = (df.groupby(["market", "subreddit_type", "ticker", "match_method"]).size().unstack(fill_value=0)
-               .reindex(columns=methods, fill_value=0))
-    summary.columns = [f"{m}_posts" for m in methods]   # avoid a 'ticker' column clashing with the index
+    summary = (
+        df.groupby(["market", "subreddit_type", "ticker", "match_method"])
+        .size()
+        .unstack(fill_value=0)
+        .reindex(columns=methods, fill_value=0)
+    )
+    summary.columns = [
+        f"{m}_posts" for m in methods
+    ]  # avoid a 'ticker' column clashing with the index
     summary["total_posts"] = summary.sum(axis=1)
-    summary["multi_ticker_list_posts"] = df.groupby(["market", "subreddit_type", "ticker"])["multi_ticker_list"].sum()
+    summary["multi_ticker_list_posts"] = df.groupby(
+        ["market", "subreddit_type", "ticker"]
+    )["multi_ticker_list"].sum()
     summary.to_csv(settings.TABLES / "match_method_summary.csv")
     log.info("matched rows=%d unique posts=%d", len(df), df["post_id"].nunique())
     return df

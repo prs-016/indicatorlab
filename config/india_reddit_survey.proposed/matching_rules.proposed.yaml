@@ -1,0 +1,1391 @@
+# PROPOSED / INACTIVE; user/Joshua review required.
+# Existing matcher schema only, not a complete replacement market config.
+# No bare tickers/cashtags. No historical identity certification.
+markets:
+  IN:
+    currency: INR
+    benchmark: ^NSEI
+    reddit:
+      general:
+      - IndianStockMarket
+      - IndiaInvestments
+      - IndianStreetBets
+      sector: []
+    stocks:
+      ABB.NS:
+        name: ABB India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ABB\.NS
+          - NSE:ABB
+          names:
+          - pattern: ABB\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: ABB\s+India
+            ignore_case: true
+      ADANIENSOL.NS:
+        name: Adani Energy Solutions Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ADANIENSOL\.NS
+          - NSE:ADANIENSOL
+          names:
+          - pattern: Adani\s+Energy\s+Solutions\s+Ltd\.
+            ignore_case: true
+          - pattern: Adani\s+Energy\s+Solutions
+            ignore_case: true
+      ADANIENT.NS:
+        name: Adani Enterprises Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ADANIENT\.NS
+          - NSE:ADANIENT
+          names:
+          - pattern: Adani\s+Enterprises\s+Ltd\.
+            ignore_case: true
+          - pattern: Adani\s+Enterprises
+            ignore_case: true
+      ADANIGREEN.NS:
+        name: Adani Green Energy Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ADANIGREEN\.NS
+          - NSE:ADANIGREEN
+          names:
+          - pattern: Adani\s+Green\s+Energy\s+Ltd\.
+            ignore_case: true
+          - pattern: Adani\s+Green\s+Energy
+            ignore_case: true
+      ADANIPORTS.NS:
+        name: Adani Ports and Special Economic Zone Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ADANIPORTS\.NS
+          - NSE:ADANIPORTS
+          names:
+          - pattern: Adani\s+Ports\s+and\s+Special\s+Economic\s+Zone\s+Ltd\.
+            ignore_case: true
+          - pattern: Adani\s+Ports\s+and\s+Special\s+Economic\s+Zone
+            ignore_case: true
+      ADANIPOWER.NS:
+        name: Adani Power Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ADANIPOWER\.NS
+          - NSE:ADANIPOWER
+          names:
+          - pattern: Adani\s+Power\s+Ltd\.
+            ignore_case: true
+          - pattern: Adani\s+Power
+            ignore_case: true
+      AMBUJACEM.NS:
+        name: Ambuja Cements Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - AMBUJACEM\.NS
+          - NSE:AMBUJACEM
+          names:
+          - pattern: Ambuja\s+Cements\s+Ltd\.
+            ignore_case: true
+          - pattern: Ambuja\s+Cements
+            ignore_case: true
+      APOLLOHOSP.NS:
+        name: Apollo Hospitals Enterprise Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - APOLLOHOSP\.NS
+          - NSE:APOLLOHOSP
+          names:
+          - pattern: Apollo\s+Hospitals\s+Enterprise\s+Ltd\.
+            ignore_case: true
+          - pattern: Apollo\s+Hospitals\s+Enterprise
+            ignore_case: true
+      ASIANPAINT.NS:
+        name: Asian Paints Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ASIANPAINT\.NS
+          - NSE:ASIANPAINT
+          names:
+          - pattern: Asian\s+Paints\s+Ltd\.
+            ignore_case: true
+          - pattern: Asian\s+Paints
+            ignore_case: true
+      DMART.NS:
+        name: Avenue Supermarts Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - DMART\.NS
+          - NSE:DMART
+          names:
+          - pattern: Avenue\s+Supermarts\s+Ltd\.
+            ignore_case: true
+          - pattern: Avenue\s+Supermarts
+            ignore_case: true
+      AXISBANK.NS:
+        name: Axis Bank Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - AXISBANK\.NS
+          - NSE:AXISBANK
+          names:
+          - pattern: Axis\s+Bank\s+Ltd\.
+            ignore_case: true
+          - pattern: Axis\s+Bank
+            ignore_case: true
+      BSE.NS:
+        name: BSE Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BSE\.NS
+          - NSE:BSE
+          names:
+          - pattern: BSE\s+Ltd\.
+            ignore_case: true
+      BAJAJ-AUTO.NS:
+        name: Bajaj Auto Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BAJAJ\-AUTO\.NS
+          - NSE:BAJAJ\-AUTO
+          names:
+          - pattern: Bajaj\s+Auto\s+Ltd\.
+            ignore_case: true
+          - pattern: Bajaj\s+Auto
+            ignore_case: true
+      BAJFINANCE.NS:
+        name: Bajaj Finance Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BAJFINANCE\.NS
+          - NSE:BAJFINANCE
+          names:
+          - pattern: Bajaj\s+Finance\s+Ltd\.
+            ignore_case: true
+          - pattern: Bajaj\s+Finance
+            ignore_case: true
+      BAJAJFINSV.NS:
+        name: Bajaj Finserv Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BAJAJFINSV\.NS
+          - NSE:BAJAJFINSV
+          names:
+          - pattern: Bajaj\s+Finserv\s+Ltd\.
+            ignore_case: true
+          - pattern: Bajaj\s+Finserv
+            ignore_case: true
+      BAJAJHLDNG.NS:
+        name: Bajaj Holdings & Investment Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BAJAJHLDNG\.NS
+          - NSE:BAJAJHLDNG
+          names:
+          - pattern: Bajaj\s+Holdings\s+\&\s+Investment\s+Ltd\.
+            ignore_case: true
+          - pattern: Bajaj\s+Holdings\s+\&\s+Investment
+            ignore_case: true
+      BANKBARODA.NS:
+        name: Bank of Baroda
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BANKBARODA\.NS
+          - NSE:BANKBARODA
+          names:
+          - pattern: Bank\s+of\s+Baroda
+            ignore_case: true
+      BEL.NS:
+        name: Bharat Electronics Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BEL\.NS
+          - NSE:BEL
+          names:
+          - pattern: Bharat\s+Electronics\s+Ltd\.
+            ignore_case: true
+          - pattern: Bharat\s+Electronics
+            ignore_case: true
+      BPCL.NS:
+        name: Bharat Petroleum Corporation Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BPCL\.NS
+          - NSE:BPCL
+          names:
+          - pattern: Bharat\s+Petroleum\s+Corporation\s+Ltd\.
+            ignore_case: true
+          - pattern: Bharat\s+Petroleum\s+Corporation
+            ignore_case: true
+      BHARTIARTL.NS:
+        name: Bharti Airtel Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BHARTIARTL\.NS
+          - NSE:BHARTIARTL
+          names:
+          - pattern: Bharti\s+Airtel\s+Ltd\.
+            ignore_case: true
+          - pattern: Bharti\s+Airtel
+            ignore_case: true
+      BOSCHLTD.NS:
+        name: Bosch Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BOSCHLTD\.NS
+          - NSE:BOSCHLTD
+          names:
+          - pattern: Bosch\s+Ltd\.
+            ignore_case: true
+      BRITANNIA.NS:
+        name: Britannia Industries Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - BRITANNIA\.NS
+          - NSE:BRITANNIA
+          names:
+          - pattern: Britannia\s+Industries\s+Ltd\.
+            ignore_case: true
+          - pattern: Britannia\s+Industries
+            ignore_case: true
+      CGPOWER.NS:
+        name: CG Power and Industrial Solutions Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - CGPOWER\.NS
+          - NSE:CGPOWER
+          names:
+          - pattern: CG\s+Power\s+and\s+Industrial\s+Solutions\s+Ltd\.
+            ignore_case: true
+          - pattern: CG\s+Power\s+and\s+Industrial\s+Solutions
+            ignore_case: true
+      CANBK.NS:
+        name: Canara Bank
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - CANBK\.NS
+          - NSE:CANBK
+          names:
+          - pattern: Canara\s+Bank
+            ignore_case: true
+      CHOLAFIN.NS:
+        name: Cholamandalam Investment and Finance Company Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - CHOLAFIN\.NS
+          - NSE:CHOLAFIN
+          names:
+          - pattern: Cholamandalam\s+Investment\s+and\s+Finance\s+Company\s+Ltd\.
+            ignore_case: true
+          - pattern: Cholamandalam\s+Investment\s+and\s+Finance\s+Company
+            ignore_case: true
+      CIPLA.NS:
+        name: Cipla Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - CIPLA\.NS
+          - NSE:CIPLA
+          names:
+          - pattern: Cipla\s+Ltd\.
+            ignore_case: true
+      COALINDIA.NS:
+        name: Coal India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - COALINDIA\.NS
+          - NSE:COALINDIA
+          names:
+          - pattern: Coal\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Coal\s+India
+            ignore_case: true
+      CUMMINSIND.NS:
+        name: Cummins India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - CUMMINSIND\.NS
+          - NSE:CUMMINSIND
+          names:
+          - pattern: Cummins\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Cummins\s+India
+            ignore_case: true
+      DLF.NS:
+        name: DLF Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - DLF\.NS
+          - NSE:DLF
+          names:
+          - pattern: DLF\s+Ltd\.
+            ignore_case: true
+      DIVISLAB.NS:
+        name: Divi's Laboratories Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - DIVISLAB\.NS
+          - NSE:DIVISLAB
+          names:
+          - pattern: Divi's\s+Laboratories\s+Ltd\.
+            ignore_case: true
+          - pattern: Divi's\s+Laboratories
+            ignore_case: true
+      DRREDDY.NS:
+        name: Dr. Reddy's Laboratories Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - DRREDDY\.NS
+          - NSE:DRREDDY
+          names:
+          - pattern: Dr\.\s+Reddy's\s+Laboratories\s+Ltd\.
+            ignore_case: true
+          - pattern: Dr\.\s+Reddy's\s+Laboratories
+            ignore_case: true
+      EICHERMOT.NS:
+        name: Eicher Motors Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - EICHERMOT\.NS
+          - NSE:EICHERMOT
+          names:
+          - pattern: Eicher\s+Motors\s+Ltd\.
+            ignore_case: true
+          - pattern: Eicher\s+Motors
+            ignore_case: true
+      ETERNAL.NS:
+        name: Eternal Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ETERNAL\.NS
+          - NSE:ETERNAL
+          names:
+          - pattern: Eternal\s+Ltd\.
+            ignore_case: true
+      GAIL.NS:
+        name: GAIL (India) Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - GAIL\.NS
+          - NSE:GAIL
+          names:
+          - pattern: GAIL\s+\(India\)\s+Ltd\.
+            ignore_case: true
+          - pattern: GAIL\s+\(India\)
+            ignore_case: true
+      GODREJCP.NS:
+        name: Godrej Consumer Products Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - GODREJCP\.NS
+          - NSE:GODREJCP
+          names:
+          - pattern: Godrej\s+Consumer\s+Products\s+Ltd\.
+            ignore_case: true
+          - pattern: Godrej\s+Consumer\s+Products
+            ignore_case: true
+      GRASIM.NS:
+        name: Grasim Industries Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - GRASIM\.NS
+          - NSE:GRASIM
+          names:
+          - pattern: Grasim\s+Industries\s+Ltd\.
+            ignore_case: true
+          - pattern: Grasim\s+Industries
+            ignore_case: true
+      HCLTECH.NS:
+        name: HCL Technologies Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - HCLTECH\.NS
+          - NSE:HCLTECH
+          names:
+          - pattern: HCL\s+Technologies\s+Ltd\.
+            ignore_case: true
+          - pattern: HCL\s+Technologies
+            ignore_case: true
+      HDFCAMC.NS:
+        name: HDFC Asset Management Company Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - HDFCAMC\.NS
+          - NSE:HDFCAMC
+          names:
+          - pattern: HDFC\s+Asset\s+Management\s+Company\s+Ltd\.
+            ignore_case: true
+          - pattern: HDFC\s+Asset\s+Management\s+Company
+            ignore_case: true
+      HDFCBANK.NS:
+        name: HDFC Bank Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - HDFCBANK\.NS
+          - NSE:HDFCBANK
+          names:
+          - pattern: HDFC\s+Bank\s+Ltd\.
+            ignore_case: true
+          - pattern: HDFC\s+Bank
+            ignore_case: true
+      HDFCLIFE.NS:
+        name: HDFC Life Insurance Company Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - HDFCLIFE\.NS
+          - NSE:HDFCLIFE
+          names:
+          - pattern: HDFC\s+Life\s+Insurance\s+Company\s+Ltd\.
+            ignore_case: true
+          - pattern: HDFC\s+Life\s+Insurance\s+Company
+            ignore_case: true
+      HINDALCO.NS:
+        name: Hindalco Industries Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - HINDALCO\.NS
+          - NSE:HINDALCO
+          names:
+          - pattern: Hindalco\s+Industries\s+Ltd\.
+            ignore_case: true
+          - pattern: Hindalco\s+Industries
+            ignore_case: true
+      HAL.NS:
+        name: Hindustan Aeronautics Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - HAL\.NS
+          - NSE:HAL
+          names:
+          - pattern: Hindustan\s+Aeronautics\s+Ltd\.
+            ignore_case: true
+          - pattern: Hindustan\s+Aeronautics
+            ignore_case: true
+      HINDUNILVR.NS:
+        name: Hindustan Unilever Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - HINDUNILVR\.NS
+          - NSE:HINDUNILVR
+          names:
+          - pattern: Hindustan\s+Unilever\s+Ltd\.
+            ignore_case: true
+          - pattern: Hindustan\s+Unilever
+            ignore_case: true
+      HINDZINC.NS:
+        name: Hindustan Zinc Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - HINDZINC\.NS
+          - NSE:HINDZINC
+          names:
+          - pattern: Hindustan\s+Zinc\s+Ltd\.
+            ignore_case: true
+          - pattern: Hindustan\s+Zinc
+            ignore_case: true
+      POWERINDIA.NS:
+        name: Hitachi Energy India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - POWERINDIA\.NS
+          - NSE:POWERINDIA
+          names:
+          - pattern: Hitachi\s+Energy\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Hitachi\s+Energy\s+India
+            ignore_case: true
+      HYUNDAI.NS:
+        name: Hyundai Motor India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - HYUNDAI\.NS
+          - NSE:HYUNDAI
+          names:
+          - pattern: Hyundai\s+Motor\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Hyundai\s+Motor\s+India
+            ignore_case: true
+      ICICIBANK.NS:
+        name: ICICI Bank Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ICICIBANK\.NS
+          - NSE:ICICIBANK
+          names:
+          - pattern: ICICI\s+Bank\s+Ltd\.
+            ignore_case: true
+          - pattern: ICICI\s+Bank
+            ignore_case: true
+      ITC.NS:
+        name: ITC Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ITC\.NS
+          - NSE:ITC
+          names:
+          - pattern: ITC\s+Ltd\.
+            ignore_case: true
+      IOC.NS:
+        name: Indian Oil Corporation Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - IOC\.NS
+          - NSE:IOC
+          names:
+          - pattern: Indian\s+Oil\s+Corporation\s+Ltd\.
+            ignore_case: true
+          - pattern: Indian\s+Oil\s+Corporation
+            ignore_case: true
+      IRFC.NS:
+        name: Indian Railway Finance Corporation Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - IRFC\.NS
+          - NSE:IRFC
+          names:
+          - pattern: Indian\s+Railway\s+Finance\s+Corporation\s+Ltd\.
+            ignore_case: true
+          - pattern: Indian\s+Railway\s+Finance\s+Corporation
+            ignore_case: true
+      INFY.NS:
+        name: Infosys Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - INFY\.NS
+          - NSE:INFY
+          names:
+          - pattern: Infosys\s+Ltd\.
+            ignore_case: true
+      INDIGO.NS:
+        name: InterGlobe Aviation Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - INDIGO\.NS
+          - NSE:INDIGO
+          names:
+          - pattern: InterGlobe\s+Aviation\s+Ltd\.
+            ignore_case: true
+          - pattern: InterGlobe\s+Aviation
+            ignore_case: true
+      JSWSTEEL.NS:
+        name: JSW Steel Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - JSWSTEEL\.NS
+          - NSE:JSWSTEEL
+          names:
+          - pattern: JSW\s+Steel\s+Ltd\.
+            ignore_case: true
+          - pattern: JSW\s+Steel
+            ignore_case: true
+      JINDALSTEL.NS:
+        name: Jindal Steel Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - JINDALSTEL\.NS
+          - NSE:JINDALSTEL
+          names:
+          - pattern: Jindal\s+Steel\s+Ltd\.
+            ignore_case: true
+          - pattern: Jindal\s+Steel
+            ignore_case: true
+      JIOFIN.NS:
+        name: Jio Financial Services Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - JIOFIN\.NS
+          - NSE:JIOFIN
+          names:
+          - pattern: Jio\s+Financial\s+Services\s+Ltd\.
+            ignore_case: true
+          - pattern: Jio\s+Financial\s+Services
+            ignore_case: true
+      KOTAKBANK.NS:
+        name: Kotak Mahindra Bank Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - KOTAKBANK\.NS
+          - NSE:KOTAKBANK
+          names:
+          - pattern: Kotak\s+Mahindra\s+Bank\s+Ltd\.
+            ignore_case: true
+          - pattern: Kotak\s+Mahindra\s+Bank
+            ignore_case: true
+      LTM.NS:
+        name: LTM Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - LTM\.NS
+          - NSE:LTM
+          names:
+          - pattern: LTM\s+Ltd\.
+            ignore_case: true
+      LT.NS:
+        name: Larsen & Toubro Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - LT\.NS
+          - NSE:LT
+          names:
+          - pattern: Larsen\s+\&\s+Toubro\s+Ltd\.
+            ignore_case: true
+          - pattern: Larsen\s+\&\s+Toubro
+            ignore_case: true
+      M&M.NS:
+        name: Mahindra & Mahindra Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - M\&M\.NS
+          - NSE:M\&M
+          names:
+          - pattern: Mahindra\s+\&\s+Mahindra\s+Ltd\.
+            ignore_case: true
+          - pattern: Mahindra\s+\&\s+Mahindra
+            ignore_case: true
+      MARUTI.NS:
+        name: Maruti Suzuki India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - MARUTI\.NS
+          - NSE:MARUTI
+          names:
+          - pattern: Maruti\s+Suzuki\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Maruti\s+Suzuki\s+India
+            ignore_case: true
+      MAXHEALTH.NS:
+        name: Max Healthcare Institute Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - MAXHEALTH\.NS
+          - NSE:MAXHEALTH
+          names:
+          - pattern: Max\s+Healthcare\s+Institute\s+Ltd\.
+            ignore_case: true
+          - pattern: Max\s+Healthcare\s+Institute
+            ignore_case: true
+      MAZDOCK.NS:
+        name: Mazagoan Dock Shipbuilders Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - MAZDOCK\.NS
+          - NSE:MAZDOCK
+          names:
+          - pattern: Mazagoan\s+Dock\s+Shipbuilders\s+Ltd\.
+            ignore_case: true
+          - pattern: Mazagoan\s+Dock\s+Shipbuilders
+            ignore_case: true
+      MUTHOOTFIN.NS:
+        name: Muthoot Finance Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - MUTHOOTFIN\.NS
+          - NSE:MUTHOOTFIN
+          names:
+          - pattern: Muthoot\s+Finance\s+Ltd\.
+            ignore_case: true
+          - pattern: Muthoot\s+Finance
+            ignore_case: true
+      NTPC.NS:
+        name: NTPC Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - NTPC\.NS
+          - NSE:NTPC
+          names:
+          - pattern: NTPC\s+Ltd\.
+            ignore_case: true
+      NESTLEIND.NS:
+        name: Nestle India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - NESTLEIND\.NS
+          - NSE:NESTLEIND
+          names:
+          - pattern: Nestle\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Nestle\s+India
+            ignore_case: true
+      ONGC.NS:
+        name: Oil & Natural Gas Corporation Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ONGC\.NS
+          - NSE:ONGC
+          names:
+          - pattern: Oil\s+\&\s+Natural\s+Gas\s+Corporation\s+Ltd\.
+            ignore_case: true
+          - pattern: Oil\s+\&\s+Natural\s+Gas\s+Corporation
+            ignore_case: true
+      PIDILITIND.NS:
+        name: Pidilite Industries Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - PIDILITIND\.NS
+          - NSE:PIDILITIND
+          names:
+          - pattern: Pidilite\s+Industries\s+Ltd\.
+            ignore_case: true
+          - pattern: Pidilite\s+Industries
+            ignore_case: true
+      POLYCAB.NS:
+        name: Polycab India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - POLYCAB\.NS
+          - NSE:POLYCAB
+          names:
+          - pattern: Polycab\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Polycab\s+India
+            ignore_case: true
+      PFC.NS:
+        name: Power Finance Corporation Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - PFC\.NS
+          - NSE:PFC
+          names:
+          - pattern: Power\s+Finance\s+Corporation\s+Ltd\.
+            ignore_case: true
+          - pattern: Power\s+Finance\s+Corporation
+            ignore_case: true
+      POWERGRID.NS:
+        name: Power Grid Corporation of India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - POWERGRID\.NS
+          - NSE:POWERGRID
+          names:
+          - pattern: Power\s+Grid\s+Corporation\s+of\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Power\s+Grid\s+Corporation\s+of\s+India
+            ignore_case: true
+      PNB.NS:
+        name: Punjab National Bank
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - PNB\.NS
+          - NSE:PNB
+          names:
+          - pattern: Punjab\s+National\s+Bank
+            ignore_case: true
+      RELIANCE.NS:
+        name: Reliance Industries Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - RELIANCE\.NS
+          - NSE:RELIANCE
+          names:
+          - pattern: Reliance\s+Industries\s+Ltd\.
+            ignore_case: true
+          - pattern: Reliance\s+Industries
+            ignore_case: true
+          contextual_name:
+            word: (?:RIL|Reliance)(?!\s+(?:Power|Capital|Infrastructure|Communications|Retail|Jio)\b)
+            strong: (?:RIL|Reliance)\s+(?:stock|shares|results|dividend|earnings)\b
+            context_terms:
+            - Reliance Industries
+      SBILIFE.NS:
+        name: SBI Life Insurance Company Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - SBILIFE\.NS
+          - NSE:SBILIFE
+          names:
+          - pattern: SBI\s+Life\s+Insurance\s+Company\s+Ltd\.
+            ignore_case: true
+          - pattern: SBI\s+Life\s+Insurance\s+Company
+            ignore_case: true
+      MOTHERSON.NS:
+        name: Samvardhana Motherson International Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - MOTHERSON\.NS
+          - NSE:MOTHERSON
+          names:
+          - pattern: Samvardhana\s+Motherson\s+International\s+Ltd\.
+            ignore_case: true
+          - pattern: Samvardhana\s+Motherson\s+International
+            ignore_case: true
+      SHRIRAMFIN.NS:
+        name: Shriram Finance Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - SHRIRAMFIN\.NS
+          - NSE:SHRIRAMFIN
+          names:
+          - pattern: Shriram\s+Finance\s+Ltd\.
+            ignore_case: true
+          - pattern: Shriram\s+Finance
+            ignore_case: true
+      ENRIN.NS:
+        name: Siemens Energy India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ENRIN\.NS
+          - NSE:ENRIN
+          names:
+          - pattern: Siemens\s+Energy\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Siemens\s+Energy\s+India
+            ignore_case: true
+      SIEMENS.NS:
+        name: Siemens Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - SIEMENS\.NS
+          - NSE:SIEMENS
+          names:
+          - pattern: Siemens\s+Ltd\.
+            ignore_case: true
+      SOLARINDS.NS:
+        name: Solar Industries India Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - SOLARINDS\.NS
+          - NSE:SOLARINDS
+          names:
+          - pattern: Solar\s+Industries\s+India\s+Ltd\.
+            ignore_case: true
+          - pattern: Solar\s+Industries\s+India
+            ignore_case: true
+      SBIN.NS:
+        name: State Bank of India
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - SBIN\.NS
+          - NSE:SBIN
+          names:
+          - pattern: State\s+Bank\s+of\s+India
+            ignore_case: true
+          contextual_name:
+            word: SBI(?!\s+(?:Life|Cards?|Mutual|Funds?|Capital|Securities)\b)
+            strong: SBI\s+(?:stock|shares|results|dividend|earnings)\b
+            context_terms:
+            - State Bank of India
+      SUNPHARMA.NS:
+        name: Sun Pharmaceutical Industries Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - SUNPHARMA\.NS
+          - NSE:SUNPHARMA
+          names:
+          - pattern: Sun\s+Pharmaceutical\s+Industries\s+Ltd\.
+            ignore_case: true
+          - pattern: Sun\s+Pharmaceutical\s+Industries
+            ignore_case: true
+      TVSMOTOR.NS:
+        name: TVS Motor Company Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TVSMOTOR\.NS
+          - NSE:TVSMOTOR
+          names:
+          - pattern: TVS\s+Motor\s+Company\s+Ltd\.
+            ignore_case: true
+          - pattern: TVS\s+Motor\s+Company
+            ignore_case: true
+      TATACAP.NS:
+        name: Tata Capital Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TATACAP\.NS
+          - NSE:TATACAP
+          names:
+          - pattern: Tata\s+Capital\s+Ltd\.
+            ignore_case: true
+          - pattern: Tata\s+Capital
+            ignore_case: true
+      TCS.NS:
+        name: Tata Consultancy Services Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TCS\.NS
+          - NSE:TCS
+          names:
+          - pattern: Tata\s+Consultancy\s+Services\s+Ltd\.
+            ignore_case: true
+          - pattern: Tata\s+Consultancy\s+Services
+            ignore_case: true
+          contextual_name:
+            word: TCS
+            strong: TCS\s+(?:stock|shares|results|dividend|earnings)\b
+            context_terms:
+            - Tata Consultancy Services
+      TATACONSUM.NS:
+        name: Tata Consumer Products Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TATACONSUM\.NS
+          - NSE:TATACONSUM
+          names:
+          - pattern: Tata\s+Consumer\s+Products\s+Ltd\.
+            ignore_case: true
+          - pattern: Tata\s+Consumer\s+Products
+            ignore_case: true
+      TMCV.NS:
+        name: Tata Motors Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TMCV\.NS
+          - NSE:TMCV
+          names:
+          - pattern: Tata\s+Motors\s+Ltd\.
+            ignore_case: true
+      TMPV.NS:
+        name: Tata Motors Passenger Vehicles Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TMPV\.NS
+          - NSE:TMPV
+          names:
+          - pattern: Tata\s+Motors\s+Passenger\s+Vehicles\s+Ltd\.
+            ignore_case: true
+          - pattern: Tata\s+Motors\s+Passenger\s+Vehicles
+            ignore_case: true
+      TATAPOWER.NS:
+        name: Tata Power Co. Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TATAPOWER\.NS
+          - NSE:TATAPOWER
+          names:
+          - pattern: Tata\s+Power\s+Co\.\s+Ltd\.
+            ignore_case: true
+          - pattern: Tata\s+Power\s+Co\.
+            ignore_case: true
+      TATASTEEL.NS:
+        name: Tata Steel Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TATASTEEL\.NS
+          - NSE:TATASTEEL
+          names:
+          - pattern: Tata\s+Steel\s+Ltd\.
+            ignore_case: true
+          - pattern: Tata\s+Steel
+            ignore_case: true
+      TECHM.NS:
+        name: Tech Mahindra Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TECHM\.NS
+          - NSE:TECHM
+          names:
+          - pattern: Tech\s+Mahindra\s+Ltd\.
+            ignore_case: true
+          - pattern: Tech\s+Mahindra
+            ignore_case: true
+      TITAN.NS:
+        name: Titan Company Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TITAN\.NS
+          - NSE:TITAN
+          names:
+          - pattern: Titan\s+Company\s+Ltd\.
+            ignore_case: true
+          - pattern: Titan\s+Company
+            ignore_case: true
+      TORNTPHARM.NS:
+        name: Torrent Pharmaceuticals Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TORNTPHARM\.NS
+          - NSE:TORNTPHARM
+          names:
+          - pattern: Torrent\s+Pharmaceuticals\s+Ltd\.
+            ignore_case: true
+          - pattern: Torrent\s+Pharmaceuticals
+            ignore_case: true
+      TRENT.NS:
+        name: Trent Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - TRENT\.NS
+          - NSE:TRENT
+          names:
+          - pattern: Trent\s+Ltd\.
+            ignore_case: true
+      ULTRACEMCO.NS:
+        name: UltraTech Cement Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ULTRACEMCO\.NS
+          - NSE:ULTRACEMCO
+          names:
+          - pattern: UltraTech\s+Cement\s+Ltd\.
+            ignore_case: true
+          - pattern: UltraTech\s+Cement
+            ignore_case: true
+      UNIONBANK.NS:
+        name: Union Bank of India
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - UNIONBANK\.NS
+          - NSE:UNIONBANK
+          names:
+          - pattern: Union\s+Bank\s+of\s+India
+            ignore_case: true
+      VBL.NS:
+        name: Varun Beverages Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - VBL\.NS
+          - NSE:VBL
+          names:
+          - pattern: Varun\s+Beverages\s+Ltd\.
+            ignore_case: true
+          - pattern: Varun\s+Beverages
+            ignore_case: true
+      VAML.NS:
+        name: Vedanta Aluminium Metal Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - VAML\.NS
+          - NSE:VAML
+          names:
+          - pattern: Vedanta\s+Aluminium\s+Metal\s+Ltd\.
+            ignore_case: true
+          - pattern: Vedanta\s+Aluminium\s+Metal
+            ignore_case: true
+      VEDL.NS:
+        name: Vedanta Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - VEDL\.NS
+          - NSE:VEDL
+          names:
+          - pattern: Vedanta\s+Ltd\.
+            ignore_case: true
+      IDEA.NS:
+        name: Vodafone Idea Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - IDEA\.NS
+          - NSE:IDEA
+          names:
+          - pattern: Vodafone\s+Idea\s+Ltd\.
+            ignore_case: true
+          - pattern: Vodafone\s+Idea
+            ignore_case: true
+      WIPRO.NS:
+        name: Wipro Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - WIPRO\.NS
+          - NSE:WIPRO
+          names:
+          - pattern: Wipro\s+Ltd\.
+            ignore_case: true
+      ZYDUSLIFE.NS:
+        name: Zydus Lifesciences Ltd.
+        reddit:
+          product: []
+          stock: []
+        match:
+          symbols:
+          - ZYDUSLIFE\.NS
+          - NSE:ZYDUSLIFE
+          names:
+          - pattern: Zydus\s+Lifesciences\s+Ltd\.
+            ignore_case: true
+          - pattern: Zydus\s+Lifesciences
+            ignore_case: true
