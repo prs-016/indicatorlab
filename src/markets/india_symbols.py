@@ -40,7 +40,6 @@ INDIA_SUBREDDITS = (
     "IndianStockMarket",
     "IndiaInvestments",
     "IndianStreetBets",
-    "DalalStreetTalks",
 )
 
 

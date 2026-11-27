@@ -199,10 +199,9 @@ def test_n1_acceptance_every_company_has_a_verified_english_title():
     ), f"Missing verified English Wikipedia titles: {', '.join(missing)}"
 
 
-def test_india_subreddits_are_the_four_verified_communities():
+def test_india_subreddits_match_the_enabled_reddit_communities():
     assert subject.INDIA_SUBREDDITS == (
         "IndianStockMarket",
         "IndiaInvestments",
         "IndianStreetBets",
-        "DalalStreetTalks",
     )

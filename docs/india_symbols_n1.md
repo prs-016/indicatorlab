@@ -35,7 +35,9 @@ Group, Siemens, or Tata Sons. These redirects represent broader entities.
 The check does not establish that no alternative article exists. Keep
 these rows open for entity-level review. [PR #6 coverage ledger](https://github.com/prs-016/indicatorlab/pull/6)
 
-All four `INDIA_SUBREDDITS` have 2026 posts verified via Joshua's
+The three active `INDIA_SUBREDDITS` match PR #5: IndianStockMarket,
+IndiaInvestments and IndianStreetBets. The historical DalalStreetTalks
+witness remains below for reference. All four witnesses were verified via Joshua's
 `ArcticShiftClient` and `posts/search`. Each witness used a bounded
 one-post request and an in-range `created_utc`.
 
@@ -44,7 +46,7 @@ one-post request and an in-range `created_utc`.
 | IndianStockMarket | `1q0rhav` | `1767227534` |
 | IndiaInvestments | `1q0u51l` | `1767236456` |
 | IndianStreetBets | `1q0qvqi` | `1767225657` |
-| DalalStreetTalks | `1q0vo70` | `1767241726` |
+| DalalStreetTalks (historical only) | `1q0vo70` | `1767241726` |
 
 This verifies 2026 activity for N1. The separate Week 3 archive-volume
 threshold and Joshua's active configuration retain their own evidence.
