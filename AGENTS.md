@@ -504,3 +504,36 @@ The workspace suite passed 353 tests; the indexed-only export independently
 passed 353 tests with the external Vibe checkout supplied. Bundle verification
 and staged whitespace checks pass; original scientific/history files are intact.
 This is staging approval only, not permission to commit, push, PR or merge.
+
+### Strategies 11–15: approved Qlib158 single diagnostics
+
+`src/india_qlib_factors.py` integrates the unchanged original Vibe
+`qlib158_std20`, `qlib158_rsv20`, `qlib158_sump20`, `qlib158_wvma20` and
+`qlib158_cord10`. It reuses the isolated worker protocol and India validation;
+no Microsoft Qlib installation is needed. Declared warm-ups remain 20/20/20/20/10;
+effective input lengths are 20/20/21/21/11 rows. The common 25 prior sessions cover
+all five. Formula, direction, metadata, safe division and NaNs stay upstream.
+`tests/test_india_qlib_factors.py` uses reused, explicitly synthetic fixtures for
+formulas, windows, causality, dependencies, volume units, timing and scoped gates.
+
+The current user approved one conditional PROVISIONAL diagnostic per factor on
+research_v4 with unchanged portfolio settings. `src/india_qlib_diagnostic.py`
+loads/verifies shared data once, computes each original real-data factor once,
+saves scores, and uses the saved cache for readiness and portfolio accounting.
+A material readiness failure saves an unrun/N/A outcome. The dataset/review-bound
+exception waives only exhaustive calendar-inventory certainty; material calendar,
+input, cutoff, all-eight eligibility and unique top-two checks remain enforced.
+The first ten strategies, reports and submission package are preserved. This
+approval does not permit repeats, formula tuning, final decisions or publication.
+
+The five Qlib158 approvals are now consumed: all passed complete finite/unique
+signal gates and completed one PROVISIONAL portfolio each in
+`results/india_qlib158_PROVISIONAL_20261101T212235Z_dfdc1a41/`. Scores were computed
+once per real-data factor and cached; do not rerun without fresh approval.
+The complete suite passed 388 cases (353 prior + 35 new) in 64.79 seconds;
+all 1,293 protected pre-existing files matched their before-task hashes.
+See `india_research/reports/india_strategies_11_15_PROVISIONAL_20261101T212235Z.md`
+and its new Strategy Log. All five underperformed the saved benchmark in net
+return and Sharpe; no final decisions follow. The old ten-strategy evidence and
+portable submission package remain unchanged. Only parent CSV round-trip parsing
+emitted a deprecation warning; original factor numerical warnings were zero.
