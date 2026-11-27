@@ -61,7 +61,7 @@ def india_names(*, include_parent_proxies: bool = False) -> dict[str, dict]:
     """Return an independent metadata mapping keyed by tracked .NS symbols.
 
     By default, titles identify the listed company. Set include_parent_proxies
-    to also return approved English parent titles. Unresolved titles stay None.
+    to also return approved English parent and group titles. Unresolved titles stay None.
     Untracked stocks have no local entry.
     """
     titles = load_india_titles().current_titles(

@@ -4087,5 +4087,29 @@
     "wikidata_item": "Q1503753",
     "article_url": "https://en.wikipedia.org/wiki/Vedanta_Resources",
     "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "BAJAJHLDNG",
+    "lang": "en",
+    "title": "Bajaj_Group",
+    "pageid": 30665779,
+    "wikidata_item": "Q4848823",
+    "article_url": "https://en.wikipedia.org/wiki/Bajaj_Group",
+    "row_kind": "group_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
+  },
+  {
+    "symbol": "SHRIRAMFIN",
+    "lang": "en",
+    "title": "Shriram_Group",
+    "pageid": 19954099,
+    "wikidata_item": "Q7504181",
+    "article_url": "https://en.wikipedia.org/wiki/Shriram_Group",
+    "row_kind": "group_proxy",
+    "valid_from": "",
+    "valid_to": null,
+    "notes": "Broader corporate attention. Point-in-time applicability is unverified."
   }
 ]

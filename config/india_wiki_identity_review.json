@@ -420,6 +420,7 @@
     "decisions": [
       {
         "symbol": "ABB",
+        "company_name": "ABB India Ltd.",
         "status": "parent_proxy",
         "parent": "ABB Ltd",
         "title": "ABB",
@@ -447,6 +448,7 @@
       },
       {
         "symbol": "BOSCHLTD",
+        "company_name": "Bosch Ltd.",
         "status": "parent_proxy",
         "parent": "Robert Bosch GmbH",
         "title": "Bosch_(company)",
@@ -468,6 +470,7 @@
       },
       {
         "symbol": "CUMMINSIND",
+        "company_name": "Cummins India Ltd.",
         "status": "parent_proxy",
         "parent": "Cummins Inc.",
         "title": "Cummins",
@@ -489,6 +492,7 @@
       },
       {
         "symbol": "HDFCAMC",
+        "company_name": "HDFC Asset Management Company Ltd.",
         "status": "parent_proxy",
         "parent": "HDFC Bank Limited",
         "title": "HDFC_Bank",
@@ -510,6 +514,7 @@
       },
       {
         "symbol": "POWERINDIA",
+        "company_name": "Hitachi Energy India Ltd.",
         "status": "parent_proxy",
         "parent": "Hitachi Energy Ltd",
         "title": "Hitachi_Energy",
@@ -537,6 +542,7 @@
       },
       {
         "symbol": "ENRIN",
+        "company_name": "Siemens Energy India Ltd.",
         "status": "parent_proxy",
         "parent": "Siemens AG",
         "title": "Siemens",
@@ -559,6 +565,7 @@
       },
       {
         "symbol": "SIEMENS",
+        "company_name": "Siemens Ltd.",
         "status": "parent_proxy",
         "parent": "Siemens AG",
         "title": "Siemens",
@@ -586,6 +593,7 @@
       },
       {
         "symbol": "TATACAP",
+        "company_name": "Tata Capital Ltd.",
         "status": "parent_proxy",
         "parent": "Tata Sons Private Limited",
         "title": "Tata_Sons",
@@ -607,6 +615,7 @@
       },
       {
         "symbol": "VAML",
+        "company_name": "Vedanta Aluminium Metal Ltd.",
         "status": "parent_proxy",
         "parent": "Vedanta Resources Limited",
         "title": "Vedanta_Resources",
@@ -625,6 +634,64 @@
           "status": 200,
           "sample_days": 3
         }
+      }
+    ]
+  },
+  "group_proxy_review": {
+    "reviewed_on": "2026-11-27",
+    "scope": "Group affiliation verified from issuer sources. Pageviews and edits measure broader corporate attention across the group. Sample retrieval does not certify historical coverage. SOLARINDS has no article mapping.",
+    "revision_api": "https://en.wikipedia.org/w/api.php",
+    "decisions": [
+      {
+        "symbol": "BAJAJHLDNG",
+        "lang": "en",
+        "title": "Bajaj_Group",
+        "pageid": 30665779,
+        "wikidata_item": "Q4848823",
+        "article_url": "https://en.wikipedia.org/wiki/Bajaj_Group",
+        "company_name": "Bajaj Holdings & Investment Ltd.",
+        "status": "group_proxy",
+        "relationship": "Bajaj Holdings & Investment identifies itself as the flagship of the Bajaj group of companies. The article is about the group as a whole.",
+        "relationship_source": "https://www.bhil.in/about-bajaj.html",
+        "public_revision": {
+          "revid": 1387980835,
+          "parentid": 1380013260,
+          "timestamp": "2026-11-26T06:26:09Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Bajaj_Group/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SHRIRAMFIN",
+        "lang": "en",
+        "title": "Shriram_Group",
+        "pageid": 19954099,
+        "wikidata_item": "Q7504181",
+        "article_url": "https://en.wikipedia.org/wiki/Shriram_Group",
+        "company_name": "Shriram Finance Ltd.",
+        "status": "group_proxy",
+        "relationship": "Shriram Finance identifies itself as part of Shriram Group. The article is about the conglomerate as a whole.",
+        "relationship_source": "https://www.shriramfinance.in/media-resources",
+        "public_revision": {
+          "revid": 1365181792,
+          "parentid": 1359484760,
+          "timestamp": "2026-07-20T20:15:27Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Shriram_Group/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SOLARINDS",
+        "company_name": "Solar Industries India Ltd.",
+        "status": "WIKIPEDIA_UNAVAILABLE",
+        "reason": "No dedicated or suitable parent or group article was verified. Solar Defence and Aerospace Limited is a subsidiary of Solar Industries India Limited, so its article is excluded.",
+        "relationship_source": "https://nsearchives.nseindia.com/corporate/SOLARINDS_27062025221237_signedSolarIA.pdf"
       }
     ]
   }

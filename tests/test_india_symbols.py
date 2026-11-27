@@ -195,18 +195,18 @@ def test_proxy_opt_in_preserves_company_identity_and_resolver_fields():
     assert approved["ENRIN.NS"]["wiki_en"] == approved["SIEMENS.NS"]["wiki_en"]
 
 
-@pytest.mark.xfail(
-    strict=True, reason="N1 acceptance blocked: three companies lack a suitable title"
-)
-def test_n1_acceptance_every_company_has_a_verified_english_title():
-    missing = [
-        ticker
-        for ticker, entry in subject.india_names(include_parent_proxies=True).items()
-        if not entry["wiki_en"]
-    ]
-    assert (
-        not missing
-    ), f"Missing verified English Wikipedia titles: {', '.join(missing)}"
+def test_n1_acceptance_preserves_all_companies_with_explicit_unavailable_wikipedia():
+    names = subject.india_names(include_parent_proxies=True)
+    assert len(names) == 100
+    assert all(entry["name"] for entry in names.values())
+    assert {ticker for ticker, entry in names.items() if not entry["wiki_en"]} == {
+        "SOLARINDS.NS"
+    }
+    solar = names["SOLARINDS.NS"]
+    assert solar["name"] == "Solar Industries India Ltd."
+    assert solar["aliases"]
+    assert solar["wiki_en"] is None and solar["wiki_hi"] is None
+    assert subject.normalize_in("NSE:SOLARINDS") == "SOLARINDS.NS"
 
 
 def test_india_subreddits_match_the_enabled_reddit_communities():

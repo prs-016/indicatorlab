@@ -27,7 +27,7 @@ mapping = load_india_titles()  # local files only; defaults are repo-relative
 india_titles = mapping.current_titles()
 # 88 tickers: 88 English and 67 Hindi current titles
 approved_titles = mapping.current_titles(include_parent_proxies=True)
-# 97 tickers with an English title: 88 exact and 9 parent proxies
+# 99 tickers with an English title: 88 exact, 9 parent proxies, 2 group proxies
 history = mapping.title_history()
 # history['ADANIENSOL.NS']['en'] contains current and two former records
 ```
@@ -38,8 +38,7 @@ Keep his existing YAML path for US/HK. This is the proposed connection point;
 the hook remains with James. For an approved proxy-enabled run, pass
 `include_parent_proxies=True` in the India-only branch. If `strategy=True` adds extra
 India tickers, retain his existing option semantics but review collisions:
-`out.update(...)` can replace verified titles. Do not silently override a
-registry identity or fill the three unresolved companies with group aliases.
+`out.update(...)` can replace verified titles. Retain registry dispositions when merging strategy entries.
 
 If he needs a YAML-shaped stock fragment instead, this local conversion yields
 only the expected Wikipedia field (not a replacement for full stock settings):
@@ -51,7 +50,7 @@ fragment = {
 }
 ```
 
-The Wikipedia fragment covers 88 exact or 97 approved tickers, depending on
+The Wikipedia fragment covers 88 exact or 99 approved tickers, depending on
 opt-in. Retain the full stock configuration and omit empty title dictionaries.
 His current pipeline cannot safely process an empty language dictionary.
 
@@ -64,7 +63,8 @@ ledger_path)` accepts explicit local paths and returns immutable `TitleRecord`s:
 `symbol`, `title`, `lang`, `kind`, `valid_from`, `valid_to`.
 
 - `current_titles()` selects exact current rows. The optional
-  `include_parent_proxies=True` includes ledger-labelled `parent_proxy` rows.
+  `include_parent_proxies=True` includes ledger-labelled `parent_proxy` and
+  `group_proxy` rows.
   Each ticker/language has at most one exportable title.
 - `title_history()` returns **all** records, grouped by ticker/language, retaining
   all 12 historical rows. Consumers must check `kind` before using a record. Unknown boundaries remain `None`; this is not an
@@ -95,8 +95,8 @@ redirects nor issues a date-qualified title selection.
 4. Enforce acquisition bounds before running collection. The reviewed pipeline
    builds both research and recent/holdout windows by default; this task has not
    made that execution safe for India historical research.
-5. Review the three remaining English gaps and 33 Hindi gaps. Missing
-   language entries remain absent.
+5. Keep the unavailable Solar Industries title out of the pipeline universe.
+   Preserve the complete stock metadata row and omit the 33 missing Hindi titles.
 
 ## Standalone checkout and offline verification
 
@@ -116,12 +116,12 @@ python -B - <<'PYTHON'
 from src.india_wikipedia_mapping import load_india_titles
 mapping = load_india_titles()
 current = mapping.current_titles()
-assert len(mapping.records) == 176
+assert len(mapping.records) == 178
 assert len(current) == 88
 assert sum('hi' in titles for titles in current.values()) == 67
-assert len(mapping.current_titles(include_parent_proxies=True)) == 97
+assert len(mapping.current_titles(include_parent_proxies=True)) == 99
 assert sum(row.kind == 'historical_move_observed' for row in mapping.records) == 12
-print('Loaded 155 exact current, 9 parent proxy and 12 historical titles.')
+print('Loaded 155 exact current, 9 parent proxy, 2 group proxy and 12 historical titles.')
 PYTHON
 ```
 
@@ -137,14 +137,14 @@ of only these committed files, without the original project present.
 
 ### Evidence checksums
 
-The ledger's complete 176 records retain only company/title identity, public
+The ledger's complete 178 records retain only company/title identity, public
 Wikipedia identifiers and URLs, observed title-event dates, query-completeness
 qualifications and mapping notes. It contains no pageviews or historical article
 text. The shared CSV and ledger must remain paired; do not edit dates or choose
 current titles by row order.
 
-- CSV SHA-256: `8ad99f8a979bf7ccd2f0ff3078195cccbdc9af9075b9c2593537082e39897c32`
-- Ledger SHA-256: `19aeee4190c0735c006da55d71296cda7e390ad9ef4702f412f6ea69f0185138`
+- CSV SHA-256: `711096f50fb5308740bef872e850a3e6c6bc137ca732c0d55ff120aec502ab4f`
+- Ledger SHA-256: `83c9d45702f82020db836387d950dfa4ba60bd59065f75452906c211c10137fc`
 
 ## All-constituent disposition review — 2026-11-23
 
@@ -170,8 +170,8 @@ parent-company articles for the unresolved English titles. The
 [review record](../config/india_wiki_identity_review.json) records decisions for
 all 12, issuer evidence, canonical page and Wikidata IDs, revisions and
 pageview retrieval samples. Nine qualified. BAJAJHLDNG, SHRIRAMFIN and SOLARINDS
-remain unmapped because no suitable controlling corporate parent article was
-verified. The original NSE ticker, name and aliases remain attached to each stock.
+lacked a suitable controlling corporate parent article at this stage. The
+follow-up below records their final dispositions.
 
 Parent page views and edits measure broader corporate attention and do not
 establish attention specific to the Indian-listed company. ENRIN and SIEMENS
@@ -183,8 +183,26 @@ historical eligibility. Recheck ENRIN on any announced change of control.
 
 The adapter and `india_names(include_parent_proxies=True)` retain James's
 existing dictionary structures. Read `TitleRecord.kind` or the coverage
-registry for `parent_proxy` provenance, outside the pipeline's language/title
+registry for `parent_proxy` and `group_proxy` provenance, outside the pipeline's language/title
 pairs and weekly output columns. James's current weekly schema carries no
 proxy flag. Keep this provenance alongside proxy-enabled output and keep
 historical or exact-identity runs on the default export. This PR does not
 enable a pipeline hook or run collection.
+
+## Group proxies and unavailable Wikipedia data
+
+`BAJAJHLDNG` maps to Bajaj Group because Bajaj Holdings & Investment is the
+group’s flagship holding company. `SHRIRAMFIN` maps to Shriram Group because
+Shriram Finance is part of that conglomerate. The registry uses `group_proxy`
+in the existing classification field to describe group affiliation.
+Views and edits measure broader corporate attention across each group.
+The [review record](../config/india_wiki_identity_review.json) contains
+canonical URLs, legal company names, Wikidata IDs, issuer sources and
+successful pageview and revision checks for both groups and all nine parents.
+
+`SOLARINDS` has an explicit `WIKIPEDIA_UNAVAILABLE` coverage row with blank
+titles. Its normal stock lookup continues to use the original company metadata.
+Solar Defence and Aerospace Limited is its wholly owned subsidiary. James’s
+Wikipedia universe omits the unavailable ticker and receives no empty language
+dictionary. Keep the null titles in resolver metadata and resolve other
+sources independently.

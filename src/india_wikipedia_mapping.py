@@ -14,7 +14,8 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CSV = ROOT / "config/india_wiki_titles.csv"
 DEFAULT_LEDGER = ROOT / "config/india_wiki_mapping_ledger.json"
 FIELDS = ["symbol", "title", "lang", "valid_from"]
-CURRENT_KINDS = {"current", "parent_proxy"}
+PROXY_KINDS = {"parent_proxy", "group_proxy"}
+CURRENT_KINDS = {"current"} | PROXY_KINDS
 KINDS = CURRENT_KINDS | {"historical_move_observed"}
 
 
@@ -35,7 +36,7 @@ class TitleRecord:
         symbol: Bare NSE symbol.
         title: Original canonical or historical title, with no translation.
         lang: Wikipedia language code (en or hi).
-        kind: Exact current title, parent_proxy, or observed historical move.
+        kind: Exact current title, parent/group proxy, or observed historical move.
         valid_from: Evidenced start event, or None when unknown.
         valid_to: Known end event from the ledger, or None.
     """
@@ -63,14 +64,14 @@ class IndiaTitleMapping:
     ) -> dict[str, dict[str, str]]:
         """Return ticker -> language -> current title, matching universe() output.
 
-        Set include_parent_proxies for the approved broader corporate signals.
+        Set include_parent_proxies to include approved parent and group proxies.
         Returns a fresh dictionary using .NS tickers and language/title strings.
         Unmapped companies are omitted. This export has no historical scope.
         """
         out: dict[str, dict[str, str]] = {}
         for row in self.records:
             if row.kind == "current" or (
-                include_parent_proxies and row.kind == "parent_proxy"
+                include_parent_proxies and row.kind in PROXY_KINDS
             ):
                 out.setdefault(row.symbol + ".NS", {})[row.lang] = row.title
         return out
@@ -150,9 +151,9 @@ def load_india_titles(
             if start and end and start >= end:
                 raise ValueError(f"Invalid title interval: {key}")
             pair = (symbol, lang)
-            if kind == "parent_proxy" and (lang != "en" or start or end):
+            if kind in PROXY_KINDS and (lang != "en" or start or end):
                 raise ValueError(
-                    f"Parent proxies require English and unknown dates: {key}"
+                    f"Proxy titles require English and unknown dates: {key}"
                 )
             if kind == "current":
                 exact.add(pair)
