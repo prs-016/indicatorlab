@@ -39,6 +39,7 @@ ARCTIC_BASE_URL = _ARCTIC["base_url"]
 ARCTIC_MIN_INTERVAL_S = _ARCTIC["min_interval_s"]
 ARCTIC_RETRY_WAIT_S = tuple(_ARCTIC["retry_wait_s"])
 ARCTIC_MAX_RETRIES = _ARCTIC["max_retries"]
+WEEKLY_RETRY_WEEKS = _REDDIT["weekly_retry_weeks"]
 
 # Week 1 investor subreddits (text-matched); Week 2 adds product/stock/sector ones via config.subreddit_map.
 SUBREDDITS = config.subreddits(MARKET, kinds=("general",))

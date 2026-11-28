@@ -3,8 +3,9 @@
 - Enforces a minimum interval between requests (config.yaml, ~1 s).
 - On network errors, HTTP 429/5xx, the in-body "Internal server error" and the API's
   in-body rate-limit message ("Timeout. Maybe slow down a bit", returned with HTTP 200
-  or 422 and `data: null`, so the body must be inspected) it waits a random 10-30 s and
-  retries up to 3 times (config.yaml `reddit.arctic_shift`).
+  or 422 and `data: null`, so the body must be inspected) it retries up to 3 times
+  (config.yaml `reddit.arctic_shift`). It waits until the per-minute budget resets when the
+  reply says when (`X-RateLimit-Reset`, seconds, checked 2026-11-25), else a random 10-30 s.
 - Never converts a failure into an empty result: exhausted retries raise, and the
   collector then logs the day as failed.
 """
@@ -23,6 +24,7 @@ from src.reddit.utils import get_logger, utc_now_iso
 log = get_logger("arctic_client", "collect_reddit.log")
 
 REQUEST_TIMEOUT_S = 90.0   # busy r/wallstreetbets days can take ~60 s to answer
+MAX_RESET_WAIT_S = 70.0    # the rate-limit budget resets on the minute, so never wait longer than this
 
 
 def _is_rate_limit_text(text: str) -> bool:
@@ -79,9 +81,18 @@ class ArcticShiftClient:
         if wait > 0:
             self._sleep(wait)
 
-    def _backoff(self, attempt: int, retry_after: str | None = None) -> float:
-        """Seconds to wait before retry `attempt + 1`: the server's Retry-After if given, else uniform(retry_wait)."""
+    def _backoff(self, attempt: int, retry_after: str | None = None, reset: str | None = None) -> float:
+        """Seconds to wait before retry `attempt + 1`.
+
+        The rate-limit reset time (`X-RateLimit-Reset`, + 1 s) if the server sent one, else its
+        Retry-After, else uniform(retry_wait).
+        """
         lo, hi = self.retry_wait
+        if reset:
+            try:
+                return min(max(float(reset), 0.0) + 1.0, MAX_RESET_WAIT_S)
+            except ValueError:
+                pass
         if retry_after:
             try:
                 return min(float(retry_after), hi)
@@ -100,13 +111,14 @@ class ArcticShiftClient:
             self._last_request = time.monotonic()
             self.n_requests += 1
             rec = {"attempt": attempt, "requested_at_utc": ts}
-            retry_after = None
+            retry_after = reset = None
             try:
                 r = self.session.get(url, params=params, timeout=self.timeout)
                 rec["http_status"] = r.status_code
                 if r.status_code == 429 or r.status_code >= 500 or _is_rate_limit_text(r.text):
                     # The rate-limit message has been observed with HTTP 200 and HTTP 422.
                     retry_after = r.headers.get("Retry-After")
+                    reset = r.headers.get("X-RateLimit-Reset")
                     rec["error"] = f"HTTP {r.status_code}: {r.text[:120]}"
                 elif r.status_code >= 400:
                     rec["error"] = f"HTTP {r.status_code}: {r.text[:300]}"
@@ -130,7 +142,7 @@ class ArcticShiftClient:
                 rec["error"] = f"{type(e).__name__}: {e}"
             attempts.append(rec)
             if attempt < self.max_attempts:
-                delay = self._backoff(attempt, retry_after)
+                delay = self._backoff(attempt, retry_after, reset)
                 log.warning("attempt %d/%d failed (%s) for %s; sleeping %.1fs",
                             attempt, self.max_attempts, rec["error"], full_url, delay)
                 self._sleep(delay)

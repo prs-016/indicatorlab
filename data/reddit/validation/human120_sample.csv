@@ -1,0 +1,966 @@
+item_id,post_id,ticker,market,subreddit,subreddit_type,group,year,created_utc_iso,title,body,url,owner,overlap,core,double,from_item,cell
+h001,5cfx9u,META,US,instagram,product,product,2016,2016-11-11T18:10:14Z,"But, Hagrid, there must be a mistake. This says Platform 9 3/4, there's no such thing. Is there?",,https://www.reddit.com,joshua,False,True,False,s370,2016|product
+h002,18prsqs,META,US,oculusquest,product,product,2023,2023-12-24T09:20:30Z,"For new headsets opened this Christmas, here’s a 60€ referral link! Get those free games with the bonus!", ,https://www.reddit.com/r/OculusQuest/comments/18prsqs/for_new_headsets_opened_this_christmas_heres_a_60/,james,False,True,False,s395,2023|product
+h003,13ob14x,TSLA,US,teslalounge,product,product,2023,2023-05-22T00:19:54Z,Ultra red in the sun has sweet purple highlights,"Had to grab a photo after a wash, as the time of day brought out the purple in the paint. What a stunning color.  I definitely always look back at it every time I walk away.",https://www.reddit.com/r/TeslaLounge/comments/13ob14x/ultra_red_in_the_sun_has_sweet_purple_highlights/,james,True,True,True,s377,2023|product
+h004,69l8u2,NFLX,US,netflix,product,product,2017,2017-05-06T13:42:43Z,[US] HideMyAss Unblocking Netflix USA - Update May 2017,,https://www.reddit.com,joshua,True,True,True,s046,2017|product
+h005,5h3519,GOOGL,US,investing,general,investor,2016,2016-12-07T22:46:16Z,Stockholm Exchange historical download,"I'm trying to find a source for downloading historical data for the individual stocks in the Stockholm Exchange. Yahoo finance doesn't work for many, and google finance has no download option for any on the exhange. Any ideas?",https://www.reddit.com,joshua,True,True,True,s335,2016|investor
+h006,16bwznl,TSLA,US,teslainvestorsclub,stock,investor,2023,2023-09-06T21:40:05Z,How is it possible that Tesla only won 18% of the bids for the federal charger subsidies if they build them faster and 20 to 70% cheaper?,"Quote by Teslarati:
+
+>As noted by the WSJ, Tesla is installing its Superchargers faster than its rivals, and the company is accomplishing it at a cost that’s 20% to 70% lower.  
+>  
+>The electric vehicle maker has won bids to build out chargers at about 18% of the sites elected by US states using federal dollars. That’s more than any other company, as noted by EV charging analytics firm EVAdoption. Roughly $77 million have reportedly been granted so far, and Tesla has won $8.5 million of the number.
+
+It's quite an intriguing conundrum, isn't it? Tesla's remarkable efficiency and cost-effectiveness in Supercharger installations are well-documented. But what leaves me scratching my head is the fact that despite their evident prowess in this domain, they've secured only 18% of the bids for federal charger subsidies. This discrepancy warrants a deeper dive into the situation.
+
+Tesla's impressive track record, as highlighted in The WSJ, shows that they are deploying Superchargers at a pace that outstrips their competitors. Not only are they faster, but they also manage to do so with a significantly reduced cost burden, somewhere between 20% to 70% lower than their rivals. This raises the question: If they're this efficient, why aren't they winning a more substantial share of the bids?
+
+According to data from EVAdoption, Tesla's success in securing these bids surpasses that of any other company in the electric vehicle industry. Out of roughly $77 million in subsidies granted so far, Tesla has managed to secure $8.5 million. While this is certainly a significant amount, it still leaves a substantial portion of the funds unaccounted for, and it's causing some Tesla enthusiasts to question the situation.
+
+One speculation that has emerged in the Tesla community is the possibility of corruption or favoritism at play, which may explain the discrepancy. However, this is merely conjecture at this point, and we need more information to draw any concrete conclusions.
+
+So, let's open the floor for discussion. What could be the factors contributing to Tesla's limited success in winning federal charger subsidy bids? Are there regulatory hurdles, competitive dynamics, or other hidden factors that we should consider? Your insights and information could help shed light on this puzzling scenario and provide a clearer picture of the electric vehicle charging landscape.",https://www.reddit.com/r/teslainvestorsclub/comments/16bwznl/how_is_it_possible_that_tesla_only_won_18_of_the/,james,False,True,False,s374,2023|investor
+h007,bg7eo4,GOOGL,US,googlepixel,product,product,2019,2019-04-22T21:06:36Z,When to factory reset and when to factory image reset?,Is the factory image reset cleaner or better instead of wiping the phone over the settings?,https://www.reddit.com,james,False,True,False,s308,2019|product
+h008,ygpnxd,NFLX,US,netflix,product,product,2022,2022-10-29T17:33:55Z,Too many people using (Bug?),"So Today I was watching some series in netflix and suddenly 'too many people using the account' message poped up as my brother was started using. But how is this fair, when i was watching for quite some time and he started only after me ,yet i get the pop up. I also didnt pause or forward the series nor did i chage episode or anything like that. 
+
+When I tried the same , i.e start to watch a series while my bro was watching still the message came for me and not him. 
+
+ Is there any way to override this and gain back control? 
+
+​
+
+Also taking to my bro is not really an option.",https://www.reddit.com,james,False,True,False,,2022|product
+h009,4wzdgy,AMZN,US,amazon,product,product,2016,2016-08-10T00:08:49Z,Importing item from Amazon US to London UK (London)?,"Hello,
+I'm planning to buy Laptop from Amazon US. I'm currently living  in London, What will be additional charges after shipping?
+
+VAT is going to one of them I believe. I'm not a local, don't have the citizenship and Will I be exempt from VAT?",https://www.reddit.com,joshua,False,True,False,s205,2016|product
+h010,1ba0ics,TSLA,US,wallstreetbets,general,investor,2024,2024-03-08T21:55:28Z,Is this glitch? WTFF!!,"Tesla up 60+ after hours? What happened??
+",https://www.reddit.com/r/wallstreetbets/comments/1ba0ics/is_this_glitch_wtff/,joshua,False,True,False,s272,2024|investor
+h011,178icwv,JPM,US,wallstreetbets,general,investor,2023,2023-10-15T15:54:54Z,  Redirects to JP Morgan Wealth Management,"The biggest clue of all has been staring us in the face the entire time. 
+
+URL for   redirects to JP Morgan Wealth Management. ""Your partner in navigating significant wealth.""
+
+Everything makes sense now! 
+
+ 
+
+ ",https://www.reddit.com/r/wallstreetbets/comments/178icwv/bearcom_redirects_to_jp_morgan_wealth_management/,james,False,True,False,s121,2023|investor
+h012,18lfxys,JPM,US,chase,product,product,2023,2023-12-18T18:37:33Z,Long approval time despite high credit score?,"I have a 760 credit score and recently applied for the chase flex on the 26th of November. I had to submit ID photos additionally after the application that day but I haven't heard anything back. 
+
+I'm a totally new client and was wondering if it typically takes this long to hear back. Is there anyway to check the status if I don't have an account?",https://www.reddit.com/r/Chase/comments/18lfxys/long_approval_time_despite_high_credit_score/,james,False,True,False,s368,2023|product
+h013,1tysp2m,META,US,instagram,product,product,2026,2026-06-06T21:00:27Z,Instagram FULL ON MUTE,"For about a week now I haven't been able to listen to anything on instagram: stories, reels, voice messages etc. Its all just muted no matter how much I press the volume up button.
+
+I have tried: deleting cache, uninstalling and reinstalling the app, updating my android version, restarting my phone and even turning off bluetooth.
+
+If anyone has the same experience, please send help🙏🙏",https://www.reddit.com/r/Instagram/comments/1tysp2m/instagram_full_on_mute/,james,False,True,False,,2026|product
+h014,jo0wwn,NVDA,US,nvidia,product,product,2020,2020-11-04T17:31:25Z,"2060 Owner, should I upgrade to a 30 series?","Recently got a 1440p monitor and noticed my frames obviously have dropped considerably, but it’s reaching awfully low and my system runs hotter even with my new fans and cpu cooler. Would upgrading to a 3080 be a good idea?",https://www.reddit.com,joshua,False,True,False,s267,2020|product
+h015,9m6sjd,MSFT,US,xbox,product,product,2018,2018-10-07T17:20:47Z,New to Xbox and gaming,"I have very little gaming experience but would love to learn how to use an Xbox and play games. I saw a demo of Sea of Thieves and it looks fun. I have a gaming laptop already, where do I go from here?
+
+Thanks!
+
+​",https://www.reddit.com,joshua,False,True,False,s060,2018|product
+h016,1imgy7r,TSLA,US,wallstreetbets,general,investor,2025,2025-02-10T21:00:42Z,"Tesla stores are targeted by vandals and arsonists, FBI gets involved",,https://www.reddit.com/r/wallstreetbets/comments/1imgy7r/tesla_stores_are_targeted_by_vandals_and/,james,False,True,False,s052,2025|investor
+h017,eof5wh,NFLX,US,wallstreetbets,general,investor,2020,2020-01-14T02:58:47Z,JP Morgan earnings will take the market to the moon.,"My friends. I am going to make this as simple as our autists minds could take. 
+
+Last year narco lords at JP Morgan got a shipment of that blow intercepted.
+
+[ 
+
+What happened after that? FED gets pissed off. Their fresh coke didn't make it therefore they started pumping cash so the bank cartel could order more, and quick. 
+
+Think about it folks. How much blow was confiscated here? The street value? If you watch Netflix you will quickly learn that when a drug shipment is seized, one double the size is sent.
+
+All the profits from the blow must have been laundered by now and on the books.",https://www.reddit.com,joshua,True,True,True,s309,2020|investor
+h018,1qvpxkc,JPM,US,amd_stock,stock,investor,2026,2026-02-04T14:25:58Z,Analyst Price Targets (4th Jan 2026),"|Company|Analyst|New Price|Old Price|Rating|
+|:-|:-|:-|:-|:-|
+|Melius Research|Ben Reitzes|**$?**|$380|Buy|
+|Raymond James|Srini Pajjuri|**$365**|$377|Outperform|
+|Cantor Fitzgerald|C.J. Muse|**$?**|$350|Overweight|
+|Wells Fargo|Aaron Raikers|**$?**|$345|Overweight|
+|Evercore ISI|Mark Lipacis|**$328**|$283|Outperform|
+|Benchmark Co.|Cody Acree|**$?**|$325|Buy|
+|Jefferies & Company|Blayne Curtis|**$?**|$300|Buy|
+|Rosenblatt Securities|Kevin Cassidy|**$?**|$300|Buy|
+|Barclays Capital|Tom O’Malley|**$?**|$300|Overweight|
+|UBS|Timothy Arcuri|**$?**|$300|Buy|
+|R. W. Baird|Tristan Gerra|**$?**|$300|Buy|
+|Roth/MKM|Suji De Silva|**$?**|$300|Buy|
+|Bank of America|Vivek Arya|**$?**|$300|Buy|
+|Daiwa Capital Markets|Lou Miscioscia|**$?**|$300|Buy|
+|CFRA|Angelo Zino|**$?**|$300|Strong Buy|
+|Susquehanna International|Chris Rolland|**$?**|$300|Buy|
+|Wolfe Research|Chris Caso|**$?**|$300|Outperform|
+|HSBC|Frank Lee|**$?**|$300|Buy|
+|KeyBanc|John Vinh|**$300**|$270|Overweight|
+|Wedbush|Matt Bryson|**$?**|$290|Outperform|
+|Loop Capital |Gary Mobley|**$?**|$290|Buy|
+|TD Cowen|Joshua Buchalter|**$?**|$290|Buy|
+|Truist Securities|William Stein|**$283**|$277|Buy|
+|Piper Sandler|Harsh Kumar|**$?**|$280|Overweight|
+|Stifel Nicolaus and Company|Ruben Roy|**$?**|$280|Buy|
+|Mizuho Securities|Vijay Rakesh|**$275**|$285|Outperform|
+|Argus Research|Jim Kelleher|**$?**|$275|Buy|
+|Morningstar|Brian Colello|**$?**|$270|Fair Value|
+|JP Morgan|Harlan Sur|**$?**|$270|Neutral|
+|Exane BNP Paribas Research|David O’Connor|**$265**|$300|Outperform|
+|Citigroup|Chris Danely|**$?**|$260|Neutral|
+|Northland Capital Markets|Gus Richard|**$?**|$260|Outperform|
+|Morgan Stanley|Joseph Moore|**$255**|$260|Equal-Weight|
+|Deutsche Bank|Ross Seymore|**$?**|$250|Hold|
+|Bernstein Research|Stacy Rasgon|**$235**|$225|Market Perform|
+|New Street Research|Pierre Ferragu|**?**|$230|Buy|
+|Goldman Sachs|James Schneider|**$?**|$210|Neutral|
+|Oppenheimer|Rick Schafer|**NA**|NA|Hold|
+
+I'm back again with another post earnings price target list. The list will be updated throughout the day as new price targets get released. Please share any new ratings or missing info and I'll add them. You can check out the previous thread [here.](  You can also find a special post Financial Analyst Day price target thread [here.]( 
+
+Thank you.
+
+**Updated prices are in bold.**",https://www.reddit.com/r/AMD_Stock/comments/1qvpxkc/analyst_price_targets_4th_jan_2026/,joshua,False,True,False,,2026|investor
+h019,uw6it1,META,US,oculusquest,product,product,2022,2022-05-23T18:12:57Z,Scuttlebutt VR - Virtual Podcasting,,https://www.reddit.com,james,False,True,False,,2022|product
+h020,1v1n3ll,META,US,instagram,product,product,2026,2026-07-20T14:26:36Z,INSTAGRAM ACCT GOT SUSPENDED,,https://www.reddit.com/r/Instagram/comments/1v1n3ll/instagram_acct_got_suspended/,james,True,True,True,,2026|product
+h021,4x0qol,AAPL,US,apple,product,product,2016,2016-08-10T06:01:52Z,iCloud Drive audio player?,"So I have moved a lot of my audiobooks to my iCloud Drive. Is there an audio player for iOS that can play from the iCloud Drive?
+
+Problem I am having is I can't exit out of the iCloud Drive if I am listening to something because then the audio stops. 
+
+Thanks!",https://www.reddit.com,james,True,True,True,s250,2016|product
+h022,q3bu3v,AMZN,US,aws,product,product,2021,2021-10-07T15:41:34Z,How to ensure that API keys do not get deleted when sls stack is removed and redeployed,"1. How do we make sure that the API keys are never deleted on sls remove?
+2. Is it better to store those as secureString in ssm?
+
+Currently we have
+
+apiKeys:  
+    \- ${self:provider.stage}-service-api-key 
+
+but this will lead to API key being deleted each time",https://www.reddit.com,joshua,False,True,False,s314,2021|product
+h023,p6pp2n,TSLA,US,teslalounge,product,product,2021,2021-08-18T11:59:50Z,【Model Y Product Test Out】I Would Like To Invite Model Y Owners For Model Y Accessories Test Out.,"Hello Everyone,
+
+  We would like to invite Model Y Owners for Product Test Out
+
+  Product include: Model Y/3 Middle Console Wrap, Model Y Trunk Hook, Model Y Frunk Leaf Block...and more in the future as we continuously develop new products for Model Y.
+
+ ",https://www.reddit.com,joshua,True,True,True,s061,2021|product
+h024,5vkw31,NVDA,US,amd_stock,stock,investor,2017,2017-02-22T19:44:11Z,Question about AMD PC Building,Thanks to the AMD gains I've decided to build a PC using their product. Question is how close is ryzen in performance with Intels i7? Because the price seems way cheaper. Also if I get a ryzen processor do I need to pair it with an AMD gpu or will a nvidia one work?,https://www.reddit.com,joshua,True,True,True,s303,2017|investor
+h025,4mwd99,META,US,stocks,general,investor,2016,2016-06-07T00:51:01Z,Why in god's name doesn't Facebook or Microsoft buy LinkedIn?,Gimme one reason to stay here! And I'll turn 'ear back around..,https://www.reddit.com,james,False,True,False,s201,2016|investor
+h026,1x02q3q,MSFT,US,xbox,product,product,2026,2026-10-07T17:30:19Z,Why do some titles not appear under the “Games coming soon” tab of the store?,"For example, Neon Abyss 2 is full on releasing tomorrow and is coming to gamepass yet I haven’t seen a single thing about it and despite me checking the store at least once a day(been waiting for new deals), I had yet to see it appear under gamepass’s coming soon or the general coming soon section until a day before it releases. Even looking at the coming soon section right now it doesn’t list Neon Abyss unless you search for it or look under gamepass’s coming soon section. If my game was releasing on Xbox and I hadn’t seen it appearing anywhere on the store where one might be browsing upcoming games, I’d be a livid! Just curious if anyone else has noticed this oddity? You’d think they would have every game coming out listed under games coming soon! Even Valor Mortis isn’t listed under the regular games coming soon. Only the gamepass part which they only added it to the other day despite the game having a for sure release date for months!",https://www.reddit.com/r/xbox/comments/1x02q3q/why_do_some_titles_not_appear_under_the_games/,joshua,False,True,False,,2026|product
+h027,7r5cwr,NFLX,US,netflix,product,product,2018,2018-01-17T23:33:47Z,What’re your guy’s favorite shows?,"I like stuff like archer, new girl, the office.
+I’m looking for suggestions cause a lot of the new stuff looks sketchy/boring but maybe some of you have suggestions? ",https://www.reddit.com,james,False,True,False,s226,2018|product
+h028,1ioywov,AMZN,US,aws,product,product,2025,2025-02-14T01:14:00Z,Do AWS Training Partners Offer Both Official & Custom Courses?,"I noticed that some AWS Authorized Training Partners offer both the official AWS curriculum **and** their own custom AWS courses. Is this a common practice, and does anyone know if AWS officially allows this? I'm curious if the custom classes are completely separate from the official curriculum or if they're integrated somehow. Any insights or experiences would be helpful.",https://www.reddit.com/r/aws/comments/1ioywov/do_aws_training_partners_offer_both_official/,joshua,True,True,True,s085,2025|product
+h029,9m1532,NVDA,US,nvidia,product,product,2018,2018-10-07T00:46:19Z,RTX Nvidia Official Merch," Anyone get an email from Nvidia about buying this
+
+[ 
+
+[ 
+
+Are those official ?
+
+i bought it anyway, it looks cool",https://www.reddit.com,joshua,False,True,False,s112,2018|product
+h030,18f34gy,MSFT,US,windows,product,product,2023,2023-12-10T13:00:35Z,"Simple questions and Help thread - Week of December 10, 2023","Welcome to the weekly Simple questions and Help thread, for questions that don't need their own posts!
+
+Before making a comment, we recommend you [search your problem on Bing](  and check if your question is already answered on our [Windows Frequently Asked Questions wiki page](  To get help with your PC, you can also make a post next Monday using the ""Tech Support"" flair or use r/TechSupport and r/WindowsHelp.
+
+
+Some examples of questions to ask:
+
+- Is this super cheap Windows key legitimate? (probably not)
+
+- How can I install Windows 11?
+
+- Can you recommend a program to play music?
+
+- How do I get back to the old Sound Control Panel?
+
+Sorting by New is recommend and is the default.
+
+----
+
+Be sure to check out the [Windows 11 version 22H2 Launch Megathread](  and also the [Windows 11 FAQ](  posts, they likely have the answers to your Windows 11 questions already!",https://www.reddit.com/r/windows/comments/18f34gy/simple_questions_and_help_thread_week_of_december/,joshua,False,True,False,s365,2023|product
+h031,fz8049,JPM,US,stocks,general,investor,2020,2020-04-11T15:50:40Z,"Wall Street Week Ahead for the trading week beginning April 13th, 2020","Good Saturday morning to all of you here on r/stocks. I hope everyone on this sub made out pretty nicely in the market this past week, and is ready for the new trading week ahead.
+
+Here is everything you need to know to get you ready for the trading week beginning April 13th, 2020.
+
+# **Banks and health care companies will report earnings, but virus updates will matter most in week ahead  - [(Source)]( 
+*****
+> Major banks and health care companies will be the first to reveal how the early weeks of the coronavirus shutdowns impacted their profits, outlook, work force and customers.
+*****
+> Earnings season begins in the week ahead, with JPMorgan, Wells Fargo and Johnson & Johnson among the first to release first quarter earnings reports Tuesday. But the stock market that appears to be willing to overlook anticipated bad news for now.
+*****
+> “Most of the slowdown occurred in March,” said Art Hogan, chief market strategist at National Securities. “Do we react to the hypernegative economic data we see? What we do react to is any semblance of guidance. There is no clarity about duration of the economic slowdown. You’re going to see a preponderance of companies pulling their guidance for the calendar year ... I think it’s going to be more companies doing that, than not.”
+*****
+> Stocks bounced higher in the four-day pre-Easter holiday week, with the S&P 500 up 12.1%, in the best week since 1974. Investors reacted to signs that new cases of the virus may be peaking in U.S. hot spots and Europe. The stock market also got a boost Thursday from the Fed’s announcement of a $2.3 trillion in programs to help the economy.
+*****
+> The market will turn its focus to earnings in the coming week, but there are also some important economic reports, including March retail sales. The virus shutdowns resulted in a rapid closing of many retail establishments, a sudden drop off in gasoline sales, and a steep decline in auto sales. That has resulted in a forecast for a 7% decline in March retail sales.
+*****
+> “People are more interested in news about the spread of the virus than they are about the economic data,” said Hogan. “We got another massive increase in jobless claims. That’s ignored because we’re listening to who is plateauing ... Is New York actually getting better and we see a peak? I get the feeling people are going to look at the first quarter earnings and say, ‘we know this and you should pull your guidance.’”
+*****
+> Before March, analysts had expected an increase of several percent in first quarter earnings. According to Refinitiv’s I/B/E/S, the forecasts and some actual numbers point to an 8.1% decline. For the second quarter, earnings are expected to decline about 20%, while economists expect an unprecedented 30% contraction in GDP during the quarter.
+*****
+> Weekly claims data will also be important, now with nearly 17 million claims filed in just three weeks. Economists expect millions more to be filed for the week ending April 11.
+*****
+> Other major",https://www.reddit.com,joshua,True,True,True,s204,2020|investor
+h032,bg8xog,AAPL,US,apple,product,product,2019,2019-04-22T23:21:08Z,"Apple Retail Employees, how long did it take for you to get hired? + Any changes since Angela moved on?","hey everyone,
+
+​
+
+while researching around the net i've determined that apple's hiring process can be fairly lengthy. i completed my third and final interview with my city's store leader close to 5 months ago. at the end of my third interview the store leader noted that there could be up to a 6 week wait. (the next day i received the email where they ask you to resubmit your application etc.) flash forward to now and i still haven't been hired officially as they noted that there is no open position yet. 
+
+​
+
+can any retail managers or employees speak to what goes into spots opening? when i followed up with the people leader at the beginning of this month, they mentioned that some people needed to be promoted before there would be an opening. what goes into a promotion at apple? how long does it typically take? 
+
+​
+
+also, i know it's still fresh but have there been any changes to the store process since Angela moved on from the company?
+
+​
+
+lastly, how do you feel about working for Apple Retail? it's been quite a long wait for me and i'm really hoping that the wait will be worth it. i've worked in retail before so i know what comes with that line of work, but i am hoping that the pros will at least offset the cons of the industry. what are your thoughts?
+
+​
+
+thank you for your help!
+
+​
+
+**TL;DR**
+
+​
+
+i interviewed for an apple retail position months ago, but there still isn't an opening yet. do you have any insight into that process? 
+
+​
+
+how long did it take for you to get hired?
+
+​
+
+have there been any changes since Angela left?
+
+​
+
+peace",https://www.reddit.com,joshua,True,True,True,s005,2019|product
+h033,bg3qs8,AMD,US,amd_stock,stock,investor,2019,2019-04-22T15:57:12Z,Barclays analyst Blayne Curtis raised his price target for AMD to $26 from $21,,https://www.reddit.com,joshua,True,True,True,s269,2019|investor
+h034,mwu0dz,NVDA,US,nvidia,product,product,2021,2021-04-23T12:21:29Z,"NVIDIA GeForce RTX 3080 Ti allegedly launches May 25th, RTX 3070 Ti early June",,https://www.reddit.com,joshua,True,True,True,s111,2021|product
+h035,1cvpjqj,GOOGL,US,googlepixel,product,product,2024,2024-05-19T14:29:45Z,How to get consent for data collection in apps for my pixel 8a?,"On my pixel 3a when I download a new app I get this nice pop up that allows me to turn off consent for data collection that I don't want. How do i get it show up on my pixel 8a?
+
+[   
+",https://www.reddit.com/r/GooglePixel/comments/1cvpjqj/how_to_get_consent_for_data_collection_in_apps/,joshua,False,True,False,s252,2024|product
+h036,7jisu7,GOOGL,US,googlepixel,product,product,2017,2017-12-13T12:13:43Z,"[P2XL, 8.1 beta] Incredible battery life improvements:","So I know that we've seen a lot of issues on 8.1 through the beta program but I have some light to provide at the end of the tunnel. I've been on the beta program since the day I received my phone and I've seen some great improvements (DP1) and some significant drops in battery life (DP2). When 8.1 received its official drop my first couple of days were awful so Saturday I tweaked some settings and deleted 1 app (GasBuddy) and these are my 2 reports from the last 3 days:
+
+Day 1, heavy usage:
+ 
+
+Day 2-3, moderate usage:
+ 
+
+Usage breakdown is predominantly Chrome Beta (Facebook, Reddit, browser-based games, various Android sites, and news articles), YouTube, and Facebook Messenger Lite as the main culprits with a dozen or so under 5% battery usage. I have bluetooth on, location to high accuracy, and I'm connected to data 100% of the time. Where I live I do not have unlimited access WiFi so I am always on data which is why I am so impressed by these usage numbers. Standby time on this phone is phenomenal.
+
+Side note: I deleted GasBuddy because it was showing 20% foreground usage and 0m of background time when I just opened it once to login. I reported the problem and deleted the app, my thinking is that it was keeping location services running constantly. I think we already knew that location services is a huge battery hog but here's further suggestion that Google Play Services needs more attention from developers.",https://www.reddit.com,james,False,True,False,s039,2017|product
+h037,163cwx4,NFLX,US,wallstreetbets,general,investor,2023,2023-08-28T05:10:14Z,The Big Short is trending on Netflix…market crash imminent.,,https://www.reddit.com/r/wallstreetbets/comments/163cwx4/the_big_short_is_trending_on_netflixmarket_crash/,joshua,False,True,False,s214,2023|investor
+h038,1b31np7,AMD,US,amd_stock,stock,investor,2024,2024-02-29T14:30:49Z,Technical Analysis for AMD 2/29----Pre-market,"​
+
+[Leap Day]( 
+
+Today is a day that really shouldn't exist but it does.  I feel like the fact that we have a leap day itself on the surface is proof positive that we have a breakdown in our calendar system.  I don't like remainders in calculations and that pretty much what this is.  Its a fix for an improper calculation.  But I digress
+
+Two different things are going on here:
+
+\-The entire market is waiting for inflation data coming in and now we've got it.  And it was roughly in-line.  No surprises there.  Which again makes it feel like really the inflation numbers coming out are going to be just choppy.  Not deadly inflation rearing its ugly head.  Now that doesn't necessarily mean the Fed should take their foot off the gas pedal just yet and start breaking but it probably means they are close to taking their foot off.  I would suggest that you probably could say that they are done raising rates.  But will have to hold the line a little bit longer than expected.  
+
+I wonder-----they keep saying the economy is strong and resilient and all that jazz.  I get it that high rates are definitely a problem in relation to limiting growth.  But looking at historical averages over like a period of 100 years, rates aren't THAT high.  And what does that say about the economy if it can't find a way to adapt?  Capitalism is about ""the strong will survive!"" I worry all of that covid spending with PPP funds and then low rates just allowed a lot of zombie companies to exist that probably should have been gobbled up by the system a long time ago.  
+
+\-Completely separate from that is the semi trade.  NVDA has slowly been shedding a little bit from the recent highs and AMD has been outperforming really.  Which is just a really really awesome and welcome change.  Our daily volume has been falling from its average level which usually leads AMD into shedding value as well.  But we are really showing a lot of resilience here.  Buyers are regularly stepping in during the last couple sessions to pick up on the weakness below $175.  We've ended the days for the most part still intact.  If we got a surge of buyers then we might take off.
+
+So for me I think that there is a bit of mania going on in the market.  A lot of 0DTE options trading going on and I think that is fueling a lot of speculation.  Everyone is looking for the next NVDA and SMCI and ARM.  Which is allowing stocks like us to just snake under the radar and work normally as intended.  We might even open today near that $180 level which has been our resistance level.  I don't necessarily think getting some of the speculators out of here is a bad thing for those of us that want to invest in AMD.  We could see some price stability and support here and really allow us to lock in a new place to take another swing at the ATH.",https://www.reddit.com/r/AMD_Stock/comments/1b31np7/technical_analysis_for_amd_229premarket/,james,False,True,False,s044,2024|investor
+h039,1e4yn9w,JPM,US,investing,general,investor,2024,2024-07-16T20:15:23Z,ETF alternatives to 401(k) investments,"Hi all,
+
+I've recently started becoming very passionate about investing and want to mirror my 401(k) portfolio in my Roth IRA and taxable brokerage. However, I'm struggling to find ETFs that mimic the same investment options I have in my 401(k). Any recommendations on the ones below?
+
+25%: State Street S&P 500 Index Fund. I plan to use VOO for this.
+
+25%: JPMorgan Large Cap Growth Fund (JLGMX). I plan to purchase SCHG instead.
+
+20%: State Street S&P Mid Cap Index Fund. I think the ticker is MDY, and I'm debating between MDY and VO. Leaning MDY currently.
+
+20% Fuller & Thaler Behavioral Small-Cap Equity (FTHFX). Would AVUV be a good alternative?
+
+10: Schroders International Alpha Trust 1. I'm thinking VXUS may be a good alternative.
+
+Any thoughts y'all have to offer would be greatly appreciated. I'm also open to feedback regarding overall portfolio make-up.
+
+Thanks!",https://www.reddit.com/r/investing/comments/1e4yn9w/etf_alternatives_to_401k_investments/,james,False,True,False,s095,2024|investor
+h040,1ao0v4o,JPM,US,chase,product,product,2024,2024-02-11T05:51:03Z,instant transfer not going through,what the heck -.- why does this stuff happen at the worst times...cash app instant transfer not going through and everything is closing in 10 minutes...wonderful,https://www.reddit.com/r/Chase/comments/1ao0v4o/instant_transfer_not_going_through/,james,True,True,True,s128,2024|product
+h041,zuiwyq,MSFT,US,xbox,product,product,2022,2022-12-24T21:12:29Z,Setup for Kid,"Merry Christmas Eve!
+
+I tried searching for this but didn't see anything definitive: I brought my 10 year old an Xbox S for Christmas and plan to maintain an ultimate subscription.
+
+Do I create the main account with my email address and add a child account? Or should I just maintain a single account that is his?
+
+Thanks in advance",https://www.reddit.com,james,False,True,False,,2022|product
+h042,agl4kq,JPM,US,stocks,general,investor,2019,2019-01-16T13:28:26Z,"Pre-Market News (Wednesday, Jan. 16th, 2019)","#Good morning traders & investors of the r/stocks sub! Welcome to Wednesday! Here are your pre-market stock movers & news this AM-
+
+*****
+
+#[Today's Top Headlines for January 16th, 2019]( 
+
+* Futures were hovering near breakeven this morning as the market evaluated the impact of the failed Brexit vote. The Dow is sitting less than 200 points away from escaping correction. The three U.S. major averages are coming off their highest closes in more than a month. (CNBC)
+* European markets higher after May's Brexit vote defeat (CNBC)
+* U.K. Prime Minister Theresa May had placed a motion before lawmakers in the lower house of Parliament, asking them to rubber stamp her withdrawal agreement with the European Union. The bill was rejected by 432 votes to 202, thought to be the largest in U.K. political history. (CNBC)
+* It's a big morning for bank earnings, with Bank of America (BAC), Bank of New York Mellon (BK), Comerica (CMA), Goldman Sachs (GS), PNC Financial (PNC), and US Bancorp (USB) all set to report. Asset manager BlackRock (BLK) and brokerage firm Charles Schwab (SCHW) will also issue quarterly numbers this morning. After the bell reports today include CSX Corp. (CSX), H.B. Fuller (FUL), and Kinder Morgan (KMI). (CNBC)
+* BlackRock results fall short of expectations, assets fall back below $6 trillion (CNBC)
+* Two economic reports out today are housing-related: the Mortgage Bankers Association will be out with its weekly look at mortgage applications at 7 a.m. ET, while the National Association of Home Builders issues its monthly sentiment index at 10 a.m. ET. The Labor Department will issue its December report on import and export prices at 8:30 a.m. ET. (CNBC)
+* The Federal Reserve issues its Beige Book today, with its region-by-region assessment of the U.S. economy due out at 2 p.m. ET.
+* The partial government shutdown, which is now entering its 26th day, has exhausted contingency plans and is prompting drastic measures throughout the federal contracting industry, the Wall Street Journal reported.
+* China's central bank today pumped a net 560 billion yuan, or $83 billion, into its banking system — a record amount of money injected in one day — in a sign that the economy may be facing enormous stress. (CNBC)
+* Democrats will get a chance today to grill Trump's point person on deregulation when Andrew Wheeler goes to Capitol Hill for his confirmation hearing to be the next permanent administrator of the EPA. (USA Today)
+* Acting AG Whitaker to testify before Congress (USA Today)
+* An FBI agent working for Robert Mueller filed a heavily redacted court document aiming to bolster the special counsel's claim that former Trump campaign chief Paul Manafort repeatedly lied to investigators. (CNBC)
+* Sen. Kirsten Gillibrand, a New York Democrat, announced she is launching an exploratory committee for a White House run. The senator spent so little during the midterms that she was reportedly left with a $10.7 million war chest. (CNBC)
+* Sears Chairman Edd",https://www.reddit.com,joshua,False,True,False,s312,2019|investor
+h043,7jg6aq,AAPL,US,apple,product,product,2017,2017-12-13T02:46:46Z,Apple TV (3rd Gen) suddenly VERY slow playing video over local network,"My Apple TV 3rd Gen has been a workhorse! I love the little bugger. It's served me very well over the years. Recently, it even added a new channel for me to watch (Amazon Video). Since that ""update"" it takes forever to buffer movies over the local network. Is anyone else having issues similar to this?",https://www.reddit.com,james,True,True,True,s137,2017|product
+h044,5vm0th,META,US,instagram,product,product,2017,2017-02-22T22:46:58Z,Photo of Brighton beach I took a couple of years ago (x-post from r/minimalism),,https://www.reddit.com,james,True,True,True,s284,2017|product
+h045,1350h16,JPM,US,investing,general,investor,2023,2023-05-01T20:34:42Z,How much is JPM actually paying for FRC's bond portfolio?,"Much is being made of the losses that JPM will have to take on FRC's ugly bond portfolio but what are they really spending and what are they getting? The details that I can find from this deal seem to be that JPM pays $10.6 billion in cash to the FDIC. For that it gets
+
+Liabilities: $90 billion deposits, of which it will repay asap $30 billion (including $5 billion to itself) of the big banks' attempted rescue deposits, presumably using the bulk of $50 billion in financing provided by the FDIC at an undisclosed (i.e. not very high) interest rate.
+
+Assets: $170 billion in loans and $30 billion (par value) in securities. So the bonds make up about 15% of the assets
+
+So JPM is basically paying $100 billion (plus some amount of interest on the $50B of financing) for $200 billion in nominal assets, 85% of which is loans, 15% of which is securities. Seems reasonable to say then that JPM is essentially paying $85 billion for the loans and $15 billion for the securities.
+
+Obviously the securities have a market value way below par. Somewhere around 60%-70% of par at the moment. 60% of $30 billion is $18 billion. So JPM is paying $15 billion for $18+ billion worth of securities. Can this really be called a loss? Obviously interest rates could continue to move higher and the market value of the bonds could continue to fall, but this seems like JPM is getting a lot of value.
+
+Am I way off on any of this?",https://www.reddit.com/r/investing/comments/1350h16/how_much_is_jpm_actually_paying_for_frcs_bond/,james,False,True,False,s162,2023|investor
+h046,1io05fz,TSLA,US,teslalounge,product,product,2025,2025-02-12T19:59:24Z,Stable,"The stable is almost full in Willcox, AZ!",https://www.reddit.com/r/TeslaLounge/comments/1io05fz/stable/,james,False,True,False,s125,2025|product
+h047,agk9ro,AMD,US,amd_stock,stock,investor,2019,2019-01-16T11:32:48Z,AMD EPYC™ Partner Testimonial: NEC Corporation,,https://www.reddit.com,joshua,False,True,False,s336,2019|investor
+h048,1kh49b0,GOOGL,US,wallstreetbets,general,investor,2025,2025-05-07T18:10:18Z,(GOOGL) Recent Market Analysis📊,"Financial performance
+
+Alphabet's Q1 FY2025 earnings report shows revenue of $90.234 billion, up 12% year-over-year
+
+[ 
+
+Operating profit increased 20% to $30.606 billion, with an operating margin of about 34%
+
+[ 
+
+Net income was $34.540 billion, up 46% year-over-year, with diluted EPS of $2.81, +49% year-over-year
+
+[ 
+
+In terms of segmentation, Google Cloud revenue was $12.26 billion, up 28% year-over-year
+
+[ 
+
+And search and other services revenue grew 10% to $50.7 billion
+
+[ 
+
+The company also announced a 5% increase in its quarterly dividend to $0.21 per share and an additional $70 billion buyback program
+
+[ 
+
+Overall, Alphabet's earnings beat expectations, reflecting continued strong growth in its advertising business and cloud services
+
+  
+Technical Analysis
+
+The stock has shown a shocking downward trend over the last three months.Alphabet has retreated from a high of about $206 in early February 2025 and closed at about $164 as of early May
+
+[ ]( 
+
+ a drop of nearly 20%. Looking at the charts (see below), the stock briefly rebounded after the earnings report in late April, but has recently moved lower again. On technical indicators, the stock is currently trading at \~$165, slightly above the 50-day SMA (\~$163) but still below the 200-day SMA (\~$173)
+
+[ ]( 
+
+ suggesting medium-term pressure near $170, with support looking towards the $150 line. Volume-wise, active trading on key event days: e.g., volume reached 70.4M on April 9 when it rose 9.7%
+
+[ ]( 
+
+and 63.7M on May 7 when it plunged 8.7%.
+
+[ ]( 
+
+ showing that money is flowing when market sentiment fluctuates. Overall, the stock's technicals are in a consolidation phase recently, and short-term momentum has turned weak, but there is buying on the low side when the market retraces.
+
+# Industry News
+
+Alphabet's Internet ecosystem continues to be impacted by AI and advertising market dynamics. The company continues to ramp up AI R&D: 2025Q1 saw the launch of Gemini 2.5, a next-generation model, and the launch of the “AI Overview” feature in search, which has reached 1.5 billion monthly active users to date.
+
+[abc.xyz]( 
+
+Reuters noted that this kind of AI is not only the most popular, but also the most popular. Reuters notes that this integration of AI in search ads is boosting the appeal of ads
+
+[ ]( 
+
+ On the advertising front, Alphabet's core advertising business revenue continued to grow despite uncertainties in the macro environment (e.g., U.S.-China trade, etc.). The earnings report showed that Google's core advertising revenue of $6.689 billion was up 8.5% year-over-year, only slightly lower than the 10.6% growth rate in the previous quarter, but still higher than expected
+
+[ ]( 
+
+ In cloud computing, the market is highly competitive, Alphabet Q1 cloud business revenue of $12.26 billion, up 28% year-on-year, the growth rate is still faster than most mature markets
+
+[ ]( 
+
+ Industry-wise, AWS and Azure still lead (31%, 20% market share, respectively), Alphabet Cloud about 12%
+
+ .",https://www.reddit.com/r/wallstreetbets/comments/1kh49b0/googl_recent_market_analysis/,james,False,True,False,s132,2025|investor
+h049,1ld4a39,AMD,US,stocks,general,investor,2025,2025-06-16T20:48:40Z,AMD Soars 10% as Piper Sandler Raises Price Target After 'Advancing AI' Event,"No paywall:  
+
+Advanced Micro Devices (AMD) shares popped nearly 10% to lead S&P 500 gainers Monday as Piper Sandler analysts raised their price target for the stock coming out of the chipmaker's ""Advancing AI"" event. 
+
+Piper raised its target to $140 from $125 and maintained an ""overweight"" rating for AMD stock. Shares of AMD were at about $127 in recent trading, making Piper's target a roughly 10% premium. 
+
+The analysts came away ""enthused"" by the firm's newly unveiled Helios server rack architecture, which it called ""pivotal"" for the growth of AMD Instinct GPUs. Helios will combine next-generation AMD MI400 chips into one larger system, the company said, and is expected in 2026. 
+
+AMD highlighted its partnerships with ChatGPT maker OpenAI, Meta Platforms (META), Oracle (ORCL), Microsoft (MSFT), and others at the event. Bank of America analysts believe there’s another high-profile partner announcement to come: Amazon (AMZN).
+
+Amazon Web Services (AWS) was ""a key sponsor for the event,"" BofA said. However, AWS typically uses its own events to announce new engagements, making a future reveal likely, the bank added.
+
+BofA maintained a ""buy"" rating and price target of $130 following the event. For comparison, the analyst consensus price target from Visible Alpha is about $124.",https://www.reddit.com/r/stocks/comments/1ld4a39/amd_soars_10_as_piper_sandler_raises_price_target/,joshua,False,True,False,s127,2025|investor
+h050,1hi0hfs,JPM,US,wallstreetbets,general,investor,2024,2024-12-19T19:09:53Z,"Newly Added to the Nasdaq 100, Over 300% Annual Gain: Why is Palantir So Highly Favored by Capital?","As a Wall Street analyst, I’ve been particularly focused on Palantir Technologies (PLTR) due to its remarkable performance recently. Over the past year, the company’s stock surged more than 300%, with its market capitalization reaching over $170 billion, making it a standout in the capital markets. Most notably, on December 13th, Palantir was added to the Nasdaq 100 index, and shortly after, it was also included in the S&P 500. This signifies an even stronger market position for the company. The driving force behind this success is not just the numerical growth, but Palantir's unique strengths in AI, big data, and defense, which continue to offer significant future growth potential.
+
+Palantir’s rise has not been accidental. Founded in 2003 by Peter Thiel and others, the company initially focused on providing big data analytics and intelligence support to government and military sectors. For example, Palantir assisted the U.S. military in locating Osama bin Laden during the Afghanistan war. Recently, it also secured a new contract with the U.S. Special Operations Command (USSOCOM), further proving the critical value of its technology in the military field. In fact, over half of Palantir’s revenue comes from government clients, including the U.S. military and intelligence agencies.
+
+However, Palantir hasn’t solely relied on government contracts. Since 2009, the company has been expanding into the commercial market, particularly in finance, where it has achieved significant success. Through its powerful data analytics capabilities, Palantir has helped banks like JPMorgan Chase detect financial fraud. By 2024, the revenue from government and commercial clients had become more balanced, with the number of commercial clients rapidly increasing. The total number of clients reached 629, with nearly 80% coming from the commercial sector.
+
+The explosive growth of AI and big data has created new opportunities for Palantir. As businesses’ demand for data analytics and management has risen, Palantir has stood out with its ontology engine and highly customized solutions. Unlike traditional SaaS companies, Palantir not only integrates data from various sources but also transforms it into actionable insights, excelling in complex environments. The launch of its AIP platform, which provides AI-driven data analysis, has further strengthened its position in the SaaS space.
+
+Looking at the financials, Palantir's performance has been impressive. In Q3 2023, fueled by growing AI demand, the company achieved a record net profit of $144 million. Additionally, Palantir's commercial customer ARPU (Average Revenue Per User) exceeded $3 million, with the average revenue from the top 20 clients reaching $60.1 million, highlighting the company's strong market appeal.
+
+Although Palantir’s heavy reliance on government clients presents risks—especially if government budgets are reduced—the company's technological advantages in AI, big data, and customized services provide substa",https://www.reddit.com/r/wallstreetbets/comments/1hi0hfs/newly_added_to_the_nasdaq_100_over_300_annual/,joshua,True,True,True,s242,2024|investor
+h051,d4uwv9,TSLA,US,teslamodel3,product,product,2019,2019-09-16T03:08:15Z,Got mine in a few days ago,,https://www.reddit.com,james,True,True,True,s296,2019|product
+h052,bg3fjd,GOOGL,US,stocks,general,investor,2019,2019-04-22T15:30:45Z,Redditors here stop doing this,"Here is a rant about common mistakes I see here. Sorry if this comes off as too abrasive.  
+
+""I dont buy XYZ stock because the single product that the company makes, out of hundred of services/products, I dont like""
+
+Do not let your opinion on one product from a company make the decision for whether you should buy or not. I hear all the time from bad investors, ""I wont buy facebook, snapchat, or Apple because I dont like their..."" There is more complexity to consider to these companies. I personally do not like any of these companies as a consumer, but after reading their 10-k report (document that tells me how much debt they currently have, CEO experience, revenue they're making) I have profited by making plays with this knowledge. 
+
+
+""A candidate just got elected in office and they will make the markets rally/crash""
+
+This is another bad common opinion. The market does not care who is in control of congress or the white house. Political offices have smaller influences on the stock market, with the exception of policies that would explicitly effect companies. Such as Warren calling for the break up of Google and Facebook. Better indicators before political office would be the federal reserve lowering/raising rates, US dollar strength, consumer index, etc.
+
+
+""I feel like the market is too high""
+
+Stop using your feelings, justify an opinion with evidence without using past stock prices. Do you have proof the European economy is suddenly at a higher risk of recession? Make a hypothesis. ""If the Brexit vote passes, then English banks will lose revenue"" Then fine evidence to support your claim.
+
+
+""The weed market is going to explode!""
+
+This is speculation. Which company is going to do well into the future? Think back to the dot com bubble, everyone said Napster was about to take off while there was a ton of speculation occurring about the internet and how revenues would be made in the future. Avoid speculation or at least realize how much risk you are taking. When you expect a stock to go up in value based on an if of an if of an if... ""If marijuana is legalized and if people buy at this company and if the company becomes profitable...""",https://www.reddit.com,james,False,True,False,s355,2019|investor
+h053,1so20ul,META,US,oculusquest,product,product,2026,2026-04-17T14:06:42Z,The Virtual Keyboard is a mess ...,"Hey y'all ! 
+
+I’m French, which matters here, and I genuinely cannot stand the virtual keyboard.
+
+First of all, there’s no real way to stop it from appearing, so it constantly gets in the way. Sometimes it shows up too low, sometimes it is barely visible, and sometimes it appears so close to where I’m tapping that I end up pressing random keys just trying to move it. Overall, the UX feels incredibly underdeveloped. It is missing basic features, like predictive text, which should honestly be standard by now.
+
+There seems to be very little effort put into this experience, and it shows. It almost feels like they have no serious competition pushing them to improve the product.
+
+The issue is even worse on a French AZERTY keyboard. To type accented characters, I have to long-press the key to open the accent menu, and sometimes it bugs out so badly that I cannot use that finger to type, it just won't work. I have to close and reopen the keyboard just to make it work again.
+
+My biggest frustration, though, is that even when I’m using a physical keyboard, I still cannot disable the virtual one. That makes basic shortcuts like Ctrl+A unnecessarily awkward, and it also blocks autocomplete on many websites until I manually close the on-screen keyboard.
+
+What I would really want is a simple option to stop the keyboard from opening automatically. Just place it in the extended menu on the right and let users open it when they actually need it.",https://www.reddit.com/r/OculusQuest/comments/1so20ul/the_virtual_keyboard_is_a_mess/,james,False,True,False,,2026|product
+h054,1fwk0t0,AMD,US,radeon,product,product,2024,2024-10-05T06:18:01Z,Upgraded my 5600xt to 7900 gre,As the title says I've upgraded my GPU and I'm very happy with it. Now my cpu is still a Ryzen 7 5700x and I've checked on some website that it will bottlenecked my pc. Are those websites reliable or I'm good with my current CPU GPU combination?,https://www.reddit.com/r/radeon/comments/1fwk0t0/upgraded_my_5600xt_to_7900_gre/,joshua,False,True,False,s015,2024|product
+h055,arjgjh,NFLX,US,netflix,product,product,2019,2019-02-17T10:36:08Z,Netflix makes everything stutter while watching?,"So for maybe a week now Netflix have been stuttering when I watch something. It does not matter wether I have only Netflix up or if I play a game at the same time. The game stuttering aswell if I keep a show going in the background.
+I have a strong PC and a good solid network. I do have a NVIDIA GTX 1050 graphics card if someone might know an update that maybe screwed something up.
+I use Google chrome as the browser for watching and this havent occured since about a week ago.
+
+I have been googling around without any good results. 
+",https://www.reddit.com,joshua,False,True,False,s002,2019|product
+h056,69jo40,NFLX,US,netflix,product,product,2017,2017-05-06T05:36:51Z,[All] Does any one have problens using the Netflix app with Chromecast?,"Since December, the Netflix app keep losing connection with my Chromecast gadgets. When I start some movie, minutes later the command buttons (like play/pause) disappear and I have to reconnect to see the buttons again. I'm using Android, by the way.
+
+UPDATE: As suggested by u/optimusbert, I have disabled the battery optimisation for the Netflix and now the app seems to be working normally.",https://www.reddit.com,james,False,True,False,s158,2017|product
+h057,bj4ztb,META,US,oculusquest,product,product,2019,2019-04-30T16:00:14Z,How fast did the Rift sell out?.. and how fast might the Quest?,"I'm on the edge of preordering on Japan's Amazon website. I'm wondering if it's worth it to pre-order now or wait until the official announcement if the ship date would change to May1st or so instead of the 21st as it's listed now.
+
+I don't want to wake up to it being unavailable for 5+ months and product flippers making the product completely unobtainable for the next half year.",https://www.reddit.com,joshua,False,True,False,s286,2019|product
+h058,zuk5ej,AAPL,US,apple,product,product,2022,2022-12-24T22:15:02Z,The Voice Assistant Battle! (2023),,https://www.reddit.com,joshua,True,True,True,,2022|product
+h059,k2r5wj,GOOGL,US,google,product,product,2020,2020-11-28T17:01:24Z,"Read it all, and think about when you had these situations",,https://www.reddit.com,james,False,True,False,s185,2020|product
+h060,rw35e1,NFLX,US,stocks,general,investor,2022,2022-01-04T19:56:38Z,What percentage of your income should you ideally invest in stocks every month?,"I'm a guy who started his first job in a 3rd world country last July (Make around $1400 per month working as a software engineer at a FAANG company).  
+
+Lockdown has been very generous to me with respect to savings, and I've been regularly investing ~$900 of my paycheck every month into stocks( 50% VOO + 25% QQQM + the remaining in either AMD/XLNX, NVDA or AAPL). Since I live with my parents, my monthly expenditure is only on Netflix and some other simple stuff, which only amounts to around $40 monthly. 
+
+In light of the new covid variant, there are talks of another lockdown in my place, extending my stay at home. Should I increase my monthly investment amount per month to around $1200, or save it as cash in a Fixed Deposit? (where i currently get an interest of around 6%, but inflation is around 6.9-7.5%)",https://www.reddit.com,joshua,False,True,False,,2022|investor
+h061,1gs3ghk,MSFT,US,wallstreetbets,general,investor,2024,2024-11-15T18:43:31Z,Elon Musk adds Microsoft to lawsuit against ChatGPT-maker OpenAI,,https://www.reddit.com/r/wallstreetbets/comments/1gs3ghk/elon_musk_adds_microsoft_to_lawsuit_against/,joshua,False,True,False,s142,2024|investor
+h062,p6nf80,GOOGL,US,investing,general,investor,2021,2021-08-18T09:01:14Z,"Daily General Discussion and spitballin thread - August 18, 2021","Have a general question?  Want to offer some commentary on markets?  Maybe you would just like to throw out a neat fact that doesn't warrant a self post?  Feel free to post here! 
+
+This thread is for: 
+
+* General questions
+* Your personal commentary on markets
+* Opinion gathering on a given stock
+* Non advice beginner questions
+
+Keep in mind that this subreddit, and this thread, is not an appropriate venue for questions that should be directed towards your broker's customer support or google.  
+
+If you would like to ask a question about your personal situation or if you are asking for advice please keep these posts in the daily advice thread as that thread is more well suited for those questions.
+
+Any posts that should be comments in this thread will likely be removed.",https://www.reddit.com,james,False,True,False,s130,2021|investor
+h063,rvltsq,AMD,US,stocks,general,investor,2022,2022-01-04T04:42:37Z,What happens to a stock price in the short term after a large acquisition?,"Hey, I'm invested in AMD and this is my first time going through an acquisition. 
+
+I need to raise cash soon and am wondering what will happen to AMD stock in the short term after the merger is complete around Q1? 
+
+I understand that the stock can do anything but what happens on average to the acquiring company's stock price?",https://www.reddit.com,joshua,False,True,False,,2022|investor
+h064,5cdt4z,META,US,facebook,product,product,2016,2016-11-11T10:18:23Z,What Is the Main Reason for Un-Publishing Facebook Pages,,https://www.reddit.com,joshua,False,True,False,s102,2016|product
+h065,1kpgeo6,AMD,US,radeon,product,product,2025,2025-05-18T09:56:59Z,Elden Ring FPS unlocked on a 9070XT works great,"Previously I had a 6900XT. It worked great with normal Elden Ring, easily getting consistent 60 fps at 4K. The issue was when I unlocked the fps limit with mods, there were random stutters. I could get 80-90 fps most of the time, but it would randomly drop to 40 and there would be spikes on the frametime chart. I used to think it was a CPU issue. I’ve seen Geekerwan mentioning Intel CPUs with E cores had abnormally 1% low is fps unlocked Elden Ring and I was running an i5-13500.
+
+Now that I’ve swapped the 6900XT to a 9070XT. The stutters just disappeared and the frametime chart is now butterly smooth. I guess I was blaming the CPU wrongly.",https://www.reddit.com/r/radeon/comments/1kpgeo6/elden_ring_fps_unlocked_on_a_9070xt_works_great/,james,False,True,False,s240,2025|product
+h066,mwxz3u,META,US,stocks,general,investor,2021,2021-04-23T15:35:32Z,How do you judge a company's future success outside of financial statements?,"This question came to me just recently after browsing Facebook Marketplace and seeing the sheer number of used iMacs and iPad Pros that have hit the market in the past couple of days since Apple's recent announcement of these updated products.
+
+I will admit that I do not go into deep dives into a company's financial statements and prefer sector ETFs (I have a large chunk of change in XLK), but I do not believe these products would be explicitly stated in Apple's financial statements. This got me thinking about how others find ""real world metrics"" that are outside of just financial statements/earnings calls that would lead to an appreciating stock price.
+
+I'd be curious to hear what other stocks people believe in based on what they see in their day-to-day life.",https://www.reddit.com,james,False,True,False,s069,2021|investor
+h067,p700r1,TSLA,US,teslamodel3,product,product,2021,2021-08-18T20:54:47Z,"Taking delivery of my Model 3 this weekend, decided to frame my last gas receipt!",,https://www.reddit.com,james,False,True,False,s316,2021|product
+h068,1qc5w05,AAPL,US,iphone,product,product,2026,2026-01-13T22:41:04Z,Apps for dynamic island?,"Heyy, I just bought an iPhone 17. I’ve upgraded from iP11 which is a huge jump to a whole different world haha. I’m curious about apps for dynamic island. I really want to try some apps for it.. perhaps those with pets walking on the dynamic island😂. Any suggestions? Please just free/lifetime subscription apps. (no monthly/weekly/yearly).
+
+Thanks in advance! ",https://www.reddit.com/r/iphone/comments/1qc5w05/apps_for_dynamic_island/,james,False,True,False,,2026|product
+h069,1hxtuvx,TSLA,US,teslamodely,product,product,2025,2025-01-10T02:13:26Z,Hardware 3 or 4?,"I have a 2023 Tesla model Y and I have been trying to figure out if I have hardware three or four? Please excuse the snow dirt all over the car, but I live in Pittsburgh. Based on these pictures I’m guessing it’s hardware 4 due to the redness in the camera? But I was also under the impression hardware 4 only had two cameras by the rearview mirror.",https://www.reddit.com/r/TeslaModelY/comments/1hxtuvx/hardware_3_or_4/,james,False,True,False,s030,2025|product
+h070,1tih506,GOOGL,US,stocks,general,investor,2026,2026-05-20T10:05:50Z,Feel free to share your thoughts and preferences,"Hey all,
+
+Mods removed my last post because they claimed I posted saying 'i had XXX amount of money what should I do with it'. Despite not mentioning capital amounts and not saying I am looking to be persuaded otherwise. As per their rules there are no memes. I wrote it myself so no AI and despite their claim of no research I chose those specific stocks after having done research. 
+
+However, it is fair because I didn't explain why I chose those stocks soI will include my reasoning underneath each stock just so they can see that I have in fact done my research and yes I wrote it myself. I am not a fan of LLM's they make constant mistakes. Doesn't mean that you can't ride the AI investing wave though! I'm just interested in what others who are more serious in the space are doing. I am simply just looking for an open discussion regarding choices you might have made.
+
+I know that everyone is sick to the teeth of hearing about Al infrastructure picks etc. As a very small play I have created my own basket (mostly for fun, it's just to scratch the itch). For those of you invested in this space, please feel free to share your picks and if you disagree with any of mine.
+
+As I said this is a mostly speculative/fun play. The majority of my funds are in an all world ETF and a bit of Google. My reasoning for this is that the absolute crazy hype around this entire sector might make a lot of people money but with excessive hype comes exceptional volatility. This is just my way of scratching that itch in a small way. Also final add on, I chose mostly mid cap companies, not all but most. Thank you and please be polite, this is not a super serious make or break investment basket just a speculative one.
+
+Compute/cloud: NBIS
+
+ GPU cloud business built from the ground up for AI, comparison might be AWS but focused entirely on the compute that AI companies actually need. Hyperscaler capacity is still massively constrained so demand is running way ahead of supply, which is showing up in triple digit revenue growth. GPU cloud is a market heading toward $500B by 2030 and i reckon this is a good way to get into it (despite run up). 
+
+Connectivity silicon: Astera Labs (ALAB)
+
+Makes chips that stop AI servers from creating bottlenecks when they're talking to each other. They're already qualified into Nvidia's Blackwell platform which means they're in on the next wave of data center builds. The market they're in is growing at around 30% a year and they're one of very few companies actually shipping product into it at scale.
+
+Optical manufacturing: Fabrinet (FN)
+
+Manufactures the optical components that let data move around inside AI data centers fast enough to keep up with modern GPU clusters. They make parts for some of the biggest names in photonics. I don't see as many people talking about them but pull them out and the whole thing slows down. With hyperscalers committing hundreds of billions to buildouts over the next few years, even if they nab a small part of the pie i",https://www.reddit.com/r/stocks/comments/1tih506/feel_free_to_share_your_thoughts_and_preferences/,joshua,False,True,False,,2026|investor
+h071,5vm2pc,AMZN,US,amd_stock,stock,investor,2017,2017-02-22T22:55:23Z,And Amazon's #1 Best Seller CPU is ...," 
+
+ 
+
+*Edit: 1800X preorders sold out both Amazon and Newegg (2/22 preorder release day)
+",https://www.reddit.com,james,False,True,False,s075,2017|investor
+h072,k2to6f,TSLA,US,wallstreetbets,general,investor,2020,2020-11-28T19:15:40Z,Nobody talking about Tesla almost reaching 600$ ?,,https://www.reddit.com,james,False,True,False,s175,2020|investor
+h073,5z5k26,GOOGL,US,wallstreetbets,general,investor,2017,2017-03-13T15:19:56Z,Making a case for $SNAP,"$SNAP, everyone's favorite stock to shit on. This is why it's a good investment. Tear me to shreds boys.
+
+**Snapchat's Issues**
+
+-Doesn't make money
+
+-Overvalued
+
+-Fad
+
+-Snap Glasses
+
+-""It's a worse Twitter""
+
+**Snapchat Loses Money**
+
+Yes. Snapchat is losing a lot of money. It costs them 1.93 for every dollar they ""make."" This is bad. But why are they so far in the red? Snapchat's biggest expense is the cloud storage space that they have to pay for to handle their incredible data load. It's easy to think this problem will grow as the app does. 
+
+Why isn't that a big deal?
+
+Cloud storage is getting cheaper, fast. This is a price record for Amazon's S3 cloud storage over time:
+
+$0.15 (before 2010)
+
+$0.14 (2010)
+
+$0.09 (2012)
+
+$0. 03 (2014)
+
+How much more can it go down? Google says that they anticipate that cloud storage costs should follow Moore's Law, meaning price should halve every 18-24 months. I think we are far from the price floor and that should reduce Snapchat's fees greatly over the next few years. 
+
+**Snapchat is like Twitter**
+
+Twitter's revenue growth has all but stopped (1%). That's terrible. People forget that Snapchat had 400% revenue growth in the same time period and continually raises growth estimates. Where Twitter has stagnated, Snapchat is booming. 
+
+**Snapchat is Easier to Advertise On**
+
+Snapchat is intertwined with ads. Featured stories, channels on the homepage, Snapchat has done something no platform has done; *Snapchat has made ads a feature, not an inconvenience*. People watch the CNN or E! stories because they want to, not out of obligation. This seamless integration of advertising is the only example in the entire industry. It's central and it's enjoyed and monetized. 
+
+**Snapchat is doing more**
+
+Snapchat is constantly rolling out new features. Two years ago, stories, adaptable filters, videos, chat messages and Snapcash didn't exist. Snapchat consistently updates and increases the functionality of their platform. Nobody else is doing this. 
+
+**Snapchat is communication and broadcasting**
+
+Twitter is about preaching to an audience that wants to listen with communication coming in second. People are less eager to get on a soapbox now. Snapchat makes it easy to do both. Stories display but chats are private. Follow your heroes on Snapchat but also talk to your mom! In the society of instant gratification people will gravitate towards that more rather than put together long text posts on Facebook. 
+
+**Snapchat is build on the foundation of the millennial**
+
+Snapchat's foundation is the selfie, the miracle of the 21st century. The selfie is going nowhere. 
+
+**Snapchat is only five years old!**
+
+It's got room to grow. 
+
+**Snap glasses!**
+
+Nope, they're retarded. Everyone else is right. 
+
+Now, that said, I don't own any $SNAP. I think sentiment is so bad on the company that even if they cured cancer they wouldn't break $25. However, I do think that if people start to think about it more, growth potential is huge. 
+
+Though",https://www.reddit.com,joshua,False,True,False,s149,2017|investor
+h074,1dbb1z8,TSLA,US,teslamodel3,product,product,2024,2024-06-08T19:44:01Z,Adaptive headlights,"
+Congrats to everyone with the matrix headlights. 
+
+With the new update do the lights actually mechanically move when going around turns?
+
+When using brights at night, will the matrix bulbs adapt the beam for oncoming cars or do brights just turn off as usual?",https://www.reddit.com/r/TeslaModel3/comments/1dbb1z8/adaptive_headlights/,joshua,False,True,False,s394,2024|product
+h075,7jnjvg,JPM,US,wallstreetbets,general,investor,2017,2017-12-13T23:45:23Z,JNUG is on fire once again! Riding to the sun!!,"I posted a [reminder](  yesterday for JNUG and DUST.  I explained that whatever move you see between 2pm and 2:30 pm is the start of a bigger move. 
+
+Here it is. JNUG is on fire. Ride it to the sun. Oh, don't get burned when it reaches the sun. Don't be too greedy.
+
+If you're wondering why JNUG is rallying? Here is the dummy explanation:
+
+* The forecast for the path of the fed funds rate came in mixed. Not hawkish enough, but not dovish enough either.
+
+* then the forecast for unemployment rate came in very dovish.
+
+* The big banks were proven wrong (or were just fucking lying through their nose). In the last 4 weeks, JP Morgan and Goldman Sach both announced that rate hikes will likely go from 3 to 4 for 2018. Fed dot plot came back with 3 rate hikes, just like they did in Sep. Banks were wrong and USD is sold off.
+",https://www.reddit.com,joshua,False,True,False,s360,2017|investor
+h076,7qxfd7,NVDA,US,wallstreetbets,general,investor,2018,2018-01-17T01:30:47Z,ASML earning to boost MU?,"Long story short, I was being greedy as usual and did not sell NVDA when it was up to 227 today. Got fucked. Plan was to sell and get some ASML and LRCX. 
+ASML gonna crush earnings, can it please leak some confidence into MU. 
+
+My heart cannot take the red anymore ",https://www.reddit.com,joshua,False,True,False,s283,2018|investor
+h077,q3dnnl,AMZN,US,aws,product,product,2021,2021-10-07T17:07:45Z,Amazon S3 Command Line Bucket Permission Issues,"I have a bucket that I have access to. When I run this command on the AWS CLI, it works just fine and I can access all the objects in the bucket:
+
+`aws s3 ls mybucket`
+
+But I also just had another bucket that was created for me with all the same permissions, but when I run:
+
+`aws s3 ls test-mybucket`
+
+I'm met with the following error:
+
+`An error occurred (AccessDenied) when calling the ListObjectsV2 operation: Access Denied`
+
+I've searched for this error on Stack Overflow and Google, but everything recommended doesn't seem to do the trick.
+
+I don't really understand why this is happening because neither bucket (including the one that works) has a different access policy and based on my current permissions I posted below, shouldn't that give me access to ALL buckets?
+
+This is the current permissions setup my IAM account has:
+
+    {
+        ""Version"": ""2012-10-17"",
+        ""Statement"": [
+            {
+                ""Sid"": ""VisualEditor0"",
+                ""Effect"": ""Allow"",
+                ""Action"": ""s3:ListBucket"",
+                ""Resource"": ""*""
+            }
+        ]
+    }",https://www.reddit.com,james,False,True,False,s097,2021|product
+h078,mx4mf7,GOOGL,US,stocks,general,investor,2021,2021-04-23T20:42:10Z,"Here is a Market Recap for today Friday, April 23, 2021","**PsychoMarket Recap - Friday, April 23, 2021**
+
+Stocks rose on Friday, largely recovering after a sharp sell-off yesterday following news that President Biden was planning a proposal to increase the capital gains tax rate on wealthy individuals. The S&P 500 (SPY) closed the day 1.10% up, recording a fresh intraday high. The Dow Jones (DIA) closed 0.67% up and the tech-heavy Nasdaq (QQQ) closed 1.26% higher.
+
+Yesterday, stocks sold off sharply following a report by [Bloomberg](  suggesting President Biden will propose almost doubling the capital gains tax rate for wealthy individuals earning $1 million or more per year to 39.6% to help pay for a slew of social programs and the proposed infrastructure bill. The new 39.6% rate would almost double the tax rate from the current base rate of 20%,  people familiar with the matter said on the condition of anonymity because the plan is not yet public. The proposal could reverse a long-standing provision of the tax code that taxes returns on investment lower than on labor salary. 
+
+However, the sharp bounce-back in equities today suggests the initial sell off was overdone. As we have suggested in previous recaps, the current high valuations of many companies even as corporate earnings blow past analyst expectations suggest there is froth in the market. In other words, the market is pricing in the most positive news, so it is not surprising to see any bad news sparking a sharp selloff. As Kathy Jones, chief fixed income strategist at Charles Schwab said, “I think the immediate reaction was probably a bit overdone. These proposals come out and you never know, especially with tax proposals, where we'll end up. So it looks like an opening bid. I'm sure there will be intense lobbying from the investment community to adjust those numbers. But I think at the moment, when you have very high valuations in the market, anything that is bad news can spark a bit of a sell-off.""
+
+In other news, the Labor Department’s Weekly Unemployment Report blew past analyst expectations for the second straight, signaling improving conditions in the labor market and corroborating the pick-up in economic activity as the economy reopens. 
+
+* **Initial jobless claims, week ended April** **17:** 547,000 vs. 610,000 expected and below last week's total of 576,000
+* **Continuing claims, week ended April 3:** 3.674 million vs. 3.650 million expected and below last week’s total of 3.708 million 
+
+**Highlights**
+
+* Kathy Entwistle, managing director at Morgan Stanley (MS), “we’re going to have our own form of the Roaring Twenties.” [(Full quote here)]( 
+* According to the[ Department of Commerce](  new home sales surged 20.7% in March compared to February, well above the  14.2% expected for the highest monthly surge since 2006.
+* The U.S. manufacturing sector's preliminary purchasing managers' index for April rose to 60.6, from 59.1 in March,[ IHS Markit reported Friday.](  This marked the highest level since the firm began tracking the metr",https://www.reddit.com,joshua,True,True,True,s031,2021|investor
+h079,1wj9qzl,TSLA,US,teslainvestorsclub,stock,investor,2026,2026-09-17T23:25:01Z,Tesla Debuts Pre-Assembled Accordion Superchargers,,https://www.reddit.com/r/teslainvestorsclub/comments/1wj9qzl/tesla_debuts_preassembled_accordion_superchargers/,james,False,True,False,,2026|investor
+h080,rvv38k,AMZN,US,wallstreetbets,general,investor,2022,2022-01-04T14:02:38Z,What Do You Think of AFRM?,"Buy-Now-Pay-Later seems to have gotten a bad reputation of late, but I still think it’s the wave of the fintech future. I especially think that since AFRM scored deals with AMZN and tens of thousands of other retailers, that Q4 with Christmas will be gangbusters and show BNPL’s durability and growth potential.
+
+Now, I’ve been in AFRM for about six months, and boy has the road been rocky. Volatile swings along with a lot of other growth stocks, especially since the CFPB launched an “inquiry” into BNPL that I think is going nowhere. 
+
+Anyway, let me know what y’all think. If I should cut my losses or double down. Note: I have done some DD, perhaps not enough, though enough to know that their delinquency rates are not as big a deal, and no reason to buy puts on AFRM.",https://www.reddit.com,joshua,False,True,False,s110,2022|investor
+h081,owrdad,AMZN,US,wallstreetbets,general,investor,2021,2021-08-03T00:05:59Z,"$SNAP insiders sold $480 MM in the last 2 months, 3.5x more than usual","At this rate, SNAP insiders are on track to sell $2.9 billion of stock per year, or about 2.4% of the market cap. If they continue selling at this rate, which they are as of today, get ready for some big fat red dildo candles into the stop loss slip and slide. Large increases in monthly selling like this by top executives have been some of best 1-3 month shorts with 100-400% in gains. 
+
+Average joe all like: ""i like sending dick pics on this app"", ""good earnings"", ""an analyst said it's now a $100 stock!"" fuck it, i'll throw $5k in with a 5% stop loss at $73, def won't go tits up.
+
+Meanwhile wall street and insiders are quietly cashing out billions on you suckers. 
+
+ 
+
+ 
+
+​
+
+**Concerning metrics:**
+
+Net income: **-$0.75 billion a year** 
+
+Price to sales ratio: **35**
+
+Forward price / earnings ratio: **95**
+
+​
+
+ 
+
+Seriously tho, who buys anything they see on SNAP?? Sure the app is fun and a few good dick pic sends were had, but as a business, I'd much rather advertise on FB/TWTR/instagram/GOOGL/AMZN. SNAP is now 10x the bottom of march 2020 crash just 1.5 years ago, pretty extreme for 112% sales growth TTM (that they are spending billions on in software development to achieve).
+
+I think a gap fill to $64 is likely here in the next few months. Lack of buyers post-earnings and the fresh low of $73.50 today looking very bearish. Great way to hedge to the downside if market pulls back again. 
+
+TL;DR: SNAP sept $70p and short shares @ $74",https://www.reddit.com,james,False,True,False,s224,2021|investor
+h082,94s7xu,META,US,stocks,general,investor,2018,2018-08-05T14:27:57Z,Would $FB ever be interested in acquiring Reddit?,"Thinking about FB’s mission of bringing people together, and creating communities online, it sounds like Reddit fits that mold perfectly. I’d be interested to hear your thoughts on the matter as  it seems like a company that Facebook would love to be apart of their suite.",https://www.reddit.com,james,True,True,True,s126,2018|investor
+h083,4qezmw,AMD,US,amd,product,product,2016,2016-06-29T11:21:00Z,This sub at the moment.,,https://www.reddit.com,joshua,True,True,True,s306,2016|product
+h084,5cezbh,TSLA,US,investing,general,investor,2016,2016-11-11T15:19:33Z,Solarcity... hold or sell,"As a shareholder of Solarcity (SCTY), should I hold the stock and wait for the potential merger with Tesla? Or is this too risky and I should jump boat now?",https://www.reddit.com,james,False,True,False,s266,2016|investor
+h085,zuirds,META,US,oculusquest,product,product,2022,2022-12-24T21:04:37Z,"Should have kept the roof up (PCVR with Quest 2, Assetto Corsa)",,https://www.reddit.com,joshua,False,True,False,,2022|product
+h086,1krn7hl,AMZN,US,wallstreetbets,general,investor,2025,2025-05-21T02:38:48Z,$PPC: American Chicken Tendie Gains,"Been posting about this play for a while. Yesterday, to my surprise, Elizabeth Warren [queried](  **Pilgrim's Pride** over currying favor with **Trump**. She was concerned over the fact that **Pilgrim's Pride** was the single **largest corporate donor** to the Trump Inauguration, beating **AMZN, MSFT, AAPL,** and **META** by 5x. Concerning... Looking into this..
+
+  
+To be honest, I thought this would be **slightly bearish,** but apparently **not**. The stock spiked quite a bit. Still going to hold for a potential **Indian Trade Deal** where they might drop their **100% chicken tariff.** It's a good time to be an **American Tendie Lover.**",https://www.reddit.com/r/wallstreetbets/comments/1krn7hl/ppc_american_chicken_tendie_gains/,james,False,True,False,s288,2025|investor
+h087,5z8haq,AMD,US,wallstreetbets,general,investor,2017,2017-03-13T23:07:17Z,[x-post /r/hardware] Nerds complaining about AMD. Get ready for the drop,,https://www.reddit.com,joshua,False,True,False,s233,2017|investor
+h088,uwaybq,AMZN,US,stocks,general,investor,2022,2022-05-23T21:32:03Z,GOOGL Dip After Hours,"The whole market, for the most part, saw a Green Day today. 
+
+However, GOOGL has, since market close, given up the entire day’s earnings and then some. 
+
+I tried to find some news, but not seeing it. 
+
+Did something shake GOOGL down at market close that is not easily found online?
+
+Note: AMZN also looks like it’s getting a bit beat up after hours.",https://www.reddit.com,joshua,False,True,False,,2022|investor
+h089,jnuor3,NVDA,US,nvidia,product,product,2020,2020-11-04T10:51:53Z,In two minds whether to keep 3070,"I ideally wanted a 3080 but I thought I'd get a 3070 as I didn't know how long I'd be waiting. Now I have my 3070 turning up today and I'm in two minds to keep it.
+
+I ideally want to get 3/4 years of playing games in high/ultra settings on 1440p.
+
+I play on a TV so as long as I get 60fps I don't really care about the extra.
+
+Do you think this is likely?",https://www.reddit.com,james,False,True,False,s325,2020|product
+h090,10noewm,AAPL,US,investing,general,investor,2023,2023-01-28T20:17:31Z,Are earning releases good times to buy/sell?,"Earnings for Apple, Snapchat, Meta, and Amazon are all coming out this week. I've never traded during a time like this, so I'm wondering: is it really easy to gain money if earnings are higher than expected, and you buy? Or is everyone buying and it's really difficult to get an order through? Or are the stock prices not predictably correlated to the earnings of a company?",https://www.reddit.com/r/investing/comments/10noewm/are_earning_releases_good_times_to_buysell/,james,True,True,True,s033,2023|investor
+h091,181y5v5,NVDA,US,nvidia,product,product,2023,2023-11-23T10:16:14Z,Vsync + Gsync + LLM Ultra = Incredible FG//Latency,"Hello!
+
+I was browsing the nvcp, when i found new description on low latency mode: Ultra ""....remove input lag when using vsync+gsync""
+
+And oh boy does it work! Gsync+vsync+llm ultra remove All frame generator flaws. I used to have screen tearing with FG while using just gsync and capped fps. Adding vsync on nvcp remove tearing, but add input lagg. With LLM ultra running games like starfield 120fps etc feel like native 120fps. The input lag is instant! Super responsive, fast as your monitor can be! I have s95b qd oled 5ms and it never felt more responsive. And all this with performance multiplier of FG!
+
+On NVCP:
+Enable gsync fullscreen and windowed
+Enable vsync(no fastsync or get tearing)
+Enable low latency mode: Ultra
+
+Ingame dont enable vsync.",https://www.reddit.com/r/nvidia/comments/181y5v5/vsync_gsync_llm_ultra_incredible_fglatency/,james,True,True,True,s152,2023|product
+h092,1q2azqr,AMZN,US,stocks,general,investor,2026,2026-01-02T21:20:33Z,"Pro Analysis
+SpaceX stock debut is the big market event of 2026. Why Musk’s venture could be biggest IPO ever","As billionaire entrepreneur Elon Musk readies to take SpaceX to the public market, investors are awaiting the chance to get in on what is expected to be the biggest IPO on record.
+
+ Musk said late last month that reports of the space technology company’s plans to go public this year were “accurate.” Multiple outlets reported that the IPO was in the works following a share sale valuing the firm at around $800 billion.
+
+ SpaceX is reportedly looking at a value of around $1.5 trillion when it hits the public market. That would surpass the prior record set by the Saudi Aramco IPO in 2019.
+
+Wall Street heavy hitters have already begun throwing their weight behind SpaceX as private investors. Baron Capital’s Ron Baron said around a quarter of his personal investments are in the company. On top of that, SpaceX is one of the largest positions in the Baron Partners Fund. It’s also the biggest holding in the ARK’s Venture Fund run by Cathie Wood.
+
+SpaceX has shown leadership in the low-earth orbit, or LEO, market, according to Jefferies. SpaceX saw a quarterly record for LEO launches at 971 in the final three months of the year, an increase of more than 30% from the prior quarter and about 70% from a year ago, the bank found. The company launched more than 3,200 satellites in 2025, a new yearly record and increase of more than 60% from the prior year.
+
+Analyst Kevin Lin told clients that SpaceX’s launch volume is “accelerating,” while competitor Amazon. Leo is “lagging” despite entering a stable launch phase. Amazon said in November that businesses could test out its rebranded Leo product as it aimed to make up ground against Musk’s Starlink.
+
+Lin said he expects the total number of launches from across companies to hit all-time highs in the near future. SpaceX’s outlook is bright for another reason: data centers. Technology moguls looking for ways to build out infrastructure to support the artificial intelligence boom are increasingly looking to firms like SpaceX that could put data centers in space, Lin said. Space data centers are expected to “drive” the total addressable market for the LEO sector, the analyst added. 
+
+“In response to the surge in demand for AI computing power and the Earth’s energy bottleneck, the topic of space data centers has gained momentum,” Lin told clients. 
+
+To be sure, Deutsche Bank analyst Edison Yu said there are key problems that need to be worked out in order to effectively put data centers in space. However, Yu said he’s “encouraged” by seeing companies such as Google and OpenAI also looking at how to do this. “There are clearly technical challenges to making this a viable endeavor but these seem to be engineering constraints as opposed to physics,” Yu wrote to clients in a note last month. 
+
+A bumper SpaceX IPO could further drive up the wealth for Musk. His controversial $1 trillion pay package from his electric vehicle company Tesla was approved by shareholders late last year.",https://www.reddit.com/r/stocks/comments/1q2azqr/pro_analysis_spacex_stock_debut_is_the_big_market/,james,True,True,True,,2026|investor
+h093,9spsrl,META,US,wallstreetbets,general,investor,2018,2018-10-30T16:59:01Z,Facebook is getting less google searches. If $FB misses its already low expectations... Worse than AMD,,https://www.reddit.com,joshua,False,True,False,s001,2018|investor
+h094,1h63dsu,META,US,wallstreetbets,general,investor,2024,2024-12-04T00:50:13Z,"If you had $50 to roll the dice with, what would you buy? That’s fifty whole dollars. 😬","I have $50 left in my brokerage account after clearing out my company stock. Last time this happened, I bought Asia Broadband (AABB) on a tip from a Facebook friend. Looking for something a little more exciting. ",https://www.reddit.com/r/wallstreetbets/comments/1h63dsu/if_you_had_50_to_roll_the_dice_with_what_would/,joshua,False,True,False,s270,2024|investor
+h095,1mwecnn,NFLX,US,wallstreetbets,general,investor,2025,2025-08-21T15:35:08Z,Carnival Murder Mystery?,Same day? Same location? Smells like a Netflix documentary. PUTS? CALLS? Who knows 😅,https://www.reddit.com/r/wallstreetbets/comments/1mwecnn/carnival_murder_mystery/,james,False,True,False,s367,2025|investor
+h096,jnmi0u,MSFT,US,windows,product,product,2020,2020-11-04T00:26:53Z,windows background images dont fit properly,"So yeah, as the tittle says all of the images ive tried to set as a desktop background dont fit properly, ive tried diferrent fittings on the settings and nothing. Pls help.",https://www.reddit.com,james,False,True,False,s048,2020|product
+h097,94t6cg,AMZN,US,aws,product,product,2018,2018-08-05T16:41:37Z,At AWS re:Invent can you get access to only the vendor booths?,"Am going to re:Invent this year and a friend will be in town. Want to walk the vendor booths together without them having to get the full access ticket.
+
+Is there a discounted (hopefully free) pass that only gets access to these areas?",https://www.reddit.com,joshua,False,True,False,s003,2018|product
+h098,7r2xsy,AAPL,US,wallstreetbets,general,investor,2018,2018-01-17T18:11:29Z,What else can I diversify with??,"I was wondering your guys opinions on what else should I invest in(long term), with an explanation please.
+
+Not the usual faggot shit half of you guys fuck with:)
+
+MU, V, WM, RRC, TELL, AAPL, MJX, JNUG(short term), SCHK, MORL(short term), BA, LMT and EWO. These are currently what I own, most of them have a solid amount of shares.",https://www.reddit.com,joshua,True,True,True,s105,2018|investor
+h099,13bcadz,AAPL,US,iphone,product,product,2023,2023-05-08T03:18:33Z,Keep iPhone unlocked when wearing an Apple Watch ?,"Coming from Android we have a feature that allows ""trusted devices"" to keep the phone unlocked while the phone is in vicinity of, say, a watch.
+
+I understand there is a *somewhat similar feature* for the iPhone but it still requires a faceID
+
+Is there any way to have the iphone remain unlocked ?",https://www.reddit.com/r/iphone/comments/13bcadz/keep_iphone_unlocked_when_wearing_an_apple_watch/,james,False,True,False,s087,2023|product
+h100,7r4xmg,AAPL,US,investing,general,investor,2018,2018-01-17T22:32:44Z,"Multinationals parked foreign income in U.S. debt to avoid IRS, companies may liquidate their bond holdings"," 
+
+> For years, the likes of Apple Inc. and Microsoft Corp. have stashed billions of dollars offshore to slash their U.S. tax bills. Now, the tax-code rewrite could throw that into reverse.
+
+> The implications for the financial markets are huge. The great on-shoring could prompt multinationals -- which have parked much of their overseas profits in Treasuries and U.S. investment-grade corporate debt -- to lighten up on bonds and use the money to goose their stock prices. Think buybacks and dividends.
+
+> It’s hard to say how much money the companies might repatriate, but the size of their overseas stash is staggering. An estimated $3.1 trillion of corporate cash is now held offshore. Led by the tech giants, a handful of the biggest companies sit on over a half-trillion dollars in U.S. securities. In other words, they dwarf most mutual funds and hedge funds.
+
+TL;DR: Companies have been storing their cash in US Treasury bonds (and other sorts of debt) offshore to avoid the IRS. With the new tax laws, they are likely to begin selling off those bonds, and some of the money will be spent on stock buybacks and dividend.
+
+This will also occur when the US is going to issue more Treasury bonds to cover the budget deficit, and if the infrastructure bill makes progress.",https://www.reddit.com,james,False,True,False,s353,2018|investor
+h101,mwy8pp,AMD,US,amd_stock,stock,investor,2021,2021-04-23T15:48:03Z,Cramer on AMD / Intel,Cramer on how Intel is performing compared to AMD amid chip shortage   ,https://www.reddit.com,joshua,False,True,False,s259,2021|investor
+h102,4n20ng,TSLA,US,teslamotors,product,product,2016,2016-06-07T23:27:14Z,Pickup from Our Wedding in a Model X?,"I have an odd request but thought why not try. I'm getting married on June 11th in Fallbrook CA and we were discussing how to get from the party to our hotel for the night around 6 miles away at 11pm. 
+
+I'm not much of a car guy but I'm obsessed with Tesla. We have our money down on the 3. We were thinking what could be cooler then jumping in the  falcon wing doors and leaving in style in a Model X. 
+
+Would anyone on this subreddit be interested in taking us? I know it's a huge ask but thought it would be better then just settling for a ride in the back of a Corolla. Haha",https://www.reddit.com,james,True,True,True,s331,2016|product
+h103,p72aqk,NVDA,US,stocks,general,investor,2021,2021-08-18T22:53:08Z,Looking for feedback/advice on what to do with some of my positions.,"Hi all! I hope you guys have had a good week in the market, and thanks for taking the time to read this lengthy post!
+
+I would like to preface this post by saying that I am currently a University student with little to no need for the money I have invested. The sole purpose of my investments is to give me a nice sum of money for when I graduate in 5 years to start my life with, or 7 years if I choose to get a master's degree. I am a very hands-off investor and I like to just buy something and then let it sit to grow over time.
+
+As of now, I have gained around 18% overall since I started investing at the end of January this year. Currently, I have positions in the following stocks and this is how they've performed for me over the last few months:
+
+\- AAPL **+10.5%**
+
+\- AAL **+29.15%**
+
+\- AKBA  **-43.36%** (Ouch, luckily I only lost around $170, so it's not the end of the world)
+
+\- AMD **+7.75%**
+
+\- DAL **-2.15%**
+
+\- DIS **-2.39%**
+
+\- F **+12.21%**
+
+\- MSFT **+32.86%**
+
+\- MTCH **-10.06%**
+
+\- NVDA +**42.54%**
+
+\- TSM -**4.78%**
+
+Overall, I currently have about $22K invested and $3K in cash. I'm personally relatively pleased with the performance of most of my choices with the obvious exceptions being those that I've lost a decent amount of money on. But with that being said, I feel like with how I'm treating my investments, my money could be better allocated in something safer like an index fund. And this is where I seek your guys' advice. I've thought of 2 different options and I'd love to hear what you guys have to say and what you'd suggest I do.
+
+​
+
+**Option 1:** This is the option I'm leaning towards currently. My plan would be to sell my DAL, DIS, MTCH, and AAL and to hold the cash until there's a dip in the market and then invest most of it into  VOO and QQQ (I think I'll go for a 60/40 split). I would like to move a decent portion of my investments into these funds so that I can just forget about them and let them grow slowly but steadily over the next few years. If I were to pull out of these stocks now, I would be taking a $151 loss on DAL, DIS and MTCH combined, and a $400 gain on AAL. This would leave me with around $8000 total to toss into VOO and QQQ which seems like a decent amount. With all this being said, I'm hesitant to do this because I would be taking a loss on most of those stocks, and also, because of how uninvolved I've been with my investments, I've unfortunately missed out on some really nice gains with DAL and MTCH (Had I been paying attention, I could've sold both for a combined profit of around $1500). This is a real shame and it is why I'm tempted to just hold on until I can make some profit on them in the future. This is where option two comes in.
+
+**Option 2:** Close Yahoo Finance, and just calm down. I'm in it for the long run so why chicken out now and sell anything at a loss? I'd just hold on for the next few years and check in every now and then to make sure things haven't gone tits up. Most of the companie",https://www.reddit.com,james,False,True,False,s356,2021|investor
+h104,1c3nxr9,NVDA,US,nvidia,product,product,2024,2024-04-14T07:36:38Z,4070ti with i79700K,"Just received my new 4070ti, but apparently it is bottleneck around 40% by my i7 9700k ??? Is there a way out of this without buying a 500$ cpu?",https://www.reddit.com/r/nvidia/comments/1c3nxr9/4070ti_with_i79700k/,james,False,True,False,s123,2024|product
+h105,jb423z,MSFT,US,windows,product,product,2020,2020-10-14T16:31:34Z,Using Apple in a Windows/Android Ecosystem?,"I am currently using a PC and laptop with Windows and have a Samsung S10+. I started seeing my friends use their iPads for notetaking and doing homework assignments. Occasionally, I also used their iPads to work out some of my homework problems on the Notability app, and the apple pencil and iPad seem to work very seamlessly with no lag. I usually take notes and do homework on paper but transitioning into electronic notes looks very attractive right now. My questions are...  
+
+
+1. Is it easy to integrate an iPad into a Windows/Android environment in terms of file transfer from iPad to PC or Android?  
+
+2. If not, is there another Windows/Android device similar to an iPad with a stylus that works as well as the Apple pencil that I should consider?  
+
+
+I am familiar with iOS and how to use the iPad. My main concern is the ability to transfer files between devices for school. The Notability App would probably be my main source for schoolwork as it is the only app that I've used for school.",https://www.reddit.com,joshua,False,True,False,s007,2020|product
+h106,1wv1wq0,TSLA,US,teslainvestorsclub,stock,investor,2026,2026-10-01T15:07:17Z,"Tesla September registrations rise across Europe, extending recovery",,https://www.reddit.com/r/teslainvestorsclub/comments/1wv1wq0/tesla_september_registrations_rise_across_europe/,joshua,False,True,False,,2026|investor
+h107,fyx64j,NFLX,US,netflix,product,product,2020,2020-04-11T05:23:37Z,Quick question about upcoming releases,How do you tell if a show is releasing all at once? I can’t find anywhere if Netflix will be releasing Outer Banks or Space Force all at once or weekly. Cheers!,https://www.reddit.com,james,False,True,False,s319,2020|product
+h108,jax9dp,JPM,US,investing,general,investor,2020,2020-10-14T09:10:29Z,JP Morgan raises target price of $40 for NIO," 
+
+JP Morgan analysts led by Nick Lai raised their price target on NIO sharply to $40 in a report released on Wednesday.
+
+
+NIO shares closed at $21.62 on Tuesday, and JP Morgan's price target means NIO has 85% upside potential.
+
+NIO shares went up by more than 7 percent in pre-market trading on Wednesday.
+
+
+JP Morgan sharply raises NIO price target to $40, representing 85% upside potential-cnTechPost
+
+
+JP Morgan's last rating on NIO was Neutral and was made on June 21, when the price target was $14.
+
+In its latest report, JP Morgan gave NIO an Overweight rating and admitted that ""we missed the stock's major rally YTD.""
+
+The report said Nio remains attractive from a long term perspective.
+
+We are upgrading the stock to OW from Neutral and set a new Jun-21 PT of USD40 based on 3.0x 2025E EV to sales.
+
+Admittedly, we missed the stock's major rally YTD. Instead of trying to justify a higher PT, we review our long term investment thesis based on our bullish top-down sector view, introduce 2025 earnings projection and draw implication to the current stock price.
+
+We come to the conclusion that Nio remains attractive from a long term perspective.
+
+We project the company to earn a ~7% market share in passenger EV market by 2025 or specifically ~30% share in the premium space which Nio focuses on.
+
+In the near term, key catalysts would include:
+
+1) anticipated solid 3Q results in mid-November, where we forecast GPM to further expand to ~12% vs. 8% in 2Q20.
+
+2) Robust order backlog, in particular, the newly launched EC6 crossover model for which the wait time is around eight weeks due to initial productionramp and very strong demand.
+
+3) A new sedan model scheduled to debut on ""Nio Day"" in December which should further enhance the company's current product portfolio (of two SUVs - ES8 and ES6, and one crossover - EC6).
+
+Following the introduction of our 2023-25 earnings forecasts, we lift our Jun-21 PT to USD40 based on 3.0x EV to 2025E sales, the same valuation approach (of 3.0x EV to 2025E sales) we apply to Xpeng Auto, another Chinese EV start-up.
+
+This also presents a meaningful discount to Tesla's current 5.1x EV to 2025E sales, which we believe is reasonable considering Tesla's technology leadership globally and market share momentum especially in China.
+
+Previously, we followed average of three approaches in Nio's valuation analysis including EV/sales, PER and EV/EBITDA, which gives us a PT of USD36.
+
+Considering consistency of valuation methodology across EV OEMs under coverage, we now move Nio's approach to EV/sales.
+
+Investment Thesis, Valuation and Risks
+
+NIO Inc. (Overweight; Price Target: $40.00)
+
+Opportunities in 2021:
+
+(1) Rising NEV penetration with an emerging and structural shift from ""B"" to ""C"" – with Tesla's localized Model 3 and aggressive pricing; we see an increasing (and unexpected) trend where more EV buyers are individuals, rather than corporates or individuals living in cities with purchase quotas – this structural wave could bro",https://www.reddit.com,james,False,True,False,s333,2020|investor
+h109,9snf8z,NVDA,US,amd_stock,stock,investor,2018,2018-10-30T12:35:13Z,Meanwhile NVDA is also going into recession,It seems that AMD down is not due to EPYC 2 competitiveness. Semi is going to be collapsed in this longest ever bull run,https://www.reddit.com,joshua,False,True,False,s182,2018|investor
+h110,5vll97,NVDA,US,wallstreetbets,general,investor,2017,2017-02-22T21:35:16Z,Anybody know why NVDA is down AH on 150k shares traded?,"I know it's just 1.5% but I'm curious why the sudden spike down when tesla jumped, assuming they are correlated. 
+
+Edit: now past 2.5%. Glad I got out today and dumped into AMD 
+
+Edit: AMD decided to join-in in cucking me
+
+Edit: 3% down now on 350k shares. Anyone saying this is ""just AH activity"" is an autist",https://www.reddit.com,james,True,True,True,s278,2017|investor
+h111,7r2wmw,AMZN,US,aws,product,product,2018,2018-01-17T18:07:21Z,How to create and secure AWS EB app with multiple envs?,,https://www.reddit.com,james,False,True,False,s212,2018|product
+h112,zukt8l,TSLA,US,teslainvestorsclub,stock,investor,2022,2022-12-24T22:49:48Z,"Tesla's demand issues may start supplanting supply issues, says former Ford CEO",,https://www.reddit.com,joshua,False,True,False,,2022|investor
+h113,5cbdre,JPM,US,wallstreetbets,general,investor,2016,2016-11-11T00:10:51Z,$JPM YOLO 95% gain on weeklies after Jamie Dimon Treasury Secretary rumor,,https://www.reddit.com,joshua,False,True,False,s265,2016|investor
+h114,agltth,NFLX,US,investing,general,investor,2019,2019-01-16T14:48:24Z,"Investing in Volatility; if you think something is going to move a lot, and soon, but don't know which way, what do you do?","So I've been watching Netflix (NFLX) for a while.  After a mediocre earnings report late last year the stock price dropped almost to half, and as the market has been healing the last few weeks it's almost directly between its 6 month high and 6 month low.
+
+Earnings report should come out this week, and I believe that immediately following the earnings report, whether it's above expectations, below them, or exactly them, it's going to move 6-7%.
+
+The question then is: is there a way to capitalize on this belief?  
+
+Can I invest in the volatility alone (over flatness) by doing something like, say, buying a put and a call option for its exact current price?  If so, how and what would that process look like?  Should I sell one option and allow the other to run long term and/or expire?  Would it be better to do short term options or longer term options?  What influences the actual price of options?
+
+I played with options before and I still don't really feel like I understand them much beyond their dictionary definition; as far as how to actually USE them when I believe a certain thing is true?  no idea.  Assuming that would be the best approach, here are the [current put/call prices for NFLX]( 
+
+As a side note I'm currently holding quite a few shares, and I have liquidity, so my plan at the moment is ""sell if it goes up, buy more if it goes down"", which feels a bit pedestrian...",https://www.reddit.com,joshua,False,True,False,s387,2019|investor
+h115,1jmor94,AMD,US,radeon,product,product,2025,2025-03-29T15:27:43Z,"Be careful, these scammers are at it BIG TIME today!","My heart jumped for a sec thinking this was the first decent pricing stock, and the ""add to cart"" option can eaily make you think its coming straight from amazon. But NOPE! A few clicks will show you it's from some unknown seller, chinese address, none to little reviews, etc... 
+
+I got taken once last year like this but seriously, how does amazon keep allowing this? Especially in a capacity like this(8 different items). Just hoping this post might help someone not have their time, or worse, money wasted. Happy hunting everyone",https://www.reddit.com/r/radeon/comments/1jmor94/be_careful_these_scammers_are_at_it_big_time_today/,joshua,False,True,False,s213,2025|product
+h116,tkkhop,TSLA,US,teslalounge,product,product,2022,2022-03-23T03:06:27Z,PPF or No PPF… current dilemma. HELP?,I know we’ve all heard that Tesla make is subpar to other paint jobs in the automotive industry. Ive seen so many people opt for PPF to help with damage to the paint for normal wear and tear. But I’ve heard some stories of after the PPF is removed or on for a long time that the under paint molts of like a cicada? Has anyone had issues with their PPF after having it on for an extended period of time? Would you recommend? Or no?,https://www.reddit.com,joshua,False,True,False,,2022|product
+h117,jb13uj,TSLA,US,teslainvestorsclub,stock,investor,2020,2020-10-14T13:54:59Z,Tesla TSLA Price Target Raised To $450 From $400 By Goldman Sachs,,https://www.reddit.com,joshua,False,True,False,s366,2020|investor
+h118,bj3w7i,JPM,US,chase,product,product,2019,2019-04-30T14:23:12Z,Chase Bank does not protect it's customers," I just recently upgraded to the Chase Sapphire Reserve. $450 a year and Chase still does not protect their customers from unscrupulous merchants. I called a hotel directly to cancel a reservation. I was only a few hours past the cancellation window but spoke to an employee who assured me the reservation would be cancelled with no charge. I had a cancellation number, time, date, and employee name. A week later, I was charged for one night. I disputed the charge but Chase sided with the merchant who suddenly claimed the cancellation never occurred. After 12 years and tens of thousands of dollars banking with Chase, not to mention an average of $10K a month in credit card charges, I will be looking for a new bank. I suggest you look elsewhere as well.",https://www.reddit.com,joshua,False,True,False,s141,2019|product
+h119,1hv0oht,GOOGL,US,investing,general,investor,2025,2025-01-06T14:48:55Z,SNDL AND THE CASE OF IMPRESSIVE NUMBERS,"TLDR:
+SNDL HAS $768,000,000 OF CASH, MARKETABLE SECURITES AND INVESTMENTS AND NO DEBT WITH A MARKET CAP HOVERING AROUND 500M. REPURCHASED 3.7M SHARES FOR CANCELLATION lowering there own market cap in the process. THEY HAVE QUIETLY BECOME A USA AND CANADA MULTINATIONAL OPERATOR. INSIDER BUYS. INSTITUTIONAL OWNERSHIP IS HIGH AND GETTING HIGHER. FINANCE STRATEGY IS BAR NONE. HIGH LIKELIHOOD OF PROFITABILITY BEING REPORTED WITH THE MARCH REPORT. FREE CASH FLOW POSITIVE. SEASONED INVESTORS LIKE THE STOCK.
+
+
+I plan to quote unioncannabisblog's posts in this post because he has already done a bunch of things that I see no need to re-do. Cheers to you and the good content you put out  
+
+Here is a post union made about a Seth Yakatan (widely considered one of the smartest investors in cannabis) interview where he calls Zach George CEO of SNDL one of the 5 smartest people he has ever met.
+ 
+
+Here is a post where union talks about the fact that SNDL purchased roughly 3,700,000 share of their own stock in the last month at price ranges from 1.70-1.90 a share. While I didnt do the math myself I did personally check sedi.ca and this information is real. Check for yourself if you desire.
+
+ 
+
+Below is something I posted last week.
+
+All financials discussed in CAD unless otherwise stated. These figures are pulled directly from the SNDL webpage third quarter 2024 report unless otherwise stated.
+
+SNDL has $763.8 M of unrestricted cash, marketbale securities and investments and no outstanding debt. $263m of which is unrestricted cash. Net book value of $1.2billion. After releasing the aforementioned numbers SNDL acquired the remaining stake in Nova reducing its unrestricted cash by $37.7m leaving $225.3m in unrestricted cash.
+
+As of writing this, SNDL's market cap is $475.24m USD. (sourced from google ai search results).
+
+""SNDL has not raised cash through share offerings since June 2021""
+Free cash flow in the third quarter. ""SNDL is on pace to deliver free cash flow for the 2024 calendar year, in line or ahead of guidance.""
+
+
+
+On November 13, 2023 SNDL's board approved a renewal of the share repurchase program of up to 5% of the outstanding shares of SNDL for purchase and deletion, reducing the float, up to $100m. On 11/20/2023 this program was renewed.
+
+Subsequent to the quarter end, in October 2024 SNDL purchased 59,417 shares for cancellation at a purchase of $1.90 USD per share.
+Institutional investors currently own 15%(fintel) of SNDL with Cannell capital(added 3.5m shares, total holding just under 8.3M shares), tidal investments, morgan stanley, prelude capital, Citadel all adding to their  existing position in the last quarter as well as many more.
+
+James Cannell, manager of Cannell Capital LLC, sits on SNDLs board and has made 2 insider buys (not related to the fund he manages that is cited above), both in the $1.85-$2.00 price range, in the last 3 months. Data sources: Fintel and Nasdaq.
+
+Sunstream USA assets:
+
+Zach George did a very accurate thing 3 years ",https://www.reddit.com/r/investing/comments/1hv0oht/sndl_and_the_case_of_impressive_numbers/,james,True,True,True,s109,2025|investor
+h120,5cc64e,META,US,stocks,general,investor,2016,2016-11-11T02:50:42Z,Facebook Inc: Is Trump Victory Killing FB Stock?,"Facebook Inc’s (NASDAQ:FB) FB stock dropped 3.5% on Thursday, with some pointing to the election of Donald Trump as U.S. president as partly responsible for the drop in Facebook stock and many other consumer tech stocks.
+
+Original Source:  ",https://www.reddit.com,james,True,True,True,s254,2016|investor

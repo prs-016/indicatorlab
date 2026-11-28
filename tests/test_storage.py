@@ -13,6 +13,13 @@ def test_parquet_round_trip_creates_parents(tmp_path):
     assert storage.read_parquet(target, columns=["value"]).columns.tolist() == ["value"]
 
 
+def test_read_table_keeps_only_filtered_rows_and_columns(tmp_path):
+    target = tmp_path / "t.parquet"
+    storage.write_parquet(pd.DataFrame({"t": [1, 5, 9], "x": ["a", "b", "c"]}), target)
+    out = storage.read_table(target, columns=["x"], filters=[("t", ">=", 5), ("t", "<", 9)])
+    assert out.column_names == ["x"] and out.column("x").to_pylist() == ["b"]
+
+
 def test_parquet_dir_reads_all_parts_and_handles_missing(tmp_path):
     assert storage.read_parquet_dir(tmp_path / "nope") is None
     storage.write_parquet(pd.DataFrame({"x": [1]}), tmp_path / "parts" / "part-1.parquet")

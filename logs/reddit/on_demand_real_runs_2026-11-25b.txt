@@ -1,0 +1,123 @@
+
+=== NVDA counts  terms=['NVDA', 'Nvidia']  saved=['nvidia', 'stocks', 'investing', 'wallstreetbets']  keyword backup=['StockMarket', 'options', 'ValueInvesting']
+2026-11-26T00:21:42Z INFO on_demand: saved posts NVDA: 31078 match in ['nvidia', 'stocks', 'investing', 'wallstreetbets'], 50.9s
+2026-11-26T00:21:49Z WARNING arctic_client: attempt 1/3 failed (HTTP 422: {"data":null,"error":"Timeout. Maybe slow down a bit"}) for https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=StockMarket&query=NVDA&after=1732492799&before=1774025979&limit=100&sort=desc&fields=id%2Csubreddit%2Ctitle%2Cselftext%2Cscore%2Cnum_comments%2Ccreated_utc; sleeping 12.0s
+2026-11-26T00:22:01Z WARNING arctic_client: attempt 2/3 failed (HTTP 422: {"data":null,"error":"Timeout. Maybe slow down a bit"}) for https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=StockMarket&query=NVDA&after=1732492799&before=1774025979&limit=100&sort=desc&fields=id%2Csubreddit%2Ctitle%2Cselftext%2Cscore%2Cnum_comments%2Ccreated_utc; sleeping 60.0s
+2026-11-26T00:22:01Z WARNING on_demand: keyword search r/StockMarket 'NVDA' stopped: rate limited past the time limit
+2026-11-26T00:22:01Z WARNING on_demand: keyword search r/StockMarket 'Nvidia' stopped: rate limited past the time limit
+2026-11-26T00:22:01Z INFO on_demand: keyword backup NVDA: searched [], skipped ['StockMarket', 'options', 'ValueInvesting'], 0 posts, 19.9s, 3 requests
+105 weeks (2024-11-25 .. 2026-11-23, current days_covered=4), truncated=False, total=31078, nonzero weeks=104, median=280, max=1279 (2025-01-27), took 70.8s
+coverage: searched=[] skipped=['StockMarket', 'options', 'ValueInvesting'] missing_days=12 (['2026-11-01']..['2026-11-12'])
+last 10 weeks: 09-21=100, 09-28=143, 10-05=126, 10-12=115, 10-19=133, 10-26=127, 11-02=0, 11-09=379, 11-16=681, 11-23=425
+
+=== TITAN.NS counts  terms=['TITAN', 'Titan Company']  saved=['stocks', 'investing', 'wallstreetbets']  keyword backup=['IndianStockMarket', 'IndianStreetBets', 'StockMarket', 'options', 'ValueInvesting']
+2026-11-26T00:22:04Z INFO on_demand: saved posts TITAN: 1 match in ['stocks', 'investing', 'wallstreetbets'], 2.5s
+2026-11-26T00:22:08Z WARNING arctic_client: attempt 1/3 failed (HTTP 422: {"data":null,"error":"Timeout. Maybe slow down a bit"}) for https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=IndianStockMarket&query=TITAN&after=1732492799&before=1795651716&limit=100&sort=desc&fields=id%2Csubreddit%2Ctitle%2Cselftext%2Cscore%2Cnum_comments%2Ccreated_utc; sleeping 53.0s
+2026-11-26T00:22:08Z WARNING on_demand: keyword search r/IndianStockMarket 'TITAN' stopped: rate limited past the time limit
+2026-11-26T00:22:08Z WARNING on_demand: keyword search r/IndianStockMarket 'Titan Company' stopped: rate limited past the time limit
+2026-11-26T00:22:08Z INFO on_demand: keyword backup TITAN: searched [], skipped ['IndianStockMarket', 'IndianStreetBets', 'StockMarket', 'options', 'ValueInvesting'], 0 posts, 3.8s, 2 requests
+105 weeks (2024-11-25 .. 2026-11-23, current days_covered=4), truncated=False, total=1, nonzero weeks=1, median=0, max=1 (2025-11-10), took 6.3s
+coverage: searched=[] skipped=['IndianStockMarket', 'IndianStreetBets', 'StockMarket', 'options', 'ValueInvesting'] missing_days=12 (['2026-11-01']..['2026-11-12'])
+last 10 weeks: 09-21=0, 09-28=0, 10-05=0, 10-12=0, 10-19=0, 10-26=0, 11-02=0, 11-09=0, 11-16=0, 11-23=0
+
+=== 0700.HK counts  terms=['Tencent', 'Tencent Holdings', 'TCEHY']  saved=['stocks', 'investing', 'wallstreetbets']  keyword backup=['HongKong', 'ChinaStocks', 'StockMarket', 'options', 'ValueInvesting']
+2026-11-26T00:22:10Z INFO on_demand: saved posts 0700: 145 match in ['stocks', 'investing', 'wallstreetbets'], 2.5s
+2026-11-26T00:22:11Z WARNING arctic_client: attempt 1/3 failed (HTTP 422: {"data":null,"error":"Timeout. Maybe slow down a bit"}) for https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=HongKong&query=Tencent&after=1795651771&before=1795652528&limit=100&sort=asc&fields=id%2Csubreddit%2Ctitle%2Cselftext%2Cscore%2Cnum_comments%2Ccreated_utc; sleeping 50.0s
+2026-11-26T00:22:11Z WARNING on_demand: keyword search r/HongKong 'Tencent' stopped: rate limited past the time limit
+2026-11-26T00:22:11Z WARNING on_demand: keyword search r/HongKong 'Tencent Holdings' stopped: rate limited past the time limit
+2026-11-26T00:22:11Z WARNING on_demand: keyword search r/HongKong 'TCEHY' stopped: rate limited past the time limit
+2026-11-26T00:22:11Z INFO on_demand: keyword backup 0700: searched [], skipped ['HongKong', 'ChinaStocks', 'StockMarket', 'options', 'ValueInvesting'], 0 posts, 0.6s, 1 requests
+105 weeks (2024-11-25 .. 2026-11-23, current days_covered=4), truncated=False, total=145, nonzero weeks=73, median=1, max=6 (2025-02-17), took 3.1s
+coverage: searched=[] skipped=['HongKong', 'ChinaStocks', 'StockMarket', 'options', 'ValueInvesting'] missing_days=12 (['2026-11-01']..['2026-11-12'])
+last 10 weeks: 09-21=1, 09-28=1, 10-05=0, 10-12=1, 10-19=1, 10-26=1, 11-02=0, 11-09=1, 11-16=2, 11-23=0
+
+=== NVDA scale check: tracked path (stored definition) vs matched path, last 8 weeks
+2026-11-26T00:22:53Z INFO on_demand: saved posts NVDA: 31078 match in ['nvidia', 'stocks', 'investing', 'wallstreetbets'], 2.6s
+2026-11-26T00:23:05Z WARNING arctic_client: attempt 1/3 failed (HTTP 422: {"data":null,"error":"Timeout. Maybe slow down a bit"}) for https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=StockMarket&query=NVDA&after=1732492799&before=1752268671&limit=100&sort=desc&fields=id%2Csubreddit%2Ctitle%2Cselftext%2Cscore%2Cnum_comments%2Ccreated_utc; sleeping 56.0s
+2026-11-26T00:23:05Z WARNING on_demand: keyword search r/StockMarket 'NVDA' stopped: rate limited past the time limit
+2026-11-26T00:23:05Z WARNING on_demand: keyword search r/StockMarket 'Nvidia' stopped: rate limited past the time limit
+2026-11-26T00:23:05Z INFO on_demand: keyword backup NVDA: searched [], skipped ['StockMarket', 'options', 'ValueInvesting'], 0 posts, 11.6s, 3 requests
+  2026-10-05: tracked   360   matched   126
+  2026-10-12: tracked   388   matched   115
+  2026-10-19: tracked   384   matched   133
+  2026-10-26: tracked   307   matched   127
+  2026-11-02: tracked     0   matched     0
+  2026-11-09: tracked   393   matched   379
+  2026-11-16: tracked   807   matched   681
+  2026-11-23: tracked   440   matched   425
+  tracked missing_days=['2026-11-01']..['2026-11-12'] (12); took 54.0s
+2026-11-26T00:23:07Z INFO on_demand: saved posts 0700: 145 match in ['stocks', 'investing', 'wallstreetbets'], 2.1s
+2026-11-26T00:23:14Z WARNING arctic_client: attempt 1/3 failed (HTTP 422: {"data":null,"error":"Timeout. Maybe slow down a bit"}) for https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=HongKong&query=Tencent+Holdings&after=1795651771&before=1795652585&limit=100&sort=asc&fields=id%2Csubreddit%2Ctitle%2Cselftext%2Cscore%2Cnum_comments%2Ccreated_utc; sleeping 47.0s
+2026-11-26T00:23:14Z WARNING on_demand: keyword search r/HongKong 'Tencent Holdings' stopped: rate limited past the time limit
+2026-11-26T00:23:14Z WARNING on_demand: keyword search r/HongKong 'TCEHY' stopped: rate limited past the time limit
+2026-11-26T00:23:14Z INFO on_demand: keyword backup 0700: searched [], skipped ['HongKong', 'ChinaStocks', 'StockMarket', 'options', 'ValueInvesting'], 0 posts, 6.8s, 2 requests
+
+=== repeat 0700.HK counts in the same process (finished days in memory): 9.0s
+
+=== J2 NVDA spike posts, week 2026-08-31
+2026-11-26T00:23:15Z WARNING arctic_client: attempt 1/3 failed (HTTP 422: {"data":null,"error":"Timeout. Maybe slow down a bit"}) for https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=StockMarket&query=Nvidia&after=1788134399&before=1788739201&limit=100&sort=desc&fields=id%2Csubreddit%2Ctitle%2Cselftext%2Cscore%2Cnum_comments%2Ccreated_utc; sleeping 46.0s
+2026-11-26T00:23:15Z WARNING on_demand: keyword search r/StockMarket 'Nvidia' stopped: rate limited past the time limit
+2026-11-26T00:23:15Z INFO on_demand: keyword backup NVDA: searched [], skipped ['StockMarket', 'options', 'ValueInvesting'], 0 posts, 0.5s, 1 requests
+2026-11-26T00:23:26Z INFO on_demand: FinBERT scored 100 posts in 11.4s
+n_fetched=190 n_scored=100 truncated=False took 12.5s; searched=[] skipped=['StockMarket', 'options', 'ValueInvesting'] scores_refreshed=True missing_days=[]
+sentiment: {'positive': 0.1401, 'negative': 0.1375, 'neutral': 0.7224, 'net': 0.0026} labels: {'positive': 7, 'negative': 13, 'neutral': 80}
+top 3 by score: [('r1', 3095, 'I built an agent that buys whatever this sub is talking abou'), ('r2', 2283, 'When will Lululemon announce LuluAI?'), ('r3', 776, 'Treasury steps in with $12.5B buyback, giving stocks relief')]
+top_positive:
+  r69 [positive pos=0.94 neg=0.01] r/nvidia score=2: FP8 vs FP4 for Neural Rendering
+  r5 [positive pos=0.93 neg=0.01] r/nvidia score=628: [Official] NVIDIA will bring support for DLSS 3D-Guided Neural Rendering to the GeForce RT
+  r28 [positive pos=0.84 neg=0.11] r/stocks score=76: Samsung locks up most memory capacity for big tech (HBM spot prices surge) - Trendforce
+  r42 [positive pos=0.83 neg=0.01] r/stocks score=25: Samsung Developing 8-Layer HBM4E Custom-Built for Nvidia, Targeting Transfer Speeds Up to 
+  r47 [positive pos=0.66 neg=0.02] r/nvidia score=15: NVIDIA Announces Jetson Orin Nano 2: Entry-Level Edge Board Gets New Ampere Silicon
+top_negative:
+  r67 [negative pos=0.02 neg=0.92] r/nvidia score=3: NVIDIA Support wants me to find another PC to test my RTX 4080 SUPER before approving an R
+  r2 [negative pos=0.01 neg=0.91] r/wallstreetbets score=2283: When will Lululemon announce LuluAI?
+  r30 [negative pos=0.02 neg=0.91] r/stocks score=69: DeepSeek Plans 160,000 Chip Huawei AI Cluster
+  r8 [negative pos=0.06 neg=0.90] r/wallstreetbets score=509: NVDA is going to rip higher all week I’m sure of it. $25k expiring Friday
+  r66 [negative pos=0.02 neg=0.79] r/nvidia score=3: Overlay doesnt work
+
+=== J2 NVDA spike posts, week 2026-11-16
+2026-11-26T00:23:39Z WARNING arctic_client: attempt 1/3 failed (HTTP 422: {"data":null,"error":"Timeout. Maybe slow down a bit"}) for https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=StockMarket&query=Nvidia&after=1794787199&before=1795392001&limit=100&sort=desc&fields=id%2Csubreddit%2Ctitle%2Cselftext%2Cscore%2Cnum_comments%2Ccreated_utc; sleeping 22.0s
+2026-11-26T00:24:01Z WARNING arctic_client: attempt 2/3 failed (HTTP 422: {"data":null,"error":"Timeout. Maybe slow down a bit"}) for https://arctic-shift.photon-reddit.com/api/posts/search?subreddit=StockMarket&query=Nvidia&after=1794787199&before=1795392001&limit=100&sort=desc&fields=id%2Csubreddit%2Ctitle%2Cselftext%2Cscore%2Cnum_comments%2Ccreated_utc; sleeping 60.0s
+2026-11-26T00:24:01Z WARNING on_demand: keyword search r/StockMarket 'Nvidia' stopped: rate limited past the time limit
+2026-11-26T00:24:01Z INFO on_demand: keyword backup NVDA: searched [], skipped ['StockMarket', 'options', 'ValueInvesting'], 0 posts, 23.2s, 2 requests
+2026-11-26T00:24:07Z INFO on_demand: FinBERT scored 100 posts in 5.2s
+n_fetched=681 n_scored=100 truncated=False took 40.3s; searched=[] skipped=['StockMarket', 'options', 'ValueInvesting'] scores_refreshed=True missing_days=[]
+sentiment: {'positive': 0.1634, 'negative': 0.275, 'neutral': 0.5616, 'net': -0.1116} labels: {'positive': 12, 'negative': 25, 'neutral': 63}
+top 3 by score: [('r1', 10648, 'I made more than my year’s salary in one day.'), ('r2', 10098, 'Jensen Huang Breaks Silence, Signals Willingness to Return a'), ('r3', 9380, "EXCLUSIVE: Nvidia's accounting is a focus of US SEC investig")]
+top_positive:
+  r9 [positive pos=0.95 neg=0.02] r/wallstreetbets score=4731: NVIDIA hits $115.8 billion revenue, up 103% as AI chip demand accelerates
+  r76 [positive pos=0.95 neg=0.03] r/wallstreetbets score=348: We are so back bois... $NVDA surges over 5% after reporting $115.84 billion in revenue for
+  r44 [positive pos=0.94 neg=0.02] r/stocks score=806: NVIDIA Announces Financial Results for Third Quarter Fiscal 2027
+  r100 [positive pos=0.90 neg=0.01] r/wallstreetbets score=184: NVIDIA's Leadership Vacuum Hands AMD Its Biggest Opportunity in Years: Analysts
+  r69 [positive pos=0.90 neg=0.01] r/nvidia score=439: Modders unlock NVIDIA's 8GB CMP 170HX crypto mining GPU to 80GB
+top_negative:
+  r94 [negative pos=0.01 neg=0.97] r/stocks score=229: S&P 500 and Dow enter correction, Nasdaq wipes out 2026 gain as Anthropic leads AI sell-of
+  r83 [negative pos=0.03 neg=0.95] r/stocks score=254: Anthropic was supposed to save the AI trade. What went wrong?
+  r56 [negative pos=0.01 neg=0.95] r/stocks score=614: Reuters - Nvidia's accounting is a focus of US SEC investigation, sources say
+  r62 [negative pos=0.02 neg=0.94] r/investing score=556: Ed Zitron, who called the bubble very vocally with detailed analysis, is now speaking on C
+  r97 [negative pos=0.02 neg=0.94] r/nvidia score=201: Nvidia stock extends $2.7 trillion rout as SEC probe reportedly investigates its accountin
+
+=== after the Nov 1-13 backfill (2026-11-26)
+2026-11-26T01:00:46Z INFO on_demand: saved posts NVDA: 32099 match in ['nvidia', 'stocks', 'investing', 'wallstreetbets'], 52.0s
+2026-11-26T01:01:01Z INFO on_demand: keyword backup NVDA: searched [], skipped ['StockMarket', 'options', 'ValueInvesting'], 0 posts, 15.6s, 2 requests
+NVDA matched: 10-05=126, 10-12=115, 10-19=133, 10-26=140, 11-02=218, 11-09=1169, 11-16=681, 11-23=425; missing_days=[]; 67.7s
+NVDA tracked: 10-05=360, 10-12=388, 10-19=384, 10-26=328, 11-02=321, 11-09=1283, 11-16=807, 11-23=440; missing_days=[]; 44.6s
+
+=== J2 NVDA spike posts, week 2026-11-09 (CEO transition; backfilled days)
+2026-11-26T01:04:01Z INFO on_demand: keyword backup NVDA: searched [], skipped ['StockMarket', 'options', 'ValueInvesting'], 0 posts, 10.4s, 2 requests
+2026-11-26T01:04:10Z INFO on_demand: FinBERT scored 100 posts in 8.4s
+n_fetched=1169 n_scored=100 took 50.9s; skipped=['StockMarket', 'options', 'ValueInvesting'] scores_refreshed=True missing_days=[]
+sentiment: {'positive': 0.0574, 'negative': 0.3415, 'neutral': 0.6011, 'net': -0.2841} labels: {'positive': 1, 'negative': 32, 'neutral': 67}
+top 3 by score: [('r1', 83714, 'Jensen Huang entering NVIDIA Office'), ('r2', 47175, 'NVIDIA board meetings'), ('r3', 25096, 'NVIDIA Announces CEO Transition')]
+top_positive:
+  r9 [positive pos=0.59 neg=0.06] r/wallstreetbets score=11407: Nvidia board urged to consider 'potential return of Jensen Huang' by two major investors
+  r31 [neutral pos=0.42 neg=0.02] r/wallstreetbets score=2565: $55,000 gain in 55 seconds flipping $NVDA calls at open
+  r13 [neutral pos=0.39 neg=0.02] r/wallstreetbets score=7201: Instead Of Lowering GPU Prices, Former NVIDIA CEO Jensen Huang Reportedly Financed AI Star
+  r83 [negative pos=0.33 neg=0.53] r/wallstreetbets score=636: Bessent Says Nvidia Needs ‘Dramatic Shakeup’ After Huang Ouster
+  r65 [neutral pos=0.18 neg=0.19] r/wallstreetbets score=1113: It’s been a good year
+top_negative:
+  r79 [negative pos=0.01 neg=0.97] r/stocks score=679: Nvidia Shares Fall 5% on CEO Spy Inquiry
+  r10 [negative pos=0.01 neg=0.97] r/wallstreetbets score=10223: Jensen Huang’s wang caused a 0.25% decrease in the global stock market
+  r62 [negative pos=0.01 neg=0.96] r/investing score=1161: Jensen Huang resigns as Nvidia CEO, effective immediately. CFO Colette Kress named interim
+  r98 [negative pos=0.02 neg=0.94] r/wallstreetbets score=394: Investor sues Nvidia over Huang's ties to suspected spy after 4.27% drop
+  r45 [negative pos=0.01 neg=0.93] r/stocks score=1937: Nvidia stock slides after NYT report alleges Jensen Huang had a second affair with an empl

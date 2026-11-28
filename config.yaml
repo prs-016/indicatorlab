@@ -19,6 +19,15 @@ spike:
   rz_min_history: 26    # past abnormal values needed before rz is defined
   mad_scale: 1.4826     # makes MAD comparable to a standard deviation
   offset: 1             # abnormal = log((x + 1) / (baseline + 1)) so zero-post weeks stay finite
+  # Any-stock dashboard (final week): below these baselines a source is "not_enough_chatter", no spike flags.
+  min_weekly_mentions: 20   # Reddit posts per week
+  min_weekly_views: 2000    # Wikipedia pageviews per week
+
+# Any-stock dashboard, POST /analyze (final week Shared contracts).
+analyze:
+  history_weeks: 104        # full weeks shown in Part 1, plus the current partial week
+  max_spike_weeks: 10       # Part 2 computed for at most this many spike weeks, most recent first
+  top_posts: 100            # Reddit posts kept and scored per spike week
 
 # Strategy tests (PDF "Strategies: the new standard").
 strategy:
@@ -44,6 +53,7 @@ reddit:
     min_interval_s: 1.0         # pause between requests
     retry_wait_s: [10, 30]      # wait drawn uniformly from this range after a Timeout / server error
     max_retries: 3              # then the day is logged as failed (never as zero posts)
+  weekly_retry_weeks: 3         # the AWS weekly run also refetches failed/partial days from this many earlier weeks
   collect_start: 2016-06-01     # Week 4: corpus backfilled from the team train start (logs/reddit/backfill_2016_2022.log)
   min_posts_per_week: 20        # subreddits below this (2024 average) are dropped
   multi_ticker_list_min: 5      # a post text-matching this many tracked stocks is flagged as a list

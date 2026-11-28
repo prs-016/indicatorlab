@@ -1,0 +1,96 @@
+item_id,post_id,ticker,label,note,rater,labeled_at_utc
+h001,5cfx9u,META,skip,,joshua,2026-11-15T04:21:37.457945Z
+h004,69l8u2,NFLX,skip,copied from sentiment s046,joshua,2026-11-15T04:04:54.382672Z
+h015,9m6sjd,MSFT,positive,copied from sentiment s060,joshua,2026-11-15T04:07:23.655168Z
+h023,p6pp2n,TSLA,positive,copied from sentiment s061,joshua,2026-11-15T04:07:35.607383Z
+h028,1ioywov,AMZN,neutral,copied from sentiment s085,joshua,2026-11-15T04:14:16.286242Z
+h029,9m1532,NVDA,positive,copied from sentiment s112,joshua,2026-11-15T04:18:20.394040Z
+h032,bg8xog,AAPL,skip,copied from sentiment s005,joshua,2026-11-15T03:54:32.405562Z
+h034,mwu0dz,NVDA,positive,copied from sentiment s111,joshua,2026-11-15T04:18:12.946454Z
+h054,1fwk0t0,AMD,positive,copied from sentiment s015,joshua,2026-11-15T03:59:03.620222Z
+h055,arjgjh,NFLX,negative,copied from sentiment s002,joshua,2026-11-15T03:53:20.885722Z
+h064,5cdt4z,META,negative,copied from sentiment s102,joshua,2026-11-15T04:16:51.133402Z
+h078,mx4mf7,GOOGL,positive,copied from sentiment s031,joshua,2026-11-15T04:01:27.377869Z
+h080,rvv38k,AMZN,neutral,copied from sentiment s110,joshua,2026-11-15T04:18:09.388506Z
+h090,10noewm,AAPL,neutral,copied from sentiment s033,joshua,2026-11-15T04:02:00.049176Z
+h093,9spsrl,META,negative,copied from sentiment s001,joshua,2026-11-15T03:52:48.695013Z
+h097,94t6cg,AMZN,neutral,copied from sentiment s003,joshua,2026-11-15T03:53:38.626075Z
+h098,7r2xsy,AAPL,neutral,copied from sentiment s105,joshua,2026-11-15T04:17:11.162060Z
+h105,jb423z,MSFT,neutral,copied from sentiment s007,joshua,2026-11-15T03:55:14.642316Z
+h119,1hv0oht,GOOGL,positive,copied from sentiment s109,joshua,2026-11-15T04:17:42.264108Z
+h003,13ob14x,TSLA,positive,,joshua,2026-11-15T04:21:51.606342Z
+h004,69l8u2,NFLX,skip,,joshua,2026-11-15T04:22:11.141097Z
+h005,5h3519,GOOGL,negative,,joshua,2026-11-15T04:22:26.127875Z
+h009,4wzdgy,AMZN,neutral,,joshua,2026-11-15T04:22:30.702953Z
+h010,1ba0ics,TSLA,positive,,joshua,2026-11-15T04:22:41.594638Z
+h014,jo0wwn,NVDA,neutral,,joshua,2026-11-15T04:22:51.681369Z
+h015,9m6sjd,MSFT,neutral,,joshua,2026-11-15T04:22:57.908703Z
+h017,eof5wh,NFLX,positive,,joshua,2026-11-15T04:23:01.387984Z
+h018,1qvpxkc,JPM,neutral,,joshua,2026-11-15T04:23:24.895036Z
+h020,1v1n3ll,META,negative,,joshua,2026-11-15T04:23:27.356535Z
+h021,4x0qol,AAPL,skip,,joshua,2026-11-15T04:23:42.797367Z
+h022,q3bu3v,AMZN,neutral,,joshua,2026-11-15T04:23:51.322888Z
+h023,p6pp2n,TSLA,positive,,joshua,2026-11-15T04:23:56.568886Z
+h024,5vkw31,NVDA,positive,,joshua,2026-11-15T04:24:08.295991Z
+h026,1x02q3q,MSFT,neutral,,joshua,2026-11-15T04:24:40.559643Z
+h028,1ioywov,AMZN,neutral,,joshua,2026-11-15T04:24:53.570568Z
+h029,9m1532,NVDA,positive,,joshua,2026-11-15T04:24:56.079238Z
+h030,18f34gy,MSFT,skip,,joshua,2026-11-15T04:25:12.122151Z
+h031,fz8049,JPM,neutral,,joshua,2026-11-15T04:25:27.966466Z
+h032,bg8xog,AAPL,skip,copied from sentiment s005,joshua,2026-11-15T04:25:31.310698Z
+h033,bg3qs8,AMD,positive,,joshua,2026-11-15T04:25:36.601135Z
+h034,mwu0dz,NVDA,positive,copied from sentiment s111,joshua,2026-11-15T04:25:39.914661Z
+h035,1cvpjqj,GOOGL,negative,,joshua,2026-11-15T04:25:48.816707Z
+h037,163cwx4,NFLX,negative,,joshua,2026-11-15T04:25:53.453041Z
+h040,1ao0v4o,JPM,negative,,joshua,2026-11-15T04:25:56.222957Z
+h042,agl4kq,JPM,neutral,,joshua,2026-11-15T04:26:12.290437Z
+h043,7jg6aq,AAPL,positive,,joshua,2026-11-15T04:26:20.221058Z
+h044,5vm0th,META,skip,,joshua,2026-11-15T04:26:26.328233Z
+h047,agk9ro,AMD,neutral,,joshua,2026-11-15T04:26:31.752108Z
+h049,1ld4a39,AMD,positive,,joshua,2026-11-15T04:26:36.858053Z
+h050,1hi0hfs,JPM,positive,,joshua,2026-11-15T04:26:45.825297Z
+h051,d4uwv9,TSLA,skip,,joshua,2026-11-15T04:26:48.867075Z
+h054,1fwk0t0,AMD,positive,copied from sentiment s015,joshua,2026-11-15T04:26:51.005807Z
+h055,arjgjh,NFLX,negative,copied from sentiment s002,joshua,2026-11-15T04:26:58.746606Z
+h057,bj4ztb,META,negative,,joshua,2026-11-15T04:27:06.596182Z
+h058,zuk5ej,AAPL,skip,,joshua,2026-11-15T04:27:17.821784Z
+h060,rw35e1,NFLX,skip,,joshua,2026-11-15T04:27:29.049512Z
+h061,1gs3ghk,MSFT,negative,,joshua,2026-11-15T04:27:35.046370Z
+h063,rvltsq,AMD,skip,,joshua,2026-11-15T04:27:40.356153Z
+h064,5cdt4z,META,negative,copied from sentiment s102,joshua,2026-11-15T04:27:43.983957Z
+h070,1tih506,GOOGL,neutral,,joshua,2026-11-15T04:27:58.279786Z
+h073,5z5k26,GOOGL,negative,,joshua,2026-11-15T04:28:11.300078Z
+h074,1dbb1z8,TSLA,neutral,,joshua,2026-11-15T04:28:23.870475Z
+h075,7jnjvg,JPM,positive,,joshua,2026-11-15T04:28:32.623518Z
+h076,7qxfd7,NVDA,negative,,joshua,2026-11-15T04:28:58.656888Z
+h078,mx4mf7,GOOGL,positive,copied from sentiment s031,joshua,2026-11-15T04:29:00.871877Z
+h080,rvv38k,AMZN,neutral,copied from sentiment s110,joshua,2026-11-15T04:29:04.625660Z
+h082,94s7xu,META,skip,,joshua,2026-11-15T04:29:12.812441Z
+h083,4qezmw,AMD,skip,,joshua,2026-11-15T04:29:14.958849Z
+h085,zuirds,META,skip,,joshua,2026-11-15T04:29:17.421221Z
+h087,5z8haq,AMD,skip,,joshua,2026-11-15T04:29:19.814357Z
+h088,uwaybq,AMZN,negative,,joshua,2026-11-15T04:29:27.967383Z
+h090,10noewm,AAPL,neutral,copied from sentiment s033,joshua,2026-11-15T04:29:31.781960Z
+h091,181y5v5,NVDA,positive,,joshua,2026-11-15T04:29:36.080394Z
+h092,1q2azqr,AMZN,positive,,joshua,2026-11-15T04:29:41.032211Z
+h093,9spsrl,META,negative,copied from sentiment s001,joshua,2026-11-15T04:29:43.374781Z
+h094,1h63dsu,META,neutral,,joshua,2026-11-15T04:29:50.610044Z
+h097,94t6cg,AMZN,neutral,copied from sentiment s003,joshua,2026-11-15T04:29:53.849607Z
+h098,7r2xsy,AAPL,neutral,copied from sentiment s105,joshua,2026-11-15T04:29:57.504020Z
+h101,mwy8pp,AMD,neutral,,joshua,2026-11-15T04:30:08.846832Z
+h102,4n20ng,TSLA,skip,,joshua,2026-11-15T04:30:11.949231Z
+h105,jb423z,MSFT,neutral,copied from sentiment s007,joshua,2026-11-15T04:30:13.591634Z
+h106,1wv1wq0,TSLA,positive,,joshua,2026-11-15T04:30:22.178955Z
+h109,9snf8z,NVDA,negative,,joshua,2026-11-15T04:30:26.166079Z
+h110,5vll97,NVDA,negative,,joshua,2026-11-15T04:30:28.770720Z
+h112,zukt8l,TSLA,negative,,joshua,2026-11-15T04:30:32.456530Z
+h113,5cbdre,JPM,negative,,joshua,2026-11-15T04:30:35.649841Z
+h113,5cbdre,JPM,positive,,joshua,2026-11-15T04:30:41.166147Z
+h114,agltth,NFLX,neutral,,joshua,2026-11-15T04:30:46.998435Z
+h115,1jmor94,AMD,skip,,joshua,2026-11-15T04:30:53.626624Z
+h116,tkkhop,TSLA,neutral,,joshua,2026-11-15T04:31:07.178810Z
+h117,jb13uj,TSLA,positive,,joshua,2026-11-15T04:31:10.086176Z
+h118,bj3w7i,JPM,negative,,joshua,2026-11-15T04:31:13.693505Z
+h119,1hv0oht,GOOGL,positive,copied from sentiment s109,joshua,2026-11-15T04:31:16.203191Z
+h120,5cc64e,META,negative,,joshua,2026-11-15T04:31:21.179523Z
+h120,5cc64e,META,negative,,joshua,2026-11-15T04:31:24.111822Z

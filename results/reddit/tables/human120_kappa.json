@@ -1,0 +1,31 @@
+{
+  "human_vs_human": {
+    "rater": "joshua",
+    "second_rater": "james",
+    "n_overlap": 0,
+    "cohen_kappa": NaN,
+    "kappa_ci_low": NaN,
+    "kappa_ci_high": NaN,
+    "raw_agreement": NaN
+  },
+  "human_vs_opus": {
+    "rater": "humans",
+    "second_rater": "claude-opus",
+    "n_overlap": 46,
+    "cohen_kappa": 0.4556213017751479,
+    "kappa_ci_low": 0.24310936646683307,
+    "kappa_ci_high": 0.6587789493090794,
+    "raw_agreement": 0.6521739130434783
+  },
+  "headline_labels": "human",
+  "headline_rule": "human-vs-Opus kappa below 0.6: headline numbers use the human labels",
+  "n_items": 120,
+  "n_human_labelled": 49,
+  "n_human_skipped": 11,
+  "n_opus_labelled": 120,
+  "scorers_compared": [
+    "vader",
+    "finbert"
+  ],
+  "scorers_skipped": []
+}

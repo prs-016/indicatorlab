@@ -1,7 +1,28 @@
 
 import pandas as pd
 
+from src.reddit import match_tickers, settings
 from src.reddit.match_tickers import match_post, match_subreddit
+
+
+def test_run_creates_the_missing_tables_folder(tmp_path, monkeypatch):
+    """The AWS image ships only src/, so results/reddit/tables does not exist there (weekly crash, Nov 2026)."""
+    ts = pd.Timestamp("2026-11-10 12:00", tz="UTC")
+    posts = pd.DataFrame([{"id": "p1", "subreddit": "stocks", "subreddit_type": "general", "owner_ticker": "",
+                           "market": "US", "created_utc": int(ts.timestamp()), "created_dt": ts, "date": ts.date(),
+                           "title": "Bought MSFT today", "selftext": "", "score": 1, "num_comments": 0,
+                           "permalink": "/r/stocks/comments/p1/", "day_status": "complete",
+                           "removed_by_category": "", "removed_flag": False, "period": "train"}])
+    (tmp_path / "posts").mkdir()
+    (tmp_path / "processed").mkdir()
+    posts.to_parquet(tmp_path / "posts/stocks.parquet", index=False)
+    monkeypatch.setattr(settings, "POSTS", tmp_path / "posts")
+    monkeypatch.setattr(settings, "PROCESSED", tmp_path / "processed")
+    monkeypatch.setattr(settings, "TABLES", tmp_path / "results/reddit/tables")      # not created
+
+    df = match_tickers.run()
+    assert df["ticker"].tolist() == ["MSFT"]
+    assert (tmp_path / "results/reddit/tables/match_method_summary.csv").exists()
 
 
 def tickers(title, body=""):

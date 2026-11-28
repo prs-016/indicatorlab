@@ -129,3 +129,16 @@ def test_sample_days_is_seeded_and_balanced_by_year():
     a, b = sample_days(days, 15, 42), sample_days(days, 15, 42)
     assert a == b and len(a) == 45
     assert {y: sum(d.year == y for d in a) for y in (2023, 2024, 2025)} == {2023: 15, 2024: 15, 2025: 15}
+
+
+def test_rate_limit_waits_for_the_reset_the_server_names():
+    rl = {"data": None, "error": "Timeout. Maybe slow down a bit"}
+    limited = _Resp(422, rl)
+    limited.headers = {"X-RateLimit-Reset": "12", "X-RateLimit-Reset-At": "1795615080000"}
+    long_wait = _Resp(422, rl)
+    long_wait.headers = {"X-RateLimit-Reset": "500"}
+    sess = _Session([limited, long_wait, _Resp(200, {"data": [{"id": "a"}]})])
+    waits = []
+    c = ArcticShiftClient(session=sess, min_interval=0, sleep=waits.append)
+    assert c.get("posts/search", {"subreddit": "x"}).body["data"] == [{"id": "a"}]
+    assert waits == [13.0, 70.0]               # reset + 1 s, capped at one minute and a bit

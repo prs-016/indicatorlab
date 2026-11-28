@@ -1,4 +1,5 @@
 """AWS pipeline modes against a local folder: hourly fetch/score/write, dedupe, the current table, week math."""
+import argparse
 from datetime import UTC, date, datetime
 from types import SimpleNamespace
 
@@ -101,7 +102,14 @@ def test_weekly_pulls_state_runs_steps_pushes_only_changes_and_publishes(tmp_pat
     import os
     import time as _time
 
-    from src.reddit import build_posts, collect_reddit, match_tickers, reddit_weekly, score_posts, settings
+    from src.reddit import (
+        build_posts,
+        collect_reddit,
+        match_tickers,
+        reddit_weekly,
+        score_posts,
+        settings,
+    )
 
     root, work = tmp_path / "s3", tmp_path / "work"
     storage.write_json({"keep": 1}, root / "raw/reddit/arctic_shift/stocks/2026/2026-11-02.json")
@@ -111,6 +119,7 @@ def test_weekly_pulls_state_runs_steps_pushes_only_changes_and_publishes(tmp_pat
     monkeypatch.setattr(settings, "RAW_ARCTIC", work / "raw/arctic_shift")
     monkeypatch.setattr(settings, "MANIFEST", work / "raw/manifest.csv")
     monkeypatch.setattr(settings, "PROCESSED", work / "processed")
+    monkeypatch.setattr(settings, "WEEKLY_RETRY_WEEKS", 3)
     calls = []
     monkeypatch.setattr(collect_reddit, "run_collect", lambda args: calls.append(("collect", args.start, args.end)))
     monkeypatch.setattr(build_posts, "build", lambda: calls.append("build"))
@@ -134,10 +143,78 @@ def test_weekly_pulls_state_runs_steps_pushes_only_changes_and_publishes(tmp_pat
     monkeypatch.setattr(storage, "copy_tree", copy_and_age)
 
     out = pl.weekly(str(root), today=date(2026, 11, 9))
-    assert calls[0] == ("collect", "2026-11-02", "2026-11-08") and calls[1:3] == ["build", "match"]
+    assert calls[0] == ("collect", "2026-10-12", "2026-11-08") and calls[1:3] == ["build", "match"]   # 3 weeks back
     assert calls[3][2] is True and calls[4] == "weekly"
     assert (work / "raw/arctic_shift/stocks/2026/2026-11-02.json").exists()      # state pulled down
     assert storage.read_parquet(root / "processed/reddit_state/posts/stocks.parquet")["x"].tolist() == [2]
     assert out["published"] == ["reddit_weekly.parquet"]
     assert storage.exists(root / "processed/reddit_weekly.parquet")
     assert out["state_files_pushed"] == 1                                        # only the rewritten file
+
+
+def _stub_weekly_steps(monkeypatch) -> list:
+    """Replace every weekly step with a no-op; returns the list that collects (start, end) of each collect."""
+    from src.reddit import (
+        build_posts,
+        collect_reddit,
+        match_tickers,
+        reddit_weekly,
+        score_posts,
+        settings,
+    )
+
+    calls = []
+    monkeypatch.setattr(settings, "WEEKLY_RETRY_WEEKS", 3)
+    monkeypatch.setattr(pl, "_sync_state", lambda *a, **k: 0)
+    monkeypatch.setattr(pl, "publish", lambda root: [])
+    monkeypatch.setattr(pl, "emit_metric", lambda *a, **k: None)
+    monkeypatch.setattr(collect_reddit, "run_collect", lambda args: calls.append((args.start, args.end)))
+    for mod, name in [(build_posts, "build"), (match_tickers, "run"), (reddit_weekly, "run")]:
+        monkeypatch.setattr(mod, name, lambda: None)
+    monkeypatch.setattr(score_posts, "run", lambda *a, **k: None)
+    return calls
+
+
+def test_weekly_reaches_back_for_days_an_earlier_run_could_not_fetch(tmp_path, monkeypatch):
+    """Nov 2026: Arctic Shift timed out 6 (subreddit, day) pairs in Nov 9-22; the Nov 30 run must retry them."""
+    calls = _stub_weekly_steps(monkeypatch)
+    out = pl.weekly(str(tmp_path), today=date(2026, 11, 30))
+    assert calls == [("2026-11-02", "2026-11-29")]
+    assert out["week"] == "2026-11-23..2026-11-29" and out["collected"] == "2026-11-02..2026-11-29"
+
+
+def test_weekly_start_catches_up_from_an_earlier_date(tmp_path, monkeypatch):
+    calls = _stub_weekly_steps(monkeypatch)
+    out = pl.weekly(str(tmp_path), today=date(2026, 11, 25), start=date(2026, 10, 1))    # beyond the reach-back
+    assert calls == [("2026-10-01", "2026-11-22")] and out["week"] == "2026-10-01..2026-11-22"
+    out = pl.weekly(str(tmp_path), today=date(2026, 11, 25), start=date(2026, 11, 9))    # within it
+    assert calls[-1] == ("2026-10-26", "2026-11-22") and out["week"] == "2026-11-09..2026-11-22"
+    with pytest.raises(ValueError, match="after the last full week"):
+        pl.weekly(str(tmp_path), today=date(2026, 11, 25), start=date(2026, 11, 23))
+
+
+def test_collect_refetches_failed_days_and_skips_complete_ones(tmp_path, monkeypatch):
+    """The reach-back relies on this: only days not yet complete (or missing on disk) are downloaded again."""
+    from src.reddit import collect_reddit as cr
+    from src.reddit import settings
+
+    monkeypatch.setattr(settings, "ROOT", tmp_path)
+    monkeypatch.setattr(settings, "RAW_ARCTIC", tmp_path / "raw/arctic_shift")
+    monkeypatch.setattr(settings, "MANIFEST", tmp_path / "raw/manifest.csv")
+    ok, bad = date(2026, 11, 12), date(2026, 11, 13)
+    for d, status in [(ok, "complete"), (bad, "failed")]:
+        cr.append_manifest({"subreddit": "stocks", "date": d.isoformat(), "status": status})
+        cr.write_json_gz(cr.raw_path("stocks", d), {})
+    fetched = []
+
+    def fake_day(client, sub, d, max_pages):
+        fetched.append(d)
+        return {"status": "complete", "n_posts_unique": 0, "n_pages": 1, "pages": [], "errors": [], "note": ""}
+    monkeypatch.setattr(cr, "collect_day", fake_day)
+    monkeypatch.setattr(cr, "ArcticShiftClient", lambda **k: SimpleNamespace(n_requests=0))
+
+    cr.run_collect(argparse.Namespace(start="2026-11-12", end="2026-11-13", allow_partial_today=False,
+                                      subreddits=["stocks"], market="US", interval=0, sample_days_per_year=0,
+                                      seed=0, force=False, max_pages=1))
+    assert fetched == [bad]
+    assert cr.load_manifest_latest()[("stocks", "2026-11-13")]["status"] == "complete"
