@@ -1,0 +1,698 @@
+{
+  "retrieved_at_utc": "2026-11-24T06:12:28.584678+00:00",
+  "scope": "Current identity metadata only; no historical attention observations or article text. Existing 88 English/67 Hindi/12 historical mappings and unknown effective dates preserved.",
+  "source": "https://en.wikipedia.org/w/api.php",
+  "direct_title_check": {
+    "batchcomplete": "",
+    "query": {
+      "redirects": [
+        {
+          "from": "Vedanta Aluminium",
+          "to": "Vedanta Resources"
+        },
+        {
+          "from": "Siemens Limited",
+          "to": "Siemens"
+        },
+        {
+          "from": "Tata Capital",
+          "to": "Tata Sons"
+        },
+        {
+          "from": "Cummins India",
+          "to": "Cummins"
+        },
+        {
+          "from": "Shriram Finance",
+          "to": "Shriram Group"
+        }
+      ],
+      "pages": {
+        "-1": {
+          "ns": 0,
+          "title": "ABB India",
+          "missing": "",
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr"
+        },
+        "-2": {
+          "ns": 0,
+          "title": "Bajaj Holdings & Investment",
+          "missing": "",
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr"
+        },
+        "-3": {
+          "ns": 0,
+          "title": "Bosch Limited",
+          "missing": "",
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr"
+        },
+        "-4": {
+          "ns": 0,
+          "title": "HDFC Asset Management Company",
+          "missing": "",
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr"
+        },
+        "-5": {
+          "ns": 0,
+          "title": "Hitachi Energy India",
+          "missing": "",
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr"
+        },
+        "-6": {
+          "ns": 0,
+          "title": "Siemens Energy India",
+          "missing": "",
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr"
+        },
+        "-7": {
+          "ns": 0,
+          "title": "Solar Industries",
+          "missing": "",
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr"
+        },
+        "1064863": {
+          "pageid": 1064863,
+          "ns": 0,
+          "title": "Cummins",
+          "pageprops": {
+            "page_image_free": "Cummins_logo.svg",
+            "wikibase-shortdesc": "American engines and related technology company",
+            "wikibase_item": "Q173476"
+          },
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr",
+          "touched": "2026-11-22T23:50:38Z",
+          "lastrevid": 1383994854,
+          "length": 30851
+        },
+        "19954099": {
+          "pageid": 19954099,
+          "ns": 0,
+          "title": "Shriram Group",
+          "pageprops": {
+            "wikibase-shortdesc": "Indian financial services conglomerate",
+            "wikibase_item": "Q7504181"
+          },
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr",
+          "touched": "2026-11-20T00:22:48Z",
+          "lastrevid": 1365181792,
+          "length": 10627
+        },
+        "168632": {
+          "pageid": 168632,
+          "ns": 0,
+          "title": "Siemens",
+          "pageprops": {
+            "page_image_free": "The_Wings,_Siemens_HQ_Munich,_April_2017.jpg",
+            "wikibase-shortdesc": "German multinational conglomerate",
+            "wikibase_item": "Q81230"
+          },
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr",
+          "touched": "2026-11-23T15:30:57Z",
+          "lastrevid": 1385671579,
+          "length": 122949
+        },
+        "9221446": {
+          "pageid": 9221446,
+          "ns": 0,
+          "title": "Tata Sons",
+          "pageprops": {
+            "page_image_free": "Tata_logo.svg",
+            "wikibase-shortdesc": "Indian holding company",
+            "wikibase_item": "Q2377884"
+          },
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr",
+          "touched": "2026-11-20T00:22:43Z",
+          "lastrevid": 1386405152,
+          "length": 21653
+        },
+        "6097908": {
+          "pageid": 6097908,
+          "ns": 0,
+          "title": "Vedanta Resources",
+          "pageprops": {
+            "wikibase-shortdesc": "Global diversified metals and mining company",
+            "wikibase_item": "Q1503753"
+          },
+          "contentmodel": "wikitext",
+          "pagelanguage": "en",
+          "pagelanguagehtmlcode": "en",
+          "pagelanguagedir": "ltr",
+          "touched": "2026-11-22T23:50:46Z",
+          "lastrevid": 1376649610,
+          "length": 37194
+        }
+      }
+    }
+  },
+  "targeted_searches": [
+    {
+      "symbol": "ABB",
+      "company_name": "ABB India Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "ABB",
+          "pageid": 195678
+        },
+        {
+          "ns": 0,
+          "title": "Hitachi Energy",
+          "pageid": 73941574
+        },
+        {
+          "ns": 0,
+          "title": "NIFTY 500",
+          "pageid": 2428767
+        }
+      ]
+    },
+    {
+      "symbol": "BAJAJHLDNG",
+      "company_name": "Bajaj Holdings & Investment Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "Bajaj Finserv",
+          "pageid": 44294683
+        },
+        {
+          "ns": 0,
+          "title": "Bajaj Group",
+          "pageid": 30665779
+        },
+        {
+          "ns": 0,
+          "title": "Bajaj Auto",
+          "pageid": 609475
+        }
+      ]
+    },
+    {
+      "symbol": "BOSCHLTD",
+      "company_name": "Bosch Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "Bosch (company)",
+          "pageid": 231364
+        },
+        {
+          "ns": 0,
+          "title": "Bosch Rexroth",
+          "pageid": 10910731
+        },
+        {
+          "ns": 0,
+          "title": "Robert Bosch",
+          "pageid": 227941
+        }
+      ]
+    },
+    {
+      "symbol": "CUMMINSIND",
+      "company_name": "Cummins India Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "Cummins",
+          "pageid": 1064863
+        },
+        {
+          "ns": 0,
+          "title": "Anant J Talaulicar",
+          "pageid": 43883447
+        },
+        {
+          "ns": 0,
+          "title": "Phaltan",
+          "pageid": 3696942
+        }
+      ]
+    },
+    {
+      "symbol": "HDFCAMC",
+      "company_name": "HDFC Asset Management Company Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "HDFC Bank",
+          "pageid": 6745280
+        },
+        {
+          "ns": 0,
+          "title": "HDFC Life",
+          "pageid": 36882765
+        },
+        {
+          "ns": 0,
+          "title": "Axis Bank",
+          "pageid": 12545216
+        }
+      ]
+    },
+    {
+      "symbol": "POWERINDIA",
+      "company_name": "Hitachi Energy India Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "Hitachi Energy",
+          "pageid": 73941574
+        },
+        {
+          "ns": 0,
+          "title": "Hitachi",
+          "pageid": 188676
+        },
+        {
+          "ns": 0,
+          "title": "Hitachi Construction Machinery",
+          "pageid": 29565410
+        }
+      ]
+    },
+    {
+      "symbol": "SHRIRAMFIN",
+      "company_name": "Shriram Finance Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "Shriram Group",
+          "pageid": 19954099
+        },
+        {
+          "ns": 0,
+          "title": "MUFG Bank",
+          "pageid": 2823064
+        },
+        {
+          "ns": 0,
+          "title": "NIFTY 500",
+          "pageid": 2428767
+        }
+      ]
+    },
+    {
+      "symbol": "ENRIN",
+      "company_name": "Siemens Energy India Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "Siemens",
+          "pageid": 168632
+        },
+        {
+          "ns": 0,
+          "title": "BSH Hausgeräte",
+          "pageid": 18709496
+        },
+        {
+          "ns": 0,
+          "title": "Siemens Financial Services",
+          "pageid": 10800788
+        }
+      ]
+    },
+    {
+      "symbol": "SIEMENS",
+      "company_name": "Siemens Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "Siemens",
+          "pageid": 168632
+        },
+        {
+          "ns": 0,
+          "title": "Siemens Communications",
+          "pageid": 5530934
+        },
+        {
+          "ns": 0,
+          "title": "Carl Wilhelm Siemens",
+          "pageid": 100515
+        }
+      ]
+    },
+    {
+      "symbol": "SOLARINDS",
+      "company_name": "Solar Industries India Ltd.",
+      "http_status": 200,
+      "search": [
+        {
+          "ns": 0,
+          "title": "Reliance Industries",
+          "pageid": 402982
+        },
+        {
+          "ns": 0,
+          "title": "V-Guard Industries",
+          "pageid": 33922750
+        },
+        {
+          "ns": 0,
+          "title": "Defence industry of India",
+          "pageid": 48533007
+        }
+      ]
+    },
+    {
+      "symbol": "TATACAP",
+      "company_name": "Tata Capital Ltd.",
+      "http_status": 429,
+      "search": []
+    },
+    {
+      "symbol": "VAML",
+      "company_name": "Vedanta Aluminium Metal Ltd.",
+      "http_status": 429,
+      "search": []
+    }
+  ],
+  "rate_limit_handling": "Stopped after HTTP 429 for TATACAP/VAML; no retries. Redirects to parents/groups are not listed-entity substitutions.",
+  "parent_proxy_review": {
+    "reviewed_on": "2026-11-27",
+    "authorization": "The requester reported Prakhar’s approval of verified parent-company proxies for unresolved English titles.",
+    "scope": "Current title and retrieval checks. Parent article views and edits measure broader corporate attention. Sample retrieval does not certify historical coverage.",
+    "revision_api": "https://en.wikipedia.org/w/api.php",
+    "decisions": [
+      {
+        "symbol": "ABB",
+        "company_name": "ABB India Ltd.",
+        "status": "parent_proxy",
+        "parent": "ABB Ltd",
+        "title": "ABB",
+        "relationship": "ABB Ltd is the ultimate holding company. It holds ABB India through ABB Asea Brown Boveri Ltd, which owns 75%.",
+        "relationship_source": "https://library.e.abb.com/public/10ee0d6daa32400391f32a376917901f/FINANCIAL%20STATEMENTS.pdf",
+        "pageid": 195678,
+        "wikidata_item": "Q52825",
+        "article_url": "https://en.wikipedia.org/wiki/ABB",
+        "public_revision": {
+          "revid": 1388187141,
+          "parentid": 1388009315,
+          "timestamp": "2026-11-26T23:49:50Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/ABB/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "BAJAJHLDNG",
+        "status": "unresolved",
+        "reason": "Bajaj Holdings is itself a holding company. Bajaj Group is a group article and no controlling corporate parent article was verified.",
+        "relationship_source": "https://www.bhil.in/investors.html"
+      },
+      {
+        "symbol": "BOSCHLTD",
+        "company_name": "Bosch Ltd.",
+        "status": "parent_proxy",
+        "parent": "Robert Bosch GmbH",
+        "title": "Bosch_(company)",
+        "relationship": "The issuer identifies Robert Bosch GmbH as ultimate holding company with 70.54% indirect equity.",
+        "relationship_source": "https://www.bosch.in/media/our_company/shareholder_information/2026/postal_ballot_notice_13-11-26.pdf",
+        "pageid": 231364,
+        "wikidata_item": "Q234021",
+        "article_url": "https://en.wikipedia.org/wiki/Bosch_(company)",
+        "public_revision": {
+          "revid": 1385629740,
+          "parentid": 1385430843,
+          "timestamp": "2026-11-14T09:35:59Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Bosch_%28company%29/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "CUMMINSIND",
+        "company_name": "Cummins India Ltd.",
+        "status": "parent_proxy",
+        "parent": "Cummins Inc.",
+        "title": "Cummins",
+        "relationship": "Cummins Inc. owns 51% of Cummins India Limited.",
+        "relationship_source": "https://www.cummins.com/en-in/en/in/company/india-companies",
+        "pageid": 1064863,
+        "wikidata_item": "Q173476",
+        "article_url": "https://en.wikipedia.org/wiki/Cummins",
+        "public_revision": {
+          "revid": 1383994854,
+          "parentid": 1383412545,
+          "timestamp": "2026-11-06T01:37:49Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Cummins/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "HDFCAMC",
+        "company_name": "HDFC Asset Management Company Ltd.",
+        "status": "parent_proxy",
+        "parent": "HDFC Bank Limited",
+        "title": "HDFC_Bank",
+        "relationship": "HDFC Bank holds 52.3% of HDFC AMC.",
+        "relationship_source": "https://www.hdfcfund.com/about-us/hdfc-mf-at-a-glance",
+        "pageid": 6745280,
+        "wikidata_item": "Q631047",
+        "article_url": "https://en.wikipedia.org/wiki/HDFC_Bank",
+        "public_revision": {
+          "revid": 1388046038,
+          "parentid": 1388007920,
+          "timestamp": "2026-11-26T11:58:20Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/HDFC_Bank/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "POWERINDIA",
+        "company_name": "Hitachi Energy India Ltd.",
+        "status": "parent_proxy",
+        "parent": "Hitachi Energy Ltd",
+        "title": "Hitachi_Energy",
+        "relationship": "Hitachi Energy Ltd is the Swiss holding company of Hitachi Energy India Limited.",
+        "relationship_source": "https://www.hitachienergy.com/news-and-events/press-releases/2021/11/hitachi-energy-goes-live-in-india",
+        "pageid": 73941574,
+        "wikidata_item": "Q107530770",
+        "article_url": "https://en.wikipedia.org/wiki/Hitachi_Energy",
+        "public_revision": {
+          "revid": 1377153355,
+          "parentid": 1367819026,
+          "timestamp": "2026-09-28T02:57:26Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Hitachi_Energy/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SHRIRAMFIN",
+        "status": "unresolved",
+        "reason": "Shriram Group is a conglomerate article. Shriram Capital Private Limited holds 14.27% and the disclosed promoter group holds 20.30%. No controlling parent article was verified.",
+        "relationship_source": "https://cdn.shriramfinance.in/sfl-kalam/files/2026-10/SFL%20Corp%20Presentation%20-%20Q2%20FY27.pdf"
+      },
+      {
+        "symbol": "ENRIN",
+        "company_name": "Siemens Energy India Ltd.",
+        "status": "parent_proxy",
+        "parent": "Siemens AG",
+        "title": "Siemens",
+        "relationship": "Siemens AG controls 59.00% directly and through Siemens International Holding B.V. in the September 2026 filing. The announced transfer of control to Siemens Energy AG is expected in fiscal 2028. Recheck before reuse after an ownership change.",
+        "relationship_source": "https://www.siemens-energy-india.com/pdf/Shareholding%20pattern_website_30.09.2026.pdf",
+        "control_transfer_source": "https://assets.siemens-energy.com/dam/03cdb4e6-b27a-4272-a911-b4480041e7ca/2026-05-12-Half-year_financial_report-2026-pdf_Original%20file.pdf",
+        "pageid": 168632,
+        "wikidata_item": "Q81230",
+        "article_url": "https://en.wikipedia.org/wiki/Siemens",
+        "public_revision": {
+          "revid": 1387950622,
+          "parentid": 1385671579,
+          "timestamp": "2026-11-26T03:52:41Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Siemens/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SIEMENS",
+        "company_name": "Siemens Ltd.",
+        "status": "parent_proxy",
+        "parent": "Siemens AG",
+        "title": "Siemens",
+        "relationship": "Siemens AG controls Siemens Limited, the separately listed Indian company.",
+        "relationship_source": "https://www.siemens.com/en-gb/company/investor-relations-india/shareholding-distribution/",
+        "pageid": 168632,
+        "wikidata_item": "Q81230",
+        "article_url": "https://en.wikipedia.org/wiki/Siemens",
+        "public_revision": {
+          "revid": 1387950622,
+          "parentid": 1385671579,
+          "timestamp": "2026-11-26T03:52:41Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Siemens/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SOLARINDS",
+        "status": "unresolved",
+        "reason": "The disclosed promoters are Nuwal family holders and trusts. No suitable corporate parent article was verified.",
+        "relationship_source": "https://www.solargroup.com/Investor-relation.html"
+      },
+      {
+        "symbol": "TATACAP",
+        "company_name": "Tata Capital Ltd.",
+        "status": "parent_proxy",
+        "parent": "Tata Sons Private Limited",
+        "title": "Tata_Sons",
+        "relationship": "Tata Capital identifies itself as a subsidiary of Tata Sons Private Limited.",
+        "relationship_source": "https://www.tatacapital.com/about-us.html",
+        "pageid": 9221446,
+        "wikidata_item": "Q2377884",
+        "article_url": "https://en.wikipedia.org/wiki/Tata_Sons",
+        "public_revision": {
+          "revid": 1388077968,
+          "parentid": 1386405152,
+          "timestamp": "2026-11-26T14:04:18Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Tata_Sons/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "VAML",
+        "company_name": "Vedanta Aluminium Metal Ltd.",
+        "status": "parent_proxy",
+        "parent": "Vedanta Resources Limited",
+        "title": "Vedanta_Resources",
+        "relationship": "The post-demerger listing memorandum identifies Vedanta Resources as holding company, with 56.38% held through the promoter group.",
+        "relationship_source": "https://d1rbiogke1jwo5.cloudfront.net/wp-content/uploads/2026/06/IM_VAML_Filing-Version.pdf",
+        "pageid": 6097908,
+        "wikidata_item": "Q1503753",
+        "article_url": "https://en.wikipedia.org/wiki/Vedanta_Resources",
+        "public_revision": {
+          "revid": 1387766530,
+          "parentid": 1376649610,
+          "timestamp": "2026-11-25T10:00:44Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Vedanta_Resources/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      }
+    ]
+  },
+  "group_proxy_review": {
+    "reviewed_on": "2026-11-27",
+    "scope": "Group affiliation verified from issuer sources. Pageviews and edits measure broader corporate attention across the group. Sample retrieval does not certify historical coverage. SOLARINDS has no article mapping.",
+    "revision_api": "https://en.wikipedia.org/w/api.php",
+    "decisions": [
+      {
+        "symbol": "BAJAJHLDNG",
+        "lang": "en",
+        "title": "Bajaj_Group",
+        "pageid": 30665779,
+        "wikidata_item": "Q4848823",
+        "article_url": "https://en.wikipedia.org/wiki/Bajaj_Group",
+        "company_name": "Bajaj Holdings & Investment Ltd.",
+        "status": "group_proxy",
+        "relationship": "Bajaj Holdings & Investment identifies itself as the flagship of the Bajaj group of companies. The article is about the group as a whole.",
+        "relationship_source": "https://www.bhil.in/about-bajaj.html",
+        "public_revision": {
+          "revid": 1387980835,
+          "parentid": 1380013260,
+          "timestamp": "2026-11-26T06:26:09Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Bajaj_Group/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SHRIRAMFIN",
+        "lang": "en",
+        "title": "Shriram_Group",
+        "pageid": 19954099,
+        "wikidata_item": "Q7504181",
+        "article_url": "https://en.wikipedia.org/wiki/Shriram_Group",
+        "company_name": "Shriram Finance Ltd.",
+        "status": "group_proxy",
+        "relationship": "Shriram Finance identifies itself as part of Shriram Group. The article is about the conglomerate as a whole.",
+        "relationship_source": "https://www.shriramfinance.in/media-resources",
+        "public_revision": {
+          "revid": 1365181792,
+          "parentid": 1359484760,
+          "timestamp": "2026-07-20T20:15:27Z"
+        },
+        "pageviews": {
+          "url": "https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/Shriram_Group/daily/2026112000/2026112200",
+          "status": 200,
+          "sample_days": 3
+        }
+      },
+      {
+        "symbol": "SOLARINDS",
+        "company_name": "Solar Industries India Ltd.",
+        "status": "WIKIPEDIA_UNAVAILABLE",
+        "reason": "No dedicated or suitable parent or group article was verified. Solar Defence and Aerospace Limited is a subsidiary of Solar Industries India Limited, so its article is excluded.",
+        "relationship_source": "https://nsearchives.nseindia.com/corporate/SOLARINDS_27062025221237_signedSolarIA.pdf"
+      }
+    ]
+  }
+}
