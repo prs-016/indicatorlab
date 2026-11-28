@@ -1,0 +1,193 @@
+{
+  "status": "FROZEN RULES; UNRUN; SHARED REGISTRATION NOT VERIFIED",
+  "frozen_at_utc": "2026-11-17T16:46:30.336393+00:00",
+  "clarification": "User-supplied Prakhar clarification: market OHLCV and Wikipedia attention satisfy two independent sources; Reddit/FinBERT not mandatory for every strategy.",
+  "source_request_sha256": "8b0312b546a725342942ba35afbd59d7e309a76615c73353ab46ec73af26019e",
+  "versions": {
+    "WATM_v1_2": {
+      "parent": "WATM_v1_1",
+      "indicators": [
+        "benchmark SMA200",
+        "stock SMA50",
+        "126/21 skip-month momentum",
+        "ATR20",
+        "market Wikipedia median robust z"
+      ],
+      "regime": "benchmark close>SMA200",
+      "entry": "positive momentum and close>SMA50; weekly descending momentum top2, then ticker",
+      "attention": "at least ceil(0.8*N) valid ratio/z names; median z>=2 halves portfolio; insufficient coverage cash",
+      "exit": "weekly loss of eligibility/top2 or regime; daily stop; split end"
+    },
+    "WVB_v1_2": {
+      "parent": "WVB_v1_1",
+      "indicators": [
+        "benchmark SMA200",
+        "prior20 high breakout",
+        "volume/prior20 mean volume",
+        "Wikipedia ratio",
+        "ATR20",
+        "prior10 low exit"
+      ],
+      "regime": "benchmark close>SMA200 gates new entries",
+      "entry": "close>prior20 high; volume ratio>=1.2; wiki ratio>=1.2; valid ratio/z warmup; vacant slots ranked excess/ATR descending, then ticker",
+      "exit": "daily stop; close<prior10 low; twentieth held close including entry; split end"
+    },
+    "WCR_v1_2": {
+      "parent": "WCR_v1_1",
+      "indicators": [
+        "benchmark SMA200",
+        "stock SMA20",
+        "Wilder RSI14",
+        "return1",
+        "Wikipedia ratio",
+        "Wikipedia robust z",
+        "ATR20"
+      ],
+      "regime": "benchmark close>SMA200 gates new entries",
+      "entry": "prior wiki ratio>=1.5,z>=2; 1<=current ratio<prior ratio; close<SMA20; RSI in[30,45]; return1>0; vacant slots rank return1/(ATR/close), then ticker",
+      "exit": "daily stop; close>=SMA20; RSI>=60; tenth held close including entry; split end",
+      "cooldown": "four strictly earlier Tuesday decisions after actual exit before a new entry decision"
+    }
+  },
+  "universes": {
+    "IN": [
+      "RELIANCE.NS",
+      "TCS.NS",
+      "INFY.NS",
+      "HDFCBANK.NS",
+      "ICICIBANK.NS",
+      "SBIN.NS",
+      "KOTAKBANK.NS",
+      "AXISBANK.NS"
+    ],
+    "US": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "TSLA",
+      "AMZN",
+      "META",
+      "GOOGL",
+      "AMD",
+      "NFLX",
+      "JPM"
+    ]
+  },
+  "benchmarks": {
+    "IN": "^NSEI",
+    "US": "SPY"
+  },
+  "splits": {
+    "warmup": [
+      "2015-07-01",
+      "2016-05-31"
+    ],
+    "train": [
+      "2016-06-01",
+      "2021-12-31"
+    ],
+    "test": [
+      "2022-01-01",
+      "2025-09-30"
+    ]
+  },
+  "parameters": {
+    "decision": "Tuesday00:00UTC",
+    "attention_week": "Monday-SundayUTC",
+    "wiki_baseline": 8,
+    "offset": 1,
+    "rz_prior_valid_values": 26,
+    "mad_scale": 1.4826,
+    "wiki_publication_lag_days": 1,
+    "max_positions": 2,
+    "risk_per_position": 0.01,
+    "weight_cap": 0.5,
+    "stop_floor": 0.02,
+    "atr_stop_multiplier": 2,
+    "max_stop_distance": 0.1,
+    "entry_expiry_sessions": 2,
+    "minimum_sessions_before_entry": 5,
+    "US_turnover_cost": 0.001,
+    "IN_costs": "original isolated Vibe IndiaEquityEngine defaults, including slippage, pinned per run",
+    "WATM_gate_coverage": 0.8,
+    "WATM_attention_z": 2,
+    "WATM_risk_multiplier": 0.5,
+    "WVB_volume_ratio": 1.2,
+    "WVB_wiki_ratio": 1.2,
+    "WVB_breakout_sessions": 20,
+    "WVB_exit_low_sessions": 10,
+    "WVB_max_held_sessions": 20,
+    "WCR_prior_wiki_ratio": 1.5,
+    "WCR_prior_wiki_z": 2,
+    "WCR_current_ratio_floor": 1,
+    "WCR_rsi_entry": [
+      30,
+      45
+    ],
+    "WCR_rsi_exit": 60,
+    "WCR_max_held_sessions": 10,
+    "WCR_cooldown_prior_decisions": 4
+  },
+  "execution_details": [
+    "Signal ATR and stop distance frozen at decision; entry stop uses cost-adjusted fill. Stops observed at completed closes execute strictly later, never intraday.",
+    "Both splits start cash and liquidate at final eligible close including costs. Five remaining sessions required for new entries, matching existing accounting convention.",
+    "Unfilled entries/resizes replaced at a later weekly snapshot; triggered exits cannot be cancelled. Same-close exits precede buys. No same-close re-entry of a stopping stock.",
+    "WATM has no maximum holding age; it remains weekly eligible or exits. WVB/WCR regime gates entry; their original explicit exit set is preserved.",
+    "WCR uses a new previous-week event and four strictly prior weekly decisions after exit. One decision cannot fill twice.",
+    "Whole-share India resizes below one permitted share are no-ops, recorded explicitly; original fee-inclusive ledger cash budget and rounding are retained.",
+    "Missing benchmark required indicators abort a prepared evaluation; missing stock entry inputs are ineligible; missing held closes fail; missing required exit inputs abort. No synthetic zero attention.",
+    "Before sending same-close orders to the original ledger, reserve actual original-engine sale fees/slippage. If desired buy budgets exceed available sale proceeds plus cash, fund buys proportionally within that budget. Preserve requested targets separately in events; record funded target weights in executable orders. This enforces the original subject-to-available-cash limit; no alpha threshold or ranking changes. Whole-share unfundable resize remains a recorded no-op."
+  ],
+  "runtime_configuration": "AccountingPolicy requires explicit initial local-currency cash before shared registration/evaluation; no production capital is inferred from fixture values. IN whole shares, US explicit fractional policy, fee-inclusive pretrade NAV sizing.",
+  "ablations": {
+    "WATM_v1_2": [
+      "benchmark_trend",
+      "momentum",
+      "sma50",
+      "wiki_attention"
+    ],
+    "WVB_v1_2": [
+      "benchmark_trend",
+      "breakout",
+      "relative_volume",
+      "wiki_attention",
+      "atr_predictive",
+      "low10_exit"
+    ],
+    "WCR_v1_2": [
+      "benchmark_trend",
+      "sma20",
+      "rsi14",
+      "price_confirmation",
+      "wiki_ratio",
+      "wiki_z",
+      "atr_predictive"
+    ]
+  },
+  "ablation_semantics": [
+    "Remove benchmark gate -> unrestricted entry regime. Remove a gate -> Boolean true; remove corresponding exit indicator -> that exit disabled.",
+    "WATM momentum removal disables its positive gate and sets ranking equal (ticker ties). Wiki removal disables its coverage/multiplier; SMA50 deletion disables entry gate.",
+    "WVB breakout removal disables breakout gate and sets ranking equal. Volume/wiki deletion disables only that gate. prior10 low deletion disables that exit.",
+    "WCR ratio deletion disables prior/current ratio conditions; z deletion disables prior z threshold. RSI/SMA20 removal disables that indicator in both entry and exit. Return1 removal disables positive-return gate and sets rankings equal.",
+    "ATR predictive deletion removes only the ranking denominator in WVB/WCR: rank raw excess/return1. Protective ATR sizing/stops remain fixed, as in the existing frozen ablation methodology.",
+    "Deletion variants retain baseline coverage requirements except the explicitly removed whole source filter. Stops/costs/execution/caps are never deleted."
+  ],
+  "evaluation": {
+    "minimum_training_entries": 30,
+    "IC": "Original Vibe rank IC; pre-gate continuous score, five-local-session returns from subsequent eligible execution; unfinished horizon censored",
+    "metrics": "net sample daily Sharpe sqrt252, zero risk-free, cash days included; benchmark price-return comparison, dividend mismatch disclosed",
+    "random": "200 timing nulls, seeds42-241, same ticker/trade count/weight/resize path/duration, no overlap, max2 positions, same market costs; predeclared weekly regime/coverage candidates; no selected partial distribution",
+    "null_max_attempts": 10000,
+    "DSR": "Existing DSR with all prior attempted trials, explicit independent-equivalent count and dependence assumption; never attest incomplete history as complete",
+    "decision": "At least30 train entries; test net Sharpe beats benchmark; beats >=180/200 null Sharpes in each split; report IC, all predictive deletions, DSR. Missing results NOT EVALUATED, not fabricated DROP."
+  },
+  "registration": "Local timestamped rows are prepared, not proof of shared-sheet entry. Actual shared registration required by latest user request before historical evaluation.",
+  "revisions": [
+    "No baseline numeric threshold changed. v1_1 records implementation/ablation/accounting details, guide clarification and precise cooldown semantics separately from original v1 excerpts.",
+    "v1_2: synthetic raw-input WATM test exposed insufficient cash from same-close sale fees at full exposure. Added explicit fee-inclusive buy funding, retaining original targets as requests. Original v1 and frozen v1_1 preserved. No historical performance examined."
+  ],
+  "parent_freeze": {
+    "path": "india_research/reports/week3_wiki_frozen_20261117",
+    "checksums_sha256": "3c39d9d9ba948a87715b5d96ad06a5b4a966593641747bbf187ae93d60f40caf"
+  }
+}

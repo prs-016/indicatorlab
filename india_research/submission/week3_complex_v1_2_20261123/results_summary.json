@@ -1,0 +1,86 @@
+{
+  "WATM_v1_2": {
+    "train": {
+      "entries": 202,
+      "mean_rank_IC": 0.01747126436781609,
+      "net_sharpe": 1.8172788393386672,
+      "net_cumulative_return": 1.6493559716395811,
+      "benchmark_sharpe": 0.9976863761841847,
+      "benchmark_cumulative_return": 1.5095728879786918,
+      "commission_USD": 13883.230521554558,
+      "random_comparisons": 200,
+      "random_percentile": 98.5,
+      "DSR": null,
+      "decision": "DROP"
+    },
+    "test": {
+      "entries": 119,
+      "mean_rank_IC": -0.02601398601398602,
+      "net_sharpe": 0.36895465040724046,
+      "net_cumulative_return": 0.1105213227765176,
+      "benchmark_sharpe": 0.6558671853209596,
+      "benchmark_cumulative_return": 0.4701123783564658,
+      "commission_USD": 5214.443408039004,
+      "random_comparisons": 200,
+      "random_percentile": 33.5,
+      "DSR": null,
+      "decision": "DROP"
+    }
+  },
+  "WVB_v1_2": {
+    "train": {
+      "entries": 15,
+      "mean_rank_IC": -0.012638453500522446,
+      "net_sharpe": 0.3693118069664896,
+      "net_cumulative_return": 0.07429116831358362,
+      "benchmark_sharpe": 0.9976863761841847,
+      "benchmark_cumulative_return": 1.5095728879786918,
+      "commission_USD": 628.1834244937419,
+      "random_comparisons": 200,
+      "random_percentile": 62.0,
+      "DSR": null,
+      "decision": "INSUFFICIENT TRADES"
+    },
+    "test": {
+      "entries": 15,
+      "mean_rank_IC": -0.007607947607947622,
+      "net_sharpe": -0.15967808702420644,
+      "net_cumulative_return": -0.021071117225966107,
+      "benchmark_sharpe": 0.6558671853209596,
+      "benchmark_cumulative_return": 0.4701123783564658,
+      "commission_USD": 534.1248580089224,
+      "random_comparisons": 200,
+      "random_percentile": 29.0,
+      "DSR": null,
+      "decision": "INSUFFICIENT TRADES"
+    }
+  },
+  "WCR_v1_2": {
+    "train": {
+      "entries": 3,
+      "mean_rank_IC": 0.007203523120478137,
+      "net_sharpe": -0.5658185456243549,
+      "net_cumulative_return": -0.019714491511389487,
+      "benchmark_sharpe": 0.9976863761841847,
+      "benchmark_cumulative_return": 1.5095728879786918,
+      "commission_USD": 89.95435219167868,
+      "random_comparisons": 200,
+      "random_percentile": 1.5,
+      "DSR": null,
+      "decision": "INSUFFICIENT TRADES"
+    },
+    "test": {
+      "entries": 5,
+      "mean_rank_IC": -0.012214452214452208,
+      "net_sharpe": 1.1785387184948817,
+      "net_cumulative_return": 0.06532346806477385,
+      "benchmark_sharpe": 0.6558671853209596,
+      "benchmark_cumulative_return": 0.4701123783564658,
+      "commission_USD": 192.60485733712878,
+      "random_comparisons": 200,
+      "random_percentile": 97.5,
+      "DSR": null,
+      "decision": "INSUFFICIENT TRADES"
+    }
+  }
+}

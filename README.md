@@ -13,6 +13,8 @@ baseline.
 
 ## India submission: reviewer entry point
 
+The [frozen Week 3 research package](india_research/submission/week3_complex_v1_2_20261123/README.md) uses the original September 30, 2025 test cutoff. It predates the Final Week October 31, 2026 cutoff.
+
 Start with the [portable review report](india_research/submission/india_review_v1_20261101/report.md)
 and [Strategy Log](india_research/submission/india_review_v1_20261101/strategy_log.md).
 The [bundle guide](india_research/submission/india_review_v1_20261101/README.md)

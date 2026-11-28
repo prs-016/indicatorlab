@@ -1,0 +1,9 @@
+{
+  "frozen_at_utc": "2026-11-17T16:46:30.336393+00:00",
+  "rules_files": {
+    "rules.json": "c44d9adf372c069a064fdcbec25ee5fce35640b99b390cd03ed58dab9f273c33",
+    "rules.md": "50a645b6928c03e02c356ce83d3fa1ec4cb343e78601dbb3f51fd0caeb7b5bb8",
+    "original_v1_rules.md": "980b5f93101912259fc7110af21ac5bb068feb6636bc3eedb8cc81ccf200758c",
+    "strategy_log_registration.tsv": "ecd96e50df2779f54e44b669cffa1b1fad59cef5f5da262f6c73fee11be494a1"
+  }
+}

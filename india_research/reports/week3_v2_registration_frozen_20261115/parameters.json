@@ -1,0 +1,111 @@
+{
+  "status": "FROZEN / READY TO REGISTER / NOT REGISTERED / NOT EVALUATED",
+  "versions": [
+    "AGM_v2",
+    "SCB_v2",
+    "AER_v2"
+  ],
+  "markets": {
+    "IN": [
+      "RELIANCE.NS",
+      "TCS.NS",
+      "INFY.NS",
+      "HDFCBANK.NS",
+      "ICICIBANK.NS",
+      "SBIN.NS",
+      "KOTAKBANK.NS",
+      "AXISBANK.NS"
+    ],
+    "US": [
+      "AAPL",
+      "MSFT",
+      "NVDA",
+      "TSLA",
+      "AMZN",
+      "META",
+      "GOOGL",
+      "AMD",
+      "NFLX",
+      "JPM"
+    ]
+  },
+  "benchmarks": {
+    "US": "SPY",
+    "IN": "^NSEI"
+  },
+  "warmup_start": "2015-07-01",
+  "train": [
+    "2016-06-01",
+    "2021-12-31"
+  ],
+  "test": [
+    "2022-01-01",
+    "2025-09-30"
+  ],
+  "holdout_excluded_from": "2025-10-01",
+  "shared_rules": "## Shared registration fields\n\n| Field | Fixed specification for all three |\n|---|---|\n| Owner/status | Jamaal; **v2 FROZEN—UNRUN—READY TO REGISTER (not yet registered)**. New local strategy IDs, not Vibe registry entries. |\n| Markets | Evaluate US and India separately, in USD and INR respectively. No combined cross-currency portfolio. |\n| India universe | RELIANCE.NS, TCS.NS, INFY.NS, HDFCBANK.NS, ICICIBANK.NS, SBIN.NS, KOTAKBANK.NS, AXISBANK.NS. Benchmark: `^NSEI`. |\n| US universe | Configured AAPL, MSFT, NVDA, TSLA, AMZN, META, GOOGL, AMD, NFLX, JPM. Benchmark: SPY. These fixed, retrospectively selected baskets carry survivorship/selection limitations. |\n| Train | **2016-06-01–2021-12-31**. |\n| Test | **2022-01-01–2025-09-30**. |\n| Warm-up | Request separately bounded history from **2015-07-01**; require every indicator’s complete warm-up before eligibility. Warm-up returns do not enter metrics. |\n| Holdout | Never request or open price, attention or sentiment observations dated **2025-10-01 onward**. Use research-only files and date-bounded requests. |\n| Weekly clock | Attention weeks are Monday–Sunday UTC. Decision snapshot: **Tuesday 00:00 UTC** following the completed week. Price indicators use only exchange sessions closed before that snapshot. |\n| Publication safeguard | A feature must have been published by the decision snapshot. A 24-hour weekly processing allowance is a proposed assumption, **not proof of historical availability**. Missing release-time evidence prevents a point-in-time claim. |\n| Execution | First eligible local close after the decision snapshot and after the price bar used for the signal. Entry orders expire after two local sessions. Daily protective exits execute at the next eligible close—not at the triggering close. |\n| Portfolio | Long-only; maximum two positions; no leverage or shorting. Exact ranking ties resolve by ascending ticker. Unallocated capital earns zero. |\n| Initial sizing | Let `a = ATR20 / signal close`, `d = max(0.02, 2a)`. Reject entries if `d > 0.10`. Initial target weight is `min(0.50, 0.01/d)`, before any portfolio-wide exposure multiplier. This budgets approximately 1% NAV to the initial stop distance; gaps can exceed that loss. |\n| Protective stop | Initial stop = execution price × `(1−d)`. Subsequently raise—but never lower—it to the maximum of its previous level and `highest completed close since entry − 2 × entry ATR20`. Adjust consistently for corporate actions. |\n| Rebalancing | Weekly entries/target review; daily protective-exit checks. Existing positions in strategies 2–3 remain until an explicit exit, rather than being replaced merely because their entry conditions disappear. |\n| Missing data | Missing collection is not zero attention. No missing-price forward-fill, invented sentiment, interpolated sessions or silent anomaly removal. An unexplained missing held-position close blocks a complete performance claim. |\n| Split boundaries | Start each split in cash; retain prior history for indicators only. Schedule liquidation at each split’s final eligible close, including costs. No new entries with fewer than five sessions remaining. |\n\n**Frozen guide-aligned transaction costs:** US single stocks retain **10 bps per unit of absolute traded NAV per side**. If a liquid ETF is actually traded, use the guide's 3 bps (reference index returns are not assumed to be trades). No shorts, so the guide's 50 bps/year borrow charge is not applicable.\n\nIndia replaces the flat 25-bps proxy with the existing Vibe `agent/backtest/engines/india_equity.py::IndiaEquityEngine` commission hooks, including STT, exchange/SEBI fees, GST, buy-only stamp duty and configured sell DP charge. Do not reimplement its tax formula or add the old flat charge on top. Frozen original source defaults: brokerage=0, STT=0.001, exchange=0.0000297, SEBI=0.000001, stamp=0.00015, GST=0.18, DP=0. Default engine slippage=0.001 is retained separately as adverse execution slippage, not another turnover commission. Pin the engine file hash/config before running. These are inspected code defaults, not independently verified historical statutory schedules; This registration freezes these existing engine defaults as the research cost convention; they are not certified historical statutory schedules. Use actual commission cash flows in NAV accounting and avoid double-counting slippage or fees. US accounting retains `(1+gross)*(1-cost_fraction)-1`; India must account consistently for the engine's cash charges/fills rather than treating a fixed cash fee as a constant percentage.\n\n### Shared indicator definitions\n\n- `C/H/L/V`: consistently adjusted close/high/low and declared comparable volume.\n- `SMA_n`: mean of the latest `n` completed local sessions.\n- `ATR20`: simple mean of 20 true ranges; true range uses the previous close.\n- `RV20`: sample standard deviation of 20 daily simple returns × `√252`.\n- `R_w`: Reddit post-count ratio; `W_w`: Wikipedia pageview ratio.\n- For either attention count `x`:\n\n  `ratio_w = (x_w + 1) / (median(x_[w−8:w−1]) + 1)`\n\n  Use the configured past-only robust z-score: at least **26 previous valid abnormal values**, MAD scale **1.4826**. A standard spike requires **ratio ≥1.5 and robust z ≥2**. Undefined baselines or zero MAD remain unavailable.\n- `S_w = mean(p_positive − p_negative)`, using deduplicated, ticker-matched English `reddit_stock` posts from the shared **validated FinBERT scorer**, or a different validated production winner explicitly approved by Prakhar. Require complete collection and **at least 20 scored posts** that week. Freeze model/tokenizer/preprocessing/text-version hashes; retain per-post probabilities and validate India sentiment on training-period labels. This replaces VADER-labelled post fractions; the numeric sentiment thresholds below are frozen on the probability-net scale; no equivalence with VADER is claimed. A validated scorer substitution is another version/trial before test, never a silent fallback.\n- `ΔS_w = S_w − S_[w−1]`.\n\n",
+  "strategy_rules": {
+    "AGM_v2": "## 1. Attention-Gated Momentum — `AGM_v2`\n\n**Hypothesis:** price momentum may remain useful while widespread unusual attention signals a need to reduce portfolio exposure. **Attention changes portfolio risk only; it does not choose stocks.**\n\n| Registration field | Fixed rule |\n|---|---|\n| Sources/indicators | Market OHLCV: 126-to-21-session momentum, SMA50, benchmark SMA200, benchmark RV20, ATR20. Reddit and Wikipedia: market-wide spike breadth. |\n| Price score | `M = C_[t−21] / C_[t−126] − 1`. This omits the latest month. |\n| Market regime | Benchmark close above SMA200 and benchmark RV20 ≤35%. Otherwise target cash. |\n| Stock eligibility | `M > 0` and stock close above SMA50. Select the two highest **price-only** momentum scores. |\n| Attention filter | For each source, calculate the fraction of covered universe names exhibiting a standard spike. Require complete attention inputs for at least 80% of the fixed universe: 8/10 US names or 7/8 Indian names. |\n| Exposure rule | If either Reddit or Wikipedia spike breadth is ≥40%, multiply **both selected positions’ weights by 0.5**. Otherwise multiplier =1. Missing market-level attention coverage means no new target can be certified. |\n| Entry/rebalance | Review every weekly snapshot; enter eligible selected names using shared sizing and subsequent-close execution. |\n| Exit | First of: no longer in the weekly top two; momentum ≤0; close below SMA50; benchmark regime fails; protective stop; **63 held sessions**. |\n| Risk-filter attribution | Record ungated price targets separately from gated targets. The filter must never reorder stocks or favor individually quiet names. |\n| IC score | Raw `M`. A common exposure multiplier does not improve cross-sectional ranks; evaluate the attention filter principally through its ablation and portfolio-risk effects. |\n\n\n",
+    "SCB_v2": "## 2. Sentiment-Confirmed Breakout — `SCB_v2`\n\n**Hypothesis:** a breakout supported by participation, attention and improving sentiment is more credible than a price breakout alone.\n\n| Registration field | Fixed rule |\n|---|---|\n| Sources/indicators | Market OHLCV: prior 55-session high, relative volume, ATR20 and benchmark trend/volatility. Reddit: attention ratio, robust z, sentiment level/change. Wikipedia: attention ratio and robust z. |\n| Breakout | `C_t > max(H_[t−55:t−1])`; the current bar is excluded from the comparison range. |\n| Volume confirmation | `VR = V_t / median(V_[t−20:t−1]) ≥1.5`. Require positive, comparable volumes and a positive denominator. |\n| Attention confirmation | Both `R_w ≥1.5` and `W_w ≥1.5`; at least one source must also have robust z ≥2. |\n| Sentiment confirmation | `S_w ≥0.20` and `ΔS_w ≥0.10`. These are mean probability-net values: a 0.10 change is 0.10 score units, not a ten-percentage-point change in VADER-labelled post counts. |\n| Market regime | Benchmark close above SMA200; SMA200 above its value 20 sessions earlier; benchmark RV20 ≤30%. |\n| Ranking | Descending `Q = (C_t/HH55−1)/a + ln(VR) + ln(R_w) + ln(W_w) + S_w + ΔS_w`, where `HH55` is the prior high and `a=ATR20/C_t`. All coefficients are fixed at one. |\n| Entry/sizing | At each weekly snapshot, fill vacant slots with the highest-ranked qualifying names; apply shared sizing. No pyramiding. |\n| Exit | First of: close below the prior 20-session low; weekly sentiment <0; benchmark regime fails; protective stop; **42 held sessions**. |\n| IC score | The continuous `Q` before Boolean entry gates, across names with complete inputs. Report gated eligibility separately. |\n\n\n",
+    "AER_v2": "## 3. Attention Exhaustion Reversal — `AER_v2`\n\n**Hypothesis:** extreme attention accompanying a sell-off may precede a rebound once attention cools, sentiment improves and price confirms recovery. This is a **long-only negative-shock reversal**, not an unsupported Indian short-selling strategy.\n\n| Registration field | Fixed rule |\n|---|---|\n| Sources/indicators | Reddit/Wikipedia attention extremes and decay; Reddit sentiment level/change; five-session price return; SMA20 deviation; RSI14; one-session price confirmation; ATR20; benchmark regime. |\n| Prior-week event | At the previous weekly snapshot: `R_[w−1] ≥3`, Reddit robust z ≥3; `W_[w−1] ≥2`, Wikipedia robust z ≥2; `S_[w−1] ≤−0.30`. |\n| Prior price shock | At that same previous snapshot: five-session return ≤−8%, close ≤`SMA20−2×ATR20`, and RSI14 ≤30. RSI uses Wilder smoothing; a flat series is neutral, not an extreme. |\n| Current exhaustion | Reddit posts fall to ≤75% of the prior week, while current Reddit attention ratio remains ≥1.5. |\n| Current recovery | `ΔS_w ≥0.20`, `S_w >−0.10`, RSI14 >30 and ≤50, and current completed close exceeds the previous session’s high. |\n| Market regime | Benchmark close ≥90% of SMA200 and benchmark RV20 ≤40%. More severe market deterioration blocks entries. |\n| Ranking | Descending `Q = ΔS_w × (−prior five-session return) / prior ATR percentage`. All components refer to the explicitly dated snapshots above. |\n| Entry/sizing | Weekly entries into vacant slots; maximum two positions; shared sizing. Each prior-week shock can generate only one entry. |\n| Exit | First of: close reaches/exceeds current SMA20; weekly sentiment ≥0.20; benchmark regime fails; protective stop; **20 held sessions**. |\n| Re-entry | Minimum **10 local sessions** after exit, plus a new qualifying shock event. |\n| IC score | Continuous recovery score `Q` before the event gates; report event-only coverage separately. |\n\n\n"
+  },
+  "evaluation_rules": "## Evaluation fields to register before running\n\n| Requirement | Fixed evaluation plan |\n|---|---|\n| Evaluable sample | **At least 30 filled training entries per strategy per market**. Count zero-to-positive position openings—not reweights or partial fills. Otherwise label **Insufficient training entries**; do not pool markets, move dates or loosen rules. |\n| IC | Weekly Spearman correlation between the declared continuous score and returns from its executable close to five local sessions later. Require ≥5 valid names; report omitted/undefined observations. Censor labels crossing either split boundary. IC is diagnostic, not portfolio Sharpe. |\n| Portfolio metrics | Separate net train/test Sharpe: daily mean/sample standard deviation ×√252, zero risk-free; include cash days. Also cumulative return, drawdown, turnover, costs, entries and exposure. |\n| Benchmarks | Same-session SPY/`^NSEI` and equal-weight fixed-universe controls. Disclose dividend-adjusted equity versus Nifty price-index mismatch; do not silently substitute a total-return index. |\n| Random entries | **200 matched-duration random-entry runs per strategy, market and split**, seeds 42–241. Keep the observed filled-entry count, ticker frequencies, entry weights and each trade’s held-session duration; randomize eligible weekly entry times, within the same predeclared benchmark-regime stratum. Enforce two slots, split boundaries, valid data and the same market costs/slippage. This conditional timing null schedules exits after the matched duration rather than replaying signal-dependent/protective exits (which could change holding times). Draw dates without using profits or future signals. If 200 feasible schedules cannot be produced, report the baseline incomplete; never silently reduce trades, shorten durations or discard losing runs. This freezes the existing v2 matched-duration null; no further timing-null choice is introduced. |\n| Drop-one ablation | Predeclare and remove each predictive indicator/filter individually without retuning; report its contribution. An indicator whose removal changes no eligible signals, targets or returns is a cut candidate for a new registered revision, not silently deleted from this one. For AGM, explicitly test no attention filter, Reddit-only and Wikipedia-only filtering. Preserve execution, costs and protective risk controls in every ablation. |\n| Deflated Sharpe | Record every attempted specification and ablation, including failures. Calculate DSR using sample length, skewness, kurtosis and an explicitly documented trial/dependence estimate; do not pretend there were only three trials. DSR addresses selection/non-normality, not data leakage. [Original DSR paper](https://davidhbailey.com/dhbpapers/deflated-sharpe.pdf). |\n| Decision | All results **N/A / NOT EVALUATED**. For each market separately, provisional KEEP eligibility requires ≥30 filled training entries, **test net Sharpe strictly above that market’s index Sharpe**, and Sharpe beating **at least 180/200 random runs in both train and test**. Report IC, every drop-one result and DSR probability; the guide gives no extra numeric DSR/IC cutoff. Any failed stated pass mark is logged DROP after evaluation; insufficient data/sample is labelled non-evaluable, never a fabricated negative return. These are guide criteria, not a decision already earned. Final PM decisions remain pending. |\n\n**Important:** 2022–2024 performance has already been observed in earlier India research. The requested test is a frozen temporal test for these new rules, **not an untouched out-of-sample period**.\n\n\n",
+  "drop_one": {
+    "AGM_v2": [
+      "momentum",
+      "sma50",
+      "reddit_attention",
+      "wikipedia_attention",
+      "benchmark_trend",
+      "benchmark_volatility"
+    ],
+    "SCB_v2": [
+      "breakout",
+      "relative_volume",
+      "reddit_attention",
+      "wikipedia_attention",
+      "sentiment_level",
+      "sentiment_change",
+      "benchmark_trend",
+      "benchmark_volatility",
+      "low20_exit",
+      "atr_predictive"
+    ],
+    "AER_v2": [
+      "reddit_attention",
+      "wikipedia_attention",
+      "sentiment_level",
+      "sentiment_change",
+      "prior_return",
+      "sma20",
+      "rsi14",
+      "price_confirmation",
+      "atr_predictive",
+      "benchmark_trend",
+      "benchmark_volatility"
+    ]
+  },
+  "ablation_semantics": "Remove all predictive entry/ranking/predictive-exit uses; additive omission/multiplicative identity; protective risk controls unchanged. See rules.md.",
+  "accounting": {
+    "sizing_basis": "pretrade_nav_fee_inclusive_budget",
+    "quantity_mode": {
+      "US": "fractional",
+      "IN": "whole"
+    },
+    "initial_cash": "REQUIRED positive local-currency value, fixed and recorded before execution",
+    "pending_update": "replace_on_snapshot"
+  },
+  "sentiment": "Shared validated pinned FinBERT mean(positive_probability - negative_probability); existing v2 thresholds unchanged",
+  "india_engine_config": {
+    "in_brokerage": 0.0,
+    "in_stt": 0.001,
+    "in_exchange_txn": 2.97e-05,
+    "in_sebi_fee": 1e-06,
+    "in_stamp_duty": 0.00015,
+    "in_gst": 0.18,
+    "in_dp_charge": 0.0,
+    "slippage": 0.001
+  },
+  "performance": "N/A — NOT EVALUATED",
+  "decision": "N/A — NOT EVALUATED"
+}
