@@ -102,7 +102,14 @@ def test_weekly_pulls_state_runs_steps_pushes_only_changes_and_publishes(tmp_pat
     import os
     import time as _time
 
-    from src.reddit import build_posts, collect_reddit, match_tickers, reddit_weekly, score_posts, settings
+    from src.reddit import (
+        build_posts,
+        collect_reddit,
+        match_tickers,
+        reddit_weekly,
+        score_posts,
+        settings,
+    )
 
     root, work = tmp_path / "s3", tmp_path / "work"
     storage.write_json({"keep": 1}, root / "raw/reddit/arctic_shift/stocks/2026/2026-11-02.json")
@@ -147,7 +154,14 @@ def test_weekly_pulls_state_runs_steps_pushes_only_changes_and_publishes(tmp_pat
 
 def _stub_weekly_steps(monkeypatch) -> list:
     """Replace every weekly step with a no-op; returns the list that collects (start, end) of each collect."""
-    from src.reddit import build_posts, collect_reddit, match_tickers, reddit_weekly, score_posts, settings
+    from src.reddit import (
+        build_posts,
+        collect_reddit,
+        match_tickers,
+        reddit_weekly,
+        score_posts,
+        settings,
+    )
 
     calls = []
     monkeypatch.setattr(settings, "WEEKLY_RETRY_WEEKS", 3)

@@ -9,7 +9,7 @@ def test_run_creates_the_missing_tables_folder(tmp_path, monkeypatch):
     """The AWS image ships only src/, so results/reddit/tables does not exist there (weekly crash, Nov 2026)."""
     ts = pd.Timestamp("2026-11-10 12:00", tz="UTC")
     posts = pd.DataFrame([{"id": "p1", "subreddit": "stocks", "subreddit_type": "general", "owner_ticker": "",
-                           "market": "us", "created_utc": int(ts.timestamp()), "created_dt": ts, "date": ts.date(),
+                           "market": "US", "created_utc": int(ts.timestamp()), "created_dt": ts, "date": ts.date(),
                            "title": "Bought MSFT today", "selftext": "", "score": 1, "num_comments": 0,
                            "permalink": "/r/stocks/comments/p1/", "day_status": "complete",
                            "removed_by_category": "", "removed_flag": False, "period": "train"}])

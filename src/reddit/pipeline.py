@@ -243,7 +243,13 @@ def publish(root: str) -> list[str]:
 
 def weekly(root: str | None = None, today: date | None = None, start: date | None = None) -> dict:
     """Collect last week, rebuild every weekly table with the local pipeline code, push and publish."""
-    from src.reddit import build_posts, collect_reddit, match_tickers, reddit_weekly, score_posts
+    from src.reddit import (
+        build_posts,
+        collect_reddit,
+        match_tickers,
+        reddit_weekly,
+        score_posts,
+    )
     root = root or root_uri()
     log.info("weekly: pulled %d state files from %s", _sync_state(root, down=True), root)
     started = time.time()       # after the download, so only files this run writes are pushed back
