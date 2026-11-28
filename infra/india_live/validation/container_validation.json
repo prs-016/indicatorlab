@@ -1,0 +1,23 @@
+{
+  "image_tag": "india-live:week3-local",
+  "image_manifest_sha256": "620e7d8d7067f23c08bb6de2673656881aa8a42a9215f332d7204077b2838181",
+  "platform": "linux/arm64",
+  "base": "public.ecr.aws/lambda/python:3.13",
+  "context_files": 10,
+  "configuration_review_approved": false,
+  "network_none_validation": {
+    "imports": "PASS",
+    "architecture": "aarch64",
+    "requests": "2.34.2",
+    "pandas": "3.1.1",
+    "pyarrow": "26.0.1",
+    "boto3": "1.43.127",
+    "entrypoint_help": "PASS",
+    "default_unapproved_configuration_exit": 1,
+    "default_unapproved_configuration": "FAIL CLOSED AS REQUIRED"
+  },
+  "AWS_resources_created": false,
+  "live_polling_activated": false,
+  "production_deployable_runtime": false,
+  "CloudFormation_offline_cfn_lint_us_west_2": "PASS"
+}

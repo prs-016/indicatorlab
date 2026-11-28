@@ -1,0 +1,54 @@
+{
+  "provider": "Existing Vibe Yahoo quoteSummary; user-authorized 60-second fallback test",
+  "scope": "Live source timing only, not historical research or AWS ingestion",
+  "cadence_seconds": 60,
+  "polls": 11,
+  "samples": 33,
+  "errors": 0,
+  "by_symbol": {
+    "RELIANCE.NS": {
+      "samples": 11,
+      "first_received": "2026-11-24T06:20:32.283674+00:00",
+      "last_received": "2026-11-24T06:30:56.133167+00:00",
+      "median_quote_age_seconds": 73568.82225894928,
+      "minimum_quote_age_seconds": 73258.2836740017,
+      "maximum_quote_age_seconds": 73882.13316702843,
+      "unique_exchange_timestamps": 1,
+      "observed_exchange_timestamp": "2026-11-23T09:59:34+00:00",
+      "samples_within_60_seconds": 0,
+      "median_request_latency_seconds": 0.06470986899876152
+    },
+    "TCS.NS": {
+      "samples": 11,
+      "first_received": "2026-11-24T06:20:32.952799+00:00",
+      "last_received": "2026-11-24T06:30:57.044745+00:00",
+      "median_quote_age_seconds": 73569.44970202446,
+      "minimum_quote_age_seconds": 73258.9527990818,
+      "maximum_quote_age_seconds": 73883.04474496841,
+      "unique_exchange_timestamps": 1,
+      "observed_exchange_timestamp": "2026-11-23T09:59:34+00:00",
+      "samples_within_60_seconds": 0,
+      "median_request_latency_seconds": 0.8781932849997247
+    },
+    "INFY.NS": {
+      "samples": 11,
+      "first_received": "2026-11-24T06:20:33.671170+00:00",
+      "last_received": "2026-11-24T06:30:57.843670+00:00",
+      "median_quote_age_seconds": 73570.39987301826,
+      "minimum_quote_age_seconds": 73259.67116999626,
+      "maximum_quote_age_seconds": 73883.84366989136,
+      "unique_exchange_timestamps": 1,
+      "observed_exchange_timestamp": "2026-11-23T09:59:34+00:00",
+      "samples_within_60_seconds": 0,
+      "median_request_latency_seconds": 0.8197987049989024
+    }
+  },
+  "conclusion": "Yahoo/Vibe access succeeds; previous-session timestamps are consistent with the documented NSE holiday. Open-session quote latency/cadence remains unverified; no live deployment claim.",
+  "session_context": {
+    "india_date": "2026-11-24",
+    "market_closed": true,
+    "reason": "Prakash Gurpurb Sri Guru Nanak Dev",
+    "official_calendar_reference": "https://nsearchives.nseindia.com/content/circulars/CMTR71775.pdf",
+    "open_session_validation_completed": false
+  }
+}

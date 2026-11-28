@@ -1,0 +1,11 @@
+{
+  "fixture_notice": "SYNTHETIC Dhan v2-shaped payload. IDs are test-only; not an instrument master or market evidence.",
+  "status": "success",
+  "data": {
+    "NSE_EQ": {
+      "1001": {"last_price": 2500, "net_change": 25, "volume": 12345, "last_trade_time": "02/01/2024 09:15:00", "ohlc": {"open": 2490, "high": 2510, "low": 2480, "close": 2475}},
+      "1002": {"last_price": 3500, "net_change": -35, "volume": 6789, "last_trade_time": "02/01/2024 09:15:01"},
+      "1003": {"last_price": 1500, "net_change": 0, "volume": 0, "last_trade_time": "02/01/2024 09:15:02"}
+    }
+  }
+}

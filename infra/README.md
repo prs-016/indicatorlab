@@ -141,3 +141,12 @@ uv venv /tmp/cfnlint && uv pip install --python /tmp/cfnlint/bin/python cfn-lint
 bash -n infra/scripts/*.sh infra/*/deploy.sh
 .venv/bin/python -m pytest tests/reddit/test_pipeline.py tests/test_storage.py
 ```
+
+
+## India live-service deployment (inactive)
+
+See [india_live/README.md](india_live/README.md) for the India-specific collector,
+Fargate scheduling, scoped credential injection and independent receipt watchdog.
+It references the shared bucket, India table and team cluster rather than
+provisioning duplicates. Defaults keep collection and schedules disabled;
+provider access, reviewed runtime inputs and deployment approval remain required.

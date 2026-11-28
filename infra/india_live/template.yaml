@@ -1,0 +1,304 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: India live collector and receipt watchdog; references shared resources. Inactive by default.
+Parameters:
+  ImageDigest:
+    Type: String
+    Description: Reviewed ARM64 digest in this project's indicatorlab-india-live ECR repository
+    AllowedPattern: 'sha256:[a-f0-9]{64}'
+  QuoteProvider:
+    Type: String
+    Default: yahoo
+    AllowedValues: [yahoo, dhan]
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  PublicSubnets:
+    Type: List<AWS::EC2::Subnet::Id>
+    Description: Existing public subnets with an Internet Gateway route
+  DhanClientIdParameterName:
+    Type: String
+    Description: Existing India SSM SecureString name, not a credential value
+    Default: ''
+    AllowedPattern: '(^$|/indicatorlab/india/[A-Za-z0-9_./-]+)'
+  DhanAccessTokenParameterName:
+    Type: String
+    Description: Existing India SSM SecureString name, not a credential value
+    Default: ''
+    AllowedPattern: '(^$|/indicatorlab/india/[A-Za-z0-9_./-]+)'
+  SecretKmsKeyArn:
+    Type: String
+    Default: ''
+    Description: Optional customer-managed key for the two SSM parameters
+    AllowedPattern: '(^$|arn:aws:kms:us-east-2:[0-9]{12}:key/.+)'
+  AlertTopicArn:
+    Type: String
+    Default: ''
+    Description: Existing SNS topic; confirm its policy/subscription before enabling
+  SchedulesState:
+    Type: String
+    Default: DISABLED
+    AllowedValues: [ENABLED, DISABLED]
+  StartExpression:
+    Type: String
+    Default: 'cron(5 9 * * ? *)'
+    Description: Daily 09:05 IST; collector calendar prevents polling closures
+  StopExpression:
+    Type: String
+    Default: 'cron(40 15 * * ? *)'
+    Description: Daily 15:40 IST; override/add dated operations for evening special sessions
+Rules:
+  RequiredRegion:
+    Assertions:
+      - Assert: !Equals [!Ref 'AWS::Region', us-east-2]
+        AssertDescription: Existing service and resource targets require us-east-2
+      - Assert: !Equals [!Ref 'AWS::StackName', indicatorlab-india-live]
+        AssertDescription: Use the dedicated indicatorlab-india-live stack
+  DhanParameters:
+    RuleCondition: !Equals [!Ref QuoteProvider, dhan]
+    Assertions:
+      - Assert: !And
+          - !Not [!Equals [!Ref DhanClientIdParameterName, '']]
+          - !Not [!Equals [!Ref DhanAccessTokenParameterName, '']]
+        AssertDescription: Dhan requires both India SecureString names
+Conditions:
+  UseDhan: !Equals [!Ref QuoteProvider, dhan]
+  HasKmsKey: !Not [!Equals [!Ref SecretKmsKeyArn, '']]
+  HasAlertTopic: !Not [!Equals [!Ref AlertTopicArn, '']]
+  Active: !Equals [!Ref SchedulesState, ENABLED]
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+  CollectorLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /indicatorlab/${AWS::StackName}/collector
+      RetentionInDays: 14
+  WatchdogLogs:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AWS::StackName}-watchdog
+      RetentionInDays: 14
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: India collector outbound HTTPS only; no inbound listeners
+      VpcId: !Ref VpcId
+      SecurityGroupEgress:
+        - {IpProtocol: tcp, FromPort: 443, ToPort: 443, CidrIp: 0.0.0.0/0}
+  ExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - {Effect: Allow, Principal: {Service: ecs-tasks.amazonaws.com}, Action: 'sts:AssumeRole'}
+      Policies:
+        - PolicyName: PullImageAndWriteCollectorLogs
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - {Effect: Allow, Action: 'ecr:GetAuthorizationToken', Resource: '*'}
+              - Effect: Allow
+                Action: [ecr:BatchCheckLayerAvailability, ecr:GetDownloadUrlForLayer, ecr:BatchGetImage]
+                Resource: !Sub arn:${AWS::Partition}:ecr:${AWS::Region}:${AWS::AccountId}:repository/indicatorlab-india-live
+              - Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !GetAtt CollectorLogs.Arn
+        - !If
+          - UseDhan
+          - PolicyName: InjectOnlyDhanSecrets
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action: ssm:GetParameters
+                  Resource:
+                    - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${DhanClientIdParameterName}
+                    - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}:${AWS::AccountId}:parameter${DhanAccessTokenParameterName}
+                - !If
+                  - HasKmsKey
+                  - Effect: Allow
+                    Action: kms:Decrypt
+                    Resource: !Ref SecretKmsKeyArn
+                    Condition:
+                      StringEquals:
+                        kms:ViaService: !Sub ssm.${AWS::Region}.${AWS::URLSuffix}
+                  - !Ref AWS::NoValue
+          - !Ref AWS::NoValue
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - {Effect: Allow, Principal: {Service: ecs-tasks.amazonaws.com}, Action: 'sts:AssumeRole'}
+      Policies:
+        - PolicyName: WriteOnlyIndiaQuotes
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:BatchWriteItem
+                Resource: !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/indicatorlab-live-india
+              - Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub arn:${AWS::Partition}:s3:::indicatorlab-data/raw/live/india/*
+  Task:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: indicatorlab-live-india
+      Cpu: '256'
+      Memory: '1024'
+      NetworkMode: awsvpc
+      RequiresCompatibilities: [FARGATE]
+      RuntimePlatform: {CpuArchitecture: ARM64, OperatingSystemFamily: LINUX}
+      ExecutionRoleArn: !GetAtt ExecutionRole.Arn
+      TaskRoleArn: !GetAtt TaskRole.Arn
+      ContainerDefinitions:
+        - Name: india-quotes
+          Essential: true
+          Image: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/indicatorlab-india-live@${ImageDigest}
+          EntryPoint: [python, '-B', '-m', src.live.india_app]
+          Command: ['--run']
+          StopTimeout: 120
+          Environment:
+            - {Name: INDIA_LIVE_REGION, Value: !Ref AWS::Region}
+            - {Name: INDIA_LIVE_PROVIDER, Value: !Ref QuoteProvider}
+            - {Name: INDIA_LIVE_CONFIG, Value: /var/task/runtime/india-live.json}
+          Secrets: !If
+            - UseDhan
+            - - {Name: DHAN_CLIENT_ID, ValueFrom: !Ref DhanClientIdParameterName}
+              - {Name: DHAN_ACCESS_TOKEN, ValueFrom: !Ref DhanAccessTokenParameterName}
+            - !Ref AWS::NoValue
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref CollectorLogs
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: india
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref Cluster
+      TaskDefinition: !Ref Task
+      DesiredCount: 0
+      LaunchType: FARGATE
+      DeploymentConfiguration:
+        MinimumHealthyPercent: 0
+        MaximumPercent: 100
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: ENABLED
+          Subnets: !Ref PublicSubnets
+          SecurityGroups: [!Ref SecurityGroup]
+  SchedulerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - {Effect: Allow, Principal: {Service: scheduler.amazonaws.com}, Action: 'sts:AssumeRole'}
+      Policies:
+        - PolicyName: StartStopOnlyIndiaService
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - {Effect: Allow, Action: 'ecs:UpdateService', Resource: !Ref Service}
+  Start:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      ScheduleExpression: !Ref StartExpression
+      ScheduleExpressionTimezone: Asia/Kolkata
+      State: !Ref SchedulesState
+      FlexibleTimeWindow: {Mode: 'OFF'}
+      Target:
+        Arn: !Sub arn:${AWS::Partition}:scheduler:::aws-sdk:ecs:updateService
+        RoleArn: !GetAtt SchedulerRole.Arn
+        Input: !Sub '{"Cluster":"${Cluster}","Service":"${Service.Name}","DesiredCount":1}'
+        RetryPolicy: {MaximumRetryAttempts: 0, MaximumEventAgeInSeconds: 60}
+  Stop:
+    Type: AWS::Scheduler::Schedule
+    Properties:
+      ScheduleExpression: !Ref StopExpression
+      ScheduleExpressionTimezone: Asia/Kolkata
+      State: !Ref SchedulesState
+      FlexibleTimeWindow: {Mode: 'OFF'}
+      Target:
+        Arn: !Sub arn:${AWS::Partition}:scheduler:::aws-sdk:ecs:updateService
+        RoleArn: !GetAtt SchedulerRole.Arn
+        Input: !Sub '{"Cluster":"${Cluster}","Service":"${Service.Name}","DesiredCount":0}'
+        RetryPolicy: {MaximumRetryAttempts: 3, MaximumEventAgeInSeconds: 300}
+  WatchdogRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - {Effect: Allow, Principal: {Service: lambda.amazonaws.com}, Action: 'sts:AssumeRole'}
+      Policies:
+        - PolicyName: ReadIndiaReceiptsAndPublishHealth
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action: dynamodb:BatchGetItem
+                Resource: !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/indicatorlab-live-india
+              - Effect: Allow
+                Action: cloudwatch:PutMetricData
+                Resource: '*'
+                Condition: {StringEquals: {'cloudwatch:namespace': IndicatorLab/India}}
+              - Effect: Allow
+                Action: [logs:CreateLogStream, logs:PutLogEvents]
+                Resource: !GetAtt WatchdogLogs.Arn
+  Watchdog:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: !Sub ${AWS::StackName}-watchdog
+      PackageType: Image
+      Architectures: [arm64]
+      Code:
+        ImageUri: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.${AWS::URLSuffix}/indicatorlab-india-live@${ImageDigest}
+      ImageConfig: {Command: [src.live.india_watchdog.handler]}
+      Environment:
+        Variables:
+          INDIA_LIVE_CONFIG: /var/task/runtime/india-live.json
+          INDIA_LIVE_REGION: !Ref AWS::Region
+      MemorySize: 1024
+      Timeout: 30
+      Role: !GetAtt WatchdogRole.Arn
+  WatchdogTimer:
+    Type: AWS::Events::Rule
+    Properties:
+      ScheduleExpression: rate(1 minute)
+      State: !Ref SchedulesState
+      Targets: [{Arn: !GetAtt Watchdog.Arn, Id: india-watchdog}]
+  WatchdogPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref Watchdog
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt WatchdogTimer.Arn
+  StaleIngestionAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmDescription: Any reviewed India symbol lacks a current collector receipt, or watchdog is missing
+      Namespace: IndicatorLab/India
+      MetricName: IngestionHealthy
+      Dimensions: [{Name: Service, Value: indicatorlab-live-india}]
+      Statistic: Minimum
+      Period: 60
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: LessThanThreshold
+      TreatMissingData: breaching
+      ActionsEnabled: !If [Active, true, false]
+      AlarmActions: !If [HasAlertTopic, [!Ref AlertTopicArn], !Ref AWS::NoValue]
+Outputs:
+  ServiceArn: {Value: !Ref Service}
+  ClusterName: {Value: !Ref Cluster}
+  StartScheduleName: {Value: !Ref Start}
+  StopScheduleName: {Value: !Ref Stop}
+  WatchdogRuleName: {Value: !Ref WatchdogTimer}
+  WatchdogFunctionName: {Value: !Ref Watchdog}
+  AlarmName: {Value: !Ref StaleIngestionAlarm}
+  SnapshotPrefix: {Value: 's3://indicatorlab-data/raw/live/india/'}

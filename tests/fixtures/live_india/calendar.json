@@ -1,0 +1,11 @@
+{
+  "fixture_label": "SYNTHETIC calendar; closures and special times are not an official NSE schedule",
+  "timezone": "Asia/Kolkata",
+  "source": "synthetic_offline_test_only",
+  "sessions": {
+    "2024-01-02": [["09:15", "15:30"]],
+    "2024-01-03": [],
+    "2024-01-06": [["18:00", "19:00"]],
+    "2024-01-07": []
+  }
+}
